@@ -24,11 +24,15 @@ export const docsConfig: DocsConfig = {
 
     {
       title: "Safe Memes",
-      href: "/docs/documentation/centralized",
+      href: "/docs/documentation",
       items: [
         {
           title: "Introduction",
           href: "/docs/documentation",
+        },
+        {
+          title: "Standards",
+          href: "/docs/documentation/standards",
         },
       ],
     },

@@ -7,7 +7,7 @@ export const marketingConfig: MarketingConfig = {
       href: "/#about",
     },
     {
-      title: "SafeMeme Labratory",
+      title: "SafeMeme Laboratory",
       href: "/docs",
     },
     {
