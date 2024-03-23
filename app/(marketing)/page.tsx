@@ -67,21 +67,25 @@ export default async function IndexPage() {
             About
           </h2>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-            We create safe memes according to a strict set of guidelines that
-            are transparently displayed in the{" "}
+            We create safe memes according to guidelines and standards that are
+            transparently displayed in the{" "}
             <a href="../docs" className="underline underline-offset-4">
               SafeMeme Laboratory
             </a>
             . We are blockchain agnostic and will be developing a diverse
             portfolio of safe memes on various blockchains over time that will
-            be listed in the SafeMeme Laboratory.
+            be listed in the SafeMeme Laboratory as they are created.
           </p>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-            The guidelines and standards were created so that we can ensure a
-            safe meme economy and that you can safely and confidently purchase
-            memes. As we grow and develop over time, so will our guidelines, and
-            the tooling that we use, though we have a blog and will frequently
-            post our updates.
+            The guidelines and standards were established so that we can ensure
+            a safe meme economy and that you can confidently purchase memes
+            without fear of being rugpulled or losing your tokens value through
+            any manipulation. As we grow and develop over time, so will our
+            guidelines and the tooling that we use, though we have a{" "}
+            <a href="../blog" className="underline underline-offset-4">
+              blog
+            </a>
+            and will frequently post our updates there.
           </p>
         </div>
       </section>
