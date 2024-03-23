@@ -84,7 +84,7 @@ export default async function IndexPage() {
             guidelines and the tooling that we use, though we have a{" "}
             <a href="../blog" className="underline underline-offset-4">
               blog
-            </a>
+            </a>{" "}
             and will frequently post our updates there.
           </p>
         </div>
