@@ -1,0 +1,213 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+
+    --header-color: #1e2a78;
+    --sub-header-color: #1e2a78;
+    --description-color: #1b365d;
+    --content-color: #648db1;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 215 20.2% 65.1%;
+
+    --radius: 0.5rem;
+    --hover-text: #234f88;
+    --hover-subtext: #29285c;
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+
+    --header-color: hwb(213 73% 19%);
+    --sub-header-color: #96a3b6;
+    --description-color: #6a809e;
+    --content-color: #6082b1;
+
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 1.2%;
+
+    --secondary: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 216 34% 17%;
+
+    --radius: 0.5rem;
+    --hover-text: #a8b2bb;
+    --hover-subtext: #80b3c2;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+.quando-regular {
+  font-family: "Quando", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+:root {
+  /* light theme */
+  --nav1: #97a4b8;
+  --nav2: #a3a4d3;
+  --nav3: #7c95da;
+  --nav4: #5370d8;
+  --nav5: #273fac;
+  --nav6: #192a96;
+  --bac1: #f0f5f9;
+  --bac2: #f5f5f5;
+  --bac3: #1b365d;
+  --bac4: #a2c2d8;
+  --bac5: #88b7dc;
+  --header-color: #1e2a78;
+  --sub-header-color: #1e2a78;
+  --description-color: #1b365d;
+  --content-color: #648db1;
+  --hover-description-background: #88b7dc;
+  --effect-1: #eff6ff; /* Default to a light color */
+  --effect-2: #f0f5f9; /* Similar to the background for subtlety */
+  background-image: radial-gradient(circle at 10% 20%, var(--bac1), transparent),
+    radial-gradient(circle at 80% 70%, var(--bac2), transparent),
+    linear-gradient(to bottom right, var(--bac3), transparent),
+    linear-gradient(to top left, var(--bac4), transparent),
+    linear-gradient(to bottom, var(--bac5), transparent);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  --button-text: #1e2a78; /* Ensure enough contrast against background */
+  --button-background: #f0f5f9; /* Similar to the background for subtlety */
+  --hover-text: #234f88; /* Contrast against the hover background */
+  --hover-subtext: #29285c; /* Subtle hover effect */
+
+  --outline-color: #1e2a78;
+}
+
+[data-theme="Dark"] {
+  /* Dark-themed colors */
+  --nav1: #6987a0;
+  --nav2: #7f9fb8;
+  --nav3: #95b7d0;
+  --nav4: #93b7d1;
+  --nav5: #9cc5e0;
+  --nav6: #b0c7d6;
+  --bac1: #4a556c;
+  --bac2: #3d3d3d;
+  --bac3: #09121e;
+  --bac4: #334155;
+  --bac5: #2b384a;
+  --header-color: #bcc4cf;
+  --sub-header-color: #96a3b6;
+  --description-color: #6a809e;
+  --content-color: #6082b1;
+  --hover-description-background: #2b384a;
+  --effect-1: #bfcdda;
+  --effect-2: #c2c7d3;
+  background-image: radial-gradient(circle at 10% 20%, var(--bac1), transparent),
+    radial-gradient(circle at 80% 70%, var(--bac2), transparent),
+    linear-gradient(to bottom right, var(--bac3), transparent),
+    linear-gradient(to top left, var(--bac4), transparent),
+    linear-gradient(to bottom, var(--bac5), transparent);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  --button-text: #a2b2c7;
+  --button-background: #3d3d3d;
+  --hover-text: #a8b2bb;
+  --hover-subtext: #80b3c2;
+
+  --outline-color: #a2b2c7;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.paragraph-container {
+  margin-bottom: 20px;
+}
+
+.chart-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ChainSelector */
+.buttonsContainer {
+  display: flex;
+  margin-top: 3em;
+  margin-bottom: 1.5em;
+  flex-wrap: wrap;
+  gap: 11px;
+  align-items: center;
+  justify-content: center;
+}
+
+.ant-btn {
+  display: inline-flex;
+  align-items: center;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+.mdx p {
+  text-indent: 2em; /* Adjust the indent size as needed */
+}
