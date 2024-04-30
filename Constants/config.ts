@@ -21,7 +21,7 @@ export const config = createConfig({
     new CoinbaseWalletConnector({
       chains,
       options: {
-        appName: "Degenerator",
+        appName: "SafeMeme Labs",
         appLogoUrl: "tbd",
       },
     }),
@@ -30,9 +30,9 @@ export const config = createConfig({
       options: {
         projectId: "7d2cdf0341b6bef24d9efae208f93467",
         metadata: {
-          name: "Degenerator",
-          description: "Degen Launchpad Protocol",
-          url: "https://createtokens.vercel.app",
+          name: "SafeMeme Labs",
+          description: "Safe Meme Economy",
+          url: "https://safememe.vercel.app",
           icons: ["tbd"],
         },
       },
@@ -51,8 +51,7 @@ export const config = createConfig({
 
 export const tokenDeployerDetails: { [key: string]: string } = {
   "666666666": "0x8c175417787c4beea7211d143423c8624c230b9b",
-  "250": "0x92758022616c3b8145a2d42b3f0d58a1007a69a3",
-  //"250": "0x676e3fd472f437b86ee5203f5adf21b7687fddb5",
+  "250": "0xe92163f8038843091c1df18f726cf04526ef9676",
   "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EE",
   "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ee",
   "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb5",

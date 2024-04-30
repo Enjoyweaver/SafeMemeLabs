@@ -1,0 +1,15 @@
+.appBody {
+  width: 60%;
+  align-items: center;
+  justify-content: center;
+  margin-left: 150px;
+  margin-bottom: 30px;
+}
+
+.appHeader {
+  width: 60%;
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-left: 0px;
+  color: var(--accent);
+}

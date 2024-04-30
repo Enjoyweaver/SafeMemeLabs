@@ -10,7 +10,7 @@ import { useAccount, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi"
 import { ConnectWallet } from "../changeNetwork/connectWallet/connectWallet"
 import { MobileNav } from "../mobileNav/navbar"
 import { Overlay } from "../overlay/overlay"
-import styles from "./navbar.module.css"
+import styles from "./walletconnect.module.css"
 
 interface MinidenticonImgProps {
   username: string
@@ -196,7 +196,7 @@ export function Navbar() {
                   src={
                     chainDetails.find(
                       (chain_) => chain_.name === (chain && chain.name)
-                    )?.logo || "/assets/icons/logos/degen.png"
+                    )?.logo || "/assets/icons/logos/fantom.png"
                   }
                   alt={
                     chainDetails.find(
@@ -258,7 +258,7 @@ export function Navbar() {
                 <Image
                   src={
                     chainDetails.find((chain) => chain.name === tempNetwork)
-                      ?.logo || "/assets/icons/logos/degen.png"
+                      ?.logo || "/assets/icons/logos/fantom.png"
                   }
                   alt={
                     chainDetails.find((chain) => chain.name === tempNetwork)

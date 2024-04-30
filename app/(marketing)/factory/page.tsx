@@ -4,7 +4,7 @@ import { ChangeEvent, useEffect, useState } from "react"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { toast } from "react-toastify"
 
-import { Navbar } from "@/components/navbar/navbar"
+import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import styles from "./page.module.css"
 import "react-toastify/dist/ReactToastify.css"
@@ -142,7 +142,7 @@ export default function Factory(): JSX.Element {
         )}
         <Navbar />
         <div className={styles.tokenDeployer}>
-          <p className={styles.title}>Token Generator</p>
+          <p className={styles.title}>Create a token</p>
           <p className={styles.inputDescription}>By SafeMeme Labs</p>
           <div className={styles.inputGroup}>
             <p className={styles.inputTitle}>Token Name*</p>
