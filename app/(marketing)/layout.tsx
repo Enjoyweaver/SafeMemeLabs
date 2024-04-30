@@ -6,9 +6,6 @@ import { buttonVariants } from "@/components/ui/button"
 import { MainNav } from "@/components/main-nav"
 import { ModeToggle } from "@/components/mode-toggle"
 import { SiteFooter } from "@/components/site-footer"
-import { config } from "@/Constants/config";
-import { WagmiConfig } from "wagmi";
-import { ToastContainer } from "react-toastify";
 
 interface MarketingLayoutProps {
   children: React.ReactNode

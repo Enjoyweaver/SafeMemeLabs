@@ -1,0 +1,36 @@
+.navbar {
+    background-color: white;
+    border: 1px solid rgb(232, 232, 232);
+    border-radius: 20px;
+    position: fixed;
+    bottom: 10px;
+    width: calc(100% - 60px);
+    transform: translateX(10px);
+    padding: 0px 20px;
+}
+.navbarOptionsContainer {
+    display: inline-block;
+    width: 50%;
+    margin: auto;
+}
+.connectText {
+    text-align: center;
+}
+.dropdown {
+    position: absolute;
+    bottom: 58px;
+    width: calc(100% - 40px);
+    left: 0;
+    background-color: white;
+    border: 1px solid rgb(232, 232, 232);
+    border-radius: 20px;
+    padding: 0px 20px;
+}
+.connectMenuOpen {
+    display: block;
+}
+
+.connectMenuClosed {
+    display: none;
+}
+

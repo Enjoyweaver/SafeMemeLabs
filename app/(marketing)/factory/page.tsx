@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useEffect, useState } from "react"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
+import { Navbar } from "@/Components/navbar/navbar"
 import { toast } from "react-toastify"
 
 import styles from "./page.module.css"
@@ -129,157 +130,160 @@ export default function Factory(): JSX.Element {
   }
 
   return (
-    <div>
-      {isClient && chainId && !tokenDeployerDetails[chainId] && (
-        <ChangeNetwork
-          changeNetworkToChainId={250}
-          dappName={"Generator"}
-          networks={"Fantom, Fantom testnet, Polygon, and Degen"}
-        />
-      )}
-      <div className={styles.tokenDeployer}>
-        <p className={styles.title}>Token Generator</p>
-        <p className={styles.inputDescription}>By SafeMeme Labs</p>
-        <div className={styles.inputGroup}>
-          <p className={styles.inputTitle}>Token Name*</p>
-          <input
-            onChange={setTokenName}
-            className={`${styles.tokenInput}`}
-            placeholder="Degen"
-            value={name}
+    <>
+      <Navbar />
+      <div>
+        {isClient && chainId && !tokenDeployerDetails[chainId] && (
+          <ChangeNetwork
+            changeNetworkToChainId={250}
+            dappName={"enerator"}
+            networks={"Fantom, Fantom testnet, Polygon, and Degen"}
           />
-        </div>
-        <div className={styles.inputGroup}>
-          <p className={styles.inputTitle}>Token Symbol*</p>
-          <input
-            onChange={setTokenSymbol}
-            className={`${styles.tokenInput}`}
-            placeholder="degen"
-            value={symbol}
-          />
-        </div>
-        <div className={styles.inputGroup}>
-          <p className={styles.inputTitle}>Token Supply*</p>
-          <input
-            onKeyDown={(evt) =>
-              ["e", "E", "+", "-", "."].includes(evt.key) &&
-              evt.preventDefault()
+        )}
+        <div className={styles.tokenDeployer}>
+          <p className={styles.title}>Token Generator</p>
+          <p className={styles.inputDescription}>By SafeMeme Labs</p>
+          <div className={styles.inputGroup}>
+            <p className={styles.inputTitle}>Token Name*</p>
+            <input
+              onChange={setTokenName}
+              className={`${styles.tokenInput}`}
+              placeholder="Degen"
+              value={name}
+            />
+          </div>
+          <div className={styles.inputGroup}>
+            <p className={styles.inputTitle}>Token Symbol*</p>
+            <input
+              onChange={setTokenSymbol}
+              className={`${styles.tokenInput}`}
+              placeholder="degen"
+              value={symbol}
+            />
+          </div>
+          <div className={styles.inputGroup}>
+            <p className={styles.inputTitle}>Token Supply*</p>
+            <input
+              onKeyDown={(evt) =>
+                ["e", "E", "+", "-", "."].includes(evt.key) &&
+                evt.preventDefault()
+              }
+              onChange={setTokenSupply}
+              className={`${styles.tokenInput}`}
+              placeholder="21000000"
+              type="number"
+              value={supply}
+            />
+          </div>
+          <div className={styles.inputGroup}>
+            <p className={styles.inputTitle}>Decimals</p>
+            <input
+              onKeyDown={(evt) =>
+                ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()
+              }
+              onChange={setTokenDecimals}
+              className={`${styles.tokenInput}`}
+              placeholder="18"
+              type="number"
+              value={decimals}
+            />
+            {!(Number(decimals) >= 0 && Number(decimals) <= 18) && (
+              <p className={styles.error}>Decimals must be from 0 to 18</p>
+            )}
+          </div>
+          <button
+            onClick={() => write?.()}
+            className={`${styles.deployButton} ${
+              !isPrepareError &&
+              isConnected &&
+              isFormFilled() &&
+              Number(decimals) >= 0 &&
+              Number(decimals) <= 18 &&
+              Number(supply) >= 0 &&
+              !(isLoadingTransaction || isLoadingWrite)
+                ? ""
+                : styles.disabled
+            }`}
+            disabled={
+              !isPrepareError &&
+              isConnected &&
+              isFormFilled() &&
+              Number(decimals) >= 0 &&
+              Number(decimals) <= 18 &&
+              Number(supply) >= 0 &&
+              !(isLoadingTransaction || isLoadingWrite)
+                ? false
+                : true
             }
-            onChange={setTokenSupply}
-            className={`${styles.tokenInput}`}
-            placeholder="21000000"
-            type="number"
-            value={supply}
-          />
-        </div>
-        <div className={styles.inputGroup}>
-          <p className={styles.inputTitle}>Decimals</p>
-          <input
-            onKeyDown={(evt) =>
-              ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()
-            }
-            onChange={setTokenDecimals}
-            className={`${styles.tokenInput}`}
-            placeholder="18"
-            type="number"
-            value={decimals}
-          />
-          {!(Number(decimals) >= 0 && Number(decimals) <= 18) && (
-            <p className={styles.error}>Decimals must be from 0 to 18</p>
+          >
+            {isClient
+              ? isConnected
+                ? isLoadingTransaction || isLoadingWrite
+                  ? "Minting..."
+                  : "Deploy (" +
+                    String(deployFee && Number(deployFee) * 10 ** -18) +
+                    " " +
+                    String(
+                      chain ? chain && chain.nativeCurrency.symbol : "Fantom"
+                    ) +
+                    ")"
+                : "Not Connected"
+              : "Loading..."}
+          </button>
+          <p className={styles.inputDescription}>(*) is a required field</p>
+          {isSuccessTransaction &&
+            toast.success(
+              "Token successfully deployed! Go to My Tokens right behind this to check it out! Then grab the contract address and import it into your wallet.",
+              {
+                toastId: String(useWaitData),
+                position: "top-right",
+              }
+            ) &&
+            ""}
+          {isClient && isConnected && (
+            <div className={styles.errorSection}>
+              {isPrepareError ? (
+                <div
+                  onClick={toggleErrorMenuOpen}
+                  className={styles.errorCollapsed}
+                >
+                  <p className={styles.errorHeader}>
+                    ❌ Contract Execution Error
+                  </p>
+                  <Image
+                    src="/assets/icons/dropdown.svg"
+                    alt="dropdown"
+                    width={25}
+                    height={25}
+                    className={styles.errorDropdown}
+                  />
+                </div>
+              ) : (
+                <div className={styles.errorCollapsed}>
+                  {!isLoadingPrepare ? (
+                    <p className={styles.errorHeader}>✅ All Clear</p>
+                  ) : (
+                    <p className={styles.errorHeader}>⏳ Loading</p>
+                  )}
+                </div>
+              )}
+              {errorMenu &&
+                isPrepareError &&
+                (!isLoadingPrepare ? (
+                  <p className={styles.errorText}>
+                    {prepareError?.details
+                      ? capitalizeFirstLetter(prepareError?.details + ".")
+                      : prepareError?.message.includes("v1: Invalid Decimals")
+                      ? "v1: Invalid Decimals"
+                      : capitalizeFirstLetter(prepareError?.message + ".")}
+                  </p>
+                ) : (
+                  <p className={styles.errorText}>Loading...</p>
+                ))}
+            </div>
           )}
         </div>
-        <button
-          onClick={() => write?.()}
-          className={`${styles.deployButton} ${
-            !isPrepareError &&
-            isConnected &&
-            isFormFilled() &&
-            Number(decimals) >= 0 &&
-            Number(decimals) <= 18 &&
-            Number(supply) >= 0 &&
-            !(isLoadingTransaction || isLoadingWrite)
-              ? ""
-              : styles.disabled
-          }`}
-          disabled={
-            !isPrepareError &&
-            isConnected &&
-            isFormFilled() &&
-            Number(decimals) >= 0 &&
-            Number(decimals) <= 18 &&
-            Number(supply) >= 0 &&
-            !(isLoadingTransaction || isLoadingWrite)
-              ? false
-              : true
-          }
-        >
-          {isClient
-            ? isConnected
-              ? isLoadingTransaction || isLoadingWrite
-                ? "Minting..."
-                : "Deploy (" +
-                  String(deployFee && Number(deployFee) * 10 ** -18) +
-                  " " +
-                  String(
-                    chain ? chain && chain.nativeCurrency.symbol : "Fantom"
-                  ) +
-                  ")"
-              : "Not Connected"
-            : "Loading..."}
-        </button>
-        <p className={styles.inputDescription}>(*) is a required field</p>
-        {isSuccessTransaction &&
-          toast.success(
-            "Token successfully deployed! Go to My Tokens right behind this to check it out! Then grab the contract address and import it into your wallet.",
-            {
-              toastId: String(useWaitData),
-              position: "top-right",
-            }
-          ) &&
-          ""}
-        {isClient && isConnected && (
-          <div className={styles.errorSection}>
-            {isPrepareError ? (
-              <div
-                onClick={toggleErrorMenuOpen}
-                className={styles.errorCollapsed}
-              >
-                <p className={styles.errorHeader}>
-                  ❌ Contract Execution Error
-                </p>
-                <Image
-                  src="/assets/icons/dropdown.svg"
-                  alt="dropdown"
-                  width={25}
-                  height={25}
-                  className={styles.errorDropdown}
-                />
-              </div>
-            ) : (
-              <div className={styles.errorCollapsed}>
-                {!isLoadingPrepare ? (
-                  <p className={styles.errorHeader}>✅ All Clear</p>
-                ) : (
-                  <p className={styles.errorHeader}>⏳ Loading</p>
-                )}
-              </div>
-            )}
-            {errorMenu &&
-              isPrepareError &&
-              (!isLoadingPrepare ? (
-                <p className={styles.errorText}>
-                  {prepareError?.details
-                    ? capitalizeFirstLetter(prepareError?.details + ".")
-                    : prepareError?.message.includes("v1: Invalid Decimals")
-                    ? "v1: Invalid Decimals"
-                    : capitalizeFirstLetter(prepareError?.message + ".")}
-                </p>
-              ) : (
-                <p className={styles.errorText}>Loading...</p>
-              ))}
-          </div>
-        )}
       </div>
-    </div>
+    </>
   )
 }
