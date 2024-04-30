@@ -37,19 +37,7 @@ const MinidenticonImg: FC<MinidenticonImgProps> = ({
 
 export default MinidenticonImg
 
-const menuItems = [
-  {
-    label: "Degenerator",
-    links: [
-      { text: "Degenerator", href: "/app/factory" },
-      { text: "My Tokens", href: "/app/mytokens" },
-    ],
-  },
-  {
-    label: "Multisender",
-    links: [{ text: "Token Multisender", href: "/app/multisender" }],
-  },
-]
+const menuItems = []
 
 const chainDetails = [
   { name: "Fantom", chainId: 250, logo: "/assets/icons/logos/fantom.png" },
@@ -331,18 +319,7 @@ export function Navbar() {
             <p className={`${styles.connectText} ${styles.toHide}`}>Fantom</p>
           </div>
         )}
-        <Link
-          href="/"
-          className={`${styles.navLeft} ${styles.navbarLi} ${styles.active}`}
-        >
-          <Image
-            alt="logo"
-            src="/assets/logo2.png"
-            className={styles.navLogo}
-            width={24}
-            height={24}
-          />
-        </Link>
+
         {menuItems.map((item, index) => (
           <div key={index} className={styles.navbarOptionsContainer}>
             <div

@@ -2,8 +2,9 @@
 
 import { ChangeEvent, useEffect, useState } from "react"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
-import { Navbar } from "@/Components/navbar/navbar"
 import { toast } from "react-toastify"
+
+import { Navbar } from "@/components/navbar/navbar"
 
 import styles from "./page.module.css"
 import "react-toastify/dist/ReactToastify.css"
@@ -131,7 +132,6 @@ export default function Factory(): JSX.Element {
 
   return (
     <>
-      <Navbar />
       <div>
         {isClient && chainId && !tokenDeployerDetails[chainId] && (
           <ChangeNetwork
@@ -140,6 +140,7 @@ export default function Factory(): JSX.Element {
             networks={"Fantom, Fantom testnet, Polygon, and Degen"}
           />
         )}
+        <Navbar />
         <div className={styles.tokenDeployer}>
           <p className={styles.title}>Token Generator</p>
           <p className={styles.inputDescription}>By SafeMeme Labs</p>
