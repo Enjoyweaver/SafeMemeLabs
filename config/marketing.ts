@@ -14,5 +14,9 @@ export const marketingConfig: MarketingConfig = {
       title: "Blog",
       href: "/blog",
     },
+    {
+      title: "Create Meme",
+      href: "/factory",
+    },
   ],
 }

@@ -1,0 +1,67 @@
+"use client"
+
+import { degen } from "@/utils/degenChain"
+import { configureChains, createConfig } from "wagmi"
+import { fantom, fantomTestnet, polygon } from "wagmi/chains"
+import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet"
+import { InjectedConnector } from "wagmi/connectors/injected"
+import { MetaMaskConnector } from "wagmi/connectors/metaMask"
+import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
+import { publicProvider } from "wagmi/providers/public"
+
+export const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [fantom, polygon, fantomTestnet, degen],
+  [publicProvider()]
+)
+
+export const config = createConfig({
+  autoConnect: true,
+  connectors: [
+    new MetaMaskConnector({ chains }),
+    new CoinbaseWalletConnector({
+      chains,
+      options: {
+        appName: "Degenerator",
+        appLogoUrl: "tbd",
+      },
+    }),
+    new WalletConnectConnector({
+      chains,
+      options: {
+        projectId: "7d2cdf0341b6bef24d9efae208f93467",
+        metadata: {
+          name: "Degenerator",
+          description: "Degen Launchpad Protocol",
+          url: "https://createtokens.vercel.app",
+          icons: ["tbd"],
+        },
+      },
+    }),
+    new InjectedConnector({
+      chains,
+      options: {
+        name: "Injected",
+        shimDisconnect: true,
+      },
+    }),
+  ],
+  publicClient,
+  webSocketPublicClient,
+})
+
+export const tokenDeployerDetails: { [key: string]: string } = {
+  "666666666": "0x8c175417787c4beea7211d143423c8624c230b9b",
+  "250": "0x92758022616c3b8145a2d42b3f0d58a1007a69a3",
+  //"250": "0x676e3fd472f437b86ee5203f5adf21b7687fddb5",
+  "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EE",
+  "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ee",
+  "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb5",
+  "4002": "0xf579e5280ce767b862520b6d99231963fd564d8b",
+}
+export const multisendDetails: { [key: string]: string } = {
+  "137": "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
+  "250": "0xe1B8Fc8e02b9b2C8152dEB18c5D1f6C2b23f8a94",
+  "4002": "0xeC4993Ab1a113A15e94c33748344954E15451d4e",
+  "64165": "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
+  "666666666": "0x29c4e664e50aa222a0f10de5233e0e1fd0bd9cc6",
+}

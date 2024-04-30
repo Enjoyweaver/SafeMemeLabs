@@ -1,0 +1,57 @@
+.connectionOptions {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px;
+    background-color:#ffffff;
+    border-radius: 10px;
+    max-width: 400px;
+    width: calc(100% - 40px);
+    z-index: 13;
+    color: rgb(50,50,50);
+    border: 1px rgb(214, 214, 214) solid;
+    box-shadow: 0 0 300px rgba(0, 0, 0, 0.1);
+}
+
+.connectionOption {
+    padding: 10px;
+    display: block;
+    width: calc(100% - 20px);
+    margin: 10px;
+    font-size: 1.3em;
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: rgb(50,50,50);
+    outline: none;
+    border: 1px rgb(214, 214, 214) solid;
+    cursor: pointer;
+}
+
+.connectionHeading {
+    color: rgb(50,50,50);
+    font-size: 1.6em;
+    margin: 0;
+    padding: 0 10px;
+}
+.connectionDesc {
+    padding: 0 10px;
+    color: rgb(50,50,50);
+    margin-top: 10px;
+}
+.walletLogo {
+    vertical-align: middle;
+    border-radius: 5px;
+    margin-right: 5px;
+    float: right;
+}
+
+.uninstalled {
+    cursor: default;
+}
+.connector {
+    float: left;
+    margin: 0;
+    vertical-align: middle;
+    margin-top: 5px;
+}

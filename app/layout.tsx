@@ -2,6 +2,10 @@ import { Inter as FontSans } from "next/font/google"
 import localFont from "next/font/local"
 
 import "@/styles/globals.css"
+import { config } from "@/Constants/config"
+import { ToastContainer } from "react-toastify"
+import { WagmiConfig } from "wagmi"
+
 import { siteConfig } from "@/config/site"
 import { absoluteUrl, cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
@@ -75,11 +79,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
           fontHeading.variable
         )}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
-          <Analytics />
-          <Toaster />
-        </ThemeProvider>
+        <WagmiConfig config={config}>
+          <ToastContainer />
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {children}
+            <Analytics />
+            <Toaster />
+          </ThemeProvider>
+        </WagmiConfig>
       </body>
     </html>
   )
