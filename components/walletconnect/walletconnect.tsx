@@ -167,7 +167,7 @@ export function Navbar() {
                 >
                   Disconnect
                 </p>
-                <Link href="/app/mytokens">
+                <Link href="../mytokens">
                   <p className={styles.dropdownOption}>My Tokens</p>
                 </Link>
               </div>
