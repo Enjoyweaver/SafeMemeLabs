@@ -12,7 +12,7 @@
 .navbarLi {
   font-size: 18px;
   line-height: 26.67px;
-  margin: 10px 5px;
+  margin: 10px 15px;
   display: inline-flex;
   align-items: center;
   height: 26.67px;
@@ -27,17 +27,13 @@
 .navLogo {
   display: inline-block;
   vertical-align: middle;
-  margin: 0 5px;
+  margin: 5px 5px;
   transform: scale(1.5);
 }
 
 .active {
   display: inline-block;
   cursor: pointer;
-}
-
-.navLeft {
-  float: left;
 }
 
 .menu {
@@ -97,7 +93,7 @@
 
 .dropdownIcon {
   vertical-align: middle;
-  margin-right: 5px;
+  margin-right: 0px;
   filter: invert(15%) sepia(0%) saturate(1%) hue-rotate(40deg) brightness(50%)
     contrast(90%);
 }
@@ -108,7 +104,7 @@
 }
 
 .navbarOptionsContainer {
-  float: left;
+  float: center;
   display: flex;
   align-items: center;
 }
@@ -121,6 +117,8 @@
 .chainLogo {
   border-radius: 100px;
   vertical-align: middle;
+  justify-content: center;
+  display: inline-block;
   margin-right: 5px;
 }
 
@@ -134,7 +132,7 @@
   max-width: 190px;
   width: 100%;
   color: black;
-  float: left;
+  float: center;
   overflow: hidden;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }

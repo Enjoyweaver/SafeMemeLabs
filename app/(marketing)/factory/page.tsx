@@ -136,8 +136,8 @@ export default function Factory(): JSX.Element {
         {isClient && chainId && !tokenDeployerDetails[chainId] && (
           <ChangeNetwork
             changeNetworkToChainId={250}
-            dappName={"enerator"}
-            networks={"Fantom, Fantom testnet, Polygon, and Degen"}
+            dappName={"SafeMeme Labs"}
+            networks={"Fantom, Fantom testnet, Base, Polygon, and Degen"}
           />
         )}
         <Navbar />

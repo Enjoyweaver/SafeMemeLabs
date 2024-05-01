@@ -1,18 +1,19 @@
-import styles from "./connectWallet.module.css";
-import { useIsMounted } from "usehooks-ts";
-import { useConnect } from "wagmi";
-import Image from "next/image";
+import Image from "next/image"
+import { useIsMounted } from "usehooks-ts"
+import { useConnect } from "wagmi"
+
+import styles from "./connectWallet.module.css"
 
 export function ConnectWallet() {
-  const isMounted = useIsMounted();
+  const isMounted = useIsMounted()
   const { connect, connectors, error, isLoading, pendingConnector } =
-    useConnect();
+    useConnect()
 
   return (
     <div className={styles.connectionOptions}>
       <p className={styles.connectionHeading}>Connect Wallet</p>
       <p className={styles.connectionDesc}>
-        Interact with Degenerator by connecting a Web3 Wallet
+        Interact with SafeMeme Labs by connecting a Web3 Wallet
       </p>
       {connectors.map((connector) => (
         <button
@@ -71,5 +72,5 @@ export function ConnectWallet() {
 
       {error && <div>{error.message}</div>}
     </div>
-  );
+  )
 }

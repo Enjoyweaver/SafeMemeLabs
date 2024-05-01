@@ -40,13 +40,14 @@ export default MinidenticonImg
 const menuItems = []
 
 const chainDetails = [
+  { name: "Base", chainId: 8453, logo: "/assets/icons/logos/base.png" },
   { name: "Fantom", chainId: 250, logo: "/assets/icons/logos/fantom.png" },
   {
     name: "Fantom Testnet",
     chainId: 4002,
-    logo: "/assets/icons/logos/fantom.png",
+    logo: "/assets/icons/logos/fantomtest.png",
   },
-  //{ name: "Polygon", chainId: 137, logo: "/assets/icons/logos/polygon.png" },
+  { name: "Polygon", chainId: 137, logo: "/assets/icons/logos/polygon.png" },
 
   // {
   //   name: "Fantom Sonic",
@@ -249,7 +250,7 @@ export function Navbar() {
         {menuItems.map((item, index) => (
           <div key={index} className={styles.navbarOptionsContainer}>
             <div
-              className={`${styles.navLeft} ${styles.navbarLi} ${styles.active}`}
+              className={` ${styles.navbarLi} ${styles.active}`}
               onClick={() => toggleMenu(index)}
             >
               <p className={`${styles.connectText} ${styles.toHide}`}>
