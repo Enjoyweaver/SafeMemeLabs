@@ -32,3 +32,7 @@ users to participate. That's why we will create guide's to help new users naviga
 | Slush       |                |                                            |                      |
 | Cascade     |                |                                            |                      |
 | Avalanche   |                |                                            |                      |
+
+
+
+To display this blog post, change the file name back to .mdx. 
