@@ -188,123 +188,49 @@ export function Navbar() {
         {isClient ? (
           isConnected ? (
             <div className={styles.connectButtonContainer}>
-              <div
-                className={`${styles.navbarLi}`}
-                onClick={toggleNetworkMenuOpen}
-              >
-                <Image
-                  src={
-                    chainDetails.find(
-                      (chain_) => chain_.name === (chain && chain.name)
-                    )?.logo || "/assets/icons/logos/fantom.png"
+              {chainDetails.map((chain) => (
+                <button
+                  key={chain.chainId}
+                  className={`${styles.navbarLi} ${
+                    chain.name === (chain && chain.name) ? styles.active : ""
+                  }`}
+                  onClick={() =>
+                    dropdownAction(() => switchNetwork?.(chain.chainId))
                   }
-                  alt={
-                    chainDetails.find(
-                      (chain_) => chain_.name === (chain && chain.name)
-                    )?.name || "Fantom"
-                  }
-                  width={23}
-                  height={23}
-                  className={styles.chainIcon}
-                />
-                <p className={`${styles.connectText} ${styles.toHide}`}>
-                  {chain
-                    ? chains.map((item) => Number(item.id)).includes(chain.id)
-                      ? chain.name
-                      : "Unsupported"
-                    : "Error"}
-                </p>
-                <Image
-                  src="/assets/icons/dropdown.svg"
-                  alt="dropdown"
-                  width={15}
-                  height={15}
-                  className={styles.dropdownIcon}
-                />
-              </div>
-              <div
-                className={`${styles.dropdown} ${
-                  networkMenuOpen
-                    ? styles.connectMenuOpen
-                    : styles.connectMenuClosed
-                }`}
-              >
-                {chainDetails.map((chain) => (
-                  <p
-                    key={chain.chainId}
-                    className={styles.dropdownOption}
-                    onClick={() =>
-                      dropdownAction(() => switchNetwork?.(chain.chainId))
-                    }
-                  >
-                    <Image
-                      src={chain.logo}
-                      alt={chain.name}
-                      className={styles.chainLogo}
-                      height={30}
-                      width={30}
-                    />
-                    {chain.name}
-                  </p>
-                ))}
-              </div>
+                >
+                  <Image
+                    src={chain.logo}
+                    alt={chain.name}
+                    className={styles.chainLogo}
+                    height={30}
+                    width={30}
+                  />
+                  {chain.name}
+                </button>
+              ))}
             </div>
           ) : (
             <div className={styles.connectButtonContainer}>
-              <div
-                className={`${styles.navbarLi}`}
-                onClick={toggleNetworkMenuOpen}
-              >
-                <Image
-                  src={
-                    chainDetails.find((chain) => chain.name === tempNetwork)
-                      ?.logo || "/assets/icons/logos/fantom.png"
+              {chainDetails.map((chain) => (
+                <button
+                  key={chain.chainId}
+                  className={`${styles.navbarLi} ${
+                    chain.name === tempNetwork ? styles.active : ""
+                  }`}
+                  onClick={() =>
+                    dropdownAction(() => setTempNetwork(chain.name))
                   }
-                  alt={
-                    chainDetails.find((chain) => chain.name === tempNetwork)
-                      ?.name || "Fantom"
-                  }
-                  width={23}
-                  height={23}
-                  className={styles.chainIcon}
-                />
-                <p className={`${styles.connectText} ${styles.toHide}`}>
-                  {tempNetwork}
-                </p>
-                <Image
-                  src="/assets/icons/dropdown.svg"
-                  alt="dropdown"
-                  width={15}
-                  height={15}
-                  className={styles.dropdownIcon}
-                />
-              </div>
-              <div
-                className={`${styles.dropdown} ${
-                  networkMenuOpen
-                    ? styles.connectMenuOpen
-                    : styles.connectMenuClosed
-                }`}
-              >
-                {chainDetails.map((chain) => (
-                  <p
-                    key={chain.chainId}
-                    className={styles.dropdownOption}
-                    onClick={() =>
-                      dropdownAction(() => setTempNetwork(chain.name))
-                    }
-                  >
-                    <Image
-                      src={chain.logo}
-                      alt={chain.name}
-                      className={styles.chainLogo}
-                      height={23}
-                      width={23}
-                    />
-                    {chain.name}
-                  </p>
-                ))}
-              </div>
+                >
+                  <Image
+                    src={chain.logo}
+                    alt={chain.name}
+                    className={styles.chainLogo}
+                    height={23}
+                    width={23}
+                  />
+                  {chain.name}
+                </button>
+              ))}
             </div>
           )
         ) : (

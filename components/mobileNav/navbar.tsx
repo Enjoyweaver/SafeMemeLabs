@@ -1,36 +1,23 @@
-import styles from "./navbar.module.css";
+import { useState } from "react"
+import Link from "next/link"
 
-import Link from "next/link";
+import styles from "./navbar.module.css"
 
-import { useState } from "react";
-
-const menuItems = [
-  {
-    label: "Degenerator",
-    links: [
-      { text: "Degenerator", href: "/app/factory" },
-      { text: "My Tokens", href: "/app/mytokens" },
-    ],
-  },
-  {
-    label: "Multisender",
-    links: [{ text: "Token Multisender", href: "/app/multisender" }],
-  },
-];
+const menuItems = []
 
 export const MobileNav = () => {
-  const [menusOpen, setMenusOpen] = useState<boolean[]>([false, false]);
+  const [menusOpen, setMenusOpen] = useState<boolean[]>([false, false])
 
   const toggleMenu = (index: number) => {
     if (!menusOpen[index]) {
-      const updatedMenusOpen: boolean[] = [];
-      updatedMenusOpen[index] = !updatedMenusOpen[index];
-      setMenusOpen(updatedMenusOpen);
+      const updatedMenusOpen: boolean[] = []
+      updatedMenusOpen[index] = !updatedMenusOpen[index]
+      setMenusOpen(updatedMenusOpen)
     } else {
-      const updatedMenusOpen: boolean[] = [];
-      setMenusOpen(updatedMenusOpen);
+      const updatedMenusOpen: boolean[] = []
+      setMenusOpen(updatedMenusOpen)
     }
-  };
+  }
 
   return (
     <div className={styles.navbar}>
@@ -60,5 +47,5 @@ export const MobileNav = () => {
         </div>
       ))}
     </div>
-  );
-};
+  )
+}

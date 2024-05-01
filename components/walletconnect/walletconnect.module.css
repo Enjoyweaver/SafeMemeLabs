@@ -10,17 +10,15 @@
 }
 
 .navbarLi {
-  float: right;
   font-size: 18px;
   line-height: 26.67px;
   margin: 10px 5px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   height: 26.67px;
 }
 
 .navbarOption {
-  float: left;
   font-size: 18px;
   line-height: 26.67px;
   margin: 10px 5px;
