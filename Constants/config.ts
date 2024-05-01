@@ -2,7 +2,7 @@
 
 import { degen } from "@/utils/degenChain"
 import { configureChains, createConfig } from "wagmi"
-import { base, fantom, fantomTestnet, polygon } from "wagmi/chains"
+import { avalanche, base, fantom, fantomTestnet, polygon } from "wagmi/chains"
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { MetaMaskConnector } from "wagmi/connectors/metaMask"
@@ -10,7 +10,7 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 import { publicProvider } from "wagmi/providers/public"
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [fantom, polygon, fantomTestnet, degen, base],
+  [avalanche, fantom, polygon, fantomTestnet, degen, base],
   [publicProvider()]
 )
 
@@ -56,7 +56,8 @@ export const tokenDeployerDetails: { [key: string]: string } = {
   "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ee",
   "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb5",
   "4002": "0xf579e5280ce767b862520b6d99231963fd564d8b",
-  "8453": "0x8c175417787c4beea7211d143423c8624c230b9b",
+  "8453": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25e",
+  "43114": "0xe92163f8038843091c1df18f726cf04526ef9676",
 }
 export const multisendDetails: { [key: string]: string } = {
   "137": "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
@@ -65,4 +66,5 @@ export const multisendDetails: { [key: string]: string } = {
   "64165": "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
   "666666666": "0x29c4e664e50aa222a0f10de5233e0e1fd0bd9cc6",
   "8453": "0x29c4e664e50aa222a0f10de5233e0e1fd0bd9cc6",
+  "43114": "0x8c175417787c4beea7211d143423c8624c230b9b",
 }

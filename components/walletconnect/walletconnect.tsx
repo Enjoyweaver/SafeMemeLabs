@@ -40,14 +40,19 @@ export default MinidenticonImg
 const menuItems = []
 
 const chainDetails = [
+  {
+    name: "Avalanche",
+    chainId: 43114,
+    logo: "/assets/icons/logos/avalanche.png",
+  },
   { name: "Base", chainId: 8453, logo: "/assets/icons/logos/base.png" },
   { name: "Fantom", chainId: 250, logo: "/assets/icons/logos/fantom.png" },
-  {
-    name: "Fantom Testnet",
-    chainId: 4002,
-    logo: "/assets/icons/logos/fantomtest.png",
-  },
-  { name: "Polygon", chainId: 137, logo: "/assets/icons/logos/polygon.png" },
+  //{
+  //   name: "Fantom Testnet",
+  //  chainId: 4002,
+  //  logo: "/assets/icons/logos/fantomtest.png",
+  //},
+  // { name: "Polygon", chainId: 137, logo: "/assets/icons/logos/polygon.png" },
 
   // {
   //   name: "Fantom Sonic",
