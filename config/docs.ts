@@ -34,6 +34,24 @@ export const docsConfig: DocsConfig = {
           title: "Standards",
           href: "/docs/documentation/standards",
         },
+        {
+          title: "Competition Created",
+          href: "/docs/documentation/standards",
+        },
+      ],
+    },
+    {
+      title: "Arweave",
+      href: "/docs/documentation",
+      items: [
+        {
+          title: "Introduction",
+          href: "/docs/documentation/arweave",
+        },
+        {
+          title: "Standards",
+          href: "/docs/documentation/standards",
+        },
       ],
     },
     {
@@ -51,12 +69,12 @@ export const docsConfig: DocsConfig = {
       ],
     },
     {
-      title: "Solana",
+      title: "Base",
       href: "/docs/documentation",
       items: [
         {
           title: "Introduction",
-          href: "/docs/documentation/solana",
+          href: "/docs/documentation/base",
         },
         {
           title: "Standards",
@@ -65,12 +83,12 @@ export const docsConfig: DocsConfig = {
       ],
     },
     {
-      title: "Arweave",
+      title: "Degen",
       href: "/docs/documentation",
       items: [
         {
           title: "Introduction",
-          href: "/docs/documentation/arweave",
+          href: "/docs/documentation/degen",
         },
         {
           title: "Standards",
@@ -99,6 +117,20 @@ export const docsConfig: DocsConfig = {
         {
           title: "Introduction",
           href: "/docs/documentation/polygon",
+        },
+        {
+          title: "Standards",
+          href: "/docs/documentation/standards",
+        },
+      ],
+    },
+    {
+      title: "Solana",
+      href: "/docs/documentation",
+      items: [
+        {
+          title: "Introduction",
+          href: "/docs/documentation/solana",
         },
         {
           title: "Standards",
