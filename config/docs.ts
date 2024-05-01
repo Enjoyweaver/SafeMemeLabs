@@ -19,13 +19,6 @@ export const docsConfig: DocsConfig = {
           title: "Welcome",
           href: "/docs",
         },
-      ],
-    },
-
-    {
-      title: "Safe Memes",
-      href: "/docs/documentation",
-      items: [
         {
           title: "Introduction",
           href: "/docs/documentation",
@@ -34,9 +27,20 @@ export const docsConfig: DocsConfig = {
           title: "Standards",
           href: "/docs/documentation/standards",
         },
+      ],
+    },
+
+    {
+      title: "Competition Created",
+      href: "/docs/documentation",
+      items: [
         {
-          title: "Competition Created",
-          href: "/docs/documentation/standards",
+          title: "Introduction",
+          href: "/docs/documentation/competition",
+        },
+        {
+          title: "Degen.Express",
+          href: "/docs/documentation/degenexpress",
         },
       ],
     },
