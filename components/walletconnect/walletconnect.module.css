@@ -224,4 +224,10 @@
   .toShow {
     display: block;
   }
+  .navbarLi {
+    font-size: 14px; /* Decrease font size */
+    line-height: 20px; /* Decrease line height */
+    margin: 5px 10px; /* Reduce margin */
+    height: auto; /* Allow height to adjust based on content */
+  }
 }
