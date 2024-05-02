@@ -129,6 +129,7 @@
   min-width: 175px;
   color: black;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  z-index: 1; /* Set initial z-index */
 }
 
 .dropdownLeft {
@@ -144,6 +145,7 @@
   float: center;
   overflow: hidden;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  z-index: 1; /* Set initial z-index */
 }
 
 .identicon {

@@ -120,16 +120,6 @@ export function Navbar() {
     setNetworkMenuOpen(false)
   }
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target as Node)
-    ) {
-      setConnectMenuOpen(false)
-      setNetworkMenuOpen(false)
-    }
-  }
-
   useEffect(() => {
     setIsClient(true)
     document.addEventListener("mousedown", handleClickOutside)
