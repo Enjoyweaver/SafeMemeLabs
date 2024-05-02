@@ -41,6 +41,8 @@
     --radius: 0.5rem;
     --hover-text: #234f88;
     --hover-subtext: #29285c;
+    --wallet-connect-text-color: #1e2a78; /* Text color for wallet connect button in light mode */
+    --blockchain-text-color: #1e2a78;
   }
 
   .dark {
@@ -81,6 +83,8 @@
     --radius: 0.5rem;
     --hover-text: #a8b2bb;
     --hover-subtext: #80b3c2;
+    --wallet-connect-text-color-dark: #bcc4cf; /* Text color for wallet connect button in dark mode */
+    --blockchain-text-color-dark: #96a3b6;
   }
 }
 

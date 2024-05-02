@@ -194,7 +194,7 @@ export function Navbar() {
             </div>
           ) : (
             <div
-              className={`${styles.navbarLi} ${styles.connectButton}`}
+              className={`${styles.navbarLi} ${styles.walletConnectButton}`}
               onClick={toggleConnectOpen}
             >
               <p className={styles.connectText}>Connect</p>
@@ -248,7 +248,17 @@ export function Navbar() {
                     height={23}
                     width={23}
                   />
-                  {chain.name}
+                  <span
+                    style={{
+                      color: isClient
+                        ? isConnected
+                          ? "var(--blockchain-text-color)"
+                          : "var(--blockchain-text-color-dark)"
+                        : "var(--blockchain-text-color)",
+                    }}
+                  >
+                    {chain.name}
+                  </span>
                 </button>
               ))}
             </div>
