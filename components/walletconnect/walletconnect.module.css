@@ -123,6 +123,7 @@
   right: 0;
   position: absolute;
   top: 55px;
+  background-color: white;
   border-radius: 10px;
   border: 1px solid rgb(225, 225, 225);
   min-width: 175px;
@@ -135,6 +136,7 @@
   display: block;
   position: absolute;
   top: 55px;
+  background-color: white;
   border-radius: 10px;
   border: 1px solid rgb(225, 225, 225);
   max-width: 190px;
@@ -144,14 +146,6 @@
   overflow: hidden;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   z-index: 1; /* Set initial z-index */
-}
-
-.dropdown.open {
-  z-index: 20; /* Adjust z-index when dropdown is open */
-}
-
-.dropdownLeft.open {
-  z-index: 20; /* Adjust z-index when dropdown is open */
 }
 
 .identicon {
