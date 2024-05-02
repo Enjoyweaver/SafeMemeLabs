@@ -1,6 +1,6 @@
 "use client"
 
-import { FC, useEffect, useMemo, useState } from "react"
+import { FC, useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { chains } from "@/Constants/config"
@@ -73,6 +73,7 @@ export function Navbar() {
   const [isClient, setIsClient] = useState<boolean>(false)
   const [tempNetwork, setTempNetwork] = useState<string>("Not Connected")
   const [menusOpen, setMenusOpen] = useState<boolean[]>([false, false])
+  const dropdownRef = useRef<HTMLDivElement>(null) // Create a ref for the dropdown menu
 
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
@@ -119,10 +120,22 @@ export function Navbar() {
     setNetworkMenuOpen(false)
   }
 
-  const { chain } = useNetwork()
-  const { error, isLoading, pendingChainId, switchNetwork } = useSwitchNetwork()
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setConnectMenuOpen(false)
+      setNetworkMenuOpen(false)
+    }
+  }
+
   useEffect(() => {
     setIsClient(true)
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
   }, [])
 
   return (
@@ -139,6 +152,7 @@ export function Navbar() {
               <div
                 className={`${styles.navbarLi}`}
                 onClick={toggleConnectMenuOpen}
+                ref={dropdownRef} // Assign the ref to the dropdown menu
               >
                 <MinidenticonImg
                   username={String(address)}

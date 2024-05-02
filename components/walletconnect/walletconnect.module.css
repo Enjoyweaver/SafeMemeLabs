@@ -122,6 +122,19 @@
   margin-right: ;
 }
 
+.dropdown {
+  right: 0;
+  position: absolute;
+  top: 55px;
+  background-color: white;
+  border-radius: 10px;
+  border: 1px solid rgb(225, 225, 225);
+  min-width: 175px;
+  color: black;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  z-index: 20; /* Adjust the z-index value */
+}
+
 .dropdownLeft {
   display: block;
   position: absolute;
@@ -135,18 +148,9 @@
   float: center;
   overflow: hidden;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  z-index: 20; /* Adjust the z-index value */
 }
-.dropdown {
-  right: 0;
-  position: absolute;
-  top: 55px;
-  background-color: white;
-  border-radius: 10px;
-  border: 1px solid rgb(225, 225, 225);
-  min-width: 175px;
-  color: black;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-}
+
 .identicon {
   vertical-align: center;
   display: inline-block;
