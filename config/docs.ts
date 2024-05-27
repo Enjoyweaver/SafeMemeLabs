@@ -42,6 +42,10 @@ export const docsConfig: DocsConfig = {
           title: "Degen.Express",
           href: "/docs/documentation/degenexpress",
         },
+        {
+          title: "MemeBoxFi",
+          href: "/docs/documentation/memeboxfi",
+        },
       ],
     },
     {
