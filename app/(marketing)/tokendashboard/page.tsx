@@ -1,39 +1,12 @@
 import React from "react"
-import Link from "next/link"
 
-import "../styles/dashboard.css"
-import { marketingConfig } from "@/config/marketing"
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
-import { MainNav } from "@/components/main-nav"
-import { ModeToggle } from "@/components/mode-toggle"
-import { SiteFooter } from "@/components/site-footer"
-
-import TokenHoldersList from "../components/tokenholderslist"
+import "@/styles/dashboard.css"
+import TokenHoldersList from "@/components/tokenholderslist"
 
 const Dashboard = () => {
   const shouldShowLogin = false
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="container z-40 bg-background">
-        <div className="flex h-20 items-center justify-between py-6">
-          <MainNav items={marketingConfig.mainNav} />
-          <nav className="flex items-center space-x-4">
-            {shouldShowLogin && (
-              <Link
-                href="/auth/login"
-                className={cn(
-                  buttonVariants({ variant: "secondary", size: "sm" }),
-                  "px-4"
-                )}
-              >
-                Login
-              </Link>
-            )}
-            <ModeToggle />
-          </nav>
-        </div>
-      </header>
       <main className="flex-1">
         <div className="dashboard">
           <section>
@@ -73,7 +46,6 @@ const Dashboard = () => {
           </section>
         </div>
       </main>
-      <SiteFooter />
     </div>
   )
 }

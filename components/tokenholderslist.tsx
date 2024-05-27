@@ -3,9 +3,6 @@
 
 import React, { useEffect, useState } from "react"
 
-interface MarketingLayoutProps {
-  children: React.ReactNode
-}
 const TokenHoldersList = ({ walletAddress, chainName }) => {
   const [transactionSummary, setTransactionSummary] = useState(null)
   const [loading, setLoading] = useState(true)

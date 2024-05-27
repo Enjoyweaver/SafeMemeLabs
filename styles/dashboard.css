@@ -1,7 +1,16 @@
 body {
-  background-color: #000;
-  color: #fff;
-  font-family: Arial, sans-serif;
+  background-color: var(
+    --background-light
+  ) !important; /* Use light theme background color */
+  color: var(--foreground-light) !important; /* Use light theme text color */
+  font-family: Arial, sans-serif !important;
+}
+
+.dark body {
+  background-color: var(
+    --background-dark
+  ) !important; /* Use dark theme background color */
+  color: var(--foreground-dark) !important; /* Use dark theme text color */
 }
 
 .container {
@@ -9,94 +18,174 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+  background-color: var(
+    --background-light
+  ) !important; /* Use light theme background color */
+}
+
+.dark .container {
+  background-color: var(
+    --background-dark
+  ) !important; /* Use dark theme background color */
 }
 
 .header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  background-color: var(
+    --background-light
+  ) !important; /* Use light theme background color */
+}
+
+.dark .header-container {
+  background-color: var(
+    --background-dark
+  ) !important; /* Use dark theme background color */
+}
+
+.header-container a,
+.header-container p {
+  color: var(--foreground-light) !important; /* Use light theme text color */
+}
+
+.dark .header-container a,
+.dark .header-container p {
+  color: var(--foreground-dark) !important; /* Use dark theme text color */
 }
 
 .main-nav {
-  display: flex;
-  justify-content: space-between;
-  flex: 1;
+  display: flex !important;
+  justify-content: space-between !important;
+  flex: 1 !important;
 }
 
 .nav-item {
-  color: #fff;
-  text-decoration: none;
-  padding: 10px 20px;
+  color: var(--foreground-light) !important;
+  text-decoration: none !important;
+  padding: 10px 20px !important;
+}
+
+.dark .nav-item {
+  color: var(--foreground-dark) !important;
 }
 
 .nav-item:hover {
-  background-color: #ff69b4;
-  color: #000;
+  background-color: var(--primary-light) !important;
+  color: var(
+    --background-light
+  ) !important; /* Use light theme background color */
+}
+
+.dark .nav-item:hover {
+  background-color: var(--primary-dark) !important;
+  color: var(
+    --background-dark
+  ) !important; /* Use dark theme background color */
 }
 
 .dashboard {
-  padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-  text-align: center;
+  padding: 20px !important;
+  max-width: 800px !important;
+  margin: 0 auto !important;
+  text-align: center !important;
+  background-color: var(
+    --background-light
+  ) !important; /* Use light theme background color */
+}
+
+.dark .dashboard {
+  background-color: var(
+    --background-dark
+  ) !important; /* Use dark theme background color */
 }
 
 .dashboard section {
-  margin-bottom: 40px;
-  padding: 20px;
-  border: 2px solid #0f0;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.1);
+  margin-bottom: 40px !important;
+  padding: 20px !important;
+  border: 2px solid var(--border-light) !important; /* Use light theme border color */
+  border-radius: 10px !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .dashboard section {
+  border: 2px solid var(--border-dark) !important; /* Use dark theme border color */
+  background-color: rgba(0, 0, 0, 0.1) !important;
 }
 
 .dashboard h2 {
-  margin-bottom: 20px;
-  color: #ff69b4;
+  margin-bottom: 20px !important;
+  color: var(--primary-light) !important; /* Use light theme primary color */
+}
+
+.dark .dashboard h2 {
+  color: var(--primary-dark) !important; /* Use dark theme primary color */
 }
 
 .dashboard h3 {
-  margin-bottom: 10px;
-  color: #0f0;
+  margin-bottom: 10px !important;
+  color: var(
+    --secondary-light
+  ) !important; /* Use light theme secondary color */
+}
+
+.dark .dashboard h3 {
+  color: var(--secondary-dark) !important; /* Use dark theme secondary color */
 }
 
 .dashboard ul {
-  list-style: none;
-  padding: 0;
+  list-style: none !important;
+  padding: 0 !important;
 }
 
 .dashboard li {
-  margin-bottom: 10px;
+  margin-bottom: 10px !important;
 }
 
 .meme {
-  margin-bottom: 20px;
-  padding: 10px;
-  border: 1px solid #ff69b4;
-  border-radius: 5px;
-  background-color: rgba(255, 255, 255, 0.2);
+  margin-bottom: 20px !important;
+  padding: 10px !important;
+  border: 1px solid var(--primary-light) !important;
+  border-radius: 5px !important;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.dark .meme {
+  border: 1px solid var(--primary-dark) !important;
+  background-color: rgba(0, 0, 0, 0.2) !important;
 }
 
 .meme h3 {
-  color: #0f0;
+  color: var(
+    --secondary-light
+  ) !important; /* Use light theme secondary color */
+}
+
+.dark .meme h3 {
+  color: var(--secondary-dark) !important; /* Use dark theme secondary color */
 }
 
 .meme p {
-  color: #fff;
+  color: var(--foreground-light) !important; /* Use light theme text color */
+}
+
+.dark .meme p {
+  color: var(--foreground-dark) !important; /* Use dark theme text color */
 }
 
 @media (min-width: 768px) {
   .header-container {
-    flex-direction: row;
+    flex-direction: row !important;
   }
 
   .main-nav {
-    display: flex;
-    justify-content: space-between;
-    flex: 1;
+    display: flex !important;
+    justify-content: space-between !important;
+    flex: 1 !important;
   }
 
   .nav-item {
-    flex: 1;
-    text-align: center;
+    flex: 1 !important;
+    text-align: center !important;
   }
 }
