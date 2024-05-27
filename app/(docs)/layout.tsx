@@ -39,10 +39,6 @@ export default function DocsLayout({ children }: DocsLayoutProps) {
       </header>
       <div className="container flex-1">{children}</div>
       <SiteFooter className="border-t" />
-      <style>
-        @import
-        url(https://fonts.googleapis.com/css2?family=Quando&display=swap)
-      </style>
     </div>
   )
 }

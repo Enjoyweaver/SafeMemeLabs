@@ -12,10 +12,6 @@ export default function DocsLayout({ children }: DocsLayoutProps) {
         <DocsSidebarNav items={docsConfig.sidebarNav} />
       </aside>
       {children}
-      <style>
-        @import
-        url(https://fonts.googleapis.com/css2?family=Quando&display=swap)
-      </style>
     </div>
   )
 }

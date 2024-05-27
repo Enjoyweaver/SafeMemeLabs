@@ -33,7 +33,18 @@ export const metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  keywords: ["crypto", "policy", "DAO", "web3", "regulation"],
+  keywords: [
+    "safe meme",
+    "meme",
+    "token generator",
+    "pump.fun",
+    "memes",
+    "safememe",
+    "pump fun",
+    "degen express",
+    "memeboxfi",
+    "meme box fi",
+  ],
   authors: [
     {
       name: "SafeMeme Labs",
@@ -58,7 +69,7 @@ export const metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     images: [`${siteConfig.url}/logo.png`],
-    creator: "@CryptoPolicyDAO",
+    creator: "@SafeMemeLabs",
   },
   icons: {
     icon: "/favicon.ico",

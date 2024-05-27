@@ -133,10 +133,6 @@ export default async function IndexPage() {
               </div>
             </Link>
           )}
-          <style>
-            @import
-            url(https://fonts.googleapis.com/css2?family=Quando&display=swap)
-          </style>
         </div>
       </section>
     </>
