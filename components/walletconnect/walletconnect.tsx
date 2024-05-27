@@ -77,6 +77,7 @@ export function Navbar() {
 
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
+  const { switchNetwork } = useSwitchNetwork()
 
   const toggleConnectOpen = () => {
     setConnectOpen(!connectOpen)
@@ -99,18 +100,9 @@ export function Navbar() {
   }
 
   const toggleMenu = (index: number) => {
-    if (!menusOpen[index]) {
-      const updatedMenusOpen: boolean[] = []
-      setConnectMenuOpen(false)
-      setNetworkMenuOpen(false)
-      updatedMenusOpen[index] = !updatedMenusOpen[index]
-      setMenusOpen(updatedMenusOpen)
-    } else {
-      const updatedMenusOpen: boolean[] = []
-      setConnectMenuOpen(false)
-      setNetworkMenuOpen(false)
-      setMenusOpen(updatedMenusOpen)
-    }
+    const updatedMenusOpen = [...menusOpen]
+    updatedMenusOpen[index] = !updatedMenusOpen[index]
+    setMenusOpen(updatedMenusOpen)
   }
 
   function dropdownAction(func: () => void): void {
@@ -127,6 +119,17 @@ export function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [])
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setMenusOpen([])
+      setConnectMenuOpen(false)
+      setNetworkMenuOpen(false)
+    }
+  }
 
   return (
     <nav>
