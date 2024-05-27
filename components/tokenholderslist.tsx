@@ -3,6 +3,8 @@
 
 import React, { useEffect, useState } from "react"
 
+import "@/styles/tokenholderslist.css"
+
 const TokenHoldersList = ({ walletAddress, chainName }) => {
   const [transactionSummary, setTransactionSummary] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -33,52 +35,50 @@ const TokenHoldersList = ({ walletAddress, chainName }) => {
     fetchTransactionSummary()
   }, [walletAddress, chainName])
 
-  if (loading) return <p>Loading...</p>
-  if (error) return <p>Error: {error}</p>
+  if (loading) return <p className="loading">Loading...</p>
+  if (error) return <p className="error">Error: {error}</p>
 
   const { total_count, latest_transaction, earliest_transaction } =
     transactionSummary
 
   return (
     <div>
-      <h2>Transaction Summary</h2>
-      <p>
+      <h2 className="title">Transaction Summary</h2>
+      <p className="total">
         <strong>Total Transactions:</strong> {total_count}
       </p>
       {latest_transaction && (
-        <div>
-          <h3>Latest Transaction</h3>
+        <div className="transaction">
+          <h3 className="subtitle">Latest Transaction</h3>
           <p>
             <strong>Date:</strong>{" "}
             {new Date(latest_transaction.block_signed_at).toLocaleString()}
           </p>
           <p>
-            <strong>Transaction Hash:</strong>{" "}
             <a
               href={latest_transaction.tx_detail_link}
               target="_blank"
               rel="noopener noreferrer"
             >
-              {latest_transaction.tx_hash}
+              Transaction Hash
             </a>
           </p>
         </div>
       )}
       {earliest_transaction && (
-        <div>
-          <h3>Earliest Transaction</h3>
+        <div className="transaction">
+          <h3 className="subtitle">Earliest Transaction</h3>
           <p>
             <strong>Date:</strong>{" "}
             {new Date(earliest_transaction.block_signed_at).toLocaleString()}
           </p>
           <p>
-            <strong>Transaction Hash:</strong>{" "}
             <a
               href={earliest_transaction.tx_detail_link}
               target="_blank"
               rel="noopener noreferrer"
             >
-              {earliest_transaction.tx_hash}
+              Transaction Hash
             </a>
           </p>
         </div>

@@ -46,17 +46,10 @@
     --hover-subtext: #29285c;
     --wallet-connect-text-color: #1e2a78; /* Text color for wallet connect button in light mode */
     --blockchain-text-color: #1e2a78;
-    --background-light: #ffffff;
-    --foreground-light: #000000;
-    --primary-light: #ff69b4; /* Pink */
-    --secondary-light: #00ff00; /* Green */
-    --accent-light: #006400; /* Dark Green */
-    --border-light: #ff69b4;
-    --text-light: #000000;
   }
 
   .dark {
-    --background: 224 71% 4%; /* Background for dark theme */
+    --background: 224 71% 4%;
     --foreground: 213 31% 91%;
 
     --header-color: hwb(213 73% 19%);
@@ -95,27 +88,16 @@
     --hover-subtext: #80b3c2;
     --wallet-connect-text-color-dark: #bcc4cf; /* Text color for wallet connect button in dark mode */
     --blockchain-text-color-dark: #96a3b6;
-
-    --background-dark: #000000;
-    --foreground-dark: #ffffff;
-    --primary-dark: #ff69b4; /* Pink */
-    --secondary-dark: #00ff00; /* Green */
-    --accent-dark: #006400; /* Dark Green */
-    --border-dark: #ff69b4;
-    --text-dark: #ffffff;
   }
+}
 
+@layer base {
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-  }
-
-  .dark body {
-    background-color: var(--background); /* Apply dark theme background */
   }
 }
 
@@ -158,14 +140,6 @@
   --hover-subtext: #29285c; /* Subtle hover effect */
 
   --outline-color: #1e2a78;
-
-  --background: var(--background-light);
-  --foreground: var(--foreground-light);
-  --primary: var(--primary-light);
-  --secondary: var(--secondary-light);
-  --accent: var(--accent-light);
-  --border: var(--border-light);
-  --text: var(--text-light);
 }
 
 [data-theme="Dark"] {
@@ -201,14 +175,6 @@
   --hover-subtext: #80b3c2;
 
   --outline-color: #a2b2c7;
-
-  --background: var(--background-dark);
-  --foreground: var(--foreground-dark);
-  --primary: var(--primary-dark);
-  --secondary: var(--secondary-dark);
-  --accent: var(--accent-dark);
-  --border: var(--border-dark);
-  --text: var(--text-dark);
 }
 
 @tailwind base;

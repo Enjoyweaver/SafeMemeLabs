@@ -1,3 +1,21 @@
+:root {
+  --background-light: #ffffff;
+  --foreground-light: #000000;
+  --primary-light: #ff69b4; /* Pink */
+  --secondary-light: #00ff00; /* Green */
+  --accent-light: #006400; /* Dark Green */
+  --border-light: #ff69b4;
+  --text-light: #000000;
+
+  --background-dark: #000000;
+  --foreground-dark: #ffffff;
+  --primary-dark: #ff69b4; /* Pink */
+  --secondary-dark: #00ff00; /* Green */
+  --accent-dark: #006400; /* Dark Green */
+  --border-dark: #ff69b4;
+  --text-dark: #ffffff;
+}
+
 body {
   background-color: var(
     --background-light
@@ -148,11 +166,40 @@ body {
   border: 1px solid var(--primary-light) !important;
   border-radius: 5px !important;
   background-color: rgba(255, 255, 255, 0.2) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important; /* Center align all items */
 }
 
 .dark .meme {
   border: 1px solid var(--primary-dark) !important;
   background-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.meme-header {
+  display: flex;
+  justify-content: center; /* Center the title and image horizontally */
+  align-items: center; /* Center items vertically */
+  width: 100%;
+  padding: 0; /* Remove padding to reduce space */
+}
+
+.meme-header h3 {
+  margin: 0; /* Remove margin from the title */
+  margin-right: 10px; /* Adjust margin to bring the title closer to the image */
+  font-size: 1.5rem; /* Adjust font size if needed */
+}
+
+.meme-header .meme-image {
+  width: 120px; /* Ensure the image size is as intended */
+  height: 120px;
+}
+
+.meme-title {
+  display: flex;
+  align-items: flex-start; /* Align items to the top */
+  justify-content: space-between;
+  width: 100%;
 }
 
 .meme h3 {

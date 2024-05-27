@@ -1,0 +1,45 @@
+.dark {
+  background-color: var(--background-dark);
+  color: var(--foreground-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.title {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: var(--primary-light);
+}
+
+.dark .title {
+  color: var(--primary-dark);
+}
+
+.total {
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.transaction {
+  margin-bottom: 15px;
+}
+
+.subtitle {
+  font-size: 1.3rem;
+  margin-bottom: 5px;
+  color: var(--secondary-light);
+}
+
+.dark .subtitle {
+  color: var(--secondary-dark);
+}
+
+.loading,
+.error {
+  font-size: 1.2rem;
+  color: var(--primary-light);
+}
+
+.dark .loading,
+.dark .error {
+  color: var(--primary-dark);
+}
