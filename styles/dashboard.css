@@ -1,7 +1,7 @@
 :root {
   --background-light: #ffffff;
   --foreground-light: #000000;
-  --primary-light: #ff69b4; /* Pink */
+  --primary-light: #d11673; /* Pink */
   --secondary-light: #00ff00; /* Green */
   --accent-light: #006400; /* Dark Green */
   --border-light: #ff69b4;
@@ -9,10 +9,10 @@
 
   --background-dark: #000000;
   --foreground-dark: #ffffff;
-  --primary-dark: #ff69b4; /* Pink */
-  --secondary-dark: #00ff00; /* Green */
+  --primary-dark: #c9146e; /* Pink */
+  --secondary-dark: #1bb61b; /* Green */
   --accent-dark: #006400; /* Dark Green */
-  --border-dark: #ff69b4;
+  --border-dark: #d81376;
   --text-dark: #ffffff;
 }
 
@@ -39,6 +39,10 @@ body {
   background-color: var(
     --background-light
   ) !important; /* Use light theme background color */
+}
+
+.pagetitle {
+  font-size: 2rem;
 }
 
 .dark .container {
@@ -131,12 +135,12 @@ body {
   background-color: rgba(0, 0, 0, 0.1) !important;
 }
 
-.dashboard h2 {
+.dashboard h1 {
   margin-bottom: 20px !important;
   color: var(--primary-light) !important; /* Use light theme primary color */
 }
 
-.dark .dashboard h2 {
+.dark .dashboard h1 {
   color: var(--primary-dark) !important; /* Use dark theme primary color */
 }
 

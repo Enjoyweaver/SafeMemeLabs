@@ -1,7 +1,10 @@
-import React from "react"
+"use client"
+
+import React, { useEffect } from "react"
 import Image from "next/image"
 
 import "@/styles/dashboard.css"
+import Bubbles from "@/components/bubbles"
 import TokenHoldersList from "@/components/tokenholderslist"
 
 const Dashboard = () => {
@@ -10,7 +13,9 @@ const Dashboard = () => {
       <main className="flex-1">
         <div className="dashboard">
           <section>
-            <h2>Memes we created on our competitors' websites</h2>
+            <h1 className="pagetitle">
+              Memes we created on our competitors' websites
+            </h1>
             <div className="meme">
               <div className="meme-header">
                 <h3>Safememe</h3>
@@ -64,6 +69,7 @@ const Dashboard = () => {
           </section>
         </div>
       </main>
+      <Bubbles />
     </div>
   )
 }
