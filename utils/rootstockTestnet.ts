@@ -1,19 +1,22 @@
 import { defineChain } from "viem"
 
-export const degen = defineChain({
+export const rootstockTestnet = defineChain({
   id: 31,
   network: "Rootstock Testnet", // Provide the appropriate network name here
-  name: "Rootstock Testnet",
+  name: "rootstockTestnet",
   nativeCurrency: {
     name: "tRBTC",
     symbol: "tRBTC",
     decimals: 18,
   },
   rpcUrls: {
-    default: { http: ["https://rpc.degen.tips"] },
-    public: { http: ["https://rpc.degen.tips"] },
+    default: { http: ["https://public-node.testnet.rsk.co"] },
+    public: { http: ["https://public-node.testnet.rsk.co"] },
   },
   blockExplorers: {
-    default: { name: "Degen Explorer", url: "https://explorer.degen.tips" },
+    default: {
+      name: "Rootstock Testnet",
+      url: "https://public-node.testnet.rsk.co",
+    },
   },
 })

@@ -69,11 +69,11 @@ const chainDetails = [
     chainId: 30,
     logo: "/assets/icons/logos/rootstock.png",
   },
-  // {
-  //   name: "Rootstock Testnet",
-  //  chainId: 31,
-  //   logo: "/assets/icons/logos/rootstock.png",
-  // },
+  {
+    name: "Rootstock Testnet",
+    chainId: 31,
+    logo: "/assets/icons/logos/rootstock.png",
+  },
 ]
 
 export function Navbar() {

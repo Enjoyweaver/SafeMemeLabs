@@ -1,24 +1,30 @@
-"use client"
+"use client";
 
-import { degen } from "@/utils/degenChain"
-import { configureChains, createConfig } from "wagmi"
-import {
-  avalanche,
-  base,
-  fantom,
-  fantomTestnet,
-  polygon,
-  rootstock,
-  rootstockTestnet,
-} from "wagmi/chains"
-import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet"
-import { InjectedConnector } from "wagmi/connectors/injected"
-import { MetaMaskConnector } from "wagmi/connectors/metaMask"
-import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
-import { publicProvider } from "wagmi/providers/public"
+import { degen } from "@/utils/degenChain";
+import { rootstockTestnet } from "@/utils/rootstockTestnet";
+import { avalanche, base, fantom, fantomTestnet, polygon, rootstock } from "@wagmi/core/chains";
+import { configureChains, createConfig } from "wagmi";
+import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import { MetaMaskConnector } from "wagmi/connectors/metaMask";
+import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+import { publicProvider } from "wagmi/providers/public";
+
+
+
+
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [avalanche, fantom, polygon, fantomTestnet, degen, base, rootstock],
+  [
+    avalanche,
+    fantom,
+    polygon,
+    fantomTestnet,
+    degen,
+    base,
+    rootstock,
+    rootstockTestnet,
+  ],
   [publicProvider()]
 )
 
@@ -67,6 +73,7 @@ export const tokenDeployerDetails: { [key: string]: string } = {
   "8453": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25e",
   "43114": "0xe92163f8038843091c1df18f726cf04526ef9676",
   "30": "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
+  "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25e",
 }
 export const multisendDetails: { [key: string]: string } = {
   "137": "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
@@ -77,4 +84,5 @@ export const multisendDetails: { [key: string]: string } = {
   "8453": "0x29c4e664e50aa222a0f10de5233e0e1fd0bd9cc6",
   "43114": "0x8c175417787c4beea7211d143423c8624c230b9b",
   "30": "0x8c175417787c4beea7211d143423c8624c230b9b",
+  "31": "0x8c175417787c4beea7211d143423c8624c230b9b",
 }
