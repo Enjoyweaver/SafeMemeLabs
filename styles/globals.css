@@ -177,10 +177,6 @@
   --outline-color: #a2b2c7;
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 .page-container {
   display: flex;
   flex-direction: column;

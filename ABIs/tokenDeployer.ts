@@ -34,6 +34,11 @@ export const tokenDeployerABI = [
         name: "_initialSupply",
         type: "uint256",
       },
+      {
+        internalType: "uint8",
+        name: "_antiWhalePercentage",
+        type: "uint8",
+      },
     ],
     name: "deployToken",
     outputs: [

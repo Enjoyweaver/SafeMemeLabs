@@ -49,7 +49,7 @@ const chainDetails = [
   { name: "Fantom", chainId: 250, logo: "/assets/icons/logos/fantom.png" },
   // {
   //   name: "Fantom Testnet",
-  //  chainId: 4002,
+  //   chainId: 4002,
   //   logo: "/assets/icons/logos/fantomtest.png",
   // },
   // { name: "Polygon", chainId: 137, logo: "/assets/icons/logos/polygon.png" },
@@ -180,7 +180,7 @@ export function Navbar() {
                 >
                   Disconnect
                 </p>
-                <Link href="../mytokens">
+                <Link href="/app/marketing/mytokens">
                   <p className={styles.dropdownOption}>My Tokens</p>
                 </Link>
               </div>

@@ -72,21 +72,21 @@ export const metadata = {
     creator: "@SafeMemeLabs",
   },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
+    icon: "/images/logo.png",
+    shortcut: "/images/logo.png",
+    apple: "/images/logo.png",
   },
-  manifest: `${
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:3000"
-      : siteConfig.url
-  }/site.webmanifest`,
+  manifest: "/site.webmanifest",
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+      <head>
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="icon" href="/favicon.ico" />
+        <meta name="theme-color" content="#000000" />
+      </head>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",

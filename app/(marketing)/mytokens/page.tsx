@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
-import { useIsMounted } from "usehooks-ts"
 import {
   erc20ABI,
   useAccount,
@@ -36,6 +35,7 @@ export default function MyTokens(): JSX.Element {
     abi: tokenDeployerABI,
     functionName: "getTokensDeployedByUser",
     args: [address as `0x${string}`],
+    enabled: !!address,
   })
 
   useEffect(() => {
@@ -65,18 +65,24 @@ export default function MyTokens(): JSX.Element {
       abi: erc20ABI,
       functionName: "decimals",
     },
+    {
+      address: contract,
+      abi: erc20ABI,
+      functionName: "antiWhalePercentage", // New function to fetch anti-whale percentage
+    },
   ])
 
   const { data: tempTokenData } = useContractReads({
     contracts: contractRequests?.flat(),
+    enabled: !!contractRequests?.length,
   })
 
   function splitData(data: any) {
-    console.log(data)
     const groupedData = []
     const namedData = []
-    for (let i = 0; i < data.length; i += 4) {
-      groupedData.push(data.slice(i, i + 4))
+    for (let i = 0; i < data.length; i += 5) {
+      // Updated to 5 since we now fetch antiWhalePercentage
+      groupedData.push(data.slice(i, i + 5))
     }
     for (let i = 0; i < groupedData.length; i++) {
       namedData.push({
@@ -84,6 +90,7 @@ export default function MyTokens(): JSX.Element {
         symbol: groupedData[i][1].result,
         supply: groupedData[i][2].result,
         decimals: groupedData[i][3].result,
+        antiWhalePercentage: groupedData[i][4].result, // Anti-whale percentage
       })
     }
     return namedData
@@ -107,7 +114,6 @@ export default function MyTokens(): JSX.Element {
           Number of Tokens Created: {tokenCount}
         </p>
       </div>
-      {/* Render token list */}
       {!isClient && <p className={styles.myTokensError}>Loading...</p>}
       {isClient && isConnected && (
         <>
@@ -128,6 +134,7 @@ export default function MyTokens(): JSX.Element {
                   <p>Contract Address: {contracts[index]}</p>
                   <p>Supply: {Number(token.supply) / 10 ** token.decimals}</p>
                   <p>Decimals: {token.decimals}</p>
+                  <p>Anti-Whale Percentage: {token.antiWhalePercentage}%</p>
                 </div>
               ))}
         </>

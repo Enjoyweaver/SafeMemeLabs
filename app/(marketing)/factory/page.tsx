@@ -1,6 +1,7 @@
 "use client"
 
 import { ChangeEvent, useEffect, useState } from "react"
+import Link from "next/link"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { toast } from "react-toastify"
 
@@ -20,8 +21,10 @@ import {
   useWaitForTransaction,
 } from "wagmi"
 
+import { factoryConfig } from "@/config/factory"
 import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 
+// Import the factory config
 import { capitalizeFirstLetter } from "../../../utils/capitilizeFirstLetter"
 
 export default function Factory(): JSX.Element {
@@ -29,10 +32,12 @@ export default function Factory(): JSX.Element {
   const [symbol, setSymbol] = useState<string>("")
   const [supply, setSupply] = useState<string>("")
   const [decimals, setDecimals] = useState<string>("")
+  const [antiWhalePercentage, setAntiWhalePercentage] = useState<string>("")
   const dName = useDebounce(name, 500)
   const dSymbol = useDebounce(symbol, 500)
   const dSupply = useDebounce(supply, 500)
   const dDecimals = useDebounce(decimals, 500)
+  const dAntiWhalePercentage = useDebounce(antiWhalePercentage, 500)
 
   const [isClient, setIsClient] = useState(false)
 
@@ -60,17 +65,23 @@ export default function Factory(): JSX.Element {
     setDecimals(e.target.value)
   }
 
+  const setAntiWhalePercentageInput = (e: ChangeEvent<HTMLInputElement>) => {
+    setAntiWhalePercentage(e.target.value)
+  }
+
   const isFormFilled = (): boolean => {
     return (
       name.trim().length > 0 &&
       symbol.trim().length > 0 &&
-      supply.trim().length > 0
+      supply.trim().length > 0 &&
+      antiWhalePercentage.trim().length > 0 &&
+      decimals.trim().length > 0
     )
   }
 
   const { chain } = useNetwork()
 
-  const chainId: string | number = chain ? chain && chain.id : 250
+  const chainId: string | number = chain ? chain.id : 250
 
   const { data: deployFee } = useContractRead({
     address: tokenDeployerDetails[chainId] as `0x${string}`,
@@ -96,7 +107,13 @@ export default function Factory(): JSX.Element {
       : undefined,
     abi: tokenDeployerABI,
     functionName: "deployToken",
-    args: [dSymbol, dName, dDecimals ? Number(dDecimals) : 18, BigInt(dSupply)],
+    args: [
+      dSymbol,
+      dName,
+      dDecimals ? Number(dDecimals) : 18,
+      BigInt(dSupply),
+      Number(dAntiWhalePercentage),
+    ],
     value: deployFee,
     cacheTime: 0,
   })
@@ -192,6 +209,27 @@ export default function Factory(): JSX.Element {
               <p className={styles.error}>Decimals must be from 0 to 18</p>
             )}
           </div>
+          <div className={styles.inputGroup}>
+            <p className={styles.inputTitle}>Anti-Whale Percentage*</p>
+            <input
+              onKeyDown={(evt) =>
+                ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()
+              }
+              onChange={setAntiWhalePercentageInput}
+              className={`${styles.tokenInput}`}
+              placeholder="3"
+              type="number"
+              value={antiWhalePercentage}
+            />
+            {!(
+              Number(antiWhalePercentage) > 0 &&
+              Number(antiWhalePercentage) <= 3
+            ) && (
+              <p className={styles.error}>
+                Percentage must be greater than 0 and less than or equal to 3
+              </p>
+            )}
+          </div>
           <button
             onClick={() => write?.()}
             className={`${styles.deployButton} ${
@@ -201,6 +239,8 @@ export default function Factory(): JSX.Element {
               Number(decimals) >= 0 &&
               Number(decimals) <= 18 &&
               Number(supply) >= 0 &&
+              Number(antiWhalePercentage) > 0 &&
+              Number(antiWhalePercentage) <= 3 &&
               !(isLoadingTransaction || isLoadingWrite)
                 ? ""
                 : styles.disabled
@@ -212,6 +252,8 @@ export default function Factory(): JSX.Element {
               Number(decimals) >= 0 &&
               Number(decimals) <= 18 &&
               Number(supply) >= 0 &&
+              Number(antiWhalePercentage) > 0 &&
+              Number(antiWhalePercentage) <= 3 &&
               !(isLoadingTransaction || isLoadingWrite)
                 ? false
                 : true
@@ -224,9 +266,7 @@ export default function Factory(): JSX.Element {
                   : "Deploy (" +
                     String(deployFee && Number(deployFee) * 10 ** -18) +
                     " " +
-                    String(
-                      chain ? chain && chain.nativeCurrency.symbol : "Fantom"
-                    ) +
+                    String(chain ? chain.nativeCurrency.symbol : "Fantom") +
                     ")"
                 : "Not Connected"
               : "Loading..."}
@@ -241,6 +281,11 @@ export default function Factory(): JSX.Element {
               }
             ) &&
             ""}
+          {isSuccessTransaction && (
+            <Link href="/mytokens">
+              <button className={styles.myTokensButton}>My Tokens</button>
+            </Link>
+          )}
           {isClient && isConnected && (
             <div className={styles.errorSection}>
               {isPrepareError ? (
