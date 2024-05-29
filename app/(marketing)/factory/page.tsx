@@ -21,7 +21,6 @@ import {
   useWaitForTransaction,
 } from "wagmi"
 
-import { factoryConfig } from "@/config/factory"
 import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 
 // Import the factory config
@@ -154,7 +153,7 @@ export default function Factory(): JSX.Element {
           <ChangeNetwork
             changeNetworkToChainId={250}
             dappName={"SafeMeme Labs"}
-            networks={"Fantom, Fantom testnet, Base, Polygon, and Degen"}
+            networks={"Avalanche, Base, Degen, Fantom, Rootstock"}
           />
         )}
         <Navbar />

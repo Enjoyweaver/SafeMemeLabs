@@ -64,6 +64,16 @@ const chainDetails = [
     chainId: 666666666,
     logo: "/assets/icons/logos/degen.png",
   },
+  {
+    name: "Rootstock",
+    chainId: 30,
+    logo: "/assets/icons/logos/rootstock.png",
+  },
+  // {
+  //   name: "Rootstock Testnet",
+  //  chainId: 31,
+  //   logo: "/assets/icons/logos/rootstock.png",
+  // },
 ]
 
 export function Navbar() {
