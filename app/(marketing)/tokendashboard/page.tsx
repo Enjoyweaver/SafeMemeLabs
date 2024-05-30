@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import { erc20ABI } from "@/ABIs/erc20"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import {
-  erc20ABI,
   useAccount,
   useContractRead,
   useContractReads,
@@ -31,7 +31,7 @@ const Dashboard = () => {
     ? chain.id
     : Object.keys(tokenDeployerDetails)[0]
 
-  const { data: contracts } = useContractRead({
+  const { data: contracts, error: contractsError } = useContractRead({
     address: tokenDeployerDetails[chainId] as `0x${string}`,
     abi: tokenDeployerABI,
     functionName: "getTokensDeployedByUser",
@@ -40,10 +40,14 @@ const Dashboard = () => {
   })
 
   useEffect(() => {
+    if (contractsError) {
+      console.error("Contracts Error: ", contractsError)
+    }
     if (contracts) {
+      console.log("Contracts: ", contracts)
       setTokenCount(contracts.length)
     }
-  }, [contracts])
+  }, [contracts, contractsError])
 
   const contractRequests = contracts?.map((contract) => [
     {
@@ -73,10 +77,19 @@ const Dashboard = () => {
     },
   ])
 
-  const { data: tempTokenData } = useContractReads({
+  const { data: tempTokenData, error: tempTokenDataError } = useContractReads({
     contracts: contractRequests?.flat(),
     enabled: !!contractRequests?.length,
   })
+
+  useEffect(() => {
+    if (tempTokenDataError) {
+      console.error("Temp Token Data Error: ", tempTokenDataError)
+    }
+    if (tempTokenData) {
+      console.log("Temp Token Data: ", tempTokenData)
+    }
+  }, [tempTokenData, tempTokenDataError])
 
   function splitData(data: any) {
     const groupedData = []
@@ -149,19 +162,17 @@ const Dashboard = () => {
           contracts.length > 0 &&
           tempTokenData &&
           tempTokenData.length > 0 &&
-          splitData(tempTokenData)
-            .reverse()
-            .map((token, index: number) => (
-              <li key={index}>
-                <p>
-                  {token.name} ({token.symbol})
-                </p>
-                <p>Contract Address: {contracts[index]}</p>
-                <p>Supply: {Number(token.supply) / 10 ** token.decimals}</p>
-                <p>Decimals: {token.decimals}</p>
-                <p>Anti-Whale Percentage: {token.antiWhalePercentage}%</p>
-              </li>
-            ))}
+          splitData(tempTokenData).map((token, index: number) => (
+            <li key={index}>
+              <p>
+                {token.name} ({token.symbol})
+              </p>
+              <p>Contract Address: {contracts[index]}</p>
+              <p>Supply: {Number(token.supply) / 10 ** token.decimals}</p>
+              <p>Decimals: {token.decimals}</p>
+              <p>Anti-Whale Percentage: {token.antiWhalePercentage}%</p>
+            </li>
+          ))}
         {!isClient && <p>Loading...</p>}
         {isClient && !isConnected && <p>No Account Connected</p>}
       </ul>
@@ -188,20 +199,26 @@ const Dashboard = () => {
               onClick={() => setSelectedTab("competitors")}
             >
               Competitors' Memes
+              {selectedTab === "competitors" && (
+                <div className="tab-indicator"></div>
+              )}
             </button>
             <button
               className={selectedTab === "user" ? "active" : ""}
               onClick={() => setSelectedTab("user")}
             >
               Your Memes
+              {selectedTab === "user" && <div className="tab-indicator"></div>}
             </button>
             <button
               className={selectedTab === "tech" ? "active" : ""}
               onClick={() => setSelectedTab("tech")}
             >
               Tech Stack Memes
+              {selectedTab === "tech" && <div className="tab-indicator"></div>}
             </button>
           </div>
+
           <div className="content">
             {selectedTab === "competitors" && renderCompetitorsMemes()}
             {selectedTab === "user" && renderUserMemes()}

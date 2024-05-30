@@ -245,6 +245,7 @@ body {
   display: flex;
   justify-content: space-around;
   margin-bottom: 20px;
+  position: relative;
 }
 
 .tabs button {
@@ -273,7 +274,47 @@ body {
   transform: translateX(-50%);
 }
 
+.tabs .tab-indicator {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #000; /* Adjust color as needed */
+  transform: translateX(-50%);
+}
+
 .content {
   padding: 20px;
   border-top: 3px solid #000; /* Adjust color as needed */
+  position: relative;
+}
+
+.content::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 2px;
+  height: 20px;
+  background: #000; /* Adjust color as needed */
+  transform: translateX(-50%);
+}
+
+.tab-indicator::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 2px;
+  height: 10px;
+  background: #000; /* Adjust color as needed */
+  transform: translateX(-50%);
+}
+
+.content.connected::before {
+  height: 30px; /* Adjust the height to create the connection */
+  top: -20px;
 }
