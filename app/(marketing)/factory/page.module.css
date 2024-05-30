@@ -50,6 +50,12 @@
   cursor: pointer;
   width: 100%;
 }
+
+.deployButton.enabled {
+  background-color: green;
+  color: white;
+}
+
 .error {
   color: #ff2828;
   margin: 2px 0px;
@@ -59,6 +65,7 @@
   background-color: rgb(174, 174, 174);
   cursor: not-allowed;
 }
+
 .title {
   font-size: 1.5em;
   margin: 0;

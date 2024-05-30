@@ -25,6 +25,7 @@ import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 
 // Import the factory config
 import { capitalizeFirstLetter } from "../../../utils/capitilizeFirstLetter"
+import Modal from "./Modal"
 
 export default function Factory(): JSX.Element {
   const [name, setName] = useState<string>("")
@@ -39,6 +40,8 @@ export default function Factory(): JSX.Element {
   const dAntiWhalePercentage = useDebounce(antiWhalePercentage, 500)
 
   const [isClient, setIsClient] = useState(false)
+  const [showModal, setShowModal] = useState(false)
+  const [modalMessage, setModalMessage] = useState("")
 
   useEffect(() => {
     setIsClient(true)
@@ -140,7 +143,26 @@ export default function Factory(): JSX.Element {
     error: error_,
   } = useWaitForTransaction({
     hash: data?.hash,
+    onSettled(data, error) {
+      if (data) {
+        setModalMessage(
+          "Token successfully deployed! Go to the Dashboard to check it out! Then grab the contract address and import it into your wallet."
+        )
+      } else if (error) {
+        setModalMessage(
+          "There was an error deploying your token. Please try again."
+        )
+      }
+    },
   })
+
+  const handleDeployClick = () => {
+    setModalMessage(
+      "Depending on which blockchain you created a token on, it could take anywhere from 2 seconds to 20 seconds."
+    )
+    setShowModal(true)
+    write?.()
+  }
 
   const toggleErrorMenuOpen = () => {
     setErrorMenu(!errorMenu)
@@ -148,6 +170,11 @@ export default function Factory(): JSX.Element {
 
   return (
     <>
+      <Modal
+        show={showModal}
+        message={modalMessage}
+        onClose={() => setShowModal(false)}
+      />
       <div>
         {isClient && chainId && !tokenDeployerDetails[chainId] && (
           <ChangeNetwork
@@ -230,7 +257,7 @@ export default function Factory(): JSX.Element {
             )}
           </div>
           <button
-            onClick={() => write?.()}
+            onClick={handleDeployClick} // Use handleDeployClick instead of directly calling write
             className={`${styles.deployButton} ${
               !isPrepareError &&
               isConnected &&
@@ -241,7 +268,7 @@ export default function Factory(): JSX.Element {
               Number(antiWhalePercentage) > 0 &&
               Number(antiWhalePercentage) <= 3 &&
               !(isLoadingTransaction || isLoadingWrite)
-                ? ""
+                ? styles.enabled
                 : styles.disabled
             }`}
             disabled={

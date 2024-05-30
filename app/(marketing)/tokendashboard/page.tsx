@@ -151,41 +151,48 @@ const Dashboard = () => {
 
   const renderUserMemes = () => (
     <>
-      <h2>Memes you created using SafeMemes</h2>
-      <ul>
-        {isClient && isConnected && contracts && contracts.length === 0 && (
-          <p>No tokens available.</p>
-        )}
-        {isClient &&
-          isConnected &&
-          contracts &&
-          contracts.length > 0 &&
-          tempTokenData &&
-          tempTokenData.length > 0 &&
-          splitData(tempTokenData).map((token, index: number) => (
-            <li key={index}>
-              <p>
+      <h1 className="pagetitle">Memes you created using SafeMemes</h1>
+      {isClient && isConnected && contracts && contracts.length === 0 && (
+        <p>No tokens available.</p>
+      )}
+      {isClient &&
+        isConnected &&
+        contracts &&
+        contracts.length > 0 &&
+        tempTokenData &&
+        tempTokenData.length > 0 &&
+        splitData(tempTokenData).map((token, index: number) => (
+          <div className="meme" key={index}>
+            <div className="meme-header">
+              <h3>
                 {token.name} ({token.symbol})
-              </p>
-              <p>Contract Address: {contracts[index]}</p>
-              <p>Supply: {Number(token.supply) / 10 ** token.decimals}</p>
-              <p>Decimals: {token.decimals}</p>
-              <p>Anti-Whale Percentage: {token.antiWhalePercentage}%</p>
-            </li>
-          ))}
-        {!isClient && <p>Loading...</p>}
-        {isClient && !isConnected && <p>No Account Connected</p>}
-      </ul>
+              </h3>
+              <Image
+                src="/images/logo.png"
+                alt={`${token.name} logo`}
+                width={120}
+                height={120}
+                className="meme-image"
+              />
+            </div>
+            <p>Contract Address: {contracts[index]}</p>
+            <p>Supply: {Number(token.supply) / 10 ** token.decimals}</p>
+            <p>Decimals: {token.decimals}</p>
+            <p>Anti-Whale Percentage: {token.antiWhalePercentage}%</p>
+          </div>
+        ))}
+      {!isClient && <p>Loading...</p>}
+      {isClient && !isConnected && <p>No Account Connected</p>}
     </>
   )
 
   const renderTechStackMemes = () => (
     <>
-      <h2>Memes we created using our tech stack</h2>
-      <ul>
-        <li>Example Tech Meme 1</li>
-        <li>Example Tech Meme 2</li>
-      </ul>
+      <h2>
+        Once we develop our own exchange, we will be using our token generator
+        to create safe memes that are deployed on our own exchange. If youre
+        interested in helping us develop our exchange, please reach out.
+      </h2>
     </>
   )
 

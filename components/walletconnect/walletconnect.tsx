@@ -51,6 +51,11 @@ const chainDetails = [
   { name: "Base", chainId: 8453, logo: "/assets/icons/logos/base.png" },
   { name: "Degen", chainId: 666666666, logo: "/assets/icons/logos/degen.png" },
   { name: "Fantom", chainId: 250, logo: "/assets/icons/logos/fantom.png" },
+  {
+    name: "Fantom Testnet",
+    chainId: 4002,
+    logo: "/assets/icons/logos/fantom.png",
+  },
   { name: "Rootstock", chainId: 30, logo: "/assets/icons/logos/rootstock.png" },
   {
     name: "Rootstock Testnet",

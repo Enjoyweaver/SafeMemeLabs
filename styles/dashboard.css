@@ -206,16 +206,6 @@ body {
   width: 100%;
 }
 
-.meme h3 {
-  color: var(
-    --secondary-light
-  ) !important; /* Use light theme secondary color */
-}
-
-.dark .meme h3 {
-  color: var(--secondary-dark) !important; /* Use dark theme secondary color */
-}
-
 .meme p {
   color: var(--foreground-light) !important; /* Use light theme text color */
 }
