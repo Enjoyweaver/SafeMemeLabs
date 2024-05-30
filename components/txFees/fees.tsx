@@ -9,13 +9,19 @@ const tokenDecimals = {
 }
 
 const fees = {
+  Avalanche: {
+    0.025: {
+      amount: 0.025,
+      displayAmount: "0.025",
+      feeInWei: "25000000000000000", // Fee in wei for 0.025 Avalanche tokens
+    },
+  },
   Fantom: {
     1: {
       amount: 1,
       displayAmount: "1", // Display amount as string for user readability
       feeInWei: "1000000000000000000", // Fee in wei for 1 FTM (Fantom)
     },
-    // Add more Fantom fees here
   },
   Degen: {
     5: {
@@ -23,24 +29,14 @@ const fees = {
       displayAmount: "5",
       feeInWei: "5000000000000000000", // Fee in wei for 25 Degen tokens
     },
-    // Add more Degen fees here
   },
-  //Polygon: {
-  //  1: {
-  //    amount: 1,
-  //    displayAmount: "1",
-  //    feeInWei: "1000000000000000000", // Fee in wei for 1 Matic (Polygon)
-  //  },
-  // Add more Polygon fees here
-  // },
-  // Avalanche: {
-  //   0.025: {
-  //     amount: 0.025,
-  //    displayAmount: "0.025",
-  //    feeInWei: "25000000000000000", // Fee in wei for 0.025 Avalanche tokens
-  //  },
-  // Add more Avalanche fees here
-  // },
+  Polygon: {
+    1: {
+      amount: 1,
+      displayAmount: "1",
+      feeInWei: "1000000000000000000", // Fee in wei for 1 Matic (Polygon)
+    },
+  },
   Base: {
     1: {
       amount: 1,
