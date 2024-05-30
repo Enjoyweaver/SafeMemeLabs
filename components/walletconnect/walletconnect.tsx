@@ -40,11 +40,11 @@ export default MinidenticonImg
 const menuItems = []
 
 const chainDetails = [
-  // {
-  //  name: "Avalanche",
-  //  chainId: 43114,
-  //  logo: "/assets/icons/logos/avalanche.png",
-  // },
+  {
+    name: "Avalanche",
+    chainId: 43114,
+    logo: "/assets/icons/logos/avalanche.png",
+  },
   { name: "Base", chainId: 8453, logo: "/assets/icons/logos/base.png" },
   {
     name: "Degen",

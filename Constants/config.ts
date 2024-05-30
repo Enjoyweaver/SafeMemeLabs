@@ -3,6 +3,7 @@
 import { degen } from "@/utils/degenChain"
 import { rootstockTestnet } from "@/utils/rootstockTestnet"
 import {
+  avalanche,
   base,
   fantom,
   fantomTestnet,
@@ -17,7 +18,16 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 import { publicProvider } from "wagmi/providers/public"
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [fantom, polygon, fantomTestnet, degen, base, rootstock, rootstockTestnet],
+  [
+    avalanche,
+    fantom,
+    polygon,
+    fantomTestnet,
+    degen,
+    base,
+    rootstock,
+    rootstockTestnet,
+  ],
   [publicProvider()]
 )
 
@@ -64,7 +74,7 @@ export const tokenDeployerDetails: { [key: string]: string } = {
   "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb5",
   "4002": "0x79b206abd08adc1b1c5d72ba7bd38d04511e985e",
   "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d6",
-  "43114": "0xe92163f8038843091c1df18f726cf04526ef9676",
+  "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228430",
   "30": "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
   "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25e",
 }
