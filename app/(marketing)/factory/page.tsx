@@ -273,10 +273,10 @@ export default function Factory(): JSX.Element {
           <p className={styles.inputDescription}>(*) is a required field</p>
           {isSuccessTransaction &&
             toast.success(
-              "Token successfully deployed! Go to My Tokens right behind this to check it out! Then grab the contract address and import it into your wallet.",
+              "Token successfully deployed! Go to the Dashboard to check it out! Then grab the contract address and import it into your wallet.",
               {
                 toastId: String(useWaitData),
-                position: "top-right",
+                position: "top-center",
               }
             ) &&
             ""}
