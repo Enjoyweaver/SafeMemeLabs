@@ -13,14 +13,12 @@ import {
 
 import { tokenDeployerDetails } from "../../../Constants/config"
 import "@/styles/dashboard.css"
-// import Bubbles from "@/components/bubbles"
 import TokenHoldersList from "@/components/tokenholderslist"
-
-import styles from "./page.module.css"
 
 const Dashboard = () => {
   const [isClient, setIsClient] = useState(false)
   const [tokenCount, setTokenCount] = useState<number>(0)
+  const [selectedTab, setSelectedTab] = useState("competitors")
 
   useEffect(() => {
     setIsClient(true)
@@ -98,88 +96,117 @@ const Dashboard = () => {
     return namedData
   }
 
+  const renderCompetitorsMemes = () => (
+    <>
+      <h1 className="pagetitle">
+        Memes we created on our competitors' websites
+      </h1>
+      <div className="meme">
+        <div className="meme-header">
+          <h3>Safememe</h3>
+          <Image
+            src="/images/logo.png"
+            alt="Bubbles"
+            width={120}
+            height={120}
+            className="meme-image"
+          />
+        </div>
+        <TokenHoldersList
+          walletAddress="0x14E3C9107b16AF020E4F2B5971CC19C6DFc8F15B"
+          chainName="fantom-mainnet"
+        />
+      </div>
+      <div className="meme">
+        <div className="meme-header">
+          <h3>Bubbles</h3>
+          <Image
+            src="/images/bubbles.jpg"
+            alt="Bubbles"
+            width={120}
+            height={120}
+            className="meme-image"
+          />
+        </div>
+        <TokenHoldersList
+          walletAddress="0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA"
+          chainName="fantom-mainnet"
+        />
+      </div>
+    </>
+  )
+
+  const renderUserMemes = () => (
+    <>
+      <h2>Memes you created using SafeMemes</h2>
+      <ul>
+        {isClient && isConnected && contracts && contracts.length === 0 && (
+          <p>No tokens available.</p>
+        )}
+        {isClient &&
+          isConnected &&
+          contracts &&
+          contracts.length > 0 &&
+          tempTokenData &&
+          tempTokenData.length > 0 &&
+          splitData(tempTokenData)
+            .reverse()
+            .map((token, index: number) => (
+              <li key={index}>
+                <p>
+                  {token.name} ({token.symbol})
+                </p>
+                <p>Contract Address: {contracts[index]}</p>
+                <p>Supply: {Number(token.supply) / 10 ** token.decimals}</p>
+                <p>Decimals: {token.decimals}</p>
+                <p>Anti-Whale Percentage: {token.antiWhalePercentage}%</p>
+              </li>
+            ))}
+        {!isClient && <p>Loading...</p>}
+        {isClient && !isConnected && <p>No Account Connected</p>}
+      </ul>
+    </>
+  )
+
+  const renderTechStackMemes = () => (
+    <>
+      <h2>Memes we created using our tech stack</h2>
+      <ul>
+        <li>Example Tech Meme 1</li>
+        <li>Example Tech Meme 2</li>
+      </ul>
+    </>
+  )
+
   return (
     <div className="flex min-h-screen flex-col">
       <main className="flex-1">
         <div className="dashboard">
-          <section>
-            <h1 className="pagetitle">
-              Memes we created on our competitors' websites
-            </h1>
-            <div className="meme">
-              <div className="meme-header">
-                <h3>Safememe</h3>
-                <Image
-                  src="/images/logo.png"
-                  alt="Bubbles"
-                  width={120}
-                  height={120}
-                  className="meme-image"
-                />
-              </div>
-              <TokenHoldersList
-                walletAddress="0x14E3C9107b16AF020E4F2B5971CC19C6DFc8F15B"
-                chainName="fantom-mainnet"
-              />
-            </div>
-            <div className="meme">
-              <div className="meme-header">
-                <h3>Bubbles</h3>
-                <Image
-                  src="/images/bubbles.jpg"
-                  alt="Bubbles"
-                  width={120}
-                  height={120}
-                  className="meme-image"
-                />
-              </div>
-              <TokenHoldersList
-                walletAddress="0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA"
-                chainName="fantom-mainnet"
-              />
-            </div>
-          </section>
-
-          <section>
-            <h2>Memes you created using SafeMemes</h2>
-            <ul>
-              {isClient &&
-                isConnected &&
-                contracts &&
-                contracts.length === 0 && <p>No tokens available.</p>}
-              {isClient &&
-                isConnected &&
-                contracts &&
-                contracts.length > 0 &&
-                tempTokenData &&
-                tempTokenData.length > 0 &&
-                splitData(tempTokenData)
-                  .reverse()
-                  .map((token, index: number) => (
-                    <li key={index}>
-                      <p>
-                        {token.name} ({token.symbol})
-                      </p>
-                      <p>Contract Address: {contracts[index]}</p>
-                      <p>
-                        Supply: {Number(token.supply) / 10 ** token.decimals}
-                      </p>
-                      <p>Decimals: {token.decimals}</p>
-                      <p>Anti-Whale Percentage: {token.antiWhalePercentage}%</p>
-                    </li>
-                  ))}
-              {!isClient && <p>Loading...</p>}
-              {isClient && !isConnected && <p>No Account Connected</p>}
-            </ul>
-          </section>
-
-          <section>
-            <h2>Memes we created using our tech stack</h2>
-            <ul>
-              <li>Example Tech Meme 1</li>
-              <li>Example Tech Meme 2</li>
-            </ul>
-          </section>
+          <div className="tabs">
+            <button
+              className={selectedTab === "competitors" ? "active" : ""}
+              onClick={() => setSelectedTab("competitors")}
+            >
+              Competitors' Memes
+            </button>
+            <button
+              className={selectedTab === "user" ? "active" : ""}
+              onClick={() => setSelectedTab("user")}
+            >
+              Your Memes
+            </button>
+            <button
+              className={selectedTab === "tech" ? "active" : ""}
+              onClick={() => setSelectedTab("tech")}
+            >
+              Tech Stack Memes
+            </button>
+          </div>
+          <div className="content">
+            {selectedTab === "competitors" && renderCompetitorsMemes()}
+            {selectedTab === "user" && renderUserMemes()}
+            {selectedTab === "tech" && renderTechStackMemes()}
+          </div>
         </div>
       </main>
     </div>
