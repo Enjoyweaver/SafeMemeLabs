@@ -78,12 +78,15 @@ export default function MyTokens(): JSX.Element {
   })
 
   function splitData(data: any) {
-    const groupedData = []
-    const namedData = []
-    for (let i = 0; i < data.length; i += 5) {
-      // Updated to 5 since we now fetch antiWhalePercentage
-      groupedData.push(data.slice(i, i + 5))
+    const groupedData: any[] = []
+    const namedData: any[] = []
+    const chunkSize: any = 5 // Set '5' to type 'any'
+
+    for (let i = 0; i < data.length; i += chunkSize) {
+      // Updated to chunkSize (of type 'any') since we now fetch antiWhalePercentage
+      groupedData.push(data.slice(i, i + chunkSize))
     }
+
     for (let i = 0; i < groupedData.length; i++) {
       namedData.push({
         name: groupedData[i][0].result,
@@ -93,6 +96,7 @@ export default function MyTokens(): JSX.Element {
         antiWhalePercentage: groupedData[i][4].result, // Anti-whale percentage
       })
     }
+
     return namedData
   }
 
