@@ -24,7 +24,7 @@ export function ConnectWallet() {
             !connector.ready && isMounted() && styles.uninstalled
           }`}
         >
-          {String(connector.name) === "MetaMask" && (
+          {connector.name === "MetaMask" && (
             <Image
               src="/assets/icons/metamask.png"
               alt="logo"
@@ -33,7 +33,7 @@ export function ConnectWallet() {
               className={styles.walletLogo}
             />
           )}
-          {String(connector.name) === "Coinbase Wallet" && (
+          {connector.name === "Coinbase Wallet" && (
             <Image
               src="/assets/icons/coinbase.png"
               alt="logo"
@@ -42,7 +42,7 @@ export function ConnectWallet() {
               className={styles.walletLogo}
             />
           )}
-          {String(connector.name) === "WalletConnect" && (
+          {connector.name === "WalletConnect" && (
             <Image
               src="/assets/icons/walletConnect.png"
               alt="logo"
@@ -51,7 +51,7 @@ export function ConnectWallet() {
               className={styles.walletLogo}
             />
           )}
-          {String(connector.name) === "Injected" && (
+          {connector.name === "Injected" && (
             <Image
               src="/assets/icons/wallet.svg"
               alt="logo"

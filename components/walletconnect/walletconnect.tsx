@@ -12,6 +12,7 @@ import { MobileNav } from "../mobileNav/navbar"
 import { Overlay } from "../overlay/overlay"
 import styles from "./walletconnect.module.css"
 
+// Define the props for the MinidenticonImg component
 interface MinidenticonImgProps {
   username: string
   saturation: number
@@ -19,6 +20,7 @@ interface MinidenticonImgProps {
   [key: string]: any
 }
 
+// MinidenticonImg component generates a unique identicon based on the username
 const MinidenticonImg: FC<MinidenticonImgProps> = ({
   username,
   saturation,
@@ -39,37 +41,12 @@ export default MinidenticonImg
 
 const menuItems = []
 
+// Define details of blockchain networks
 const chainDetails = [
-  // {
-  //  name: "Avalanche",
-  //  chainId: 43114,
-  //  logo: "/assets/icons/logos/avalanche.png",
-  // },
   { name: "Base", chainId: 8453, logo: "/assets/icons/logos/base.png" },
-  {
-    name: "Degen",
-    chainId: 666666666,
-    logo: "/assets/icons/logos/degen.png",
-  },
+  { name: "Degen", chainId: 666666666, logo: "/assets/icons/logos/degen.png" },
   { name: "Fantom", chainId: 250, logo: "/assets/icons/logos/fantom.png" },
-  // {
-  //   name: "Fantom Testnet",
-  //   chainId: 4002,
-  //   logo: "/assets/icons/logos/fantomtest.png",
-  // },
-  // { name: "Polygon", chainId: 137, logo: "/assets/icons/logos/polygon.png" },
-
-  // {
-  //   name: "Fantom Sonic",
-  //   chainId: 64165,
-  //   logo: "/assets/icons/logos/fantom.png",
-  // },
-
-  {
-    name: "Rootstock",
-    chainId: 30,
-    logo: "/assets/icons/logos/rootstock.png",
-  },
+  { name: "Rootstock", chainId: 30, logo: "/assets/icons/logos/rootstock.png" },
   {
     name: "Rootstock Testnet",
     chainId: 31,
@@ -90,10 +67,12 @@ export function Navbar() {
   const { disconnect } = useDisconnect()
   const { switchNetwork } = useSwitchNetwork()
 
+  // Toggle the visibility of the connect wallet overlay
   const toggleConnectOpen = () => {
     setConnectOpen(!connectOpen)
   }
 
+  // Toggle the connect menu dropdown
   const toggleConnectMenuOpen = () => {
     if (!connectMenuOpen) {
       setNetworkMenuOpen(false)
@@ -102,6 +81,7 @@ export function Navbar() {
     setConnectMenuOpen(!connectMenuOpen)
   }
 
+  // Toggle the network menu dropdown
   const toggleNetworkMenuOpen = () => {
     if (!networkMenuOpen) {
       setConnectMenuOpen(false)
@@ -110,12 +90,14 @@ export function Navbar() {
     setNetworkMenuOpen(!networkMenuOpen)
   }
 
+  // Toggle individual menus
   const toggleMenu = (index: number) => {
     const updatedMenusOpen = [...menusOpen]
     updatedMenusOpen[index] = !updatedMenusOpen[index]
     setMenusOpen(updatedMenusOpen)
   }
 
+  // Perform an action and close all dropdowns
   function dropdownAction(func: () => void): void {
     func()
     setMenusOpen([])
@@ -123,6 +105,7 @@ export function Navbar() {
     setNetworkMenuOpen(false)
   }
 
+  // Add event listener to close dropdowns when clicking outside
   useEffect(() => {
     setIsClient(true)
     document.addEventListener("mousedown", handleClickOutside)
@@ -131,6 +114,7 @@ export function Navbar() {
     }
   }, [])
 
+  // Handle clicks outside the dropdown to close it
   const handleClickOutside = (event: MouseEvent) => {
     if (
       dropdownRef.current &&
@@ -144,14 +128,18 @@ export function Navbar() {
 
   return (
     <nav>
+      {/* Overlay and Connect Wallet components */}
       {!isConnected && connectOpen && <Overlay onClick={toggleConnectOpen} />}
       {!isConnected && connectOpen && <ConnectWallet />}
+
       <div className={styles.toShow}>
         <MobileNav />
       </div>
+
       <div className={styles.navbar}>
         {isClient ? (
           isConnected ? (
+            // Display user details when connected
             <div className={styles.connectButtonContainer}>
               <div
                 className={`${styles.navbarLi}`}
@@ -167,7 +155,7 @@ export function Navbar() {
                 />
                 <p className={`${styles.connectText} ${styles.toHide}`}>
                   {address
-                    ? address?.slice(0, 6) + "..." + address?.slice(-4)
+                    ? `${address.slice(0, 6)}...${address.slice(-4)}`
                     : "Error"}
                 </p>
                 <Image
@@ -197,86 +185,76 @@ export function Navbar() {
               </div>
             </div>
           ) : (
+            // Show connect button when not connected
             <div
-              className={`${styles.navbarLi} ${styles.walletConnectButton}`}
+              className={`${styles.navbarLi} ${styles.connectButton}`}
               onClick={toggleConnectOpen}
             >
               <p className={styles.connectText}>Connect</p>
             </div>
           )
         ) : (
-          <div className={`${styles.navbarLi} ${styles.connectButton}`}>
+          // Show loading state
+          <div className={`${styles.navbarLi} ${styles.connectButtonWhite}`}>
             <p className={styles.connectText}>Loading...</p>
           </div>
         )}
-        {isClient ? (
-          isConnected ? (
-            <div className={styles.connectButtonContainer}>
-              {chainDetails.map((chain) => (
-                <button
-                  key={chain.chainId}
-                  className={`${styles.navbarLi} ${
-                    chain.name === (chain && chain.name) ? styles.active : ""
-                  }`}
-                  onClick={() =>
-                    dropdownAction(() => switchNetwork?.(chain.chainId))
-                  }
-                >
-                  <Image
-                    src={chain.logo}
-                    alt={chain.name}
-                    className={styles.chainLogo}
-                    height={30}
-                    width={30}
-                  />
-                  {chain.name}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className={styles.connectButtonContainer}>
-              {chainDetails.map((chain) => (
-                <button
-                  key={chain.chainId}
-                  className={`${styles.navbarLi} ${
-                    chain.name === tempNetwork ? styles.active : ""
-                  }`}
-                  onClick={() =>
-                    dropdownAction(() => setTempNetwork(chain.name))
-                  }
-                >
-                  <Image
-                    src={chain.logo}
-                    alt={chain.name}
-                    className={styles.chainLogo}
-                    height={23}
-                    width={23}
-                  />
-                  <span
-                    style={{
-                      color: isClient
-                        ? isConnected
-                          ? "var(--blockchain-text-color)"
-                          : "var(--blockchain-text-color-dark)"
-                        : "var(--blockchain-text-color)",
-                    }}
-                  >
-                    {chain.name}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )
+
+        {isClient && isConnected ? (
+          // Display network options when connected
+          <div className={styles.connectButtonContainer}>
+            {chainDetails.map((chain) => (
+              <button
+                key={chain.chainId}
+                className={`${styles.navbarLi} ${
+                  chain.name === tempNetwork ? styles.active : ""
+                }`}
+                onClick={() =>
+                  dropdownAction(() => switchNetwork?.(chain.chainId))
+                }
+              >
+                <Image
+                  src={chain.logo}
+                  alt={chain.name}
+                  className={styles.chainLogo}
+                  height={30}
+                  width={30}
+                />
+                {chain.name}
+              </button>
+            ))}
+          </div>
         ) : (
-          <div className={`${styles.navbarLi} ${styles.connectButtonWhite}`}>
-            <Image
-              src="/assets/icons/logos/fantom.png"
-              alt="Fantom"
-              width={23}
-              height={23}
-              className={styles.chainIcon}
-            />
-            <p className={`${styles.connectText} ${styles.toHide}`}>Fantom</p>
+          // Display network options in a disconnected state
+          <div className={styles.connectButtonContainer}>
+            {chainDetails.map((chain) => (
+              <button
+                key={chain.chainId}
+                className={`${styles.navbarLi} ${
+                  chain.name === tempNetwork ? styles.active : ""
+                }`}
+                onClick={() => dropdownAction(() => setTempNetwork(chain.name))}
+              >
+                <Image
+                  src={chain.logo}
+                  alt={chain.name}
+                  className={styles.chainLogo}
+                  height={23}
+                  width={23}
+                />
+                <span
+                  style={{
+                    color: isClient
+                      ? isConnected
+                        ? "var(--blockchain-text-color)"
+                        : "var(--blockchain-text-color-dark)"
+                      : "var(--blockchain-text-color)",
+                  }}
+                >
+                  {chain.name}
+                </span>
+              </button>
+            ))}
           </div>
         )}
 
@@ -286,9 +264,10 @@ export function Navbar() {
               className={` ${styles.navbarLi} ${styles.active}`}
               onClick={() => toggleMenu(index)}
             >
-              <p className={`${styles.connectText} ${styles.toHide}`}>
+              {/* //TODO: FIX THIS */}
+              {/* <p className={`${styles.connectText} ${styles.toHide}`}>
                 {item.label}
-              </p>
+              </p> */}
             </div>
             <div
               className={`${styles.dropdownLeft} ${
@@ -297,11 +276,12 @@ export function Navbar() {
                   : styles.connectMenuClosed
               }`}
             >
-              {item.links.map((link, linkIndex) => (
+              {/* {//TODO: FIX THIS} */}
+              {/* {item.links.map((link, linkIndex) => (
                 <Link key={linkIndex} href={link.href}>
                   <p className={styles.dropdownOption}>{link.text}</p>
                 </Link>
-              ))}
+              ))} */}
             </div>
           </div>
         ))}
