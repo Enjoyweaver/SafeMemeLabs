@@ -6,6 +6,7 @@
   width: calc(100% - 30px);
   z-index: 11;
   height: 48.333px;
+  margin-top: 40px;
 }
 
 .navbarLi {
@@ -19,8 +20,9 @@
 }
 
 .navbarLi:hover {
-  background-color: #f0f0f0;
+  /* background-color: #f0f0f0; */
   transform: scale(1.05);
+  text-shadow: 1px 1px 2px #ff1493, 0 0 1em #3b9d59, 0 0 0.2em #3e8e41;
 }
 
 .navbarOption {
@@ -71,18 +73,37 @@
 }
 
 .connectButton {
-  background-color: orange;
-  border: none;
+  background-color: #4bb76a; /* More green shade */
+  border: 2px solid #ff1493; /* Pink border */
   border-radius: 25px;
-  width: fit-content;
+  padding: 10px 20px; /* Adjusted padding */
   cursor: pointer;
-  box-shadow: rgba(17, 17, 26, 0.1) 0px 2px 0px;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: rgba(17, 17, 26, 0.1) 0px 2px 0px,
+    inset 0 0 10px rgba(0, 0, 0, 0.1); /* Glass effect */
+  transition: background-color 0.3s ease, transform 0.3s ease,
+    box-shadow 0.3s ease, border-color 0.3s ease;
+  color: black; /* Black text */
+  position: relative;
+  backdrop-filter: blur(5px); /* Glass effect */
+}
+
+.connectButton::before {
+  content: "Connect";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: black; /* Black text */
+  z-index: 1;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Sunken text effect */
 }
 
 .connectButton:hover {
-  background-color: darkorange;
+  background-color: #3b9d59; /* Darker green shade */
   transform: scale(1.05);
+  box-shadow: 0 0 15px 5px rgba(255, 20, 147, 0.6),
+    inset 0 0 10px rgba(0, 0, 0, 0.2); /* Pink glow effect with inset shadow */
+  border-color: #ff69b4; /* Lighter pink border on hover */
 }
 
 .connectButtonWhite {
@@ -109,6 +130,16 @@
 .connectButtonContainer {
   float: right;
   position: relative;
+}
+
+.networkOptionsContainer {
+  margin-top: 20px;
+}
+
+.networkOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .navbarOptionsContainer {

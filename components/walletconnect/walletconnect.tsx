@@ -3,9 +3,8 @@
 import { FC, useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { chains } from "@/Constants/config"
 import { minidenticon } from "minidenticons"
-import { useAccount, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi"
+import { useAccount, useDisconnect, useSwitchNetwork } from "wagmi"
 
 import { ConnectWallet } from "../changeNetwork/connectWallet/connectWallet"
 import { MobileNav } from "../mobileNav/navbar"
@@ -175,7 +174,7 @@ export function Navbar() {
               >
                 <p
                   className={styles.dropdownOption}
-                  onClick={() => dropdownAction(() => disconnect())}
+                  onClick={() => disconnect()}
                 >
                   Disconnect
                 </p>
@@ -202,59 +201,67 @@ export function Navbar() {
 
         {isClient && isConnected ? (
           // Display network options when connected
-          <div className={styles.connectButtonContainer}>
-            {chainDetails.map((chain) => (
-              <button
-                key={chain.chainId}
-                className={`${styles.navbarLi} ${
-                  chain.name === tempNetwork ? styles.active : ""
-                }`}
-                onClick={() =>
-                  dropdownAction(() => switchNetwork?.(chain.chainId))
-                }
-              >
-                <Image
-                  src={chain.logo}
-                  alt={chain.name}
-                  className={styles.chainLogo}
-                  height={30}
-                  width={30}
-                />
-                {chain.name}
-              </button>
-            ))}
+          <div className={styles.networkOptionsContainer}>
+            <h3>Choose from these options</h3>
+            <div className={styles.networkOptions}>
+              {chainDetails.map((chain) => (
+                <button
+                  key={chain.chainId}
+                  className={`${styles.navbarLi} ${
+                    chain.name === tempNetwork ? styles.active : ""
+                  }`}
+                  onClick={() =>
+                    dropdownAction(() => switchNetwork?.(chain.chainId))
+                  }
+                >
+                  <Image
+                    src={chain.logo}
+                    alt={chain.name}
+                    className={styles.chainLogo}
+                    height={30}
+                    width={30}
+                  />
+                  {chain.name}
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
           // Display network options in a disconnected state
-          <div className={styles.connectButtonContainer}>
-            {chainDetails.map((chain) => (
-              <button
-                key={chain.chainId}
-                className={`${styles.navbarLi} ${
-                  chain.name === tempNetwork ? styles.active : ""
-                }`}
-                onClick={() => dropdownAction(() => setTempNetwork(chain.name))}
-              >
-                <Image
-                  src={chain.logo}
-                  alt={chain.name}
-                  className={styles.chainLogo}
-                  height={23}
-                  width={23}
-                />
-                <span
-                  style={{
-                    color: isClient
-                      ? isConnected
-                        ? "var(--blockchain-text-color)"
-                        : "var(--blockchain-text-color-dark)"
-                      : "var(--blockchain-text-color)",
-                  }}
+          <div className={styles.networkOptionsContainer}>
+            <h3>Choose from these options</h3>
+            <div className={styles.networkOptions}>
+              {chainDetails.map((chain) => (
+                <button
+                  key={chain.chainId}
+                  className={`${styles.navbarLi} ${
+                    chain.name === tempNetwork ? styles.active : ""
+                  }`}
+                  onClick={() =>
+                    dropdownAction(() => setTempNetwork(chain.name))
+                  }
                 >
-                  {chain.name}
-                </span>
-              </button>
-            ))}
+                  <Image
+                    src={chain.logo}
+                    alt={chain.name}
+                    className={styles.chainLogo}
+                    height={23}
+                    width={23}
+                  />
+                  <span
+                    style={{
+                      color: isClient
+                        ? isConnected
+                          ? "var(--blockchain-text-color)"
+                          : "var(--blockchain-text-color-dark)"
+                        : "var(--blockchain-text-color)",
+                    }}
+                  >
+                    {chain.name}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
