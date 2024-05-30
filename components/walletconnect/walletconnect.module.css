@@ -15,6 +15,12 @@
   display: inline-flex;
   align-items: center;
   height: 26.67px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.navbarLi:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.05);
 }
 
 .navbarOption {
@@ -65,12 +71,18 @@
 }
 
 .connectButton {
-  background-color: var(--accent);
+  background-color: orange;
   border: none;
   border-radius: 25px;
   width: fit-content;
   cursor: pointer;
   box-shadow: rgba(17, 17, 26, 0.1) 0px 2px 0px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.connectButton:hover {
+  background-color: darkorange;
+  transform: scale(1.05);
 }
 
 .connectButtonWhite {
@@ -82,7 +94,6 @@
 
 .connectText {
   display: inline;
-  margin: none;
   padding: 0 5px;
   vertical-align: top;
   margin: 0;
@@ -116,7 +127,7 @@
   vertical-align: middle;
   justify-content: center;
   display: inline-block;
-  margin-right: ;
+  margin-right: 10px;
 }
 
 .dropdown {
@@ -129,7 +140,8 @@
   min-width: 175px;
   color: black;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-  z-index: 1; /* Set initial z-index */
+  z-index: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .dropdownLeft {
@@ -145,18 +157,25 @@
   float: center;
   overflow: hidden;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-  z-index: 1; /* Set initial z-index */
+  z-index: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .identicon {
   vertical-align: center;
   display: inline-block;
 }
+
 .dropdownOption {
   margin: 0;
   vertical-align: middle;
   padding: 10px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdownOption:hover {
+  background-color: #f0f0f0;
 }
 
 .dropdownOption:last-child {
@@ -176,10 +195,14 @@
 
 .connectMenuOpen {
   display: block;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .connectMenuClosed {
   display: none;
+  opacity: 0;
+  transform: translateY(-20px);
 }
 
 .dropbtn {
@@ -205,15 +228,19 @@
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
   top: 55px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .dropdownNew:hover .dropdownContent {
   display: block;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .dropdownNew:hover .dropbtn {
   background-color: #3e8e41;
 }
+
 .toShow {
   display: none;
 }
