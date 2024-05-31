@@ -126,7 +126,7 @@ export function Navbar() {
   }
 
   return (
-    <nav>
+    <nav className={styles.nav}>
       {/* Overlay and Connect Wallet components */}
       {!isConnected && connectOpen && <Overlay onClick={toggleConnectOpen} />}
       {!isConnected && connectOpen && <ConnectWallet />}
@@ -174,7 +174,10 @@ export function Navbar() {
               >
                 <p
                   className={styles.dropdownOption}
-                  onClick={() => disconnect()}
+                  onClick={() => {
+                    disconnect()
+                    setConnectMenuOpen(false) // Close the dropdown after disconnect
+                  }}
                 >
                   Disconnect
                 </p>
@@ -202,7 +205,7 @@ export function Navbar() {
         {isClient && isConnected ? (
           // Display network options when connected
           <div className={styles.networkOptionsContainer}>
-            <h3>Choose from these options</h3>
+            <h3 className={styles.networkTitle}>Choose from these options</h3>
             <div className={styles.networkOptions}>
               {chainDetails.map((chain) => (
                 <button
@@ -229,7 +232,7 @@ export function Navbar() {
         ) : (
           // Display network options in a disconnected state
           <div className={styles.networkOptionsContainer}>
-            <h3>Choose from these options</h3>
+            <h3 className={styles.networkTitle}>Choose from these options</h3>
             <div className={styles.networkOptions}>
               {chainDetails.map((chain) => (
                 <button

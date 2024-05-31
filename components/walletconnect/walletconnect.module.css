@@ -1,3 +1,10 @@
+/* Navbar Styles */
+.nav {
+  position: relative;
+  height: 10vh;
+  margin-bottom: 20px;
+}
+
 .navbar {
   padding: 0 15px;
   position: relative;
@@ -20,7 +27,6 @@
 }
 
 .navbarLi:hover {
-  /* background-color: #f0f0f0; */
   transform: scale(1.05);
   text-shadow: 1px 1px 2px #ff1493, 0 0 1em #3b9d59, 0 0 0.2em #3e8e41;
 }
@@ -45,10 +51,6 @@
 
 .menu {
   display: none;
-}
-
-.menu {
-  display: block;
   width: 100%;
   height: 100%;
   position: fixed;
@@ -60,10 +62,6 @@
   top: 0;
 }
 
-.navElement {
-  margin: 20px;
-}
-
 .menuOpen {
   transform: translateX(0);
 }
@@ -73,18 +71,18 @@
 }
 
 .connectButton {
-  background-color: #4bb76a; /* More green shade */
-  border: 2px solid #ff1493; /* Pink border */
+  background-color: #4bb76a;
+  border: 2px solid #ff1493;
   border-radius: 25px;
-  padding: 10px 20px; /* Adjusted padding */
+  padding: 10px 20px;
   cursor: pointer;
   box-shadow: rgba(17, 17, 26, 0.1) 0px 2px 0px,
-    inset 0 0 10px rgba(0, 0, 0, 0.1); /* Glass effect */
+    inset 0 0 10px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease, transform 0.3s ease,
     box-shadow 0.3s ease, border-color 0.3s ease;
-  color: black; /* Black text */
+  color: black;
   position: relative;
-  backdrop-filter: blur(5px); /* Glass effect */
+  backdrop-filter: blur(5px);
 }
 
 .connectButton::before {
@@ -93,17 +91,17 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: black; /* Black text */
+  color: black;
   z-index: 1;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Sunken text effect */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .connectButton:hover {
-  background-color: #3b9d59; /* Darker green shade */
+  background-color: #3b9d59;
   transform: scale(1.05);
   box-shadow: 0 0 15px 5px rgba(255, 20, 147, 0.6),
-    inset 0 0 10px rgba(0, 0, 0, 0.2); /* Pink glow effect with inset shadow */
-  border-color: #ff69b4; /* Lighter pink border on hover */
+    inset 0 0 10px rgba(0, 0, 0, 0.2);
+  border-color: #ff69b4;
 }
 
 .connectButtonWhite {
@@ -134,12 +132,21 @@
 
 .networkOptionsContainer {
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 5px;
 }
 
 .networkOptions {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 5px;
+  position: relative;
+  margin-bottom: 20px;
+  align-content: flex-start;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .navbarOptionsContainer {
@@ -284,9 +291,9 @@
     display: block;
   }
   .navbarLi {
-    font-size: 14px; /* Decrease font size */
-    line-height: 20px; /* Decrease line height */
-    margin: 5px 10px; /* Reduce margin */
-    height: auto; /* Allow height to adjust based on content */
+    font-size: 14px;
+    line-height: 20px;
+    margin: 5px 10px;
+    height: auto;
   }
 }
