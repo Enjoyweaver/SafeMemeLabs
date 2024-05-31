@@ -1,24 +1,51 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
 .tokenDeployer {
-  max-width: 500px;
+  max-width: 600px;
   width: calc(100% - 80px);
-  padding: 20px;
+  padding: 40px;
   background-color: #ffffff;
-  border: 1px rgb(214, 214, 214) solid;
-  border-radius: 10px;
-  margin: auto;
-  margin-bottom: 100px;
-  margin-top: 75px;
-  box-shadow: 0 0 300px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  margin: 75px auto 100px auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 2em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1.2em;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .inputGroup {
+  width: 100%;
   margin-bottom: 20px;
 }
 
 .inputTitle {
   font-size: 1em;
   margin-bottom: 5px;
-  color: rgb(75, 75, 75);
+  color: #333;
+  text-align: left;
+  width: 100%;
 }
 
 .inputDescription {
@@ -29,19 +56,18 @@
 
 .tokenInput {
   font-size: 1em;
-  padding: 8px;
+  padding: 12px;
   border-radius: 5px;
   outline: none;
-  width: calc(100% - 16px);
-  transition: border-color 0.5s ease-in-out;
+  width: 100%;
+  transition: border-color 0.3s ease-in-out;
   background-color: white;
-  color: rgb(75, 75, 75);
-  border: none;
-  border: 1px rgb(214, 214, 214) solid;
+  color: #333;
+  border: 1px solid #e0e0e0;
 }
 
 .deployButton {
-  color: rgb(237, 237, 237);
+  color: #fff;
   border-radius: 25px;
   background-color: var(--accent);
   border: none;
@@ -49,7 +75,12 @@
   font-size: 1em;
   cursor: pointer;
   width: 100%;
+  transition: background-color 0.3s ease;
 }
+
+
+.deployButton:hover {
+  background-color: darken(var(--accent), 10%);
 
 .deployButton.enabled {
   background-color: green;
@@ -59,12 +90,18 @@
 .error {
   color: #ff2828;
   margin: 2px 0px;
+
 }
 
 .disabled {
-  background-color: rgb(174, 174, 174);
+  background-color: #ccc;
   cursor: not-allowed;
 }
+
+
+.error {
+  color: #ff2828;
+  margin: 2px 0px;
 
 .title {
   font-size: 1.5em;
@@ -72,29 +109,50 @@
   color: rgb(69, 67, 78);
   font-weight: bold;
 }
+
 .errorText {
-  color: rgb(75, 75, 75);
+  color: #333;
   overflow-wrap: break-word;
 }
+
 .errorSection {
-  border: 1px solid rgb(184, 184, 184);
+  border: 1px solid #b8b8b8;
   border-radius: 10px;
   padding: 20px;
   background-color: white;
+  margin-top: 20px;
 }
+
 .errorHeader {
-  color: rgb(14, 14, 14);
-  font-size: 25px;
+  color: #0e0e0e;
+  font-size: 1.5em;
   margin: 0;
   display: inline-block;
 }
+
 .errorCollapsed {
   width: 100%;
+  cursor: pointer;
 }
+
 .errorDropdown {
   vertical-align: middle;
   float: right;
-  vertical-align: middle;
   filter: invert(15%) sepia(0%) saturate(1%) hue-rotate(40deg) brightness(30%)
     contrast(90%);
+}
+
+.myTokensButton {
+  background-color: #008cba;
+  color: #fff;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.myTokensButton:hover {
+  background-color: #0079a1;
 }
