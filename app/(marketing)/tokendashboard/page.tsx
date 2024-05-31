@@ -15,6 +15,17 @@ import { tokenDeployerDetails } from "../../../Constants/config"
 import "@/styles/dashboard.css"
 import TokenHoldersList from "@/components/tokenholderslist"
 
+const chainIdToName = {
+  1: "eth-mainnet",
+  3: "ropsten",
+  4: "rinkeby",
+  5: "goerli",
+  42: "kovan",
+  250: "fantom-mainnet",
+  4002: "fantom-testnet",
+  // Add other chains here
+}
+
 const Dashboard = () => {
   const [isClient, setIsClient] = useState(false)
   const [tokenCount, setTokenCount] = useState<number>(0)
@@ -109,6 +120,12 @@ const Dashboard = () => {
     return namedData
   }
 
+  const formatNumber = (number: number, decimals: number) => {
+    return (number / 10 ** decimals).toLocaleString("en-US", {
+      maximumFractionDigits: 2,
+    })
+  }
+
   const renderCompetitorsMemes = () => (
     <>
       <h1 className="pagetitle">
@@ -126,7 +143,7 @@ const Dashboard = () => {
           />
         </div>
         <TokenHoldersList
-          walletAddress="0x14E3C9107b16AF020E4F2B5971CC19C6DFc8F15B"
+          tokenAddress="0x14E3C9107b16AF020E4F2B5971CC19C6DFc8F15B"
           chainName="fantom-mainnet"
         />
       </div>
@@ -142,7 +159,7 @@ const Dashboard = () => {
           />
         </div>
         <TokenHoldersList
-          walletAddress="0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA"
+          tokenAddress="0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA"
           chainName="fantom-mainnet"
         />
       </div>
@@ -167,18 +184,34 @@ const Dashboard = () => {
               <h3>
                 {token.name} ({token.symbol})
               </h3>
-              <Image
-                src="/images/logo.png"
-                alt={`${token.name} logo`}
-                width={120}
-                height={120}
-                className="meme-image"
-              />
             </div>
-            <p>Contract Address: {contracts[index]}</p>
-            <p>Supply: {Number(token.supply) / 10 ** token.decimals}</p>
-            <p>Decimals: {token.decimals}</p>
-            <p>Anti-Whale Percentage: {token.antiWhalePercentage}%</p>
+            <div className="meme-details">
+              <p>
+                <strong>Contract Address:</strong> {contracts[index]}
+              </p>
+              <p>
+                <strong>Supply:</strong>{" "}
+                {formatNumber(Number(token.supply), token.decimals)}
+              </p>
+              <p>
+                <strong>Decimals:</strong> {token.decimals}
+              </p>
+              <p>
+                <strong>Anti-Whale Percentage:</strong>{" "}
+                {token.antiWhalePercentage}%
+              </p>
+              <p>
+                <strong>Max Tokens per Holder:</strong>{" "}
+                {formatNumber(
+                  (Number(token.supply) * token.antiWhalePercentage) / 100,
+                  token.decimals
+                )}
+              </p>
+            </div>
+            <TokenHoldersList
+              tokenAddress={contracts[index]}
+              chainName={chainIdToName[chain?.id] ?? ""}
+            />
           </div>
         ))}
       {!isClient && <p>Loading...</p>}
@@ -190,7 +223,7 @@ const Dashboard = () => {
     <>
       <h2>
         Once we develop our own exchange, we will be using our token generator
-        to create safe memes that are deployed on our own exchange. If youre
+        to create safe memes that are deployed on our own exchange. If you're
         interested in helping us develop our exchange, please reach out.
       </h2>
     </>
@@ -221,7 +254,7 @@ const Dashboard = () => {
               className={selectedTab === "tech" ? "active" : ""}
               onClick={() => setSelectedTab("tech")}
             >
-              Tech Stack Memes
+              Our Memes
               {selectedTab === "tech" && <div className="tab-indicator"></div>}
             </button>
           </div>

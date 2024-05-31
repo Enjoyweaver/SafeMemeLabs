@@ -308,3 +308,17 @@ body {
   height: 30px; /* Adjust the height to create the connection */
   top: -20px;
 }
+
+.meme-details {
+  text-align: left;
+}
+
+.meme-details p {
+  margin: 5px 0;
+}
+
+.meme-details p strong {
+  display: inline-block;
+  width: 180px; /* Adjust width as needed */
+  color: var(--secondary-dark); /* Adjust color as needed */
+}

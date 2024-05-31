@@ -62,6 +62,9 @@ const chainDetails = [
     chainId: 31,
     logo: "/assets/icons/logos/rootstock.png",
   },
+  // { name: "Stellar", chainId: 161, logo: "/assets/icons/logos/stellar.png" },
+  // { name: "Polkadot", chainId: 0, logo: "/assets/icons/logos/polkadot.png" },
+  // { name: "Stacks", chainId: 576, logo: "/assets/icons/logos/stacks.png" },
 ]
 
 export function Navbar() {

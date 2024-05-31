@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react"
 
 import "@/styles/tokenholderslist.css"
 
-const TokenHoldersList = ({ walletAddress, chainName }) => {
+const TokenHoldersList = ({ tokenAddress, chainName }) => {
   const [transactionSummary, setTransactionSummary] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -13,8 +13,12 @@ const TokenHoldersList = ({ walletAddress, chainName }) => {
   useEffect(() => {
     const fetchTransactionSummary = async () => {
       const apiKey = process.env.NEXT_PUBLIC_COVALENT_API_KEY
-      const url = `https://api.covalenthq.com/v1/${chainName}/address/${walletAddress}/transactions_summary/?key=${apiKey}`
-
+      if (!chainName || !tokenAddress) {
+        setError("Chain name or token address is missing")
+        setLoading(false)
+        return
+      }
+      const url = `https://api.covalenthq.com/v1/${chainName}/address/${tokenAddress}/transactions_summary/?key=${apiKey}`
       try {
         const response = await fetch(url)
         if (!response.ok) {
@@ -33,7 +37,7 @@ const TokenHoldersList = ({ walletAddress, chainName }) => {
     }
 
     fetchTransactionSummary()
-  }, [walletAddress, chainName])
+  }, [tokenAddress, chainName])
 
   if (loading) return <p className="loading">Loading...</p>
   if (error) return <p className="error">Error: {error}</p>
