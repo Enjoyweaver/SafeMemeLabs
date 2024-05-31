@@ -15,16 +15,6 @@ import { tokenDeployerDetails } from "../../../Constants/config"
 import "@/styles/dashboard.css"
 import TokenHoldersList from "@/components/tokenholderslist"
 
-import { degen } from "../../../utils/degenChain"
-import { rootstockTestnet } from "../../../utils/rootstockTestnet"
-
-const chainIdToName = {
-  250: "fantom-mainnet",
-  4002: "fantom-testnet",
-  31: "rootstock-testnet",
-  666666666: "degen",
-}
-
 const Dashboard = () => {
   const [isClient, setIsClient] = useState(false)
   const [tokenCount, setTokenCount] = useState<number>(0)
@@ -183,7 +173,15 @@ const Dashboard = () => {
               <h3>
                 {token.name} ({token.symbol})
               </h3>
+              <Image
+                src="/images/logo.png" // You can dynamically set the logo URL if available
+                alt={`${token.name} logo`}
+                width={50}
+                height={50}
+                className="token-logo"
+              />
             </div>
+
             <div className="meme-details">
               <p>
                 <strong>Contract Address:</strong> {contracts[index]}

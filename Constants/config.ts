@@ -3,6 +3,7 @@
 
 import { degen } from "@/utils/degenChain"
 import { rootstockTestnet } from "@/utils/rootstockTestnet"
+import { solana } from "@/utils/solana"
 import {
   base,
   fantom,
@@ -18,7 +19,16 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 import { publicProvider } from "wagmi/providers/public"
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [fantom, polygon, fantomTestnet, degen, base, rootstock, rootstockTestnet],
+  [
+    fantom,
+    polygon,
+    fantomTestnet,
+    degen,
+    base,
+    rootstock,
+    rootstockTestnet,
+    solana,
+  ],
   [publicProvider()]
 )
 
@@ -69,6 +79,7 @@ export const tokenDeployerDetails: { [key: string]: string } = {
   "30": "0xe92163f8038843091c1df18f726cf04526ef9676",
   "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25e",
   "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25e",
+  "501": "YourTokenAddressForSolanaTestnet", // Add your token deployer address for Solana
 }
 export const multisendDetails: { [key: string]: string } = {
   "137": "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
@@ -80,6 +91,7 @@ export const multisendDetails: { [key: string]: string } = {
   "43114": "0x8c175417787c4beea7211d143423c8624c230b9b",
   "30": "0x8c175417787c4beea7211d143423c8624c230b9b",
   "31": "0x8c175417787c4beea7211d143423c8624c230b9b",
+  "501": "YourMultisendAddressForSolanaTestnet", // Add your multisend address for Solana
 }
 
 export const blockExplorerUrls: { [key: string]: string } = {
@@ -90,7 +102,7 @@ export const blockExplorerUrls: { [key: string]: string } = {
   "43114": "https://snowtrace.io/tx/",
   "30": "https://explorer.rsk.co/tx/",
   "666666666": "https://degenscan.io/tx/",
-  // Add other block explorer URLs as needed
+  "501": "https://explorer.solana.com/tx/", // Add Solana testnet block explorer URL
 }
 
 export const chainIdToCovalentChainId: { [key: string]: string } = {
@@ -100,6 +112,5 @@ export const chainIdToCovalentChainId: { [key: string]: string } = {
   137: "matic-mainnet",
   43114: "avalanche-mainnet",
   30: "rsk-mainnet",
-  666666666: "degen-chain",
-  // Add other mappings as needed
+  501: "solana-mainnet",
 }

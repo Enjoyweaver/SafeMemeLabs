@@ -322,3 +322,12 @@ body {
   width: 180px; /* Adjust width as needed */
   color: var(--secondary-dark); /* Adjust color as needed */
 }
+
+.meme-header {
+  display: flex;
+  align-items: center;
+}
+
+.token-logo {
+  margin-left: 10px;
+}
