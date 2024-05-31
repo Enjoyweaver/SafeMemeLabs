@@ -17,7 +17,7 @@ export const rootstockTestnet = defineChain({
   blockExplorers: {
     default: {
       name: "Rootstock Testnet Explorer",
-      url: "https://explorer.testnet.rsk.co",
+      url: "https://explorer.testnet.rootstock.io/",
     },
   },
 })

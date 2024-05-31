@@ -1,3 +1,4 @@
+// utils/config.ts
 "use client"
 
 import { degen } from "@/utils/degenChain"
@@ -79,4 +80,26 @@ export const multisendDetails: { [key: string]: string } = {
   "43114": "0x8c175417787c4beea7211d143423c8624c230b9b",
   "30": "0x8c175417787c4beea7211d143423c8624c230b9b",
   "31": "0x8c175417787c4beea7211d143423c8624c230b9b",
+}
+
+export const blockExplorerUrls: { [key: string]: string } = {
+  "31": "https://explorer.testnet.rootstock.io/tx/",
+  "250": "https://ftmscan.com/tx/",
+  "4002": "https://testnet.ftmscan.com/tx/",
+  "137": "https://polygonscan.com/tx/",
+  "43114": "https://snowtrace.io/tx/",
+  "30": "https://explorer.rsk.co/tx/",
+  "666666666": "https://degenscan.io/tx/",
+  // Add other block explorer URLs as needed
+}
+
+export const chainIdToCovalentChainId: { [key: string]: string } = {
+  250: "fantom-mainnet",
+  4002: "fantom-testnet",
+  31: "rsk-testnet",
+  137: "matic-mainnet",
+  43114: "avalanche-mainnet",
+  30: "rsk-mainnet",
+  666666666: "degen-chain",
+  // Add other mappings as needed
 }

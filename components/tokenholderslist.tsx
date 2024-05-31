@@ -1,16 +1,10 @@
+// components/tokenholderslist.tsx
 "use client"
 
 import React, { useEffect, useState } from "react"
+import { blockExplorerUrls, chainIdToCovalentChainId } from "@/Constants/config"
 
 import "@/styles/tokenholderslist.css"
-
-const chainIdToCovalentChainId = {
-  250: "fantom-mainnet",
-  4002: "fantom-testnet",
-  31: "31", // Assuming 31 is supported by Covalent
-  666666666: "666666666", // Assuming this is a valid ID for your chain in Covalent
-  // Add other supported chain IDs as needed
-}
 
 const TokenHoldersList = ({ tokenAddress, chainId }) => {
   const [transactionSummary, setTransactionSummary] = useState(null)
@@ -55,6 +49,11 @@ const TokenHoldersList = ({ tokenAddress, chainId }) => {
   const { total_count, latest_transaction, earliest_transaction } =
     transactionSummary
 
+  const getTransactionLink = (transactionHash) => {
+    const blockExplorerUrl = blockExplorerUrls[chainId]
+    return blockExplorerUrl ? `${blockExplorerUrl}${transactionHash}` : null
+  }
+
   return (
     <div>
       <h2 className="title">Transaction Summary</h2>
@@ -70,7 +69,7 @@ const TokenHoldersList = ({ tokenAddress, chainId }) => {
           </p>
           <p>
             <a
-              href={latest_transaction.tx_detail_link}
+              href={getTransactionLink(latest_transaction.tx_hash)}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -88,7 +87,7 @@ const TokenHoldersList = ({ tokenAddress, chainId }) => {
           </p>
           <p>
             <a
-              href={earliest_transaction.tx_detail_link}
+              href={getTransactionLink(earliest_transaction.tx_hash)}
               target="_blank"
               rel="noopener noreferrer"
             >
