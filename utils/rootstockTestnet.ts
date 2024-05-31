@@ -1,11 +1,12 @@
+// utils/rootstockTestnet.ts
 import { defineChain } from "viem"
 
 export const rootstockTestnet = defineChain({
   id: 31,
-  network: "Rootstock Testnet", // Provide the appropriate network name here
+  network: "rsk-testnet",
   name: "rsk-testnet",
   nativeCurrency: {
-    name: "tRBTC",
+    name: "Testnet RBTC",
     symbol: "tRBTC",
     decimals: 18,
   },
@@ -15,8 +16,8 @@ export const rootstockTestnet = defineChain({
   },
   blockExplorers: {
     default: {
-      name: "Rootstock Testnet",
-      url: "https://public-node.testnet.rsk.co",
+      name: "Rootstock Testnet Explorer",
+      url: "https://explorer.testnet.rsk.co",
     },
   },
 })
