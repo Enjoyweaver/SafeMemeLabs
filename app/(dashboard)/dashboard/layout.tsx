@@ -26,11 +26,11 @@ export default async function DashboardLayout({
         <div className="container flex h-16 items-center justify-between py-4">
           <MainNav items={dashboardConfig.mainNav} />
           <UserAccountNav
-            user={{
-              name: data.user.name,
-              image: data.user.image,
-              email: data.user.email,
-            }}
+          // user={{
+          //   // name: data.user.name,
+          //   // image: data.user.image,
+          //   email: data.user.email,
+          // }}
           />
         </div>
       </header>
