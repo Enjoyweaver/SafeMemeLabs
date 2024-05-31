@@ -3,7 +3,7 @@ import { defineChain } from "viem"
 export const rootstockTestnet = defineChain({
   id: 31,
   network: "Rootstock Testnet", // Provide the appropriate network name here
-  name: "rootstockTestnet",
+  name: "rsk-testnet",
   nativeCurrency: {
     name: "tRBTC",
     symbol: "tRBTC",

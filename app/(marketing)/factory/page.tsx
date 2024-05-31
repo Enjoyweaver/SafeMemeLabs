@@ -4,7 +4,9 @@ import { ChangeEvent, useEffect, useState } from "react"
 import Link from "next/link"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { toast } from "react-toastify"
+
 import { Navbar } from "@/components/walletconnect/walletconnect"
+
 import styles from "./page.module.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
@@ -18,7 +20,9 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi"
+
 import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
+
 import { capitalizeFirstLetter } from "../../../utils/capitilizeFirstLetter"
 import Modal from "./Modal"
 
@@ -102,15 +106,11 @@ export default function Factory(): JSX.Element {
     error,
     isError,
   } = useContractWrite(config)
+
   const {
     data: useWaitData,
     isLoading: isLoadingTransaction,
     isSuccess: isSuccessTransaction,
-
-  } = useWaitForTransaction({ hash: data?.hash })
-
-  const toggleErrorMenuOpen = () => setErrorMenu(!errorMenu)
-
     error: error_,
   } = useWaitForTransaction({
     hash: data?.hash,
@@ -139,7 +139,6 @@ export default function Factory(): JSX.Element {
     setErrorMenu(!errorMenu)
   }
 
-
   return (
     <>
       <Modal
@@ -157,7 +156,6 @@ export default function Factory(): JSX.Element {
         )}
         <Navbar />
 
-        <br />
         <div className={styles.container}>
           <div className={styles.tokenDeployer}>
             <h1 className={styles.title}>Create Your Token</h1>
@@ -236,174 +234,36 @@ export default function Factory(): JSX.Element {
                   <p className={styles.error}>
                     Percentage must be greater than 0 and less than or equal to
                     3
-
-        <div className={styles.tokenDeployer}>
-          <p className={styles.title}>Create a token</p>
-          <p className={styles.inputDescription}>By SafeMeme Labs</p>
-          <div className={styles.inputGroup}>
-            <p className={styles.inputTitle}>Token Name*</p>
-            <input
-              onChange={setTokenName}
-              className={`${styles.tokenInput}`}
-              placeholder="Degen"
-              value={name}
-            />
-          </div>
-          <div className={styles.inputGroup}>
-            <p className={styles.inputTitle}>Token Symbol*</p>
-            <input
-              onChange={setTokenSymbol}
-              className={`${styles.tokenInput}`}
-              placeholder="degen"
-              value={symbol}
-            />
-          </div>
-          <div className={styles.inputGroup}>
-            <p className={styles.inputTitle}>Token Supply*</p>
-            <input
-              onKeyDown={(evt) =>
-                ["e", "E", "+", "-", "."].includes(evt.key) &&
-                evt.preventDefault()
-              }
-              onChange={setTokenSupply}
-              className={`${styles.tokenInput}`}
-              placeholder="21000000"
-              type="number"
-              value={supply}
-            />
-          </div>
-          <div className={styles.inputGroup}>
-            <p className={styles.inputTitle}>Decimals</p>
-            <input
-              onKeyDown={(evt) =>
-                ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()
-              }
-              onChange={setTokenDecimals}
-              className={`${styles.tokenInput}`}
-              placeholder="18"
-              type="number"
-              value={decimals}
-            />
-            {!(Number(decimals) >= 0 && Number(decimals) <= 18) && (
-              <p className={styles.error}>Decimals must be from 0 to 18</p>
-            )}
-          </div>
-          <div className={styles.inputGroup}>
-            <p className={styles.inputTitle}>Anti-Whale Percentage*</p>
-            <input
-              onKeyDown={(evt) =>
-                ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()
-              }
-              onChange={setAntiWhalePercentageInput}
-              className={`${styles.tokenInput}`}
-              placeholder="3"
-              type="number"
-              value={antiWhalePercentage}
-            />
-            {!(
-              Number(antiWhalePercentage) > 0 &&
-              Number(antiWhalePercentage) <= 3
-            ) && (
-              <p className={styles.error}>
-                Percentage must be greater than 0 and less than or equal to 3
-              </p>
-            )}
-          </div>
-          <button
-            onClick={handleDeployClick} // Use handleDeployClick instead of directly calling write
-            className={`${styles.deployButton} ${
-              !isPrepareError &&
-              isConnected &&
-              isFormFilled() &&
-              Number(decimals) >= 0 &&
-              Number(decimals) <= 18 &&
-              Number(supply) >= 0 &&
-              Number(antiWhalePercentage) > 0 &&
-              Number(antiWhalePercentage) <= 3 &&
-              !(isLoadingTransaction || isLoadingWrite)
-                ? styles.enabled
-                : styles.disabled
-            }`}
-            disabled={
-              !isPrepareError &&
-              isConnected &&
-              isFormFilled() &&
-              Number(decimals) >= 0 &&
-              Number(decimals) <= 18 &&
-              Number(supply) >= 0 &&
-              Number(antiWhalePercentage) > 0 &&
-              Number(antiWhalePercentage) <= 3 &&
-              !(isLoadingTransaction || isLoadingWrite)
-                ? false
-                : true
-            }
-          >
-            {isClient
-              ? isConnected
-                ? isLoadingTransaction || isLoadingWrite
-                  ? "Minting..."
-                  : "Deploy (" +
-                    String(deployFee && Number(deployFee) * 10 ** -18) +
-                    " " +
-                    String(chain ? chain.nativeCurrency.symbol : "Fantom") +
-                    ")"
-                : "Not Connected"
-              : "Loading..."}
-          </button>
-          <p className={styles.inputDescription}>(*) is a required field</p>
-          {isSuccessTransaction &&
-            toast.success(
-              "Token successfully deployed! Go to the Dashboard to check it out! Then grab the contract address and import it into your wallet.",
-              {
-                toastId: String(useWaitData),
-                position: "top-center",
-              }
-            ) &&
-            ""}
-          {isSuccessTransaction && (
-            <Link href="/mytokens">
-              <button className={styles.myTokensButton}>My Tokens</button>
-            </Link>
-          )}
-          {isClient && isConnected && (
-            <div className={styles.errorSection}>
-              {isPrepareError ? (
-                <div
-                  onClick={toggleErrorMenuOpen}
-                  className={styles.errorCollapsed}
-                >
-                  <p className={styles.errorHeader}>
-                    ❌ Contract Execution Error
                   </p>
                 )}
               </div>
               <button
-                onClick={() => write?.()}
+                onClick={handleDeployClick}
                 className={`${styles.deployButton} ${
-                  isPrepareError ||
-                  !isConnected ||
-                  !isFormFilled() ||
-                  Number(decimals) < 0 ||
-                  Number(decimals) > 18 ||
-                  Number(supply) < 0 ||
-                  Number(antiWhalePercentage) <= 0 ||
-                  Number(antiWhalePercentage) > 3 ||
-                  isLoadingTransaction ||
-                  isLoadingWrite
-                    ? styles.disabled
-                    : ""
+                  !isPrepareError &&
+                  isConnected &&
+                  isFormFilled() &&
+                  Number(decimals) >= 0 &&
+                  Number(decimals) <= 18 &&
+                  Number(supply) >= 0 &&
+                  Number(antiWhalePercentage) > 0 &&
+                  Number(antiWhalePercentage) <= 3 &&
+                  !(isLoadingTransaction || isLoadingWrite)
+                    ? styles.enabled
+                    : styles.disabled
                 }`}
                 disabled={
-                  isPrepareError ||
-                  !isConnected ||
-                  !isFormFilled() ||
-                  Number(decimals) < 0 ||
-                  Number(decimals) > 18 ||
-                  Number(supply) < 0 ||
-                  Number(antiWhalePercentage) <= 0 ||
-                  Number(antiWhalePercentage) > 3 ||
-                  isLoadingTransaction ||
-                  isLoadingWrite
+                  !isPrepareError &&
+                  isConnected &&
+                  isFormFilled() &&
+                  Number(decimals) >= 0 &&
+                  Number(decimals) <= 18 &&
+                  Number(supply) >= 0 &&
+                  Number(antiWhalePercentage) > 0 &&
+                  Number(antiWhalePercentage) <= 3 &&
+                  !(isLoadingTransaction || isLoadingWrite)
+                    ? false
+                    : true
                 }
               >
                 {isClient

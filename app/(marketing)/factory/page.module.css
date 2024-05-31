@@ -78,10 +78,9 @@
   transition: background-color 0.3s ease;
 }
 
-
 .deployButton:hover {
   background-color: darken(var(--accent), 10%);
-
+}
 .deployButton.enabled {
   background-color: green;
   color: white;
@@ -90,7 +89,6 @@
 .error {
   color: #ff2828;
   margin: 2px 0px;
-
 }
 
 .disabled {
@@ -98,10 +96,10 @@
   cursor: not-allowed;
 }
 
-
 .error {
   color: #ff2828;
   margin: 2px 0px;
+}
 
 .title {
   font-size: 1.5em;

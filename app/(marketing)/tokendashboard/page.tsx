@@ -15,15 +15,14 @@ import { tokenDeployerDetails } from "../../../Constants/config"
 import "@/styles/dashboard.css"
 import TokenHoldersList from "@/components/tokenholderslist"
 
+import { degen } from "../../../utils/degenChain"
+import { rootstockTestnet } from "../../../utils/rootstockTestnet"
+
 const chainIdToName = {
-  1: "eth-mainnet",
-  3: "ropsten",
-  4: "rinkeby",
-  5: "goerli",
-  42: "kovan",
   250: "fantom-mainnet",
   4002: "fantom-testnet",
-  // Add other chains here
+  31: "rootstock-testnet",
+  666666666: "degen",
 }
 
 const Dashboard = () => {
@@ -144,7 +143,7 @@ const Dashboard = () => {
         </div>
         <TokenHoldersList
           tokenAddress="0x14E3C9107b16AF020E4F2B5971CC19C6DFc8F15B"
-          chainName="fantom-mainnet"
+          chainId={250}
         />
       </div>
       <div className="meme">
@@ -160,7 +159,7 @@ const Dashboard = () => {
         </div>
         <TokenHoldersList
           tokenAddress="0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA"
-          chainName="fantom-mainnet"
+          chainId={250}
         />
       </div>
     </>
@@ -210,7 +209,7 @@ const Dashboard = () => {
             </div>
             <TokenHoldersList
               tokenAddress={contracts[index]}
-              chainName={chainIdToName[chain?.id] ?? ""}
+              chainId={chain?.id}
             />
           </div>
         ))}
