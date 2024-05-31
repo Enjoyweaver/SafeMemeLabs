@@ -139,15 +139,13 @@ export function Navbar() {
   }
 
   return (
-    <nav className={styles.nav}>
+    <nav className={(styles.nav, styles.container)}>
       {/* Overlay and Connect Wallet components */}
       {!isConnected && connectOpen && <Overlay onClick={toggleConnectOpen} />}
       {!isConnected && connectOpen && <ConnectWallet />}
-
       <div className={styles.toShow}>
         <MobileNav />
       </div>
-
       <div className={styles.navbar}>
         {isClient ? (
           isConnected ? (
