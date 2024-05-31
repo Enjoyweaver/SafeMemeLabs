@@ -65,7 +65,7 @@ export const tokenDeployerDetails: { [key: string]: string } = {
   "4002": "0x79b206abd08adc1b1c5d72ba7bd38d04511e985e",
   "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d6",
   "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228430",
-  "30": "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
+  "30": "0xe92163f8038843091c1df18f726cf04526ef9676",
   "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25e",
   "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25e",
 }
