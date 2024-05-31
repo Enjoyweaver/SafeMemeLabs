@@ -1,4 +1,9 @@
 /* Navbar Styles */
+.container {
+  height: 10vh;
+}
+
+
 .nav {
   position: relative;
   height: 10vh;
