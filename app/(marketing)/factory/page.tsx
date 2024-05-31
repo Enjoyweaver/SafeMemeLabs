@@ -145,7 +145,7 @@ export default function Factory(): JSX.Element {
         message={modalMessage}
         onClose={() => setShowModal(false)}
       />
-      <div>
+      <div className={styles.pageContainer}>
         {isClient && chainId && !tokenDeployerDetails[chainId] && (
           <ChangeNetwork
             changeNetworkToChainId={250}
@@ -154,6 +154,9 @@ export default function Factory(): JSX.Element {
           />
         )}
         <Navbar />
+      </div>
+      <div>
+        <div className={styles.spacer}></div>
 
         <div className={styles.container}>
           <div className={styles.tokenDeployer}>
@@ -322,7 +325,7 @@ export default function Factory(): JSX.Element {
                     (!isLoadingPrepare ? (
                       <p className={styles.errorText}>
                         {prepareError?.cause
-                          ? capitalizeFirstLetter(prepareError?.details + ".")
+                          ? capitalizeFirstLetter(prepareError?.cause + ".")
                           : prepareError?.message.includes(
                               "v1: Invalid Decimals"
                             )
