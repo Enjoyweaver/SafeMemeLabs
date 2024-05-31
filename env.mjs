@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 // TODO: UNCOMMENT
+=======
+>>>>>>> acbd44df20d9b3cff203932437219d1d80b2c777
 
 import { createEnv } from "@t3-oss/env-nextjs"
 import { z } from "zod"
