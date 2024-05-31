@@ -42,15 +42,28 @@ const menuItems = []
 
 // Define details of blockchain networks
 const chainDetails = [
+  {
+    name: "Avalanche",
+    chainId: 43114,
+    logo: "/assets/icons/logos/avalanche.png",
+  },
   { name: "Base", chainId: 8453, logo: "/assets/icons/logos/base.png" },
   { name: "Degen", chainId: 666666666, logo: "/assets/icons/logos/degen.png" },
   { name: "Fantom", chainId: 250, logo: "/assets/icons/logos/fantom.png" },
+  {
+    name: "Fantom Testnet",
+    chainId: 4002,
+    logo: "/assets/icons/logos/fantom.png",
+  },
   { name: "Rootstock", chainId: 30, logo: "/assets/icons/logos/rootstock.png" },
   {
     name: "Rootstock Testnet",
     chainId: 31,
     logo: "/assets/icons/logos/rootstock.png",
   },
+  // { name: "Stellar", chainId: 161, logo: "/assets/icons/logos/stellar.png" },
+  // { name: "Polkadot", chainId: 0, logo: "/assets/icons/logos/polkadot.png" },
+  // { name: "Stacks", chainId: 576, logo: "/assets/icons/logos/stacks.png" },
 ]
 
 export function Navbar() {
