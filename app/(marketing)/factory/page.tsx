@@ -111,7 +111,6 @@ export default function Factory(): JSX.Element {
     data: useWaitData,
     isLoading: isLoadingTransaction,
     isSuccess: isSuccessTransaction,
-    error: error_,
   } = useWaitForTransaction({
     hash: data?.hash,
     onSettled(data, error) {
