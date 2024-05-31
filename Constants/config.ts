@@ -3,7 +3,6 @@
 import { degen } from "@/utils/degenChain"
 import { rootstockTestnet } from "@/utils/rootstockTestnet"
 import {
-  avalanche,
   base,
   fantom,
   fantomTestnet,
@@ -18,16 +17,7 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 import { publicProvider } from "wagmi/providers/public"
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [
-    avalanche,
-    fantom,
-    polygon,
-    fantomTestnet,
-    degen,
-    base,
-    rootstock,
-    rootstockTestnet,
-  ],
+  [fantom, polygon, fantomTestnet, degen, base, rootstock, rootstockTestnet],
   [publicProvider()]
 )
 
