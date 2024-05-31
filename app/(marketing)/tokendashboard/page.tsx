@@ -143,7 +143,7 @@ const Dashboard = () => {
         </div>
         <TokenHoldersList
           tokenAddress="0x14E3C9107b16AF020E4F2B5971CC19C6DFc8F15B"
-          chainId={250}
+          chainName="fantom-mainnet"
         />
       </div>
       <div className="meme">
@@ -159,7 +159,7 @@ const Dashboard = () => {
         </div>
         <TokenHoldersList
           tokenAddress="0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA"
-          chainId={250}
+          chainName="fantom-mainnet"
         />
       </div>
     </>
@@ -209,7 +209,7 @@ const Dashboard = () => {
             </div>
             <TokenHoldersList
               tokenAddress={contracts[index]}
-              chainId={chain?.id}
+              chainName={chainIdToName[chain?.id] ?? ""}
             />
           </div>
         ))}

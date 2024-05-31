@@ -1,34 +1,24 @@
+// components/TokenHoldersList.js
 "use client"
 
 import React, { useEffect, useState } from "react"
 
 import "@/styles/tokenholderslist.css"
 
-const chainIdToCovalentChainId = {
-  250: "fantom-mainnet",
-  4002: "fantom-testnet",
-  31: "31", // Assuming 31 is supported by Covalent
-  666666666: "666666666", // Assuming this is a valid ID for your chain in Covalent
-  // Add other supported chain IDs as needed
-}
-
-const TokenHoldersList = ({ tokenAddress, chainId }) => {
+const TokenHoldersList = ({ tokenAddress, chainName }) => {
   const [transactionSummary, setTransactionSummary] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchTransactionSummary = async () => {
-      const covalentChainId = chainIdToCovalentChainId[chainId]
-      if (!covalentChainId) {
-        setError(`Chain ID ${chainId} not supported by Covalent`)
+      const apiKey = process.env.NEXT_PUBLIC_COVALENT_API_KEY
+      if (!chainName || !tokenAddress) {
+        setError("Chain name or token address is missing")
         setLoading(false)
         return
       }
-
-      const apiKey = process.env.NEXT_PUBLIC_COVALENT_API_KEY
-      const url = `https://api.covalenthq.com/v1/${covalentChainId}/address/${tokenAddress}/transactions_summary/?key=${apiKey}`
-
+      const url = `https://api.covalenthq.com/v1/${chainName}/address/${tokenAddress}/transactions_summary/?key=${apiKey}`
       try {
         const response = await fetch(url)
         if (!response.ok) {
@@ -47,7 +37,7 @@ const TokenHoldersList = ({ tokenAddress, chainId }) => {
     }
 
     fetchTransactionSummary()
-  }, [tokenAddress, chainId])
+  }, [tokenAddress, chainName])
 
   if (loading) return <p className="loading">Loading...</p>
   if (error) return <p className="error">Error: {error}</p>
