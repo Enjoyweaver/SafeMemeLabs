@@ -133,6 +133,20 @@ export const docsConfig: DocsConfig = {
       ],
     },
     {
+      title: "Rootstock",
+      href: "/docs/documentation",
+      items: [
+        {
+          title: "Introduction",
+          href: "/docs/documentation/rootstock",
+        },
+        {
+          title: "Standards",
+          href: "/docs/documentation/standards",
+        },
+      ],
+    },
+    {
       title: "Solana",
       href: "/docs/documentation",
       items: [

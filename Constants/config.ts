@@ -5,6 +5,7 @@ import { degen } from "@/utils/degenChain"
 import { rootstockTestnet } from "@/utils/rootstockTestnet"
 import { solana } from "@/utils/solana"
 import {
+  avalanche,
   base,
   fantom,
   fantomTestnet,
@@ -28,6 +29,7 @@ export const { chains, publicClient, webSocketPublicClient } = configureChains(
     rootstock,
     rootstockTestnet,
     solana,
+    avalanche,
   ],
   [publicProvider()]
 )

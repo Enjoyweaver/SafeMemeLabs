@@ -331,3 +331,17 @@ body {
 .token-logo {
   margin-left: 10px;
 }
+
+.meme-info-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.meme-info {
+  width: 45%;
+}
+
+.transaction-summary {
+  width: 45%;
+}

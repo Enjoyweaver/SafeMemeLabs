@@ -13,7 +13,8 @@ import {
 
 import { tokenDeployerDetails } from "../../../Constants/config"
 import "@/styles/dashboard.css"
-import TokenHoldersList from "@/components/tokenholderslist"
+import DexData from "@/APIs/exchangedata"
+import TokenHoldersList from "@/APIs/tokeninfo"
 
 const Dashboard = () => {
   const [isClient, setIsClient] = useState(false)
@@ -122,22 +123,6 @@ const Dashboard = () => {
       </h1>
       <div className="meme">
         <div className="meme-header">
-          <h3>Safememe</h3>
-          <Image
-            src="/images/logo.png"
-            alt="Bubbles"
-            width={120}
-            height={120}
-            className="meme-image"
-          />
-        </div>
-        <TokenHoldersList
-          tokenAddress="0x14E3C9107b16AF020E4F2B5971CC19C6DFc8F15B"
-          chainId={250}
-        />
-      </div>
-      <div className="meme">
-        <div className="meme-header">
           <h3>Bubbles</h3>
           <Image
             src="/images/bubbles.jpg"
@@ -147,10 +132,29 @@ const Dashboard = () => {
             className="meme-image"
           />
         </div>
-        <TokenHoldersList
-          tokenAddress="0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA"
-          chainId={250}
-        />
+        <div className="meme-info-container">
+          <div className="meme-info">
+            <Image
+              src="/images/memebox.jpg"
+              alt="MemeBox.Fi"
+              width={120}
+              height={120}
+              className="meme-image"
+            />
+            <h3>MemeBox.Fi</h3>
+            <p>
+              We created Bubbles on <a href="https://memebox.fi">MemeBox.Fi</a>.
+              Check out their{" "}
+              <a href="https://twitter.com/MemeboxFi">Twitter</a>.
+            </p>
+          </div>
+          <div className="transaction-summary">
+            <TokenHoldersList
+              tokenAddress="0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA"
+              chainId={250}
+            />
+          </div>
+        </div>
       </div>
     </>
   )
@@ -209,6 +213,7 @@ const Dashboard = () => {
               tokenAddress={contracts[index]}
               chainId={chain?.id}
             />
+            <DexData tokenAddress={contracts[index]} chainId={chain?.id} />
           </div>
         ))}
       {!isClient && <p>Loading...</p>}
