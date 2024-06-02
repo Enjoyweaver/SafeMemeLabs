@@ -1,0 +1,235 @@
+:root {
+  --background-light: #ffffff;
+  --foreground-light: #000000;
+  --primary-light: #0b8826; /* Pink */
+  --secondary-light: #92124e; /* Green */
+  --accent-light: #04a777; /* Dark Green */
+  --border-light: #0b8826;
+  --text-light: #000000;
+
+  --input-light: #f8f9fa;
+  --input-dark: #1a1a2e;
+
+  --background-dark: #000000;
+  --foreground-dark: #ffffff;
+  --primary-dark: #92124e; /* Pink */
+  --secondary-dark: #0b8826; /* Green */
+  --accent-dark: #006400; /* Dark Green */
+  --border-dark: #0b8826;
+  --text-dark: #ffffff;
+}
+
+body {
+  background-color: var(
+    --background-light
+  ) !important; /* Use light theme background color */
+  color: var(--foreground-light) !important; /* Use light theme text color */
+  font-family: Arial, sans-serif !important;
+}
+
+.dark body {
+  background-color: var(
+    --background-dark
+  ) !important; /* Use dark theme background color */
+  color: var(--foreground-dark) !important; /* Use dark theme text color */
+}
+
+.swap-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 10px 20px 20px 20px;
+  background-color: var(--background-light);
+  border: 2px solid var(--border-light);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark .swap-container {
+  background-color: var(--background-dark);
+  border: 2px solid var(--border-dark);
+}
+
+.page-title {
+  text-align: center;
+  font-size: 2rem;
+  color: var(--primary-light);
+  margin-bottom: 20px;
+}
+
+.dark .page-title {
+  color: var(--primary-dark);
+}
+
+.swap-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.token-section,
+.swap-field {
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.dark .token-section,
+.dark .swap-field {
+  border: 1px solid var(--border-dark);
+}
+
+.token-section label,
+.swap-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.token-amount-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.input-field {
+  background-color: var(--input-light); /* Light mode input background */
+  border: none;
+  border-radius: 5px;
+  color: var(--foreground-light);
+  padding: 10px;
+  margin-right: 10px;
+  flex: 1;
+}
+
+.dark .input-field {
+  background-color: var(--input-dark); /* Dark mode input background */
+  color: var(--foreground-dark);
+}
+
+.amount-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex: 1;
+  position: relative;
+}
+
+.amount-container input {
+  margin-top: 5px;
+  width: 150px;
+}
+
+.quick-select-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  position: absolute;
+  top: -30px;
+}
+
+.quick-select-buttons button {
+  padding: 3px 6px; /* Smaller padding */
+  background-color: var(--primary-light);
+  border: none;
+  border-radius: 5px;
+  color: var(--text-light);
+  font-size: 12px; /* Smaller font size */
+  cursor: pointer;
+  flex: 1;
+  margin: 0 2px;
+}
+
+.quick-select-buttons button:hover {
+  background-color: var(--secondary-light);
+}
+
+.dark .quick-select-buttons button {
+  background-color: var(--primary-dark);
+}
+
+.dark .quick-select-buttons button:hover {
+  background-color: var(--secondary-dark);
+}
+
+.reverse-button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+
+.reverse-button {
+  background-color: var(--primary-light);
+  border: none;
+  border-radius: 50%;
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reverse-button:hover {
+  background-color: var(--secondary-light);
+}
+
+.dark .reverse-button {
+  background-color: var(--primary-dark);
+}
+
+.dark .reverse-button:hover {
+  background-color: var(--secondary-dark);
+}
+
+.swap-field input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+}
+
+.dark .swap-field input {
+  border: 1px solid var(--border-dark);
+}
+
+.swap-summary {
+  text-align: left;
+  margin-left: 2rem;
+  font-size: x-small;
+}
+
+.swap-summary p {
+  margin: 5px 0;
+  color: var(--secondary-light);
+}
+
+.dark .swap-summary p {
+  color: var(--secondary-dark);
+}
+
+.swap-button {
+  padding: 10px 20px;
+  background-color: var(--primary-light);
+  border: none;
+  border-radius: 5px;
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 5px;
+}
+
+.swap-button:hover {
+  background-color: var(--secondary-light);
+}
+
+.dark .swap-button {
+  background-color: var(--primary-dark);
+}
+
+.dark .swap-button:hover {
+  background-color: var(--secondary-dark);
+}

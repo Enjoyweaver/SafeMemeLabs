@@ -22,5 +22,9 @@ export const marketingConfig: MarketingConfig = {
       title: "Dashboard",
       href: "/tokendashboard",
     },
+    //{
+    //  title: "Swap",
+    //  href: "/swap",
+    //},
   ],
 }
