@@ -139,8 +139,7 @@ export function Navbar() {
   }
 
   return (
-    <nav className={(styles.nav, styles.container)}>
-      {/* Overlay and Connect Wallet components */}
+    <nav className={`${styles.nav} ${styles.container}`}>
       {!isConnected && connectOpen && <Overlay onClick={toggleConnectOpen} />}
       {!isConnected && connectOpen && <ConnectWallet />}
       <div className={styles.toShow}>
@@ -149,12 +148,11 @@ export function Navbar() {
       <div className={styles.navbar}>
         {isClient ? (
           isConnected ? (
-            // Display user details when connected
             <div className={styles.connectButtonContainer}>
               <div
-                className={`${styles.navbarLi}`}
+                className={styles.navbarLi}
                 onClick={toggleConnectMenuOpen}
-                ref={dropdownRef} // Assign the ref to the dropdown menu
+                ref={dropdownRef}
               >
                 <MinidenticonImg
                   username={String(address)}
@@ -187,7 +185,7 @@ export function Navbar() {
                   className={styles.dropdownOption}
                   onClick={() => {
                     disconnect()
-                    setConnectMenuOpen(false) // Close the dropdown after disconnect
+                    setConnectMenuOpen(false)
                   }}
                 >
                   Disconnect
@@ -198,7 +196,6 @@ export function Navbar() {
               </div>
             </div>
           ) : (
-            // Show connect button when not connected
             <div
               className={`${styles.navbarLi} ${styles.connectButton}`}
               onClick={toggleConnectOpen}
@@ -207,21 +204,19 @@ export function Navbar() {
             </div>
           )
         ) : (
-          // Show loading state
           <div className={`${styles.navbarLi} ${styles.connectButtonWhite}`}>
             <p className={styles.connectText}>Loading...</p>
           </div>
         )}
 
         {isClient && isConnected ? (
-          // Display network options when connected
           <div className={styles.networkOptionsContainer}>
             <h3 className={styles.networkTitle}>Choose from these options</h3>
             <div className={styles.networkOptions}>
-              {chainDetails.map((chain) => (
+              {chainDetails.map((chain, index) => (
                 <button
                   key={chain.chainId}
-                  className={`${styles.navbarLi} ${
+                  className={`${styles.networkOption} ${
                     chain.name === tempNetwork ? styles.active : ""
                   }`}
                   onClick={() =>
@@ -232,23 +227,22 @@ export function Navbar() {
                     src={chain.logo}
                     alt={chain.name}
                     className={styles.chainLogo}
-                    height={30}
-                    width={30}
+                    height={20}
+                    width={20}
                   />
-                  {chain.name}
+                  <span className={styles.chainName}>{chain.name}</span>
                 </button>
               ))}
             </div>
           </div>
         ) : (
-          // Display network options in a disconnected state
           <div className={styles.networkOptionsContainer}>
             <h3 className={styles.networkTitle}>Choose from these options</h3>
             <div className={styles.networkOptions}>
-              {chainDetails.map((chain) => (
+              {chainDetails.map((chain, index) => (
                 <button
                   key={chain.chainId}
-                  className={`${styles.navbarLi} ${
+                  className={`${styles.networkOption} ${
                     chain.name === tempNetwork ? styles.active : ""
                   }`}
                   onClick={() =>
@@ -259,10 +253,11 @@ export function Navbar() {
                     src={chain.logo}
                     alt={chain.name}
                     className={styles.chainLogo}
-                    height={23}
-                    width={23}
+                    height={20}
+                    width={20}
                   />
                   <span
+                    className={styles.chainName}
                     style={{
                       color: isClient
                         ? isConnected

@@ -1,21 +1,22 @@
 :root {
   --background-light: #ffffff;
   --foreground-light: #000000;
-  --primary-light: #0b8826; /* Pink */
-  --secondary-light: #92124e; /* Green */
-  --accent-light: #04a777; /* Dark Green */
-  --border-light: #0b8826;
+  --primary-light: #04c44e; /* Pink */
+  --secondary-light: #b80f5e; /* Green */
+  --primary-light: #04c44e; /* Pink */
+  --accent-light: #04c44e; /* Dark Green */
+  --border-light: #04c44e;
   --text-light: #000000;
 
-  --input-light: #f8f9fa;
+  --input-light: #e3e4e6;
   --input-dark: #1a1a2e;
 
   --background-dark: #000000;
   --foreground-dark: #ffffff;
-  --primary-dark: #92124e; /* Pink */
-  --secondary-dark: #0b8826; /* Green */
-  --accent-dark: #006400; /* Dark Green */
-  --border-dark: #0b8826;
+  --primary-dark: #df1584; /* Pink */
+  --secondary-dark: #41b80a; /* Green */
+  --accent-dark: #41b80a; /* Dark Green */
+  --border-dark: #41b80a;
   --text-dark: #ffffff;
 }
 
