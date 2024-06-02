@@ -341,3 +341,30 @@
     height: auto;
   }
 }
+
+@media screen and (max-width: 620px) {
+  .networkOptionsContainer {
+    padding: 5px;
+  }
+
+  .networkOptions {
+    transform: translateX(0); /* Center the container on mobile */
+    gap: 8px;
+    max-width: 100%; /* Allow full width on mobile */
+  }
+
+  .networkOption {
+    font-size: 10px;
+    padding: 3px;
+  }
+
+  .chainLogo {
+    height: 16px;
+    width: 16px;
+    margin-right: 3px;
+  }
+
+  .chainName {
+    font-size: 10px;
+  }
+}
