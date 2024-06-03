@@ -177,6 +177,31 @@
     margin: 5px 10px;
     height: auto;
   }
+  .connectButtonContainer {
+    position: relative;
+    top: 20px; /* Adjust as necessary to place the button above the blockchain selections */
+    order: -1; /* Move the connect button above the network options */
+  }
+  .networkOptionsContainer {
+    padding: 5px;
+  }
+  .networkOptions {
+    transform: translateX(0); /* Center the container on mobile */
+    gap: 8px;
+    max-width: 100%; /* Allow full width on mobile */
+  }
+  .networkOption {
+    font-size: 10px;
+    padding: 3px;
+  }
+  .chainLogo {
+    height: 16px;
+    width: 16px;
+    margin-right: 3px;
+  }
+  .chainName {
+    font-size: 10px;
+  }
 }
 
 @media screen and (max-width: 620px) {

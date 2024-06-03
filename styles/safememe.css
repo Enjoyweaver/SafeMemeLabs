@@ -181,6 +181,11 @@ body {
   .input-row-container .input-row {
     margin: 10px 0;
   }
+  .blank-filler {
+    height: 48px; /* Adjust as needed to match the height of input rows */
+    margin-bottom: 0px; /* Consistent margin with other input rows */
+    visibility: hidden; /* Make the blank filler invisible while keeping the space */
+  }
 }
 
 @media (max-width: 576px) {
@@ -195,6 +200,11 @@ body {
   .input-section input {
     width: 100%;
   }
+  .blank-filler {
+    height: 48px; /* Adjust as needed to match the height of input rows */
+    margin-bottom: 0px; /* Consistent margin with other input rows */
+    visibility: hidden; /* Make the blank filler invisible while keeping the space */
+  }
 }
 
 @media (max-width: 480px) {
@@ -208,5 +218,10 @@ body {
 
   .input-section label {
     font-size: 0.9rem;
+  }
+  .blank-filler {
+    height: 48px; /* Adjust as needed to match the height of input rows */
+    margin-bottom: 0px; /* Consistent margin with other input rows */
+    visibility: hidden; /* Make the blank filler invisible while keeping the space */
   }
 }
