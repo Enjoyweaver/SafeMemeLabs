@@ -1,4 +1,3 @@
-/* Navbar Styles */
 .container {
   height: 10vh;
 }
@@ -35,45 +34,6 @@
 .navbarLi:hover {
   transform: scale(1.05);
   text-shadow: 1px 1px 2px #ff1493, 0 0 1em #3b9d59, 0 0 0.2em #3e8e41;
-}
-
-.navbarOption {
-  font-size: 18px;
-  line-height: 26.67px;
-  margin: 10px 5px;
-}
-
-.navLogo {
-  display: inline-block;
-  vertical-align: middle;
-  margin: 5px 5px;
-  transform: scale(1.5);
-}
-
-.active {
-  display: inline-block;
-  cursor: pointer;
-}
-
-.menu {
-  display: none;
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  background-color: #f5f5f5;
-  z-index: 10;
-  overflow: hidden;
-  padding-top: calc(40px + 1.9em);
-  transition: transform 0.6s ease-in-out;
-  top: 0;
-}
-
-.menuOpen {
-  transform: translateX(0);
-}
-
-.menuClosed {
-  transform: translateX(-100%);
 }
 
 .connectButton {
@@ -132,8 +92,11 @@
 }
 
 .connectButtonContainer {
-  float: right;
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the button horizontally */
+  position: absolute;
+  right: 15%; /* Position it halfway between the blockchain options and the right wall */
 }
 
 .networkOptionsContainer {
@@ -159,7 +122,7 @@
   gap: 10px;
   max-width: 500px; /* Ensures no more than 5 items per row */
   margin: 0 auto; /* Center the container */
-  transform: translateX(-15%); /* Move the container 10% to the left */
+  transform: translateX(-20%); /* Move the container to the left */
 }
 
 .networkOption {
@@ -180,17 +143,6 @@
   transform: scale(1.05);
 }
 
-.navbarOptionsContainer {
-  float: center;
-  display: flex;
-  align-items: center;
-}
-
-.chainIcon {
-  border-radius: 100px;
-  vertical-align: middle;
-}
-
 .chainLogo {
   border-radius: 50%;
   margin-right: 5px;
@@ -206,121 +158,6 @@
 .active {
   background-color: var(--primary-light);
   color: white;
-}
-
-.toShow {
-  display: none;
-}
-
-.dropdown {
-  right: 0;
-  position: absolute;
-  top: 55px;
-  background-color: white;
-  border-radius: 10px;
-  border: 1px solid rgb(225, 225, 225);
-  min-width: 175px;
-  color: black;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-  z-index: 1;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.dropdownLeft {
-  display: block;
-  position: absolute;
-  top: 55px;
-  background-color: white;
-  border-radius: 10px;
-  border: 1px solid rgb(225, 225, 225);
-  max-width: 190px;
-  width: 100%;
-  color: black;
-  float: center;
-  overflow: hidden;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-  z-index: 1;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.identicon {
-  vertical-align: center;
-  display: inline-block;
-}
-
-.dropdownOption {
-  margin: 0;
-  vertical-align: middle;
-  padding: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.dropdownOption:hover {
-  background-color: #f0f0f0;
-}
-
-.dropdownOption:last-child {
-  border: none;
-}
-
-.profile {
-  display: inline-block;
-}
-
-.walletIconImage {
-  margin: auto auto;
-  margin-left: calc((26.67px) / 2 - 7.5px);
-  filter: invert(15%) sepia(0%) saturate(1%) hue-rotate(40deg) brightness(99%)
-    contrast(90%);
-}
-
-.connectMenuOpen {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.connectMenuClosed {
-  display: none;
-  opacity: 0;
-  transform: translateY(-20px);
-}
-
-.dropbtn {
-  background-color: #4caf50;
-  color: white;
-  padding: 16px;
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
-}
-
-.dropdownNew {
-  position: relative;
-  float: right;
-}
-
-.dropdownContent {
-  display: none;
-  position: absolute;
-  right: 0;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-  top: 55px;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.dropdownNew:hover .dropdownContent {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.dropdownNew:hover .dropbtn {
-  background-color: #3e8e41;
 }
 
 .toShow {

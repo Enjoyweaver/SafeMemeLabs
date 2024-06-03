@@ -76,6 +76,11 @@ const Dashboard = () => {
       abi: erc20ABI,
       functionName: "antiWhalePercentage",
     },
+    {
+      address: contract,
+      abi: erc20ABI,
+      functionName: "lockedSupply",
+    },
   ])
 
   const { data: tempTokenData, error: tempTokenDataError } = useContractReads({
@@ -95,8 +100,8 @@ const Dashboard = () => {
   function splitData(data: any) {
     const groupedData = []
     const namedData = []
-    for (let i = 0; i < data.length; i += 5) {
-      groupedData.push(data.slice(i, i + 5))
+    for (let i = 0; i < data.length; i += 6) {
+      groupedData.push(data.slice(i, i + 6))
     }
     for (let i = 0; i < groupedData.length; i++) {
       namedData.push({
@@ -105,6 +110,7 @@ const Dashboard = () => {
         supply: groupedData[i][2].result,
         decimals: groupedData[i][3].result,
         antiWhalePercentage: groupedData[i][4].result,
+        lockedSupply: groupedData[i][5].result,
       })
     }
     return namedData
@@ -201,6 +207,7 @@ const Dashboard = () => {
                 <strong>Anti-Whale Percentage:</strong>{" "}
                 {token.antiWhalePercentage}%
               </p>
+
               <p>
                 <strong>Max Tokens per Holder:</strong>{" "}
                 {formatNumber(

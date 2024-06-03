@@ -146,9 +146,33 @@ export function Navbar() {
         <MobileNav />
       </div>
       <div className={styles.navbar}>
-        {isClient ? (
-          isConnected ? (
-            <div className={styles.connectButtonContainer}>
+        <div className={styles.networkOptionsContainer}>
+          <div className={styles.networkOptions}>
+            {chainDetails.map((chain, index) => (
+              <button
+                key={chain.chainId}
+                className={`${styles.networkOption} ${
+                  chain.name === tempNetwork ? styles.active : ""
+                }`}
+                onClick={() =>
+                  dropdownAction(() => switchNetwork?.(chain.chainId))
+                }
+              >
+                <Image
+                  src={chain.logo}
+                  alt={chain.name}
+                  className={styles.chainLogo}
+                  height={20}
+                  width={20}
+                />
+                <span className={styles.chainName}>{chain.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className={styles.connectButtonContainer}>
+          {isClient ? (
+            isConnected ? (
               <div
                 className={styles.navbarLi}
                 onClick={toggleConnectMenuOpen}
@@ -174,133 +198,20 @@ export function Navbar() {
                   className={styles.dropdownIcon}
                 />
               </div>
+            ) : (
               <div
-                className={`${styles.dropdown} ${
-                  connectMenuOpen
-                    ? styles.connectMenuOpen
-                    : styles.connectMenuClosed
-                }`}
+                className={`${styles.navbarLi} ${styles.connectButton}`}
+                onClick={toggleConnectOpen}
               >
-                <p
-                  className={styles.dropdownOption}
-                  onClick={() => {
-                    disconnect()
-                    setConnectMenuOpen(false)
-                  }}
-                >
-                  Disconnect
-                </p>
-                <Link href="/app/marketing/mytokens">
-                  <p className={styles.dropdownOption}>My Tokens</p>
-                </Link>
+                <p className={styles.connectText}>Connect</p>
               </div>
-            </div>
+            )
           ) : (
-            <div
-              className={`${styles.navbarLi} ${styles.connectButton}`}
-              onClick={toggleConnectOpen}
-            >
-              <p className={styles.connectText}>Connect</p>
+            <div className={`${styles.navbarLi} ${styles.connectButtonWhite}`}>
+              <p className={styles.connectText}>Loading...</p>
             </div>
-          )
-        ) : (
-          <div className={`${styles.navbarLi} ${styles.connectButtonWhite}`}>
-            <p className={styles.connectText}>Loading...</p>
-          </div>
-        )}
-
-        {isClient && isConnected ? (
-          <div className={styles.networkOptionsContainer}>
-            <h3 className={styles.networkTitle}>Choose from these options</h3>
-            <div className={styles.networkOptions}>
-              {chainDetails.map((chain, index) => (
-                <button
-                  key={chain.chainId}
-                  className={`${styles.networkOption} ${
-                    chain.name === tempNetwork ? styles.active : ""
-                  }`}
-                  onClick={() =>
-                    dropdownAction(() => switchNetwork?.(chain.chainId))
-                  }
-                >
-                  <Image
-                    src={chain.logo}
-                    alt={chain.name}
-                    className={styles.chainLogo}
-                    height={20}
-                    width={20}
-                  />
-                  <span className={styles.chainName}>{chain.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className={styles.networkOptionsContainer}>
-            <h3 className={styles.networkTitle}>Choose from these options</h3>
-            <div className={styles.networkOptions}>
-              {chainDetails.map((chain, index) => (
-                <button
-                  key={chain.chainId}
-                  className={`${styles.networkOption} ${
-                    chain.name === tempNetwork ? styles.active : ""
-                  }`}
-                  onClick={() =>
-                    dropdownAction(() => setTempNetwork(chain.name))
-                  }
-                >
-                  <Image
-                    src={chain.logo}
-                    alt={chain.name}
-                    className={styles.chainLogo}
-                    height={20}
-                    width={20}
-                  />
-                  <span
-                    className={styles.chainName}
-                    style={{
-                      color: isClient
-                        ? isConnected
-                          ? "var(--blockchain-text-color)"
-                          : "var(--blockchain-text-color-dark)"
-                        : "var(--blockchain-text-color)",
-                    }}
-                  >
-                    {chain.name}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {menuItems.map((item, index) => (
-          <div key={index} className={styles.navbarOptionsContainer}>
-            <div
-              className={` ${styles.navbarLi} ${styles.active}`}
-              onClick={() => toggleMenu(index)}
-            >
-              {/* //TODO: FIX THIS */}
-              {/* <p className={`${styles.connectText} ${styles.toHide}`}>
-                {item.label}
-              </p> */}
-            </div>
-            <div
-              className={`${styles.dropdownLeft} ${
-                menusOpen[index]
-                  ? styles.connectMenuOpen
-                  : styles.connectMenuClosed
-              }`}
-            >
-              {/* {//TODO: FIX THIS} */}
-              {/* {item.links.map((link, linkIndex) => (
-                <Link key={linkIndex} href={link.href}>
-                  <p className={styles.dropdownOption}>{link.text}</p>
-                </Link>
-              ))} */}
-            </div>
-          </div>
-        ))}
+          )}
+        </div>
       </div>
     </nav>
   )

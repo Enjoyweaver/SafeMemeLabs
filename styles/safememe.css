@@ -1,0 +1,212 @@
+:root {
+  --background-light: #ffffff;
+  --foreground-light: #000000;
+  --primary-light: #04c44e; /* Pink */
+  --secondary-light: #b80f5e; /* Green */
+  --accent-light: #04c44e; /* Dark Green */
+  --border-light: #04c44e;
+  --text-light: #000000;
+
+  --input-light: #e3e4e6;
+  --input-dark: #1a1a2e;
+
+  --background-dark: #000000;
+  --foreground-dark: #ffffff;
+  --primary-dark: #df1584; /* Pink */
+  --secondary-dark: #41b80a; /* Green */
+  --accent-dark: #41b80a; /* Dark Green */
+  --border-dark: #41b80a;
+  --text-dark: #ffffff;
+}
+
+body {
+  background-color: var(
+    --background-light
+  ) !important; /* Use light theme background color */
+  color: var(--foreground-light) !important; /* Use light theme text color */
+  font-family: Arial, sans-serif !important;
+}
+
+.dark body {
+  background-color: var(
+    --background-dark
+  ) !important; /* Use dark theme background color */
+  color: var(--foreground-dark) !important; /* Use dark theme text color */
+}
+
+.blog-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: var(--background-light);
+  border: 2px solid var(--border-light);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark .blog-container {
+  background-color: var(--background-dark);
+  border: 2px solid var(--border-dark);
+}
+
+.page-title {
+  text-align: center;
+  font-size: 2.5rem;
+  color: var(--primary-light);
+  margin-bottom: 20px;
+}
+
+.dark .page-title {
+  color: var(--primary-dark);
+}
+
+.section-title {
+  font-size: 2rem;
+  color: var(--secondary-light);
+  margin-top: 20px;
+}
+
+.dark .section-title {
+  color: var(--secondary-dark);
+}
+
+.blog-content {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.charts-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.chart-section {
+  width: 50%;
+  margin-top: 20px;
+  padding: 20px;
+  border: none; /* Remove borders around sections */
+  background-color: var(--background-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chart-title {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: var(--foreground-light);
+}
+
+.dark .chart-title {
+  color: var(--foreground-dark);
+}
+
+.dark .chart-section {
+  background-color: var(--background-dark);
+}
+
+.input-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.input-row {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0; /* Add margin to ensure spacing between rows */
+}
+
+.input-row-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.input-row-container .input-row {
+  flex: 1;
+  margin: 0 10px;
+}
+
+.input-section label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.input-section input {
+  width: 150px;
+  padding: 5px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  margin: 0 auto;
+}
+
+.dark .input-section input {
+  background-color: var(--input-dark); /* Dark mode input background */
+  color: var(--foreground-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.threshold-section {
+  margin-bottom: 10px;
+}
+
+.blank-filler {
+  height: 48px; /* Adjust as needed to match the height of input rows */
+  margin-bottom: 110px; /* Consistent margin with other input rows */
+  visibility: hidden; /* Make the blank filler invisible while keeping the space */
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .charts-container {
+    flex-direction: column;
+  }
+
+  .chart-section {
+    width: 100%;
+  }
+
+  .input-row-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .input-row-container .input-row {
+    margin: 10px 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .input-section input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 1.8rem;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+  }
+
+  .input-section label {
+    font-size: 0.9rem;
+  }
+}

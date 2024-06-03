@@ -1,4 +1,3 @@
-// utils/config.ts
 "use client"
 
 import { degen } from "@/utils/degenChain"
@@ -115,4 +114,32 @@ export const chainIdToCovalentChainId: { [key: string]: string } = {
   43114: "avalanche-mainnet",
   30: "rsk-mainnet",
   501: "solana-mainnet",
+}
+
+export const lockerDetails: { [key: string]: string } = {
+  "137": "YourLockerAddressForPolygon",
+  "250": "YourLockerAddressForFantom",
+  "4002": "YourLockerAddressForFantomTestnet",
+  "64165": "YourLockerAddressForFantomTestnet2",
+  "666666666": "YourLockerAddressForDegen",
+  "8453": "YourLockerAddressForDegen2",
+  "43114": "YourLockerAddressForAvalanche",
+  "30": "YourLockerAddressForRootstock",
+  "31": "YourLockerAddressForRootstockTestnet",
+  "148": "YourLockerAddressForAnotherChain",
+  "501": "YourLockerAddressForSolanaTestnet",
+}
+
+export const managerDetails: { [key: string]: string } = {
+  "137": "YourManagerAddressForPolygon",
+  "250": "YourManagerAddressForFantom",
+  "4002": "YourManagerAddressForFantomTestnet",
+  "64165": "YourManagerAddressForFantomTestnet2",
+  "666666666": "YourManagerAddressForDegen",
+  "8453": "YourManagerAddressForDegen2",
+  "43114": "YourManagerAddressForAvalanche",
+  "30": "YourManagerAddressForRootstock",
+  "31": "YourManagerAddressForRootstockTestnet",
+  "148": "YourManagerAddressForAnotherChain",
+  "501": "YourManagerAddressForSolanaTestnet",
 }

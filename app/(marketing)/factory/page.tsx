@@ -140,12 +140,13 @@ export default function Factory(): JSX.Element {
 
   return (
     <>
+      <Navbar />
       <Modal
         show={showModal}
         message={modalMessage}
         onClose={() => setShowModal(false)}
       />
-      <div className={styles.pageContainer}>
+      <div>
         {isClient && chainId && !tokenDeployerDetails[chainId] && (
           <ChangeNetwork
             changeNetworkToChainId={250}
@@ -153,10 +154,6 @@ export default function Factory(): JSX.Element {
             networks={"Avalanche, Base, Degen, Fantom, Rootstock"}
           />
         )}
-        <Navbar />
-      </div>
-      <div>
-        <div className={styles.spacer}></div>
 
         <div className={styles.container}>
           <div className={styles.tokenDeployer}>
@@ -325,7 +322,7 @@ export default function Factory(): JSX.Element {
                     (!isLoadingPrepare ? (
                       <p className={styles.errorText}>
                         {prepareError?.cause
-                          ? capitalizeFirstLetter(prepareError?.cause + ".")
+                          ? capitalizeFirstLetter(prepareError?.details + ".")
                           : prepareError?.message.includes(
                               "v1: Invalid Decimals"
                             )
