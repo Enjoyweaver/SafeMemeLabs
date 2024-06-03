@@ -1,14 +1,18 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { erc20ABI } from "@/ABIs/erc20"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { tokenDeployerDetails } from "@/Constants/config"
-import { ethers } from "ethers"
-import { useAccount, useNetwork } from "wagmi"
+import {
+  useAccount,
+  useContractRead,
+  useContractReads,
+  useNetwork,
+} from "wagmi"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
-import { addLiquidity, createPair, swapTokens } from "./dex"
 import "./swap.css"
 
 const Swap = () => {
@@ -28,100 +32,100 @@ const Swap = () => {
   const { address, isConnected } = useAccount()
   const { chain } = useNetwork()
 
-  const fetchTokens = async () => {
-    if (chain && isConnected && address) {
-      try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const factoryAddress = tokenDeployerDetails[chain.id] // Get the factory contract address based on the chain ID
+  const chainId = chain ? chain.id : Object.keys(tokenDeployerDetails)[0]
 
-        if (!factoryAddress) {
-          console.error("Factory address not found for chain ID:", chain.id)
-          return
-        }
+  const { data: contracts, error: contractsError } = useContractRead({
+    address: tokenDeployerDetails[chainId] as `0x${string}`,
+    abi: tokenDeployerABI,
+    functionName: "getTokensDeployedByUser",
+    args: [address as `0x${string}`],
+    enabled: !!address,
+  })
 
-        console.log("Factory address:", factoryAddress)
-        const factoryContract = new ethers.Contract(
-          factoryAddress,
-          tokenDeployerABI,
-          provider.getSigner()
-        )
-
-        // Fetch tokens created by the user
-        const tokensDeployedByUser =
-          await factoryContract.getTokensDeployedByUser(address)
-        console.log("Tokens deployed by user:", tokensDeployedByUser)
-        setTokens(
-          tokensDeployedByUser.filter(
-            (token) => token !== ethers.constants.AddressZero
-          )
-        )
-      } catch (error) {
-        console.error("Error fetching tokens:", error)
-      }
+  useEffect(() => {
+    if (contractsError) {
+      console.error("Contracts Error: ", contractsError)
     }
+    if (contracts) {
+      console.log("Contracts: ", contracts)
+    }
+  }, [contracts, contractsError])
+
+  const contractRequests = contracts?.map((contract) => [
+    {
+      address: contract,
+      abi: erc20ABI,
+      functionName: "name",
+    },
+    {
+      address: contract,
+      abi: erc20ABI,
+      functionName: "symbol",
+    },
+    {
+      address: contract,
+      abi: erc20ABI,
+      functionName: "totalSupply",
+    },
+    {
+      address: contract,
+      abi: erc20ABI,
+      functionName: "decimals",
+    },
+  ])
+
+  const { data: tempTokenData, error: tempTokenDataError } = useContractReads({
+    contracts: contractRequests?.flat(),
+    enabled: !!contractRequests?.length,
+  })
+
+  useEffect(() => {
+    if (tempTokenDataError) {
+      console.error("Temp Token Data Error: ", tempTokenDataError)
+    }
+    if (tempTokenData) {
+      console.log("Temp Token Data: ", tempTokenData)
+      setTokens(splitData(tempTokenData))
+    }
+  }, [tempTokenData, tempTokenDataError])
+
+  function splitData(data: any) {
+    const groupedData = []
+    const namedData = []
+    for (let i = 0; i < data.length; i += 4) {
+      groupedData.push(data.slice(i, i + 4))
+    }
+    for (let i = 0; i < groupedData.length; i++) {
+      namedData.push({
+        address: contracts[i],
+        name: groupedData[i][0].result,
+        symbol: groupedData[i][1].result,
+        supply: groupedData[i][2].result,
+        decimals: groupedData[i][3].result,
+      })
+    }
+    return namedData
   }
 
-  useEffect(() => {
-    fetchTokens()
-  }, [chain, isConnected, address])
-
-  useEffect(() => {
-    if (
-      typeof window !== "undefined" &&
-      typeof window.ethereum !== "undefined" &&
-      chain &&
-      isConnected
-    ) {
-      const initializeProvider = async () => {
-        try {
-          const provider = new ethers.providers.Web3Provider(window.ethereum)
-          const factoryAddress = tokenDeployerDetails[chain.id]
-
-          if (!factoryAddress) {
-            console.error("Factory address not found for chain ID:", chain.id)
-            return
-          }
-
-          console.log("Factory address:", factoryAddress)
-          const factoryContract = new ethers.Contract(
-            factoryAddress,
-            tokenDeployerABI,
-            provider.getSigner()
-          )
-
-          factoryContract.on(
-            "TokenDeployed",
-            async (tokenAddress, symbol, name) => {
-              console.log("Token deployed:", tokenAddress, symbol, name)
-              await createPair(provider, tokenAddress)
-              const tokenAmount = 1000
-              const wFTMAmount = 1
-              await addLiquidity(
-                provider,
-                tokenAddress,
-                tokenAmount,
-                wFTMAmount
-              )
-              fetchTokens() // Fetch tokens again to update the list
-            }
-          )
-
-          return () => {
-            factoryContract.removeAllListeners("TokenDeployed")
-          }
-        } catch (error) {
-          console.error("Error initializing provider:", error)
-        }
-      }
-
-      initializeProvider()
-    }
-  }, [chain, isConnected])
+  const formatNumber = (number: number, decimals: number) => {
+    return (number / 10 ** decimals).toLocaleString("en-US", {
+      maximumFractionDigits: 2,
+    })
+  }
 
   const handleSwap = async () => {
     if (isConnected && amount > 0 && tokenFrom && tokenTo) {
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const swapTokens = async (provider, tokenFrom, tokenTo, amount) => {
+          const dexContract = new ethers.Contract(
+            dexAddress,
+            dexABI,
+            provider.getSigner()
+          )
+          await dexContract.swap(tokenFrom, tokenTo, amount)
+          console.log("Tokens swapped:", tokenFrom, tokenTo, amount)
+        }
         await swapTokens(provider, tokenFrom, tokenTo, amount)
       } catch (error) {
         console.error("Swap failed:", error)
@@ -165,11 +169,12 @@ const Swap = () => {
                   >
                     <option value="">Select Token</option>
                     {tokens.map((token, index) => (
-                      <option key={index} value={token}>
-                        {token}
+                      <option key={index} value={token.address}>
+                        {token.name} ({token.symbol})
                       </option>
                     ))}
                   </select>
+
                   <div className="amount-container">
                     <div className="quick-select-buttons">
                       <button onClick={() => handleQuickSelect(25)}>25%</button>
@@ -206,8 +211,8 @@ const Swap = () => {
                 >
                   <option value="">Select Token</option>
                   {tokens.map((token, index) => (
-                    <option key={index} value={token}>
-                      {token}
+                    <option key={index} value={token.address}>
+                      {token.name} ({token.symbol})
                     </option>
                   ))}
                 </select>
