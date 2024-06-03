@@ -34,41 +34,51 @@ const Swap = () => {
 
   const chainId = chain ? chain.id : Object.keys(tokenDeployerDetails)[0]
 
-  const { data: contracts, error: contractsError } = useContractRead({
+  const { data: contractsCount, error: contractsCountError } = useContractRead({
     address: tokenDeployerDetails[chainId] as `0x${string}`,
     abi: tokenDeployerABI,
-    functionName: "getTokensDeployedByUser",
-    args: [address as `0x${string}`],
-    enabled: !!address,
+    functionName: "getDeployedTokenCount",
+  })
+
+  const { data: allContracts, error: allContractsError } = useContractReads({
+    contracts: contractsCount
+      ? Array.from({ length: Number(contractsCount) }, (_, i) => ({
+          address: tokenDeployerDetails[chainId] as `0x${string}`,
+          abi: tokenDeployerABI,
+          functionName: "tokensDeployed",
+          args: [i],
+        }))
+      : [],
+    enabled: contractsCount > 0,
   })
 
   useEffect(() => {
-    if (contractsError) {
-      console.error("Contracts Error: ", contractsError)
+    if (allContractsError) {
+      console.error("All Contracts Error: ", allContractsError)
     }
-    if (contracts) {
-      console.log("Contracts: ", contracts)
+    if (allContracts) {
+      console.log("All Contracts: ", allContracts)
     }
-  }, [contracts, contractsError])
+  }, [allContracts, allContractsError])
 
-  const contractRequests = contracts?.map((contract) => [
+  const contractRequests = allContracts?.map((contract) => [
     {
-      address: contract,
+      address: contract.result,
       abi: erc20ABI,
       functionName: "name",
     },
     {
-      address: contract,
+      address: contract.result,
       abi: erc20ABI,
       functionName: "symbol",
     },
     {
-      address: contract,
+      address: contract.result,
       abi: erc20ABI,
       functionName: "totalSupply",
     },
     {
-      address: contract,
+      address: contract.result,
       abi: erc20ABI,
       functionName: "decimals",
     },
@@ -97,7 +107,7 @@ const Swap = () => {
     }
     for (let i = 0; i < groupedData.length; i++) {
       namedData.push({
-        address: contracts[i],
+        address: allContracts[i].result,
         name: groupedData[i][0].result,
         symbol: groupedData[i][1].result,
         supply: groupedData[i][2].result,
