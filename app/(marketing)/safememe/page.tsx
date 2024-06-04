@@ -222,6 +222,7 @@ const SafeMemeBlogPost = () => {
                       <input
                         type="number"
                         step="0.01" // Allows input of decimals
+                        pattern="[0-9\.]*"
                         id={`tokenBPrice${index}`}
                         value={tokenBPrices[index]}
                         onChange={(e) =>
