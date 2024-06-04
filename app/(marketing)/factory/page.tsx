@@ -7,7 +7,7 @@ import { toast } from "react-toastify"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
-import styles from "./page.module.css"
+import "./factory.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
 import { tokenDeployerDetails } from "@/Constants/config"
@@ -154,74 +154,71 @@ export default function Factory(): JSX.Element {
             networks={"Avalanche, Base, Degen, Fantom, Rootstock"}
           />
         )}
-
-        <div className={styles.container}>
-          <div className={styles.tokenDeployer}>
-            <h1 className={styles.title}>Create Your Token</h1>
-            <p className={styles.subtitle}>
+        <div className="container">
+          <div className="tokenDeployer">
+            <h1 className="title">Create Your Token</h1>
+            <p className="subtitle">
               Easily create and deploy your custom token
             </p>
-            <div className={styles.form}>
-              <div className={styles.inputGroup}>
-                <label className={styles.inputTitle}>Token Name*</label>
+            <div className="form">
+              <div className="inputGroup">
+                <label className="inputTitle">Token Name*</label>
                 <input
                   onChange={setTokenName}
-                  className={styles.tokenInput}
+                  className="tokenInput"
                   placeholder="Degen"
                   value={name}
                 />
               </div>
-              <div className={styles.inputGroup}>
-                <label className={styles.inputTitle}>Token Symbol*</label>
+              <div className="inputGroup">
+                <label className="inputTitle">Token Symbol*</label>
                 <input
                   onChange={setTokenSymbol}
-                  className={styles.tokenInput}
+                  className="tokenInput"
                   placeholder="Degen"
                   value={symbol}
                 />
               </div>
-              <div className={styles.inputGroup}>
-                <label className={styles.inputTitle}>Token Supply*</label>
+              <div className="inputGroup">
+                <label className="inputTitle">Token Supply*</label>
                 <input
                   onKeyDown={(evt) =>
                     ["e", "E", "+", "-", "."].includes(evt.key) &&
                     evt.preventDefault()
                   }
                   onChange={setTokenSupply}
-                  className={styles.tokenInput}
+                  className="tokenInput"
                   placeholder="21000000"
                   type="number"
                   value={supply}
                 />
               </div>
-              <div className={styles.inputGroup}>
-                <label className={styles.inputTitle}>Decimals</label>
+              <div className="inputGroup">
+                <label className="inputTitle">Decimals</label>
                 <input
                   onKeyDown={(evt) =>
                     ["e", "E", "+", "-"].includes(evt.key) &&
                     evt.preventDefault()
                   }
                   onChange={setTokenDecimals}
-                  className={styles.tokenInput}
+                  className="tokenInput"
                   placeholder="18"
                   type="number"
                   value={decimals}
                 />
                 {!(Number(decimals) >= 0 && Number(decimals) <= 18) && (
-                  <p className={styles.error}>Decimals must be from 0 to 18</p>
+                  <p className="error">Decimals must be from 0 to 18</p>
                 )}
               </div>
-              <div className={styles.inputGroup}>
-                <label className={styles.inputTitle}>
-                  Anti-Whale Percentage*
-                </label>
+              <div className="inputGroup">
+                <label className="inputTitle">Anti-Whale Percentage*</label>
                 <input
                   onKeyDown={(evt) =>
                     ["e", "E", "+", "-"].includes(evt.key) &&
                     evt.preventDefault()
                   }
                   onChange={setAntiWhalePercentageInput}
-                  className={styles.tokenInput}
+                  className="tokenInput"
                   placeholder="3"
                   type="number"
                   value={antiWhalePercentage}
@@ -230,7 +227,7 @@ export default function Factory(): JSX.Element {
                   Number(antiWhalePercentage) > 0 &&
                   Number(antiWhalePercentage) <= 3
                 ) && (
-                  <p className={styles.error}>
+                  <p className="error">
                     Percentage must be greater than 0 and less than or equal to
                     3
                   </p>
@@ -238,7 +235,7 @@ export default function Factory(): JSX.Element {
               </div>
               <button
                 onClick={handleDeployClick}
-                className={`${styles.deployButton} ${
+                className={`deployButton ${
                   !isPrepareError &&
                   isConnected &&
                   isFormFilled() &&
@@ -248,8 +245,8 @@ export default function Factory(): JSX.Element {
                   Number(antiWhalePercentage) > 0 &&
                   Number(antiWhalePercentage) <= 3 &&
                   !(isLoadingTransaction || isLoadingWrite)
-                    ? styles.enabled
-                    : styles.disabled
+                    ? "enabled"
+                    : "disabled"
                 }`}
                 disabled={
                   !isPrepareError &&
@@ -275,7 +272,7 @@ export default function Factory(): JSX.Element {
                     : "Not Connected"
                   : "Loading..."}
               </button>
-              <p className={styles.inputDescription}>(*) is a required field</p>
+              <p className="inputDescription">(*) is a required field</p>
               {isSuccessTransaction &&
                 toast.success(
                   "Token successfully deployed! Go to My Tokens right behind this to check it out! Then grab the contract address and import it into your wallet.",
@@ -287,40 +284,38 @@ export default function Factory(): JSX.Element {
                 ""}
               {isSuccessTransaction && (
                 <Link href="/mytokens">
-                  <button className={styles.myTokensButton}>My Tokens</button>
+                  <button className="myTokensButton">My Tokens</button>
                 </Link>
               )}
               {isClient && isConnected && (
-                <div className={styles.errorSection}>
+                <div className="errorSection">
                   {isPrepareError ? (
                     <div
                       onClick={toggleErrorMenuOpen}
-                      className={styles.errorCollapsed}
+                      className="errorCollapsed"
                     >
-                      <p className={styles.errorHeader}>
-                        ❌ Contract Execution Error
-                      </p>
+                      <p className="errorHeader">❌ Contract Execution Error</p>
                       <Image
                         src="/assets/icons/dropdown.svg"
                         alt="dropdown"
                         width={25}
                         height={25}
-                        className={styles.errorDropdown}
+                        className="errorDropdown"
                       />
                     </div>
                   ) : (
-                    <div className={styles.errorCollapsed}>
+                    <div className="errorCollapsed">
                       {!isLoadingPrepare ? (
-                        <p className={styles.errorHeader}>✅ All Clear</p>
+                        <p className="errorHeader">✅ All Clear</p>
                       ) : (
-                        <p className={styles.errorHeader}>⏳ Loading</p>
+                        <p className="errorHeader">⏳ Loading</p>
                       )}
                     </div>
                   )}
                   {errorMenu &&
                     isPrepareError &&
                     (!isLoadingPrepare ? (
-                      <p className={styles.errorText}>
+                      <p className="errorText">
                         {prepareError?.cause
                           ? capitalizeFirstLetter(prepareError?.details + ".")
                           : prepareError?.message.includes(
@@ -330,7 +325,7 @@ export default function Factory(): JSX.Element {
                           : capitalizeFirstLetter(prepareError?.message + ".")}
                       </p>
                     ) : (
-                      <p className={styles.errorText}>Loading...</p>
+                      <p className="errorText">Loading...</p>
                     ))}
                 </div>
               )}
