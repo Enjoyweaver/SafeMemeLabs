@@ -233,3 +233,53 @@ body {
 .myTokensButton:hover {
   background-color: #0079a1;
 }
+
+@media (max-width: 600px) {
+  .tokenDeployer {
+    width: calc(100% - 40px);
+    padding: 20px;
+    margin: 50px auto;
+  }
+
+  .title {
+    font-size: 1.5em;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 1em;
+    margin-bottom: 15px;
+  }
+
+  .inputGroup {
+    margin-bottom: 15px;
+  }
+
+  .inputTitle {
+    font-size: 0.9em;
+    margin-bottom: 3px;
+  }
+
+  .tokenInput {
+    font-size: 0.9em;
+    padding: 10px;
+  }
+
+  .deployButton,
+  .myTokensButton {
+    padding: 10px;
+    font-size: 0.9em;
+  }
+
+  .errorSection {
+    padding: 15px;
+  }
+
+  .errorHeader {
+    font-size: 1.2em;
+  }
+
+  .errorText {
+    font-size: 0.9em;
+  }
+}
