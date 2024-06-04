@@ -107,7 +107,7 @@ const SafeMemeBlogPost = () => {
     setUnlockThresholds(newThresholds)
   }
 
-  const handletokenBPriceChange = (index, value) => {
+  const handleTokenBPriceChange = (index, value) => {
     const newPrices = [...tokenBPrices]
     newPrices[index] = parseFloat(value)
     settokenBPrices(newPrices)
