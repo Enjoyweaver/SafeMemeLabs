@@ -223,6 +223,7 @@ const SafeMemeBlogPost = () => {
                         step="0.01" // Allows input of decimals
                         id={`tokenBPrice${index}`}
                         value={tokenBPrices[index]}
+                        keyboardType="decimal-pad"
                         onChange={(e) =>
                           handleTokenBPriceChange(index, e.target.value)
                         }
