@@ -124,14 +124,14 @@ const SafeMemeBlogPost = () => {
       <div className="flex min-h-screen flex-col">
         <main className="flex-1">
           <div className="blog-container">
-            <h1 className="page-title">What is the SafeMeme Contract?</h1>
+            <h1 className="page-title">What is the SafeMeme Token Standard?</h1>
             <p className="blog-content">
-              SafeMeme is a smart contract designed to provide a structured and
-              secure token launch experience. It includes built-in anti-whale
-              mechanisms and progressive unlocking of token supply based on
-              specific thresholds. The SafeMeme contract is particularly
-              suitable for meme tokens aiming to build a strong and stable
-              liquidity pool from the start.
+              The SafeMeme token standard is designed to provide a structured
+              and secure token launch by including an anti-whale mechanism and
+              progressive unlocking of your token supply based on specific
+              liquidity thresholds. The SafeMeme smart contract is suitable for
+              any token aiming to build a strong and stable liquidity pool from
+              the start.
             </p>
             <h2 className="section-title">Tokenomics and Mechanisms</h2>
             <p className="blog-content">
@@ -220,7 +220,7 @@ const SafeMemeBlogPost = () => {
                         Token B Price (USD) for Phase {index + 1}:
                       </label>
                       <input
-                        type="number"
+                        type="text"
                         step="0.01" // Allows input of decimals
                         pattern="[0-9\.]*"
                         id={`tokenBPrice${index}`}
