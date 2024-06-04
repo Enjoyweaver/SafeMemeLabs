@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react"
 import { erc20ABI } from "@/ABIs/erc20"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
-import { tokenDeployerDetails } from "@/Constants/config"
+import { routerDetails, tokenDeployerDetails } from "@/Constants/config"
+import { ethers } from "ethers"
 import {
   useAccount,
   useContractRead,
@@ -158,6 +159,36 @@ const Swap = () => {
     const temp = tokenFrom
     setTokenFrom(tokenTo)
     setTokenTo(temp)
+  }
+
+  const handleListInitialTokens = async (
+    tokenAddress,
+    initialAmount,
+    pricePerToken
+  ) => {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const routerAddress = routerDetails[chainId]
+      const routerContract = new ethers.Contract(
+        routerAddress,
+        routerABI,
+        provider.getSigner()
+      )
+
+      await routerContract.listInitialTokens(
+        tokenAddress,
+        initialAmount,
+        pricePerToken
+      )
+      console.log(
+        "Initial tokens listed:",
+        tokenAddress,
+        initialAmount,
+        pricePerToken
+      )
+    } catch (error) {
+      console.error("Listing initial tokens failed:", error)
+    }
   }
 
   return (

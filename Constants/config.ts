@@ -143,3 +143,17 @@ export const managerDetails: { [key: string]: string } = {
   "148": "YourManagerAddressForAnotherChain",
   "501": "YourManagerAddressForSolanaTestnet",
 }
+
+export const routerDetails: { [key: string]: string } = {
+  "137": "YourManagerAddressForPolygon",
+  "250": "YourManagerAddressForFantom",
+  "4002": "YourManagerAddressForFantomTestnet",
+  "64165": "YourManagerAddressForFantomTestnet2",
+  "666666666": "YourManagerAddressForDegen",
+  "8453": "YourManagerAddressForDegen2",
+  "43114": "YourManagerAddressForAvalanche",
+  "30": "YourManagerAddressForRootstock",
+  "31": "YourManagerAddressForRootstockTestnet",
+  "148": "YourManagerAddressForAnotherChain",
+  "501": "YourManagerAddressForSolanaTestnet",
+}

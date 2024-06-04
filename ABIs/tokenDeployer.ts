@@ -39,6 +39,16 @@ export const tokenDeployerABI = [
         name: "_antiWhalePercentage",
         type: "uint8",
       },
+      {
+        internalType: "address",
+        name: "_locker", // Optional locker address
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_manager", // Manager contract address
+        type: "address",
+      },
     ],
     name: "deployToken",
     outputs: [
