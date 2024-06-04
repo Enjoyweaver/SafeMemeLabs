@@ -118,6 +118,24 @@ const SafeMemeBlogPost = () => {
     settokenBReceived(parseFloat(value))
   }
 
+  const DecimalInput = () => {
+    const [value, setValue] = useState("0.00")
+
+    const handleInput = (e) => {
+      const newValue = e.target.value.replace(/[^\d\.]/g, "")
+      setValue(newValue)
+    }
+
+    return (
+      <input
+        type="text"
+        value={value}
+        onChange={handleInput}
+        pattern="[0-9\.]*"
+      />
+    )
+  }
+
   return (
     <div>
       <Navbar />
@@ -219,11 +237,7 @@ const SafeMemeBlogPost = () => {
                       <label htmlFor={`tokenBPrice${index}`}>
                         Token B Price (USD) for Phase {index + 1}:
                       </label>
-                      <input
-                        type="text"
-                        step="0.01" // Allows input of decimals
-                        pattern="[0-9\.]*"
-                        id={`tokenBPrice${index}`}
+                      <DecimalInput
                         value={tokenBPrices[index]}
                         onChange={(e) =>
                           handleTokenBPriceChange(index, e.target.value)
