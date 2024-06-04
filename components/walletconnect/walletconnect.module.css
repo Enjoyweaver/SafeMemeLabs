@@ -204,6 +204,75 @@
   }
 }
 
+@media screen and (max-width: 480px) {
+  .navbarLi {
+    font-size: 12px;
+    line-height: 18px;
+    margin: 4px 8px;
+    height: auto;
+  }
+  .connectButtonContainer {
+    top: 15px; /* Adjust as necessary to place the button above the blockchain selections */
+  }
+  .networkOption {
+    font-size: 9px;
+    padding: 2px;
+  }
+  .chainLogo {
+    height: 14px;
+    width: 14px;
+  }
+  .chainName {
+    font-size: 9px;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .navbarLi {
+    font-size: 10px;
+    line-height: 16px;
+    margin: 3px 6px;
+    height: auto;
+  }
+  .connectButtonContainer {
+    top: 10px; /* Adjust as necessary to place the button above the blockchain selections */
+  }
+  .networkOption {
+    font-size: 8px;
+    padding: 1px;
+  }
+  .chainLogo {
+    height: 12px;
+    width: 12px;
+  }
+  .chainName {
+    font-size: 8px;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .navbarLi {
+    font-size: 8px;
+    line-height: 14px;
+    margin: 2px 4px;
+    height: auto;
+  }
+  .connectButtonContainer {
+    top: 5px; /* Adjust as necessary to place the button above the blockchain selections */
+  }
+  .networkOption {
+    font-size: 7px;
+    padding: 1px;
+  }
+  .chainLogo {
+    height: 10px;
+    width: 10px;
+  }
+  .chainName {
+    font-size: 7px;
+  }
+}
+
 @media screen and (max-width: 620px) {
   .networkOptionsContainer {
     padding: 5px;

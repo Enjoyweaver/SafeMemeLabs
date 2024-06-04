@@ -180,7 +180,7 @@ const Swap = () => {
                     <option value="">Select Token</option>
                     {tokens.map((token, index) => (
                       <option key={index} value={token.address}>
-                        {token.name} ({token.symbol})
+                        {token.name}
                       </option>
                     ))}
                   </select>
