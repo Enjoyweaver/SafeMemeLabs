@@ -113,6 +113,10 @@ const SafeMemeBlogPost = () => {
     settokenBPrices(newPrices)
   }
 
+  const handleTokenBReceivedChange = (value) => {
+    settokenBReceived(parseFloat(value))
+  }
+
   return (
     <div>
       <Navbar />
@@ -179,7 +183,7 @@ const SafeMemeBlogPost = () => {
                         id="tokenBReceived"
                         value={tokenBReceived}
                         onChange={(e) =>
-                          setTokenBReceived(parseInt(e.target.value))
+                          handleTokenBReceivedChange(e.target.value)
                         }
                       />
                     </div>
@@ -216,6 +220,7 @@ const SafeMemeBlogPost = () => {
                       </label>
                       <input
                         type="number"
+                        step="0.01" // Allows input of decimals
                         id={`tokenBPrice${index}`}
                         value={tokenBPrices[index]}
                         onChange={(e) =>
