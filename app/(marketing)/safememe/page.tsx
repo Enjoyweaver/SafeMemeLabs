@@ -108,8 +108,9 @@ const SafeMemeBlogPost = () => {
   }
 
   const handleTokenBPriceChange = (index, value) => {
+    const newValue = value.replace(/[^0-9\.]/g, "") // Remove any non-numeric characters
     const newPrices = [...tokenBPrices]
-    newPrices[index] = parseFloat(value)
+    newPrices[index] = parseFloat(newValue)
     settokenBPrices(newPrices)
   }
 
@@ -223,7 +224,6 @@ const SafeMemeBlogPost = () => {
                         step="0.01" // Allows input of decimals
                         id={`tokenBPrice${index}`}
                         value={tokenBPrices[index]}
-                        keyboardType="decimal-pad"
                         onChange={(e) =>
                           handleTokenBPriceChange(index, e.target.value)
                         }
