@@ -154,7 +154,7 @@ export default function Factory(): JSX.Element {
             networks={"Avalanche, Base, Degen, Fantom, Rootstock"}
           />
         )}
-        <div className="container">
+        <div>
           <div className="tokenDeployer">
             <h1 className="title">Create Your Token</h1>
             <p className="subtitle">

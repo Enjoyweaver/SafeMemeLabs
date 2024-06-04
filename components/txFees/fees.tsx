@@ -44,6 +44,13 @@ const fees = {
       feeInWei: "1000000", // Fee in wei for 1 USDC (Base)
     },
   },
+  Rootstock: {
+    1: {
+      amount: 0.00003333,
+      displayAmount: "0.00003333",
+      feeInWei: "33333333333333333", // Fee in wei for $1 in rBTC
+    },
+  },
 }
 
 function weiToNativeToken(weiAmount: string, decimals?: number): string {
