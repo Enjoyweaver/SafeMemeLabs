@@ -183,7 +183,7 @@ body {
 }
 
 .errorText {
-  color: #333;
+  color: #f1f0f0;
   overflow-wrap: break-word;
 }
 
@@ -201,7 +201,7 @@ body {
 }
 
 .errorHeader {
-  color: #0e0e0e;
+  color: #f3f3f3;
   font-size: 1.5em;
   margin: 0;
   display: inline-block;
@@ -217,21 +217,6 @@ body {
   float: right;
   filter: invert(15%) sepia(0%) saturate(1%) hue-rotate(40deg) brightness(30%)
     contrast(90%);
-}
-
-.myTokensButton {
-  background-color: #008cba;
-  color: #fff;
-  padding: 12px;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  margin-top: 10px;
-  width: 100%;
-}
-
-.myTokensButton:hover {
-  background-color: #0079a1;
 }
 
 @media (max-width: 600px) {

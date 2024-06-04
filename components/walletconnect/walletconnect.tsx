@@ -138,6 +138,12 @@ export function Navbar() {
     }
   }
 
+  // Log current state for debugging
+  useEffect(() => {
+    console.log("isClient:", isClient)
+    console.log("isConnected:", isConnected)
+  }, [isClient, isConnected])
+
   return (
     <nav className={`${styles.nav} ${styles.container}`}>
       {!isConnected && connectOpen && <Overlay onClick={toggleConnectOpen} />}
