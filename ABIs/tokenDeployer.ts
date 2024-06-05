@@ -6,6 +6,29 @@ export const tokenDeployerABI = [
         name: "_creationFee",
         type: "uint256",
       },
+      {
+        internalType: "address",
+        name: "_liquidityManager",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_router",
+        type: "address",
+      },
+    ],
+    name: "constructor",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_newFee",
+        type: "uint256",
+      },
     ],
     name: "changeCreationFee",
     outputs: [],
@@ -41,12 +64,17 @@ export const tokenDeployerABI = [
       },
       {
         internalType: "address",
-        name: "_locker", // Optional locker address
+        name: "_locker",
         type: "address",
       },
       {
         internalType: "address",
-        name: "_manager", // Manager contract address
+        name: "_manager",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_tokenB",
         type: "address",
       },
     ],
@@ -62,55 +90,97 @@ export const tokenDeployerABI = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-    ],
-    name: "OwnableInvalidOwner",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-    ],
-    name: "OwnableUnauthorizedAccount",
-    type: "error",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "previousOwner",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
-    ],
-    name: "OwnershipTransferred",
-    type: "event",
-  },
-  {
     inputs: [],
-    name: "renounceOwnership",
+    name: "withdrawFees",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    anonymous: false,
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getTokensDeployedByUser",
+    outputs: [
+      {
+        internalType: "address[]",
+        name: "",
+        type: "address[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getDeployedTokenCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "creationFee",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "feeCollector",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "liquidityManager",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "router",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         indexed: true,
@@ -137,91 +207,19 @@ export const tokenDeployerABI = [
   {
     inputs: [
       {
+        indexed: true,
         internalType: "address",
-        name: "newOwner",
+        name: "recipient",
         type: "address",
       },
-    ],
-    name: "transferOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "creationFee",
-    outputs: [
       {
+        indexed: false,
         internalType: "uint256",
-        name: "",
+        name: "amount",
         type: "uint256",
       },
     ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_user",
-        type: "address",
-      },
-    ],
-    name: "getTokensDeployedByUser",
-    outputs: [
-      {
-        internalType: "address[]",
-        name: "",
-        type: "address[]",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "owner",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "tokensDeployed",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getDeployedTokenCount",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
+    name: "FeeWithdrawn",
+    type: "event",
   },
 ] as const

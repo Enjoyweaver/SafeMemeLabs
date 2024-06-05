@@ -50,7 +50,7 @@ body {
   background-color: var(--background-light);
   border: 1px solid var(--border-light);
   border-radius: 15px;
-  margin: 75px auto 100px auto;
+  margin: 15px auto 100px auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -267,4 +267,116 @@ body {
   .errorText {
     font-size: 0.9em;
   }
+}
+
+.tokenTypeButtonsContainer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 5rem;
+}
+
+.tokenTypeButton {
+  font-size: 14px;
+  padding: 10px 20px;
+  background-color: var(--primary-light);
+  border: 2px solid var(--border-light);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.tokenTypeButton:hover {
+  background-color: var(--secondary-light);
+  transform: scale(1.05);
+}
+
+.tokenTypeButton.active {
+  background-color: var(--input-dark);
+  color: white;
+}
+
+@media screen and (max-width: 620px) {
+  .tokenTypeButtonsContainer {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-top: 2rem;
+  }
+
+  .tokenTypeButton {
+    font-size: 12px;
+    padding: 8px 16px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .tokenTypeButtonsContainer {
+    gap: 15px;
+    margin-top: 1.5rem;
+  }
+
+  .tokenTypeButton {
+    font-size: 11px;
+    padding: 7px 14px;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .tokenTypeButtonsContainer {
+    gap: 10px;
+    margin-top: 1rem;
+  }
+
+  .tokenTypeButton {
+    font-size: 10px;
+    padding: 6px 12px;
+  }
+}
+
+.tokenTypeButtonContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.tokenTypeButtonPopup {
+  visibility: hidden;
+  width: 200px;
+  background-color: var(--foreground-light);
+  color: var(--background-light);
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1000;
+  bottom: 125%; /* Position above the button */
+  left: 50%;
+  margin-left: -100px; /* Center the popup */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.dark .tokenTypeButtonPopup {
+  background-color: var(--foreground-dark);
+  color: var(--background-dark);
+}
+
+.tokenTypeButtonContainer:hover .tokenTypeButtonPopup {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tokenTypeButtonPopup::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--foreground-light) transparent transparent transparent;
+}
+
+.dark .tokenTypeButtonPopup::after {
+  border-color: var(--foreground-dark) transparent transparent transparent;
 }

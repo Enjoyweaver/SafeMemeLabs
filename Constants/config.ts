@@ -68,31 +68,102 @@ export const config = createConfig({
   webSocketPublicClient,
 })
 
-export const tokenDeployerDetails: { [key: string]: string } = {
-  "666666666": "0xe92163f8038843091c1df18f726cf04526ef9676",
-  "250": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d6",
-  "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EE",
-  "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ee",
-  "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb5",
-  "4002": "0x79b206abd08adc1b1c5d72ba7bd38d04511e985e",
-  "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d6",
-  "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228430",
-  "30": "0xe92163f8038843091c1df18f726cf04526ef9676",
-  "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25e",
-  "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25e",
-  "501": "YourTokenAddressForSolanaTestnet", // Add your token deployer address for Solana
+export const tokenDeployerDetails: {
+  [key: string]: { safeMemeToken: string; safeMemeTokenLaunched: string }
+} = {
+  "666666666": {
+    safeMemeToken: "0xe92163f8038843091c1df18f726cf04526ef9676",
+    safeMemeTokenLaunched: "0xe92163f8038843091c1df18f726cf04526ef9677",
+  },
+  "250": {
+    safeMemeToken: "0x396652c3fc3273b5946bdfe7b558a00a57ed27d6",
+    safeMemeTokenLaunched: "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
+  },
+  "137": {
+    safeMemeToken: "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EE",
+    safeMemeTokenLaunched: "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
+  },
+  "64165": {
+    safeMemeToken: "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ee",
+    safeMemeTokenLaunched: "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
+  },
+  "64240": {
+    safeMemeToken: "0x676e3fd472f437b86ee5203f5adf21b7687fddb5",
+    safeMemeTokenLaunched: "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
+  },
+  "4002": {
+    safeMemeToken: "0x79b206abd08adc1b1c5d72ba7bd38d04511e985e",
+    safeMemeTokenLaunched: "0x79b206abd08adc1b1c5d72ba7bd38d04511e985f",
+  },
+  "8453": {
+    safeMemeToken: "0x396652c3fc3273b5946bdfe7b558a00a57ed27d6",
+    safeMemeTokenLaunched: "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
+  },
+  "43114": {
+    safeMemeToken: "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228430",
+    safeMemeTokenLaunched: "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
+  },
+  "30": {
+    safeMemeToken: "0xe92163f8038843091c1df18f726cf04526ef9676",
+    safeMemeTokenLaunched: "0xe92163f8038843091c1df18f726cf04526ef9677",
+  },
+  "31": {
+    safeMemeToken: "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25e",
+    safeMemeTokenLaunched: "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
+  },
+  "148": {
+    safeMemeToken: "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25e",
+    safeMemeTokenLaunched: "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
+  },
+  "501": {
+    safeMemeToken: "YourTokenAddressForSolanaTestnet",
+    safeMemeTokenLaunched: "YourTokenAddressForSolanaTestnetLaunched",
+  },
 }
-export const multisendDetails: { [key: string]: string } = {
-  "137": "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
-  "250": "0xe1B8Fc8e02b9b2C8152dEB18c5D1f6C2b23f8a94",
-  "4002": "0xeC4993Ab1a113A15e94c33748344954E15451d4e",
-  "64165": "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
-  "666666666": "0x29c4e664e50aa222a0f10de5233e0e1fd0bd9cc6",
-  "8453": "0x29c4e664e50aa222a0f10de5233e0e1fd0bd9cc6",
-  "43114": "0x8c175417787c4beea7211d143423c8624c230b9b",
-  "30": "0x8c175417787c4beea7211d143423c8624c230b9b",
-  "31": "0x8c175417787c4beea7211d143423c8624c230b9b",
-  "501": "YourMultisendAddressForSolanaTestnet", // Add your multisend address for Solana
+
+export const multisendDetails: {
+  [key: string]: { safeMemeToken: string; safeMemeTokenLaunched: string }
+} = {
+  "137": {
+    safeMemeToken: "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
+    safeMemeTokenLaunched: "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE2",
+  },
+  "250": {
+    safeMemeToken: "0xe1B8Fc8e02b9b2C8152dEB18c5D1f6C2b23f8a94",
+    safeMemeTokenLaunched: "0xe1B8Fc8e02b9b2C8152dEB18c5D1f6C2b23f8a95",
+  },
+  "4002": {
+    safeMemeToken: "0xeC4993Ab1a113A15e94c33748344954E15451d4e",
+    safeMemeTokenLaunched: "0xeC4993Ab1a113A15e94c33748344954E15451d4f",
+  },
+  "64165": {
+    safeMemeToken: "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
+    safeMemeTokenLaunched: "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE2",
+  },
+  "666666666": {
+    safeMemeToken: "0x29c4e664e50aa222a0f10de5233e0e1fd0bd9cc6",
+    safeMemeTokenLaunched: "0x29c4e664e50aa222a0f10de5233e0e1fd0bd9cc7",
+  },
+  "8453": {
+    safeMemeToken: "0x29c4e664e50aa222a0f10de5233e0e1fd0bd9cc6",
+    safeMemeTokenLaunched: "0x29c4e664e50aa222a0f10de5233e0e1fd0bd9cc7",
+  },
+  "43114": {
+    safeMemeToken: "0x8c175417787c4beea7211d143423c8624c230b9b",
+    safeMemeTokenLaunched: "0x8c175417787c4beea7211d143423c8624c230b9c",
+  },
+  "30": {
+    safeMemeToken: "0x8c175417787c4beea7211d143423c8624c230b9b",
+    safeMemeTokenLaunched: "0x8c175417787c4beea7211d143423c8624c230b9c",
+  },
+  "31": {
+    safeMemeToken: "0x8c175417787c4beea7211d143423c8624c230b9b",
+    safeMemeTokenLaunched: "0x8c175417787c4beea7211d143423c8624c230b9c",
+  },
+  "501": {
+    safeMemeToken: "YourMultisendAddressForSolanaTestnet",
+    safeMemeTokenLaunched: "YourMultisendAddressForSolanaTestnetLaunched",
+  },
 }
 
 export const blockExplorerUrls: { [key: string]: string } = {
@@ -116,52 +187,161 @@ export const chainIdToCovalentChainId: { [key: string]: string } = {
   501: "solana-mainnet",
 }
 
-export const lockerDetails: { [key: string]: string } = {
-  "137": "YourLockerAddressForPolygon",
-  "250": "YourLockerAddressForFantom",
-  "4002": "YourLockerAddressForFantomTestnet",
-  "64165": "YourLockerAddressForFantomTestnet2",
-  "666666666": "YourLockerAddressForDegen",
-  "8453": "YourLockerAddressForDegen2",
-  "43114": "YourLockerAddressForAvalanche",
-  "30": "YourLockerAddressForRootstock",
-  "31": "YourLockerAddressForRootstockTestnet",
-  "148": "YourLockerAddressForAnotherChain",
-  "501": "YourLockerAddressForSolanaTestnet",
+export const lockerDetails: {
+  [key: string]: { safeMemeToken: string; safeMemeTokenLaunched: string }
+} = {
+  "137": {
+    safeMemeToken: "YourLockerAddressForPolygon",
+    safeMemeTokenLaunched: "YourLockerAddressForPolygonLaunched",
+  },
+  "250": {
+    safeMemeToken: "YourLockerAddressForFantom",
+    safeMemeTokenLaunched: "YourLockerAddressForFantomLaunched",
+  },
+  "4002": {
+    safeMemeToken: "YourLockerAddressForFantomTestnet",
+    safeMemeTokenLaunched: "YourLockerAddressForFantomTestnetLaunched",
+  },
+  "64165": {
+    safeMemeToken: "YourLockerAddressForFantomTestnet2",
+    safeMemeTokenLaunched: "YourLockerAddressForFantomTestnet2Launched",
+  },
+  "666666666": {
+    safeMemeToken: "YourLockerAddressForDegen",
+    safeMemeTokenLaunched: "YourLockerAddressForDegenLaunched",
+  },
+  "8453": {
+    safeMemeToken: "YourLockerAddressForDegen2",
+    safeMemeTokenLaunched: "YourLockerAddressForDegen2Launched",
+  },
+  "43114": {
+    safeMemeToken: "YourLockerAddressForAvalanche",
+    safeMemeTokenLaunched: "YourLockerAddressForAvalancheLaunched",
+  },
+  "30": {
+    safeMemeToken: "YourLockerAddressForRootstock",
+    safeMemeTokenLaunched: "YourLockerAddressForRootstockLaunched",
+  },
+  "31": {
+    safeMemeToken: "YourLockerAddressForRootstockTestnet",
+    safeMemeTokenLaunched: "YourLockerAddressForRootstockTestnetLaunched",
+  },
+  "148": {
+    safeMemeToken: "YourLockerAddressForAnotherChain",
+    safeMemeTokenLaunched: "YourLockerAddressForAnotherChainLaunched",
+  },
+  "501": {
+    safeMemeToken: "YourLockerAddressForSolanaTestnet",
+    safeMemeTokenLaunched: "YourLockerAddressForSolanaTestnetLaunched",
+  },
 }
 
-export const managerDetails: { [key: string]: string } = {
-  "137": "YourManagerAddressForPolygon",
-  "250": "YourManagerAddressForFantom",
-  "4002": "0x118a984d43d95adb18e4f5195923f69393589aca",
-  "64165": "YourManagerAddressForFantomTestnet2",
-  "666666666": "YourManagerAddressForDegen",
-  "8453": "YourManagerAddressForDegen2",
-  "43114": "YourManagerAddressForAvalanche",
-  "30": "YourManagerAddressForRootstock",
-  "31": "YourManagerAddressForRootstockTestnet",
-  "148": "YourManagerAddressForAnotherChain",
-  "501": "YourManagerAddressForSolanaTestnet",
+export const managerDetails: {
+  [key: string]: { safeMemeToken: string; safeMemeTokenLaunched: string }
+} = {
+  "137": {
+    safeMemeToken: "YourManagerAddressForPolygon",
+    safeMemeTokenLaunched: "YourManagerAddressForPolygonLaunched",
+  },
+  "250": {
+    safeMemeToken: "YourManagerAddressForFantom",
+    safeMemeTokenLaunched: "YourManagerAddressForFantomLaunched",
+  },
+  "4002": {
+    safeMemeToken: "0x118a984d43d95adb18e4f5195923f69393589aca",
+    safeMemeTokenLaunched: "0x118a984d43d95adb18e4f5195923f69393589acb",
+  },
+  "64165": {
+    safeMemeToken: "YourManagerAddressForFantomTestnet2",
+    safeMemeTokenLaunched: "YourManagerAddressForFantomTestnet2Launched",
+  },
+  "666666666": {
+    safeMemeToken: "YourManagerAddressForDegen",
+    safeMemeTokenLaunched: "YourManagerAddressForDegenLaunched",
+  },
+  "8453": {
+    safeMemeToken: "YourManagerAddressForDegen2",
+    safeMemeTokenLaunched: "YourManagerAddressForDegen2Launched",
+  },
+  "43114": {
+    safeMemeToken: "YourManagerAddressForAvalanche",
+    safeMemeTokenLaunched: "YourManagerAddressForAvalancheLaunched",
+  },
+  "30": {
+    safeMemeToken: "YourManagerAddressForRootstock",
+    safeMemeTokenLaunched: "YourManagerAddressForRootstockLaunched",
+  },
+  "31": {
+    safeMemeToken: "YourManagerAddressForRootstockTestnet",
+    safeMemeTokenLaunched: "YourManagerAddressForRootstockTestnetLaunched",
+  },
+  "148": {
+    safeMemeToken: "YourManagerAddressForAnotherChain",
+    safeMemeTokenLaunched: "YourManagerAddressForAnotherChainLaunched",
+  },
+  "501": {
+    safeMemeToken: "YourManagerAddressForSolanaTestnet",
+    safeMemeTokenLaunched: "YourManagerAddressForSolanaTestnetLaunched",
+  },
 }
 
-export const routerDetails: { [key: string]: string } = {
-  "137": "YourManagerAddressForPolygon",
-  "250": "YourManagerAddressForFantom",
-  "4002": "0xb68971834547e589c482d6ebbac390f1b64aff94",
-  "64165": "YourManagerAddressForFantomTestnet2",
-  "666666666": "YourManagerAddressForDegen",
-  "8453": "YourManagerAddressForDegen2",
-  "43114": "YourManagerAddressForAvalanche",
-  "30": "YourManagerAddressForRootstock",
-  "31": "YourManagerAddressForRootstockTestnet",
-  "148": "YourManagerAddressForAnotherChain",
-  "501": "YourManagerAddressForSolanaTestnet",
+export const routerDetails: {
+  [key: string]: { safeMemeToken: string; safeMemeTokenLaunched: string }
+} = {
+  "137": {
+    safeMemeToken: "YourRouterAddressForPolygon",
+    safeMemeTokenLaunched: "YourRouterAddressForPolygonLaunched",
+  },
+  "250": {
+    safeMemeToken: "YourRouterAddressForFantom",
+    safeMemeTokenLaunched: "YourRouterAddressForFantomLaunched",
+  },
+  "4002": {
+    safeMemeToken: "0xb68971834547e589c482d6ebbac390f1b64aff94",
+    safeMemeTokenLaunched: "0xb68971834547e589c482d6ebbac390f1b64aff95",
+  },
+  "64165": {
+    safeMemeToken: "YourRouterAddressForFantomTestnet2",
+    safeMemeTokenLaunched: "YourRouterAddressForFantomTestnet2Launched",
+  },
+  "666666666": {
+    safeMemeToken: "YourRouterAddressForDegen",
+    safeMemeTokenLaunched: "YourRouterAddressForDegenLaunched",
+  },
+  "8453": {
+    safeMemeToken: "YourRouterAddressForDegen2",
+    safeMemeTokenLaunched: "YourRouterAddressForDegen2Launched",
+  },
+  "43114": {
+    safeMemeToken: "YourRouterAddressForAvalanche",
+    safeMemeTokenLaunched: "YourRouterAddressForAvalancheLaunched",
+  },
+  "30": {
+    safeMemeToken: "YourRouterAddressForRootstock",
+    safeMemeTokenLaunched: "YourRouterAddressForRootstockLaunched",
+  },
+  "31": {
+    safeMemeToken: "YourRouterAddressForRootstockTestnet",
+    safeMemeTokenLaunched: "YourRouterAddressForRootstockTestnetLaunched",
+  },
+  "148": {
+    safeMemeToken: "YourRouterAddressForAnotherChain",
+    safeMemeTokenLaunched: "YourRouterAddressForAnotherChainLaunched",
+  },
+  "501": {
+    safeMemeToken: "YourRouterAddressForSolanaTestnet",
+    safeMemeTokenLaunched: "YourRouterAddressForSolanaTestnetLaunched",
+  },
 }
 
 export const tokenBOptions: {
   [key: string]: { address: string; symbol: string }[]
 } = {
   "4002": [
+    { address: "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", symbol: "wFTM" },
+    // Add more tokens if needed
+  ],
+  "250": [
     { address: "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", symbol: "wFTM" },
     // Add more tokens if needed
   ],

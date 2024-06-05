@@ -10,7 +10,7 @@ import { Navbar } from "@/components/walletconnect/walletconnect"
 import "./factory.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
-import { tokenBOptions, tokenDeployerDetails } from "@/Constants/config"
+import { tokenDeployerDetails } from "@/Constants/config"
 import { useDebounce } from "usehooks-ts"
 import {
   useAccount,
@@ -27,22 +27,18 @@ import { capitalizeFirstLetter } from "../../../utils/capitilizeFirstLetter"
 import Modal from "./Modal"
 
 export default function Factory(): JSX.Element {
-  const [tokenType, setTokenType] = useState<string>("safeMemeToken")
   const [name, setName] = useState<string>("")
   const [symbol, setSymbol] = useState<string>("")
   const [supply, setSupply] = useState<string>("")
   const [decimals, setDecimals] = useState<string>("")
   const [antiWhalePercentage, setAntiWhalePercentage] = useState<string>("")
-  const [selectedTokenB, setSelectedTokenB] = useState<string>("")
-
   const dName = useDebounce(name, 500)
   const dSymbol = useDebounce(symbol, 500)
   const dSupply = useDebounce(supply, 500)
   const dDecimals = useDebounce(decimals, 500)
   const dAntiWhalePercentage = useDebounce(antiWhalePercentage, 500)
-  const dSelectedTokenB = useDebounce(selectedTokenB, 500)
-
   const [isClient, setIsClient] = useState(false)
+
   const [errorMenu, setErrorMenu] = useState(false)
   const { isConnected } = useAccount()
   const { chain } = useNetwork()
@@ -64,18 +60,13 @@ export default function Factory(): JSX.Element {
     setDecimals(e.target.value)
   const setAntiWhalePercentageInput = (e: ChangeEvent<HTMLInputElement>) =>
     setAntiWhalePercentage(e.target.value)
-  const setTokenBAddress = (e: ChangeEvent<HTMLSelectElement>) =>
-    setSelectedTokenB(e.target.value)
 
   const isFormFilled = (): boolean =>
     name.trim().length > 0 &&
     symbol.trim().length > 0 &&
     supply.trim().length > 0 &&
     antiWhalePercentage.trim().length > 0 &&
-    decimals.trim().length > 0 &&
-    (tokenType === "safeMemeTokenLaunched"
-      ? selectedTokenB.trim().length > 0
-      : true)
+    decimals.trim().length > 0
 
   const chainId: string | number = chain ? chain.id : 250
 
@@ -102,7 +93,6 @@ export default function Factory(): JSX.Element {
       dDecimals ? Number(dDecimals) : 18,
       BigInt(dSupply),
       Number(dAntiWhalePercentage),
-      ...(tokenType === "safeMemeTokenLaunched" ? [dSelectedTokenB] : []),
     ],
     value: deployFee,
     cacheTime: 0,
@@ -165,38 +155,6 @@ export default function Factory(): JSX.Element {
           />
         )}
         <div>
-          <div className="tokenTypeButtonsContainer">
-            <div className="tokenTypeButtonContainer">
-              <button
-                className={`tokenTypeButton ${
-                  tokenType === "safeMemeToken" ? "active" : ""
-                }`}
-                onClick={() => setTokenType("safeMemeToken")}
-              >
-                SafeMeme Deployed
-              </button>
-              <div className="tokenTypeButtonPopup">
-                Deploy a SafeMeme token and 100% of the supply will be sent to
-                your wallet for you to choose where to launch it for people to
-                purchase.
-              </div>
-            </div>
-            <div className="tokenTypeButtonContainer">
-              <button
-                className={`tokenTypeButton ${
-                  tokenType === "safeMemeTokenLaunched" ? "active" : ""
-                }`}
-                onClick={() => setTokenType("safeMemeTokenLaunched")}
-              >
-                SafeMeme Launched
-              </button>
-              <div className="tokenTypeButtonPopup">
-                Create and launch a SafeMeme token on our swap where 5% of the
-                supply will be immediately available for purchase. And you can
-                choose what to pair your token with (Token B).{" "}
-              </div>
-            </div>
-          </div>
           <div className="tokenDeployer">
             <h1 className="title">Create Your Token</h1>
             <p className="subtitle">
@@ -275,23 +233,6 @@ export default function Factory(): JSX.Element {
                   </p>
                 )}
               </div>
-              {isClient && tokenType === "safeMemeTokenLaunched" && (
-                <div className="inputGroup">
-                  <label className="inputTitle">Token B Address*</label>
-                  <select
-                    onChange={setTokenBAddress}
-                    className="tokenInput"
-                    value={selectedTokenB}
-                  >
-                    <option value="">Select Token B</option>
-                    {tokenBOptions[chainId]?.map((token) => (
-                      <option key={token.address} value={token.address}>
-                        {token.symbol}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
               <button
                 onClick={handleDeployClick}
                 className={`deployButton ${
