@@ -36,7 +36,7 @@ body {
 
 .blog-container {
   width: 100%;
-  max-width: 800px;
+  max-width: 900px;
   margin: 50px auto;
   padding: 20px;
   background-color: var(--background-light);
@@ -259,7 +259,8 @@ body {
   border: 2px solid var(--border-light);
   border-radius: 10px;
   background-color: var(--background-light);
-  width: 70%;
+  width: 100%;
+  max-width: 900px;
   margin: 0 auto;
 }
 

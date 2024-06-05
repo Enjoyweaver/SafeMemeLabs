@@ -252,7 +252,33 @@ const SafeMemeBlogPost = () => {
         </main>
 
         <section className="audit-section">
-          <h2 className="first-contract-title ">Factory Contract</h2>
+          <h2 className="first-contract-title ">ERC-20 Standard</h2>
+
+          <h3 className="subsection-title">Introduction</h3>
+          <p className="audit-content">
+            The ERC-20 standard, introduced in 2015, is the most widely adopted
+            token standard on the Ethereum blockchain. It defines a set of
+            functions and events that a token contract must implement to be
+            considered an ERC-20 token. The key functionalities include:
+          </p>
+          <ul className="audit-list">
+            <li>Transferring tokens from one account to another.</li>
+            <li>Getting the current token balance of an account.</li>
+            <li>
+              Getting the total supply of the token available on the network.
+            </li>
+            <li>
+              Approving whether an amount of tokens from an account can be spent
+              by a third-party account.
+            </li>
+          </ul>
+          <p className="audit-content">
+            The ERC-20 standard was created to serve administrative purposes
+            like airdrops so security was not a factor. Thats why are are
+            expanding on the security considerations of our contracts below.
+          </p>
+
+          <h2 className="contract-title ">Factory Contract</h2>
 
           <h3 className="subsection-title">Purpose</h3>
           <p className="audit-content">
@@ -308,6 +334,38 @@ const SafeMemeBlogPost = () => {
               with the Router contract to confirm initial token listings are
               handled correctly and securely.
             </li>
+            <li>
+              <strong>Not-Updating the State:</strong> Ensure state variables
+              are correctly updated to reflect the latest status and prevent
+              inconsistencies.
+            </li>
+            <li>
+              <strong>Non tx.origin Authentication:</strong> Use msg.sender
+              instead of tx.origin for contract authentication to prevent
+              phishing attacks.
+            </li>
+            <li>
+              <strong>Transfer Function Access:</strong> Restrict access to the
+              transfer function to prevent unauthorized token transfers.
+            </li>
+            <li>
+              <strong>Manually Adjustable Balances:</strong> Avoid allowing
+              balances to be manually adjusted to prevent fraud or errors.
+            </li>
+            <li>
+              <strong>Update Balance Before Send:</strong> Ensure balances are
+              updated before executing a transfer to prevent reentrancy attacks.
+            </li>
+            <li>
+              <strong>Burn Function Visibility:</strong> Make the burn function
+              publicly visible and ensure it operates correctly to avoid token
+              supply manipulation.
+            </li>
+            <li>
+              <strong>Integer Overflow:</strong> Use safe math libraries or
+              built-in overflow checks to prevent integer overflow
+              vulnerabilities.
+            </li>
           </ul>
 
           <h2 className="contract-title ">Locker Contract</h2>
@@ -359,6 +417,7 @@ const SafeMemeBlogPost = () => {
               token activities.
             </li>
           </ul>
+
           <h2 className="contract-title ">Manager Contract</h2>
 
           <h3 className="subsection-title">Purpose</h3>
@@ -409,6 +468,7 @@ const SafeMemeBlogPost = () => {
               token activities.
             </li>
           </ul>
+
           <h2 className="contract-title ">Router Contract</h2>
 
           <h3 className="subsection-title">Purpose</h3>
