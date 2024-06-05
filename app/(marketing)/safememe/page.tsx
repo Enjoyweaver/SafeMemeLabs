@@ -271,7 +271,7 @@ const SafeMemeBlogPost = () => {
           </ul>
           <p className="audit-content">
             The ERC-20 standard was created to serve administrative purposes
-            like airdrops so security was not a factor. Thats why are are
+            like airdrops only, so security was not a factor. Thats why we are
             expanding on the security considerations of our contracts below.
           </p>
 
