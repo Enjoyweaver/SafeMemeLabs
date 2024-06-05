@@ -298,9 +298,9 @@ body {
 
 @media screen and (max-width: 620px) {
   .tokenTypeButtonsContainer {
-    flex-direction: column;
+    flex-direction: row; /* Change to row */
     align-items: center;
-    gap: 20px;
+    gap: 10px; /* Adjust the gap for mobile view */
     margin-top: 2.3rem;
   }
 
