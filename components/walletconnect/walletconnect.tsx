@@ -74,7 +74,7 @@ export function Navbar() {
   const [tempNetwork, setTempNetwork] = useState<string>("Not Connected")
   const [menusOpen, setMenusOpen] = useState<boolean[]>([false, false])
   const dropdownRef = useRef<HTMLDivElement>(null) // Create a ref for the dropdown menu
-
+  const [activeChainId, setActiveChainId] = useState(null)
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
   const { switchNetwork } = useSwitchNetwork()
@@ -158,11 +158,12 @@ export function Navbar() {
               <button
                 key={chain.chainId}
                 className={`${styles.networkOption} ${
-                  chain.name === tempNetwork ? styles.active : ""
+                  chain.chainId === activeChainId ? styles.active : ""
                 }`}
-                onClick={() =>
+                onClick={() => {
                   dropdownAction(() => switchNetwork?.(chain.chainId))
-                }
+                  setActiveChainId(chain.chainId) // Update active chain ID on click
+                }}
               >
                 <Image
                   src={chain.logo}

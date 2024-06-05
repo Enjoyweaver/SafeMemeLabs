@@ -191,9 +191,9 @@ export default function Factory(): JSX.Element {
                 SafeMeme Launched
               </button>
               <div className="tokenTypeButtonPopup">
-                Create and launch a SafeMeme token on our swap where 5% of the
-                supply will be immediately available for purchase. And you can
-                choose what to pair your token with (Token B).{" "}
+                Create and fair-launch a SafeMeme token on our swap where 5% of
+                the supply will be immediately available for purchase. And you
+                can choose what to pair your token with (Token B).{" "}
               </div>
             </div>
           </div>

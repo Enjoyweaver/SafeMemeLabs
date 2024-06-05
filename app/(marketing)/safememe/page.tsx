@@ -13,8 +13,6 @@ import {
 } from "chart.js"
 import { Line } from "react-chartjs-2"
 
-import { Navbar } from "@/components/walletconnect/walletconnect"
-
 import "@/styles/safememe.css"
 
 ChartJS.register(
@@ -138,7 +136,6 @@ const SafeMemeBlogPost = () => {
 
   return (
     <div>
-      <Navbar />
       <div className="flex min-h-screen flex-col">
         <main className="flex-1">
           <div className="blog-container">
