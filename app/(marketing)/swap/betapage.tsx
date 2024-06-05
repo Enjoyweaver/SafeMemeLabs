@@ -189,7 +189,13 @@ const Swap = () => {
   const fetchTokenPrice = async (tokenSymbol) => {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
-      const priceFeedAddress = priceFeedAddresses[chainId][`${tokenSymbol}/USD`]
+      const priceFeedAddress =
+        priceFeedAddresses[chainId]?.[`${tokenSymbol}/USD`]
+      if (!priceFeedAddress) {
+        console.error(`Price feed address not found for ${tokenSymbol}/USD`)
+        return 0
+      }
+
       const priceFeedABI = [
         {
           inputs: [],
@@ -205,6 +211,7 @@ const Swap = () => {
           type: "function",
         },
       ]
+
       const priceFeedContract = new ethers.Contract(
         priceFeedAddress,
         priceFeedABI,
@@ -235,7 +242,9 @@ const Swap = () => {
       setTokenPrices(prices)
     }
 
-    fetchTokensAndPairs()
+    if (chainId) {
+      fetchTokensAndPairs()
+    }
   }, [chainId])
 
   const handleTokenFromChange = async (e) => {
@@ -245,8 +254,10 @@ const Swap = () => {
     const selectedToken = tokens.find(
       (token) => token.address === selectedTokenAddress
     )
-    const price = await fetchTokenPrice(selectedToken.symbol)
-    setExchangeRate(price)
+    if (selectedToken) {
+      const price = await fetchTokenPrice(selectedToken.symbol)
+      setExchangeRate(price)
+    }
   }
 
   const handleTokenToChange = async (e) => {
@@ -356,7 +367,7 @@ const Swap = () => {
 
   useEffect(() => {
     const tokenBList = tokenBOptions[chainId] || []
-    setTokens((prevTokens) => [...prevTokens, ...tokenBList])
+    setTokens(tokenBList)
   }, [chainId])
 
   return (
@@ -379,7 +390,7 @@ const Swap = () => {
                     <option value="">Select Token</option>
                     {tokens.map((token, index) => (
                       <option key={index} value={token.address}>
-                        {token.name} ({token.symbol})
+                        {token.symbol}
                       </option>
                     ))}
                   </select>
@@ -400,14 +411,17 @@ const Swap = () => {
                       placeholder="Amount"
                       className="input-field"
                     />
-                    <span className="price-info">
-                      {tokenPrices[tokenFrom]
-                        ? `$${tokenPrices[tokenFrom].toFixed(2)}`
-                        : ""}
-                    </span>
+                    {tokenFrom && tokenPrices[tokenFrom] !== undefined ? (
+                      <span className="price-info">
+                        {`$${tokenPrices[tokenFrom].toFixed(2)}`}
+                      </span>
+                    ) : (
+                      <span className="price-info">Select a token</span>
+                    )}
                   </div>
                 </div>
               </div>
+
               <div className="reverse-button-container">
                 <button className="reverse-button" onClick={handleReverse}>
                   &#x21C5;
@@ -437,11 +451,13 @@ const Swap = () => {
                     disabled
                     className="input-field"
                   />
-                  <span className="price-info">
-                    {tokenPrices[tokenTo]
-                      ? `$${tokenPrices[tokenTo].toFixed(2)}`
-                      : ""}
-                  </span>
+                  {tokenTo && tokenPrices[tokenTo] !== undefined ? (
+                    <span className="price-info">
+                      {`$${tokenPrices[tokenTo].toFixed(2)}`}
+                    </span>
+                  ) : (
+                    <span className="price-info">Select a token</span>
+                  )}
                 </div>
               </div>
               <div className="swap-summary">

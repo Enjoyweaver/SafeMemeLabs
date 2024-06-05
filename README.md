@@ -188,3 +188,60 @@ const ContractBasis: React.FC = () => {
             </li>
           </ul>
 ```
+
+Scope
+The Factory.sol contract handles:
+
+Setting and collecting a creation fee for deploying new tokens.
+Deploying new SafeMeme tokens with defined parameters.
+Managing the deployment process and interacting with the Router contract for initial token listings.
+Providing information about deployed tokens and allowing the withdrawal of collected fees.
+Functions
+constructor(uint256 \_creationFee, address \_liquidityManager, address \_router):
+
+Initializes the contract with a creation fee, liquidity manager address, and router address.
+Sets the fee collector to the contract deployer.
+changeCreationFee(uint256 \_newFee):
+
+Allows the fee collector to change the token creation fee.
+deployToken(string memory \_symbol, string memory \_name, uint8 \_decimals, uint256 \_initialSupply, uint8 \_antiWhalePercentage, address \_locker, address \_manager) external payable returns (address):
+
+Deploys a new SafeMeme token with specified parameters (symbol, name, decimals, initial supply, anti-whale percentage, locker address, and manager address).
+Transfers the creation fee to the fee collector.
+Initializes and sets up the new token, transfers 95% of the supply to the locker and 5% to the manager.
+Lists the initial 5% of tokens on the DEX via the Router contract.
+Emits a TokenDeployed event with the new token's address, symbol, and name.
+withdrawFees():
+
+Allows the fee collector to withdraw the collected creation fees from the contract.
+getTokensDeployedByUser(address \_user) external view returns (address[] memory):
+
+Returns a list of token addresses deployed by a specific user.
+getDeployedTokenCount() external view returns (uint256):
+
+Returns the total number of tokens deployed by the factory.
+transfer(address token, address recipient, uint256 amount) external antiWhale(token, recipient, amount) returns (bool):
+
+Transfers tokens from the caller to a recipient, enforcing the anti-whale rules.
+approve(address token, address spender, uint256 amount) external returns (bool):
+
+Approves a spender to spend a specific amount of tokens on behalf of the caller.
+transferFrom(address token, address sender, address recipient, uint256 amount) external antiWhale(token, recipient, amount) returns (bool):
+
+Transfers tokens from a sender to a recipient, enforcing the anti-whale rules and the allowance mechanism.
+antiWhale(address token, address recipient, uint256 amount) (modifier):
+
+Ensures that token transfers adhere to the anti-whale percentage rules.
+Events
+TokenDeployed(address indexed tokenAddress, string symbol, string name):
+
+Emitted when a new token is deployed.
+FeeWithdrawn(address indexed recipient, uint256 amount):
+
+Emitted when the fee collector withdraws the collected creation fees.
+Transfer(address indexed from, address indexed to, uint256 value):
+
+Emitted when tokens are transferred.
+Approval(address indexed owner, address indexed spender, uint256 value):
+
+Emitted when a token owner approves a spender.

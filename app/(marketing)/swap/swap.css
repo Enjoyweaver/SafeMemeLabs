@@ -232,8 +232,9 @@ body {
 }
 
 .price-info {
-  margin-left: 10px;
-  font-size: 0.9rem;
+  display: block;
+  margin-top: 10px;
+  font-size: 14px;
   color: var(--secondary-light);
 }
 
