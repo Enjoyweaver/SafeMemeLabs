@@ -21,23 +21,19 @@
 }
 
 body {
-  background-color: var(
-    --background-light
-  ) !important; /* Use light theme background color */
-  color: var(--foreground-light) !important; /* Use light theme text color */
+  background-color: var(--background-light) !important;
+  color: var(--foreground-light) !important;
   font-family: Arial, sans-serif !important;
 }
 
 .dark body {
-  background-color: var(
-    --background-dark
-  ) !important; /* Use dark theme background color */
-  color: var(--foreground-dark) !important; /* Use dark theme text color */
+  background-color: var(--background-dark) !important;
+  color: var(--foreground-dark) !important;
 }
 
 .swap-container {
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   margin: 50px auto;
   padding: 10px 20px 20px 20px;
   background-color: var(--background-light);
@@ -94,7 +90,7 @@ body {
 }
 
 .input-field {
-  background-color: var(--input-light); /* Light mode input background */
+  background-color: var(--input-light);
   border: none;
   border-radius: 5px;
   color: var(--foreground-light);
@@ -104,7 +100,7 @@ body {
 }
 
 .dark .input-field {
-  background-color: var(--input-dark); /* Dark mode input background */
+  background-color: var(--input-dark);
   color: var(--foreground-dark);
 }
 
@@ -124,21 +120,21 @@ body {
 .quick-select-buttons {
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  width: 85%;
   position: absolute;
   top: -30px;
 }
 
 .quick-select-buttons button {
-  padding: 3px 6px; /* Smaller padding */
+  padding: 3px 3px;
   background-color: var(--primary-light);
   border: none;
   border-radius: 5px;
   color: var(--text-light);
-  font-size: 12px; /* Smaller font size */
+  font-size: 12px;
   cursor: pointer;
   flex: 1;
-  margin: 0 2px;
+  margin: 0 4px;
 }
 
 .quick-select-buttons button:hover {
@@ -233,4 +229,14 @@ body {
 
 .dark .swap-button:hover {
   background-color: var(--secondary-dark);
+}
+
+.price-info {
+  margin-left: 10px;
+  font-size: 0.9rem;
+  color: var(--secondary-light);
+}
+
+.dark .price-info {
+  color: var(--secondary-dark);
 }

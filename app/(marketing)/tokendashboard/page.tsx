@@ -20,6 +20,7 @@ const Dashboard = () => {
   const [isClient, setIsClient] = useState(false)
   const [tokenCount, setTokenCount] = useState<number>(0)
   const [selectedTab, setSelectedTab] = useState("competitors")
+  const [phasedTokens, setPhasedTokens] = useState([]) // State to store phased tokens
 
   useEffect(() => {
     setIsClient(true)
@@ -235,6 +236,42 @@ const Dashboard = () => {
         to create safe memes that are deployed on our own exchange. If you're
         interested in helping us develop our exchange, please reach out.
       </h2>
+      <div className="phased-tokens-section">
+        <h2 className="section-title">Available Tokens by Phases</h2>
+        {phasedTokens.map((token, index) => (
+          <div key={index} className="phased-token-card">
+            <p>
+              <strong>Name:</strong> {token.name}
+            </p>
+            <p>
+              <strong>Symbol:</strong> {token.symbol}
+            </p>
+            <p>
+              <strong>Total Supply:</strong>{" "}
+              {formatNumber(token.totalSupply, token.decimals)}
+            </p>
+            <p>
+              <strong>Decimals:</strong> {token.decimals}
+            </p>
+          </div>
+        ))}
+      </div>
+      <div className="pairs-section">
+        <h2 className="section-title">Available Pairs</h2>
+        {pairs.map((pair, index) => (
+          <div key={index} className="pair-card">
+            <p>
+              <strong>Pair Address:</strong> {pair.pairAddress}
+            </p>
+            <p>
+              <strong>Token 0:</strong> {pair.token0.name}
+            </p>
+            <p>
+              <strong>Token 1:</strong> {pair.token1.name}
+            </p>
+          </div>
+        ))}
+      </div>
     </>
   )
 

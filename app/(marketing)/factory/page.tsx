@@ -3,6 +3,8 @@
 import { ChangeEvent, useEffect, useState } from "react"
 import Link from "next/link"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
+import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
+// Import the new ABI
 import { toast } from "react-toastify"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
@@ -10,7 +12,12 @@ import { Navbar } from "@/components/walletconnect/walletconnect"
 import "./factory.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
-import { tokenBOptions, tokenDeployerDetails } from "@/Constants/config"
+import {
+  lockerDetails,
+  managerDetails,
+  tokenBOptions,
+  tokenDeployerDetails,
+} from "@/Constants/config"
 import { useDebounce } from "usehooks-ts"
 import {
   useAccount,
@@ -34,6 +41,8 @@ export default function Factory(): JSX.Element {
   const [decimals, setDecimals] = useState<string>("")
   const [antiWhalePercentage, setAntiWhalePercentage] = useState<string>("")
   const [selectedTokenB, setSelectedTokenB] = useState<string>("")
+  const [locker, setLocker] = useState<string>("")
+  const [manager, setManager] = useState<string>("")
 
   const dName = useDebounce(name, 500)
   const dSymbol = useDebounce(symbol, 500)
@@ -41,6 +50,8 @@ export default function Factory(): JSX.Element {
   const dDecimals = useDebounce(decimals, 500)
   const dAntiWhalePercentage = useDebounce(antiWhalePercentage, 500)
   const dSelectedTokenB = useDebounce(selectedTokenB, 500)
+  const dLocker = useDebounce(locker, 500)
+  const dManager = useDebounce(manager, 500)
 
   const [isClient, setIsClient] = useState(false)
   const [errorMenu, setErrorMenu] = useState(false)
@@ -53,6 +64,13 @@ export default function Factory(): JSX.Element {
   useEffect(() => {
     setIsClient(true)
   }, [])
+
+  useEffect(() => {
+    if (chain && chain.id) {
+      setLocker(lockerDetails[chain.id]?.safeMemeToken || "")
+      setManager(managerDetails[chain.id]?.safeMemeToken || "")
+    }
+  }, [chain])
 
   const setTokenName = (e: ChangeEvent<HTMLInputElement>) =>
     setName(e.target.value)
@@ -80,7 +98,7 @@ export default function Factory(): JSX.Element {
   const chainId: string | number = chain ? chain.id : 250
 
   const { data: deployFee } = useContractRead({
-    address: tokenDeployerDetails[chainId] as `0x${string}`,
+    address: tokenDeployerDetails[chainId]?.safeMemeToken as `0x${string}`,
     abi: tokenDeployerABI,
     functionName: "creationFee",
   })
@@ -92,9 +110,14 @@ export default function Factory(): JSX.Element {
     isLoading: isLoadingPrepare,
   } = usePrepareContractWrite({
     address: chainId
-      ? (tokenDeployerDetails[chainId] as `0x${string}`)
+      ? ((tokenType === "safeMemeTokenLaunched"
+          ? tokenDeployerDetails[chainId]?.safeMemeTokenLaunched
+          : tokenDeployerDetails[chainId]?.safeMemeToken) as `0x${string}`)
       : undefined,
-    abi: tokenDeployerABI,
+    abi:
+      tokenType === "safeMemeTokenLaunched"
+        ? tokenLauncherABI
+        : tokenDeployerABI,
     functionName: "deployToken",
     args: [
       dSymbol,
@@ -102,7 +125,9 @@ export default function Factory(): JSX.Element {
       dDecimals ? Number(dDecimals) : 18,
       BigInt(dSupply),
       Number(dAntiWhalePercentage),
-      ...(tokenType === "safeMemeTokenLaunched" ? [dSelectedTokenB] : []),
+      ...(tokenType === "safeMemeTokenLaunched"
+        ? [dLocker, dManager, dSelectedTokenB]
+        : []),
     ],
     value: deployFee,
     cacheTime: 0,
@@ -191,9 +216,9 @@ export default function Factory(): JSX.Element {
                 SafeMeme Launched
               </button>
               <div className="tokenTypeButtonPopup">
-                Create and fair-launch a SafeMeme token on our swap where 5% of
-                the supply will be immediately available for purchase. And you
-                can choose what to pair your token with (Token B).
+                Create and launch a SafeMeme token on our swap where 5% of the
+                supply is available to trade while the remaining 95% is unlocked
+                at different liquidity levels.
               </div>
             </div>
           </div>

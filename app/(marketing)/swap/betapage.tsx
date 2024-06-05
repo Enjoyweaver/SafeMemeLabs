@@ -4,7 +4,12 @@ import { useEffect, useState } from "react"
 import { erc20ABI } from "@/ABIs/erc20"
 import { routerABI } from "@/ABIs/router"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
-import { routerDetails, tokenDeployerDetails } from "@/Constants/config"
+import {
+  priceFeedAddresses,
+  routerDetails,
+  tokenBOptions,
+  tokenDeployerDetails,
+} from "@/Constants/config"
 import { ethers } from "ethers"
 import {
   useAccount,
@@ -23,11 +28,11 @@ const Swap = () => {
   const [tokenTo, setTokenTo] = useState("")
   const [amount, setAmount] = useState("")
   const [balance, setBalance] = useState(1000) // Mock balance
-  const [exchangeRate, setExchangeRate] = useState() // Mock exchange rate
-  const [estimatedOutput, setEstimatedOutput] = useState()
+  const [exchangeRate, setExchangeRate] = useState(0) // Mock exchange rate
+  const [estimatedOutput, setEstimatedOutput] = useState(0)
   const [tokens, setTokens] = useState([]) // State to store fetched tokens
-  const [phasedTokens, setPhasedTokens] = useState([]) // State to store phased tokens
   const [pairs, setPairs] = useState([]) // State to store pairs
+  const [tokenPrices, setTokenPrices] = useState({}) // State to store token prices
 
   useEffect(() => {
     setIsClient(true)
@@ -181,16 +186,82 @@ const Swap = () => {
     }
   }
 
+  const fetchTokenPrice = async (tokenSymbol) => {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const priceFeedAddress = priceFeedAddresses[chainId][`${tokenSymbol}/USD`]
+      const priceFeedABI = [
+        {
+          inputs: [],
+          name: "latestRoundData",
+          outputs: [
+            { internalType: "uint80", name: "roundId", type: "uint80" },
+            { internalType: "int256", name: "answer", type: "int256" },
+            { internalType: "uint256", name: "startedAt", type: "uint256" },
+            { internalType: "uint256", name: "updatedAt", type: "uint256" },
+            { internalType: "uint80", name: "answeredInRound", type: "uint80" },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ]
+      const priceFeedContract = new ethers.Contract(
+        priceFeedAddress,
+        priceFeedABI,
+        provider
+      )
+
+      const priceData = await priceFeedContract.latestRoundData()
+      const price = priceData.answer / 10 ** 8 // Assuming the price feed returns 8 decimal places
+
+      return price
+    } catch (error) {
+      console.error("Error fetching token price:", error)
+      return 0
+    }
+  }
+
   useEffect(() => {
     const fetchTokensAndPairs = async () => {
       const tokensFromRouter = await fetchTokensFromRouter()
-      setPhasedTokens(tokensFromRouter)
       const pairsFromRouter = await fetchPairsFromRouter()
       setPairs(pairsFromRouter)
+
+      const prices = {}
+      for (const token of tokensFromRouter) {
+        const price = await fetchTokenPrice(token.symbol)
+        prices[token.address] = price
+      }
+      setTokenPrices(prices)
     }
 
     fetchTokensAndPairs()
   }, [chainId])
+
+  const handleTokenFromChange = async (e) => {
+    const selectedTokenAddress = e.target.value
+    setTokenFrom(selectedTokenAddress)
+
+    const selectedToken = tokens.find(
+      (token) => token.address === selectedTokenAddress
+    )
+    const price = await fetchTokenPrice(selectedToken.symbol)
+    setExchangeRate(price)
+  }
+
+  const handleTokenToChange = async (e) => {
+    const selectedTokenAddress = e.target.value
+    setTokenTo(selectedTokenAddress)
+
+    const selectedToken = tokens.find(
+      (token) => token.address === selectedTokenAddress
+    )
+    const price = await fetchTokenPrice(selectedToken.symbol)
+
+    if (price && exchangeRate) {
+      setEstimatedOutput((parseFloat(amount) * exchangeRate) / price)
+    }
+  }
 
   function splitData(data: any) {
     const groupedData = []
@@ -283,6 +354,11 @@ const Swap = () => {
     }
   }
 
+  useEffect(() => {
+    const tokenBList = tokenBOptions[chainId] || []
+    setTokens((prevTokens) => [...prevTokens, ...tokenBList])
+  }, [chainId])
+
   return (
     <div>
       <Navbar />
@@ -297,17 +373,16 @@ const Swap = () => {
                   <select
                     id="tokenFrom"
                     value={tokenFrom}
-                    onChange={(e) => setTokenFrom(e.target.value)}
+                    onChange={handleTokenFromChange}
                     className="input-field"
                   >
                     <option value="">Select Token</option>
                     {tokens.map((token, index) => (
                       <option key={index} value={token.address}>
-                        {token.name}
+                        {token.name} ({token.symbol})
                       </option>
                     ))}
                   </select>
-
                   <div className="amount-container">
                     <div className="quick-select-buttons">
                       <button onClick={() => handleQuickSelect(25)}>25%</button>
@@ -325,6 +400,11 @@ const Swap = () => {
                       placeholder="Amount"
                       className="input-field"
                     />
+                    <span className="price-info">
+                      {tokenPrices[tokenFrom]
+                        ? `$${tokenPrices[tokenFrom].toFixed(2)}`
+                        : ""}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -336,19 +416,33 @@ const Swap = () => {
 
               <div className="token-section">
                 <label htmlFor="tokenTo">To</label>
-                <select
-                  id="tokenTo"
-                  value={tokenTo}
-                  onChange={(e) => setTokenTo(e.target.value)}
-                  className="input-field"
-                >
-                  <option value="">Select Token</option>
-                  {tokens.map((token, index) => (
-                    <option key={index} value={token.address}>
-                      {token.name} ({token.symbol})
-                    </option>
-                  ))}
-                </select>
+                <div className="token-amount-container">
+                  <select
+                    id="tokenTo"
+                    value={tokenTo}
+                    onChange={handleTokenToChange}
+                    className="input-field"
+                  >
+                    <option value="">Select Token</option>
+                    {tokens.map((token, index) => (
+                      <option key={index} value={token.address}>
+                        {token.name} ({token.symbol})
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="number"
+                    id="estimatedOutput"
+                    value={estimatedOutput}
+                    disabled
+                    className="input-field"
+                  />
+                  <span className="price-info">
+                    {tokenPrices[tokenTo]
+                      ? `$${tokenPrices[tokenTo].toFixed(2)}`
+                      : ""}
+                  </span>
+                </div>
               </div>
               <div className="swap-summary">
                 <p>Exchange Rate: {exchangeRate}</p>
@@ -359,42 +453,6 @@ const Swap = () => {
               <button className="swap-button" onClick={handleSwap}>
                 Swap
               </button>
-            </div>
-            <div className="phased-tokens-section">
-              <h2 className="section-title">Available Tokens by Phases</h2>
-              {phasedTokens.map((token, index) => (
-                <div key={index} className="phased-token-card">
-                  <p>
-                    <strong>Name:</strong> {token.name}
-                  </p>
-                  <p>
-                    <strong>Symbol:</strong> {token.symbol}
-                  </p>
-                  <p>
-                    <strong>Total Supply:</strong>{" "}
-                    {formatNumber(token.totalSupply, token.decimals)}
-                  </p>
-                  <p>
-                    <strong>Decimals:</strong> {token.decimals}
-                  </p>
-                </div>
-              ))}
-            </div>
-            <div className="pairs-section">
-              <h2 className="section-title">Available Pairs</h2>
-              {pairs.map((pair, index) => (
-                <div key={index} className="pair-card">
-                  <p>
-                    <strong>Pair Address:</strong> {pair.pairAddress}
-                  </p>
-                  <p>
-                    <strong>Token 0:</strong> {pair.token0.name}
-                  </p>
-                  <p>
-                    <strong>Token 1:</strong> {pair.token1.name}
-                  </p>
-                </div>
-              ))}
             </div>
           </div>
         </main>
