@@ -250,6 +250,254 @@ const SafeMemeBlogPost = () => {
             </div>
           </div>
         </main>
+
+        <section className="audit-section">
+          <h2 className="first-contract-title ">Factory Contract</h2>
+
+          <h3 className="subsection-title">Purpose</h3>
+          <p className="audit-content">
+            The Factory.sol contract is designed to create new SafeMeme tokens
+            with specific features, including an anti-whale mechanism. It
+            manages the entire deployment process, from token creation to
+            initial listing on a decentralized exchange (DEX).
+          </p>
+
+          <h3 className="subsection-title">Scope</h3>
+          <p className="audit-content">
+            The Factory.sol contract handles the following:
+          </p>
+          <ul className="audit-list">
+            <li>
+              Setting and collecting a creation fee for deploying new tokens.
+            </li>
+            <li>Deploying new SafeMeme tokens with defined parameters.</li>
+            <li>
+              Managing the deployment process and interacting with the Router
+              contract for initial token listings.
+            </li>
+            <li>
+              Providing information about deployed tokens and allowing the
+              withdrawal of collected fees.
+            </li>
+          </ul>
+
+          <h3 className="subsection-title">
+            Areas for Improvement / Potential Weaknesses
+          </h3>
+          <ul className="audit-list">
+            <li>
+              <strong>Fee Management:</strong> Ensure the fee collector address
+              is secured and the process for changing the fee is restricted to
+              authorized users.
+            </li>
+            <li>
+              <strong>Anti-Whale Mechanism:</strong> Verify the anti-whale rules
+              are effectively enforced to prevent large transfers that could
+              disrupt the token ecosystem.
+            </li>
+            <li>
+              <strong>Token Initialization:</strong> Double-check the
+              initialization process to prevent re-initialization or unintended
+              behavior.
+            </li>
+            <li>
+              <strong>Event Emission:</strong> Ensure all relevant events are
+              emitted properly to allow for accurate tracking and auditing of
+              token activities.
+            </li>
+            <li>
+              <strong>Router Interaction:</strong> Validate the interactions
+              with the Router contract to confirm initial token listings are
+              handled correctly and securely.
+            </li>
+            <li>
+              <strong>Unit Tests:</strong> Implement extensive unit tests to
+              cover various scenarios and ensure the contract behaves as
+              expected under different conditions.
+            </li>
+          </ul>
+
+          <h2 className="contract-title ">Locker Contract</h2>
+
+          <h3 className="subsection-title">Purpose</h3>
+          <p className="audit-content">
+            The Locker.sol contract is responsible for securely locking the
+            majority of the token supply and releasing it in phases based on
+            specific criteria. It ensures that the token supply is gradually
+            unlocked, promoting stability and reducing the risk of large-scale
+            token dumps.
+          </p>
+
+          <h3 className="subsection-title">Scope</h3>
+          <p className="audit-content">
+            The Locker.sol contract handles the following:
+          </p>
+          <ul className="audit-list">
+            <li>Locking a specified percentage of the total token supply.</li>
+            <li>
+              Managing the gradual unlocking of tokens based on predefined
+              criteria.
+            </li>
+            <li>
+              Interacting with the Manager contract to notify it when tokens are
+              unlocked.
+            </li>
+            <li>
+              Providing information about the remaining locked tokens and the
+              number of unlock phases completed.
+            </li>
+          </ul>
+
+          <h3 className="subsection-title">
+            Areas for Improvement / Potential Weaknesses
+          </h3>
+          <ul className="audit-list">
+            <li>
+              <strong>Manager Authorization:</strong> Ensure that only the
+              authorized Manager contract can call the unlock function to
+              prevent unauthorized access to locked tokens.
+            </li>
+            <li>
+              <strong>Unlock Percentage:</strong> Carefully set the unlock
+              percentage to balance between providing liquidity and maintaining
+              token value.
+            </li>
+            <li>
+              <strong>Event Emission:</strong> Ensure all relevant events are
+              emitted properly to allow for accurate tracking and auditing of
+              token activities.
+            </li>
+            <li>
+              <strong>Unit Tests:</strong> Implement extensive unit tests to
+              cover various scenarios and ensure the contract behaves as
+              expected under different conditions.
+            </li>
+          </ul>
+          <h2 className="contract-title ">Manager Contract</h2>
+
+          <h3 className="subsection-title">Purpose</h3>
+          <p className="audit-content">
+            The Manager.sol contract is responsible for managing the receipt of
+            tokens and coordinating the unlocking of SafeMeme tokens based on
+            predefined thresholds. It interacts with the Locker contract to
+            trigger token unlocks and manages the creation of liquidity pairs
+            for initial token listings.
+          </p>
+
+          <h3 className="subsection-title">Scope</h3>
+          <p className="audit-content">
+            The Manager.sol contract handles the following:
+          </p>
+          <ul className="audit-list">
+            <li>Receiving tokens and tracking the amount received.</li>
+            <li>
+              Interacting with the Locker contract to unlock tokens when
+              thresholds are met.
+            </li>
+            <li>
+              Managing the creation of liquidity pairs for initial token
+              listings.
+            </li>
+          </ul>
+
+          <h3 className="subsection-title">
+            Areas for Improvement / Potential Weaknesses
+          </h3>
+          <ul className="audit-list">
+            <li>
+              <strong>Threshold Management:</strong> Ensure the unlock
+              thresholds are set appropriately to balance liquidity and token
+              availability.
+            </li>
+            <li>
+              <strong>Authorization:</strong> Verify that only the authorized
+              Locker contract can trigger the unlock function to prevent
+              unauthorized access to locked tokens.
+            </li>
+            <li>
+              <strong>Token Transfer Validation:</strong> Ensure that token
+              transfers to the router are correctly validated to prevent
+              transfer failures.
+            </li>
+            <li>
+              <strong>Event Emission:</strong> Ensure all relevant events are
+              emitted properly to allow for accurate tracking and auditing of
+              token activities.
+            </li>
+            <li>
+              <strong>Unit Tests:</strong> Implement extensive unit tests to
+              cover various scenarios and ensure the contract behaves as
+              expected under different conditions.
+            </li>
+          </ul>
+          <h2 className="contract-title ">Router Contract</h2>
+
+          <h3 className="subsection-title">Purpose</h3>
+          <p className="audit-content">
+            The Router.sol contract is designed to handle the initial listing
+            and swapping of SafeMeme tokens. It interacts with the Manager
+            contract to manage liquidity and ensure that tokens are listed at
+            appropriate rates.
+          </p>
+
+          <h3 className="subsection-title">Scope</h3>
+          <p className="audit-content">
+            The Router.sol contract handles the following:
+          </p>
+          <ul className="audit-list">
+            <li>
+              Setting the manager contract responsible for liquidity management.
+            </li>
+            <li>
+              Adding liquidity received by the Manager contract to the DEX.
+            </li>
+            <li>
+              Listing initial tokens at a calculated rate based on the amount of
+              tokenB received.
+            </li>
+            <li>Facilitating token swaps through a specified path.</li>
+            <li>
+              Providing information about the initial price per token and
+              initial token amount listed.
+            </li>
+          </ul>
+
+          <h3 className="subsection-title">
+            Areas for Improvement / Potential Weaknesses
+          </h3>
+          <ul className="audit-list">
+            <li>
+              <strong>Manager Setting:</strong> Ensure that the manager contract
+              is set correctly and only once to avoid unauthorized access or
+              mismanagement.
+            </li>
+            <li>
+              <strong>Liquidity Addition:</strong> Verify the proper handling of
+              liquidity addition to the DEX and ensure that token approvals and
+              transfers are securely managed.
+            </li>
+            <li>
+              <strong>Initial Token Listing:</strong> Double-check the
+              calculation of the initial price per token to prevent mispricing.
+              Ensure the initial token listing logic is correctly implemented.
+            </li>
+            <li>
+              <strong>Swap Functionality:</strong> Implement and test the swap
+              logic thoroughly to ensure it functions as expected. Placeholder
+              logic should be replaced with robust calculations.
+            </li>
+            <li>
+              <strong>Event Emission:</strong> Ensure all relevant events are
+              emitted properly to allow for accurate tracking and auditing of
+              token activities.
+            </li>
+            <li>
+              <strong>Unit Tests:</strong> Implement extensive unit tests to
+              cover various scenarios and ensure the contract behaves as
+              expected under different conditions.
+            </li>
+          </ul>
+        </section>
       </div>
     </div>
   )

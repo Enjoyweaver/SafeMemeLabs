@@ -225,3 +225,74 @@ body {
     visibility: hidden; /* Make the blank filler invisible while keeping the space */
   }
 }
+
+.audit-section {
+  margin-top: 40px;
+  padding: 20px;
+  border: 2px solid var(--border-light);
+  border-radius: 10px;
+  background-color: var(--background-light);
+  width: 70%;
+  margin: 0 auto;
+}
+
+.dark .audit-section {
+  border: 2px solid var(--border-dark);
+  background-color: var(--background-dark);
+}
+
+.first-contract-title {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: var(--secondary-light);
+  margin-top: 1rem;
+  text-decoration: underline;
+}
+.dark .first-contract-title {
+  color: var(--secondary-dark);
+}
+.contract-title {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: var(--secondary-light);
+  margin-top: 4rem;
+  text-decoration: underline;
+}
+.dark .contract-title {
+  color: var(--secondary-dark);
+}
+
+.subsection-title {
+  font-size: 1.5rem;
+  color: var(--secondary-light);
+  margin-top: 20px;
+}
+
+.dark .subsection-title {
+  color: var(--secondary-dark);
+}
+
+.audit-content {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.audit-list {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+.audit-list li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.audit-list strong {
+  color: var(--primary-light);
+}
+
+.dark .audit-list strong {
+  color: var(--primary-dark);
+}

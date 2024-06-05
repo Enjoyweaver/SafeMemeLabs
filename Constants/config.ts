@@ -133,7 +133,7 @@ export const lockerDetails: { [key: string]: string } = {
 export const managerDetails: { [key: string]: string } = {
   "137": "YourManagerAddressForPolygon",
   "250": "YourManagerAddressForFantom",
-  "4002": "YourManagerAddressForFantomTestnet",
+  "4002": "0x118a984d43d95adb18e4f5195923f69393589aca",
   "64165": "YourManagerAddressForFantomTestnet2",
   "666666666": "YourManagerAddressForDegen",
   "8453": "YourManagerAddressForDegen2",
@@ -147,7 +147,7 @@ export const managerDetails: { [key: string]: string } = {
 export const routerDetails: { [key: string]: string } = {
   "137": "YourManagerAddressForPolygon",
   "250": "YourManagerAddressForFantom",
-  "4002": "YourManagerAddressForFantomTestnet",
+  "4002": "0xb68971834547e589c482d6ebbac390f1b64aff94",
   "64165": "YourManagerAddressForFantomTestnet2",
   "666666666": "YourManagerAddressForDegen",
   "8453": "YourManagerAddressForDegen2",
@@ -156,4 +156,14 @@ export const routerDetails: { [key: string]: string } = {
   "31": "YourManagerAddressForRootstockTestnet",
   "148": "YourManagerAddressForAnotherChain",
   "501": "YourManagerAddressForSolanaTestnet",
+}
+
+export const tokenBOptions: {
+  [key: string]: { address: string; symbol: string }[]
+} = {
+  "4002": [
+    { address: "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", symbol: "wFTM" },
+    // Add more tokens if needed
+  ],
+  // Add entries for other chains similarly
 }

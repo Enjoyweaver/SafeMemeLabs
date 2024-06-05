@@ -27,6 +27,7 @@ const Swap = () => {
   const [estimatedOutput, setEstimatedOutput] = useState()
   const [tokens, setTokens] = useState([]) // State to store fetched tokens
   const [phasedTokens, setPhasedTokens] = useState([]) // State to store phased tokens
+  const [pairs, setPairs] = useState([]) // State to store pairs
 
   useEffect(() => {
     setIsClient(true)
@@ -137,13 +138,58 @@ const Swap = () => {
     }
   }
 
+  const fetchPairsFromRouter = async () => {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const routerAddress = routerDetails[chainId]
+      const routerContract = new ethers.Contract(
+        routerAddress,
+        routerABI,
+        provider
+      )
+
+      const pairs = await routerContract.getAllPairs()
+
+      const pairDetails = await Promise.all(
+        pairs.map(async (pairAddress) => {
+          const pairContract = new ethers.Contract(
+            pairAddress,
+            erc20ABI,
+            provider
+          )
+          const token0 = await pairContract.token0()
+          const token1 = await pairContract.token1()
+
+          const token0Contract = new ethers.Contract(token0, erc20ABI, provider)
+          const token1Contract = new ethers.Contract(token1, erc20ABI, provider)
+
+          const token0Name = await token0Contract.name()
+          const token1Name = await token1Contract.name()
+
+          return {
+            pairAddress,
+            token0: { address: token0, name: token0Name },
+            token1: { address: token1, name: token1Name },
+          }
+        })
+      )
+
+      return pairDetails
+    } catch (error) {
+      console.error("Error fetching pairs from router:", error)
+      return []
+    }
+  }
+
   useEffect(() => {
-    const fetchTokens = async () => {
+    const fetchTokensAndPairs = async () => {
       const tokensFromRouter = await fetchTokensFromRouter()
       setPhasedTokens(tokensFromRouter)
+      const pairsFromRouter = await fetchPairsFromRouter()
+      setPairs(pairsFromRouter)
     }
 
-    fetchTokens()
+    fetchTokensAndPairs()
   }, [chainId])
 
   function splitData(data: any) {
@@ -176,11 +222,11 @@ const Swap = () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const swapTokens = async (provider, tokenFrom, tokenTo, amount) => {
           const dexContract = new ethers.Contract(
-            dexAddress,
-            dexABI,
+            routerDetails[chainId],
+            routerABI,
             provider.getSigner()
           )
-          await dexContract.swap(tokenFrom, tokenTo, amount)
+          await dexContract.swapTokens(tokenFrom, tokenTo, amount)
           console.log("Tokens swapped:", tokenFrom, tokenTo, amount)
         }
         await swapTokens(provider, tokenFrom, tokenTo, amount)
@@ -210,7 +256,7 @@ const Swap = () => {
   const handleListInitialTokens = async (
     tokenAddress,
     initialAmount,
-    pricePerToken
+    tokenBAmount
   ) => {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -224,13 +270,13 @@ const Swap = () => {
       await routerContract.listInitialTokens(
         tokenAddress,
         initialAmount,
-        pricePerToken
+        tokenBAmount
       )
       console.log(
         "Initial tokens listed:",
         tokenAddress,
         initialAmount,
-        pricePerToken
+        tokenBAmount
       )
     } catch (error) {
       console.error("Listing initial tokens failed:", error)
@@ -330,6 +376,22 @@ const Swap = () => {
                   </p>
                   <p>
                     <strong>Decimals:</strong> {token.decimals}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="pairs-section">
+              <h2 className="section-title">Available Pairs</h2>
+              {pairs.map((pair, index) => (
+                <div key={index} className="pair-card">
+                  <p>
+                    <strong>Pair Address:</strong> {pair.pairAddress}
+                  </p>
+                  <p>
+                    <strong>Token 0:</strong> {pair.token0.name}
+                  </p>
+                  <p>
+                    <strong>Token 1:</strong> {pair.token1.name}
                   </p>
                 </div>
               ))}
