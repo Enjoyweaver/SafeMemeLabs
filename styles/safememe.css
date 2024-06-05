@@ -186,6 +186,15 @@ body {
     margin-bottom: 0px; /* Consistent margin with other input rows */
     visibility: hidden; /* Make the blank filler invisible while keeping the space */
   }
+  .audit-section {
+    margin-top: 40px;
+    padding: 20px;
+    border: 2px solid var(--border-light);
+    border-radius: 10px;
+    background-color: var(--background-light);
+    width: 95%;
+    margin: 0 auto;
+  }
 }
 
 @media (max-width: 576px) {
@@ -205,6 +214,15 @@ body {
     margin-bottom: 0px; /* Consistent margin with other input rows */
     visibility: hidden; /* Make the blank filler invisible while keeping the space */
   }
+  .audit-section {
+    margin-top: 40px;
+    padding: 20px;
+    border: 2px solid var(--border-light);
+    border-radius: 10px;
+    background-color: var(--background-light);
+    width: 95%;
+    margin: 0 auto;
+  }
 }
 
 @media (max-width: 480px) {
@@ -223,6 +241,15 @@ body {
     height: 48px; /* Adjust as needed to match the height of input rows */
     margin-bottom: 0px; /* Consistent margin with other input rows */
     visibility: hidden; /* Make the blank filler invisible while keeping the space */
+  }
+  .audit-section {
+    margin-top: 40px;
+    padding: 20px;
+    border: 2px solid var(--border-light);
+    border-radius: 10px;
+    background-color: var(--background-light);
+    width: 95%;
+    margin: 0 auto;
   }
 }
 

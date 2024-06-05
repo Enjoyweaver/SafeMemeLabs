@@ -281,9 +281,7 @@ const SafeMemeBlogPost = () => {
             </li>
           </ul>
 
-          <h3 className="subsection-title">
-            Areas for Improvement / Potential Weaknesses
-          </h3>
+          <h3 className="subsection-title">Areas of Consideration</h3>
           <ul className="audit-list">
             <li>
               <strong>Fee Management:</strong> Ensure the fee collector address
@@ -309,11 +307,6 @@ const SafeMemeBlogPost = () => {
               <strong>Router Interaction:</strong> Validate the interactions
               with the Router contract to confirm initial token listings are
               handled correctly and securely.
-            </li>
-            <li>
-              <strong>Unit Tests:</strong> Implement extensive unit tests to
-              cover various scenarios and ensure the contract behaves as
-              expected under different conditions.
             </li>
           </ul>
 
@@ -348,9 +341,7 @@ const SafeMemeBlogPost = () => {
             </li>
           </ul>
 
-          <h3 className="subsection-title">
-            Areas for Improvement / Potential Weaknesses
-          </h3>
+          <h3 className="subsection-title">Areas of Consideration</h3>
           <ul className="audit-list">
             <li>
               <strong>Manager Authorization:</strong> Ensure that only the
@@ -366,11 +357,6 @@ const SafeMemeBlogPost = () => {
               <strong>Event Emission:</strong> Ensure all relevant events are
               emitted properly to allow for accurate tracking and auditing of
               token activities.
-            </li>
-            <li>
-              <strong>Unit Tests:</strong> Implement extensive unit tests to
-              cover various scenarios and ensure the contract behaves as
-              expected under different conditions.
             </li>
           </ul>
           <h2 className="contract-title ">Manager Contract</h2>
@@ -400,9 +386,7 @@ const SafeMemeBlogPost = () => {
             </li>
           </ul>
 
-          <h3 className="subsection-title">
-            Areas for Improvement / Potential Weaknesses
-          </h3>
+          <h3 className="subsection-title">Areas of Consideration</h3>
           <ul className="audit-list">
             <li>
               <strong>Threshold Management:</strong> Ensure the unlock
@@ -423,11 +407,6 @@ const SafeMemeBlogPost = () => {
               <strong>Event Emission:</strong> Ensure all relevant events are
               emitted properly to allow for accurate tracking and auditing of
               token activities.
-            </li>
-            <li>
-              <strong>Unit Tests:</strong> Implement extensive unit tests to
-              cover various scenarios and ensure the contract behaves as
-              expected under different conditions.
             </li>
           </ul>
           <h2 className="contract-title ">Router Contract</h2>
@@ -462,9 +441,7 @@ const SafeMemeBlogPost = () => {
             </li>
           </ul>
 
-          <h3 className="subsection-title">
-            Areas for Improvement / Potential Weaknesses
-          </h3>
+          <h3 className="subsection-title">Areas of Consideration</h3>
           <ul className="audit-list">
             <li>
               <strong>Manager Setting:</strong> Ensure that the manager contract
@@ -490,11 +467,6 @@ const SafeMemeBlogPost = () => {
               <strong>Event Emission:</strong> Ensure all relevant events are
               emitted properly to allow for accurate tracking and auditing of
               token activities.
-            </li>
-            <li>
-              <strong>Unit Tests:</strong> Implement extensive unit tests to
-              cover various scenarios and ensure the contract behaves as
-              expected under different conditions.
             </li>
           </ul>
         </section>
