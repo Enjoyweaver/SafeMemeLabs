@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "concurrently \"contentlayer dev\" \"next dev\"",
-    "build": "contentlayer build && next build",
+    "build": "contentlayer build && next build && next lint",
     "turbo": "next dev --turbo",
     "start": "next start",
     "lint": "next lint",

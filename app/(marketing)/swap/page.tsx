@@ -1,16 +1,29 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { priceFeedAddresses, rpcUrls, tokenBOptions } from "@/Constants/config"
+import {
+  priceFeedAddresses,
+  rpcUrls,
+  tokenBOptions,
+  tokenDeployerDetails,
+} from "@/Constants/config"
 import { ethers } from "ethers"
-import { useNetwork } from "wagmi"
+import {
+  useAccount,
+  useContractRead,
+  useContractReads,
+  useNetwork,
+} from "wagmi"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import "./swap.css"
+import { erc20ABI } from "@/ABIs/erc20"
+import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 
 const TokenSwap: React.FC = () => {
   const { chain } = useNetwork()
+  const { address, isConnected } = useAccount()
   const [tokenPrices, setTokenPrices] = useState<{
     [key: string]: { [symbol: string]: number | null }
   }>({})
@@ -21,6 +34,92 @@ const TokenSwap: React.FC = () => {
   const [selectedTokenTo, setSelectedTokenTo] = useState<string | null>(null)
   const [amount, setAmount] = useState<number>(1)
   const [estimatedOutput, setEstimatedOutput] = useState<number>(0)
+  const [deployedTokens, setDeployedTokens] = useState([]) // State to store fetched tokens
+
+  const chainId = chain ? chain.id : Object.keys(tokenDeployerDetails)[0]
+
+  const { data: contractsCount, error: contractsCountError } = useContractRead({
+    address: tokenDeployerDetails[chainId] as `0x${string}`,
+    abi: tokenDeployerABI,
+    functionName: "getDeployedTokenCount",
+  })
+
+  const { data: allContracts, error: allContractsError } = useContractReads({
+    contracts: contractsCount
+      ? Array.from({ length: Number(contractsCount) }, (_, i) => ({
+          address: tokenDeployerDetails[chainId] as `0x${string}`,
+          abi: tokenDeployerABI,
+          functionName: "tokensDeployed",
+          args: [i],
+        }))
+      : [],
+    enabled: contractsCount > 0,
+  })
+
+  useEffect(() => {
+    if (allContractsError) {
+      console.error("All Contracts Error: ", allContractsError)
+    }
+    if (allContracts) {
+      console.log("All Contracts: ", allContracts)
+    }
+  }, [allContracts, allContractsError])
+
+  const contractRequests = allContracts?.map((contract) => [
+    {
+      address: contract.result,
+      abi: erc20ABI,
+      functionName: "name",
+    },
+    {
+      address: contract.result,
+      abi: erc20ABI,
+      functionName: "symbol",
+    },
+    {
+      address: contract.result,
+      abi: erc20ABI,
+      functionName: "totalSupply",
+    },
+    {
+      address: contract.result,
+      abi: erc20ABI,
+      functionName: "decimals",
+    },
+  ])
+
+  const { data: tempTokenData, error: tempTokenDataError } = useContractReads({
+    contracts: contractRequests?.flat(),
+    enabled: !!contractRequests?.length,
+  })
+
+  useEffect(() => {
+    if (tempTokenDataError) {
+      console.error("Temp Token Data Error: ", tempTokenDataError)
+    }
+    if (tempTokenData) {
+      console.log("Temp Token Data: ", tempTokenData)
+      setDeployedTokens(splitData(tempTokenData))
+    }
+  }, [tempTokenData, tempTokenDataError])
+
+  function splitData(data: any) {
+    const groupedData = []
+    const namedData = []
+    for (let i = 0; i < data.length; i += 4) {
+      groupedData.push(data.slice(i, i + 4))
+    }
+    for (let i = 0; i < groupedData.length; i++) {
+      namedData.push({
+        address: allContracts[i].result,
+        name: groupedData[i][0].result,
+        symbol: groupedData[i][1].result,
+        supply: groupedData[i][2].result,
+        decimals: groupedData[i][3].result,
+      })
+    }
+    return namedData
+  }
 
   useEffect(() => {
     const fetchTokenPrices = async () => {
@@ -110,14 +209,66 @@ const TokenSwap: React.FC = () => {
     setSelectedTokenTo(tempToken)
   }
 
-  const handleSwap = () => {
-    // Implement the swap functionality
-    console.log("Swapping tokens")
+  const handleSwap = async () => {
+    if (isConnected && amount > 0 && selectedTokenFrom && selectedTokenTo) {
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const swapTokens = async (provider, tokenFrom, tokenTo, amount) => {
+          const dexContract = new ethers.Contract(
+            dexAddress,
+            dexABI,
+            provider.getSigner()
+          )
+          await dexContract.swap(tokenFrom, tokenTo, amount)
+          console.log("Tokens swapped:", tokenFrom, tokenTo, amount)
+        }
+
+        await swapTokens(provider, selectedTokenFrom, selectedTokenTo, amount)
+      } catch (error) {
+        console.error("Swap failed:", error)
+      }
+    }
   }
 
-  const allTokens = Object.entries(tokenBOptions).flatMap(([chainId, tokens]) =>
-    tokens.map((token) => ({ chainId, ...token }))
-  )
+  useEffect(() => {
+    if (
+      amount &&
+      tokenPrices[selectedTokenFrom?.split("-")[0]] &&
+      tokenPrices[selectedTokenTo?.split("-")[0]]
+    ) {
+      const fromPrice =
+        tokenPrices[selectedTokenFrom?.split("-")[0]][
+          selectedTokenFrom?.split("-")[1]
+        ]
+      const toPrice =
+        tokenPrices[selectedTokenTo?.split("-")[0]][
+          selectedTokenTo?.split("-")[1]
+        ]
+      if (fromPrice && toPrice) {
+        setEstimatedOutput((amount * fromPrice) / toPrice)
+      }
+    }
+  }, [amount, selectedTokenFrom, selectedTokenTo, tokenPrices])
+
+  const getTokensForCurrentChain = () => {
+    const currentChainId = chain
+      ? chain.id
+      : Object.keys(tokenDeployerDetails)[0]
+    return tokenBOptions[currentChainId] || []
+  }
+
+  const allTokens = getTokensForCurrentChain().map((token) => ({
+    chainId: chain ? chain.id : Object.keys(tokenDeployerDetails)[0],
+    ...token,
+  }))
+
+  const combinedTokens = [
+    ...allTokens,
+    ...deployedTokens.map((token) => ({
+      chainId,
+      ...token,
+    })),
+  ]
 
   return (
     <div>
@@ -137,12 +288,12 @@ const TokenSwap: React.FC = () => {
                     className="input-field"
                   >
                     <option value="">Select Token</option>
-                    {allTokens.map((token, index) => (
+                    {combinedTokens.map((token, index) => (
                       <option
                         key={index}
                         value={`${token.chainId}-${token.symbol}`}
                       >
-                        {token.symbol} (Chain ID: {token.chainId})
+                        {token.symbol}
                       </option>
                     ))}
                   </select>
@@ -193,12 +344,12 @@ const TokenSwap: React.FC = () => {
                     className="input-field"
                   >
                     <option value="">Select Token</option>
-                    {allTokens.map((token, index) => (
+                    {combinedTokens.map((token, index) => (
                       <option
                         key={index}
                         value={`${token.chainId}-${token.symbol}`}
                       >
-                        {token.symbol} (Chain ID: {token.chainId})
+                        {token.symbol}
                       </option>
                     ))}
                   </select>
