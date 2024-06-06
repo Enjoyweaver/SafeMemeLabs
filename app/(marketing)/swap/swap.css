@@ -97,11 +97,20 @@ body {
   padding: 10px;
   margin-right: 10px;
   flex: 1;
+  width: 100%;
+  padding-right: 70px;
 }
 
 .dark .input-field {
   background-color: var(--input-dark);
   color: var(--foreground-dark);
+}
+
+.input-field.with-price {
+  height: 60px; /* Adjust the height to accommodate both the amount and price */
+  padding-top: 10px; /* Add padding to the top */
+  padding-bottom: 30px; /* Add padding to the bottom */
+  position: relative; /* Set position relative to contain the price info */
 }
 
 .amount-container {
@@ -115,6 +124,14 @@ body {
 .amount-container input {
   margin-top: 5px;
   width: 150px;
+}
+
+.amount-input-with-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  position: relative;
+  width: 70%;
 }
 
 .quick-select-buttons {
@@ -231,9 +248,20 @@ body {
   background-color: var(--secondary-dark);
 }
 
+.amount-input-with-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Changed to flex-start to align price below the amount */
+}
+
+.amount-input-with-price .input-field {
+  margin-bottom: 5px; /* Add margin to separate amount input and price info */
+}
+
 .price-info {
-  display: block;
-  margin-top: 10px;
+  position: absolute;
+  bottom: 5px; /* Position the price at the bottom of the input field */
+  left: 10px; /* Adjust to push the price to the left */
   font-size: 14px;
   color: var(--secondary-light);
 }
