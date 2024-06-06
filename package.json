@@ -26,7 +26,6 @@
     "@editorjs/list": "^1.8.0",
     "@editorjs/paragraph": "^2.9.0",
     "@editorjs/table": "^2.2.1",
-    "@hackbg/lolsdk": "git+https://github.com/hackbg/chainlink-low-latency-consumer.git#8e68debef907923c24bbe44f4d6ad89b261386c2",
     "@hackbg/chainlink-datastreams-consumer": "github:hackbg/chainlink-datastreams-consumer",
     "@hookform/resolvers": "^3.1.0",
     "@prisma/client": "^4.13.0",
