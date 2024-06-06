@@ -311,7 +311,7 @@ const TokenSwap: React.FC = () => {
                         key={index}
                         value={`${token.chainId}-${token.symbol}`}
                       >
-                        {token.symbol} (Chain ID: {token.chainId})
+                        {token.symbol}
                       </option>
                     ))}
                   </select>
@@ -367,7 +367,7 @@ const TokenSwap: React.FC = () => {
                         key={index}
                         value={`${token.chainId}-${token.symbol}`}
                       >
-                        {token.symbol} (Chain ID: {token.chainId})
+                        {token.symbol}
                       </option>
                     ))}
                   </select>
