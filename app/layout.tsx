@@ -12,6 +12,9 @@ import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from "@/components/analytics"
 import { ThemeProvider } from "@/components/theme-provider"
 
+import { DatafeedProvider } from "./(marketing)/datafeed-provider"
+import { SocketProvider } from "./(marketing)/socket-provider"
+
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -94,14 +97,22 @@ export default function RootLayout({ children }: RootLayoutProps) {
           fontHeading.variable
         )}
       >
-        <WagmiConfig config={config}>
-          <ToastContainer />
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
-            <Analytics />
-            <Toaster />
-          </ThemeProvider>
-        </WagmiConfig>
+        <DatafeedProvider>
+          <SocketProvider>
+            <WagmiConfig config={config}>
+              <ToastContainer />
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+              >
+                {children}
+                <Analytics />
+                <Toaster />
+              </ThemeProvider>
+            </WagmiConfig>
+          </SocketProvider>
+        </DatafeedProvider>
       </body>
     </html>
   )
