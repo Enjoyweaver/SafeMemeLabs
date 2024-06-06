@@ -1,0 +1,10 @@
+{
+  "build": {
+    "env": {
+      "CHAINLINK_API_URL": "default-api-url",
+      "CHAINLINK_WEBSOCKET_URL": "default-ws-url",
+      "CHAINLINK_CLIENT_ID": "default-client-id",
+      "CHAINLINK_CLIENT_SECRET": "default-client-secret"
+    }
+  }
+}
