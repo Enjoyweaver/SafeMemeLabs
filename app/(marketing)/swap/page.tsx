@@ -35,6 +35,7 @@ const TokenSwap: React.FC = () => {
   const [amount, setAmount] = useState<number>(1)
   const [estimatedOutput, setEstimatedOutput] = useState<number>(0)
   const [deployedTokens, setDeployedTokens] = useState([]) // State to store fetched tokens
+  const [isClient, setIsClient] = useState(false) // State to track if we are on the client
 
   const chainId = chain ? chain.id : Object.keys(tokenDeployerDetails)[0]
 
@@ -183,6 +184,11 @@ const TokenSwap: React.FC = () => {
     fetchTokenPrices()
   }, [])
 
+  useEffect(() => {
+    // Ensure this code runs only on the client
+    setIsClient(true)
+  }, [])
+
   const handleTokenFromChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -222,6 +228,13 @@ const TokenSwap: React.FC = () => {
           await dexContract.swap(tokenFrom, tokenTo, amount)
           console.log("Tokens swapped:", tokenFrom, tokenTo, amount)
         }
+        // Function to get tokens for the current chain
+        const getTokensForCurrentChain = () => {
+          const currentChainId = chain
+            ? chain.id
+            : Object.keys(tokenDeployerDetails)[0]
+          return tokenBOptions[currentChainId] || []
+        }
 
         await swapTokens(provider, selectedTokenFrom, selectedTokenTo, amount)
       } catch (error) {
@@ -249,6 +262,11 @@ const TokenSwap: React.FC = () => {
       }
     }
   }, [amount, selectedTokenFrom, selectedTokenTo, tokenPrices])
+
+  if (!isClient) {
+    // Render nothing on the server
+    return null
+  }
 
   const getTokensForCurrentChain = () => {
     const currentChainId = chain
@@ -293,7 +311,7 @@ const TokenSwap: React.FC = () => {
                         key={index}
                         value={`${token.chainId}-${token.symbol}`}
                       >
-                        {token.symbol}
+                        {token.symbol} (Chain ID: {token.chainId})
                       </option>
                     ))}
                   </select>
@@ -349,26 +367,29 @@ const TokenSwap: React.FC = () => {
                         key={index}
                         value={`${token.chainId}-${token.symbol}`}
                       >
-                        {token.symbol}
+                        {token.symbol} (Chain ID: {token.chainId})
                       </option>
                     ))}
                   </select>
-                  <input
-                    type="number"
-                    id="estimatedOutput"
-                    value={estimatedOutput}
-                    disabled
-                    className="input-field"
-                  />
-                  {selectedTokenTo && (
-                    <span className="price-info">
-                      {tokenPrices[selectedTokenTo.split("-")[0]]
-                        ? `$${tokenPrices[selectedTokenTo.split("-")[0]][
-                            selectedTokenTo.split("-")[1]
-                          ]?.toFixed(2)}`
-                        : "Select a token"}
-                    </span>
-                  )}
+                  <div className="amount-container">
+                    <div className="amount-input-with-price">
+                      <input
+                        type="number"
+                        id="estimatedOutput"
+                        value={estimatedOutput}
+                        disabled
+                        className="input-field with-price"
+                      />
+                      <div className="price-info">
+                        {selectedTokenTo &&
+                        tokenPrices[selectedTokenTo.split("-")[0]]
+                          ? `$${tokenPrices[selectedTokenTo.split("-")[0]][
+                              selectedTokenTo.split("-")[1]
+                            ]?.toFixed(2)}`
+                          : "Select a token"}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="swap-summary">
