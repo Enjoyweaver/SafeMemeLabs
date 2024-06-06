@@ -131,7 +131,7 @@ body {
   flex-direction: column;
   align-items: flex-end;
   position: relative;
-  width: 70%;
+  width: 100%;
 }
 
 .quick-select-buttons {
@@ -271,7 +271,7 @@ body {
 }
 
 /* Mobile styling */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .swap-container {
     margin: 20px auto;
     padding: 10px;
@@ -279,54 +279,32 @@ body {
 
   .page-title {
     font-size: 1.5rem;
-    margin-bottom: 10px;
   }
 
   .token-amount-container {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+  }
+
+  .input-field {
+    margin-right: 0;
+    margin-bottom: 10px;
   }
 
   .amount-container {
     width: 100%;
   }
 
-  .input-field.with-price {
-    height: auto;
-    padding-top: 10px;
-    padding-bottom: 10px;
+  .quick-select-buttons {
+    top: -20px;
+    width: 100%;
+  }
+
+  .amount-input-with-price {
+    width: 100%;
   }
 
   .price-info {
-    position: relative;
-    left: 0;
-    bottom: 0;
-    font-size: 12px;
-    margin-top: 5px;
-  }
-
-  .quick-select-buttons {
-    width: 100%;
-    top: -20px;
-    justify-content: space-evenly;
-  }
-
-  .reverse-button-container {
-    margin-top: 5px;
-    margin-bottom: 10px;
-  }
-
-  .swap-summary {
-    margin-left: 0;
-    text-align: center;
-  }
-
-  .swap-summary p {
-    font-size: 12px;
-  }
-
-  .swap-button {
-    width: 100%;
-    padding: 10px;
+    left: 10px;
   }
 }
