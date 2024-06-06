@@ -1,194 +1,344 @@
-import Image from "next/image"
-import { isTradeEnabled } from "@/Constants/trade"
+"use client"
 
-import { ExchangePlatform, Pair } from "@/types/_types"
-import { cn } from "@/lib/utils"
+import { useEffect, useState } from "react"
+import { erc20ABI } from "@/ABIs/erc20"
+import { routerABI } from "@/ABIs/router"
+import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
+import { routerDetails, tokenDeployerDetails } from "@/Constants/config"
+import { ethers } from "ethers"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import DatafeedData from "@/components/datafeed-data"
-import ExchangePrice from "@/components/exchange-price"
-import { TradeButton } from "@/components/trade-button"
+  useAccount,
+  useContractRead,
+  useContractReads,
+  useNetwork,
+} from "wagmi"
+
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
-export default function Home() {
+import "./swap.css"
+
+const Swap = () => {
+  const [isClient, setIsClient] = useState(false)
+  const [tokenFrom, setTokenFrom] = useState("")
+  const [tokenTo, setTokenTo] = useState("")
+  const [amount, setAmount] = useState("")
+  const [balance, setBalance] = useState(1000) // Mock balance
+  const [exchangeRate, setExchangeRate] = useState() // Mock exchange rate
+  const [estimatedOutput, setEstimatedOutput] = useState()
+  const [tokens, setTokens] = useState([]) // State to store fetched tokens
+  const [phasedTokens, setPhasedTokens] = useState([]) // State to store phased tokens
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  const { address, isConnected } = useAccount()
+  const { chain } = useNetwork()
+
+  const chainId = chain ? chain.id : Object.keys(tokenDeployerDetails)[0]
+
+  const { data: contractsCount, error: contractsCountError } = useContractRead({
+    address: tokenDeployerDetails[chainId] as `0x${string}`,
+    abi: tokenDeployerABI,
+    functionName: "getDeployedTokenCount",
+  })
+
+  const { data: allContracts, error: allContractsError } = useContractReads({
+    contracts: contractsCount
+      ? Array.from({ length: Number(contractsCount) }, (_, i) => ({
+          address: tokenDeployerDetails[chainId] as `0x${string}`,
+          abi: tokenDeployerABI,
+          functionName: "tokensDeployed",
+          args: [i],
+        }))
+      : [],
+    enabled: contractsCount > 0,
+  })
+
+  useEffect(() => {
+    if (allContractsError) {
+      console.error("All Contracts Error: ", allContractsError)
+    }
+    if (allContracts) {
+      console.log("All Contracts: ", allContracts)
+    }
+  }, [allContracts, allContractsError])
+
+  const contractRequests = allContracts?.map((contract) => [
+    {
+      address: contract.result,
+      abi: erc20ABI,
+      functionName: "name",
+    },
+    {
+      address: contract.result,
+      abi: erc20ABI,
+      functionName: "symbol",
+    },
+    {
+      address: contract.result,
+      abi: erc20ABI,
+      functionName: "totalSupply",
+    },
+    {
+      address: contract.result,
+      abi: erc20ABI,
+      functionName: "decimals",
+    },
+  ])
+
+  const { data: tempTokenData, error: tempTokenDataError } = useContractReads({
+    contracts: contractRequests?.flat(),
+    enabled: !!contractRequests?.length,
+  })
+
+  useEffect(() => {
+    if (tempTokenDataError) {
+      console.error("Temp Token Data Error: ", tempTokenDataError)
+    }
+    if (tempTokenData) {
+      console.log("Temp Token Data: ", tempTokenData)
+      setTokens(splitData(tempTokenData))
+    }
+  }, [tempTokenData, tempTokenDataError])
+
+  const fetchTokensFromRouter = async () => {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const routerAddress = routerDetails[chainId]
+      const routerContract = new ethers.Contract(
+        routerAddress,
+        routerABI,
+        provider
+      )
+
+      const listedTokens = await routerContract.getListedTokens()
+
+      const tokenDetails = await Promise.all(
+        listedTokens.map(async (tokenAddress) => {
+          const tokenContract = new ethers.Contract(
+            tokenAddress,
+            erc20ABI,
+            provider
+          )
+          const name = await tokenContract.name()
+          const symbol = await tokenContract.symbol()
+          const totalSupply = await tokenContract.totalSupply()
+          const decimals = await tokenContract.decimals()
+
+          return { address: tokenAddress, name, symbol, totalSupply, decimals }
+        })
+      )
+
+      return tokenDetails
+    } catch (error) {
+      console.error("Error fetching tokens from router:", error)
+      return []
+    }
+  }
+
+  useEffect(() => {
+    const fetchTokens = async () => {
+      const tokensFromRouter = await fetchTokensFromRouter()
+      setPhasedTokens(tokensFromRouter)
+    }
+
+    fetchTokens()
+  }, [chainId])
+
+  function splitData(data: any) {
+    const groupedData = []
+    const namedData = []
+    for (let i = 0; i < data.length; i += 4) {
+      groupedData.push(data.slice(i, i + 4))
+    }
+    for (let i = 0; i < groupedData.length; i++) {
+      namedData.push({
+        address: allContracts[i].result,
+        name: groupedData[i][0].result,
+        symbol: groupedData[i][1].result,
+        supply: groupedData[i][2].result,
+        decimals: groupedData[i][3].result,
+      })
+    }
+    return namedData
+  }
+
+  const formatNumber = (number: number, decimals: number) => {
+    return (number / 10 ** decimals).toLocaleString("en-US", {
+      maximumFractionDigits: 2,
+    })
+  }
+
+  const handleSwap = async () => {
+    if (isConnected && amount > 0 && tokenFrom && tokenTo) {
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const swapTokens = async (provider, tokenFrom, tokenTo, amount) => {
+          const dexContract = new ethers.Contract(
+            dexAddress,
+            dexABI,
+            provider.getSigner()
+          )
+          await dexContract.swap(tokenFrom, tokenTo, amount)
+          console.log("Tokens swapped:", tokenFrom, tokenTo, amount)
+        }
+        await swapTokens(provider, tokenFrom, tokenTo, amount)
+      } catch (error) {
+        console.error("Swap failed:", error)
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (amount && exchangeRate) {
+      setEstimatedOutput(parseFloat(amount) * exchangeRate)
+    }
+  }, [amount, exchangeRate])
+
+  const handleQuickSelect = (percentage) => {
+    const calculatedAmount = (balance * percentage) / 100
+    setAmount(calculatedAmount.toString())
+  }
+
+  const handleReverse = () => {
+    const temp = tokenFrom
+    setTokenFrom(tokenTo)
+    setTokenTo(temp)
+  }
+
+  const handleListInitialTokens = async (
+    tokenAddress,
+    initialAmount,
+    pricePerToken
+  ) => {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const routerAddress = routerDetails[chainId]
+      const routerContract = new ethers.Contract(
+        routerAddress,
+        routerABI,
+        provider.getSigner()
+      )
+
+      await routerContract.listInitialTokens(
+        tokenAddress,
+        initialAmount,
+        pricePerToken
+      )
+      console.log(
+        "Initial tokens listed:",
+        tokenAddress,
+        initialAmount,
+        pricePerToken
+      )
+    } catch (error) {
+      console.error("Listing initial tokens failed:", error)
+    }
+  }
+
   return (
     <div>
       <Navbar />
-      <div className="mb-6 mt-12 space-y-6">
-        <h2 className="hidden text-[40px] font-medium leading-[52px] tracking-[-0.8px] md:block">
-          Chainlink Data Streams Demo dApp
-        </h2>
-        <p className="hidden font-[450] text-muted-foreground md:block">
-          Low-latency, high frequency, gas efficient data feeds on Arbitrum
-          Sepolia Testnet.
-        </p>
-        <div className="rounded-md border bg-[rgb(24,29,41)]/60 p-6">
-          <Table className="border-separate border-spacing-y-4">
-            <TableHeader className="[&_tr]:border-b-0">
-              <TableRow className="hover:bg-[rgb(24,29,41)]/60 data-[state=selected]:bg-[rgb(24,29,41)]/60">
-                <TableHead className="flex items-center space-x-1 text-xl font-medium text-foreground">
-                  <span>Feed</span>
-                  <Image src="/sort.svg" width={13} height={13} alt="sort" />
-                </TableHead>
-                <TableHead className="text-xl font-medium text-foreground">
-                  Network
-                </TableHead>
-                <TableHead className="text-xl font-medium text-foreground">
-                  Answer
-                </TableHead>
-                <TableHead className="text-xl font-medium text-foreground">
-                  Last Update
-                </TableHead>
-                <TableHead className="w-[300px] text-xl font-medium text-foreground">
-                  Cex Comparison
-                </TableHead>
-                {isTradeEnabled && (
-                  <TableHead className="text-right text-xl font-medium text-foreground"></TableHead>
-                )}
-              </TableRow>
-            </TableHeader>
-            <TableBody className="text-base font-medium leading-4">
-              <TableRow className="rounded-md bg-[rgb(43,49,60)]/40">
-                <TableCell className="rounded-l-md">
-                  <div className="flex items-center space-x-2">
-                    <Image
-                      src="/ethereum.svg"
-                      alt="ethereum"
-                      width={16}
-                      height={16}
+      <div className="flex min-h-screen flex-col">
+        <main className="flex-1">
+          <div className="swap-container">
+            <h1 className="page-title">Token Swap</h1>
+            <div className="swap-card">
+              <div className="token-section">
+                <label htmlFor="tokenFrom">From</label>
+                <div className="token-amount-container">
+                  <select
+                    id="tokenFrom"
+                    value={tokenFrom}
+                    onChange={(e) => setTokenFrom(e.target.value)}
+                    className="input-field"
+                  >
+                    <option value="">Select Token</option>
+                    {tokens.map((token, index) => (
+                      <option key={index} value={token.address}>
+                        {token.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  <div className="amount-container">
+                    <div className="quick-select-buttons">
+                      <button onClick={() => handleQuickSelect(25)}>25%</button>
+                      <button onClick={() => handleQuickSelect(50)}>50%</button>
+                      <button onClick={() => handleQuickSelect(75)}>75%</button>
+                      <button onClick={() => handleQuickSelect(100)}>
+                        Max
+                      </button>
+                    </div>
+                    <input
+                      type="number"
+                      id="amount"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      placeholder="Amount"
+                      className="input-field"
                     />
-                    <span> ETH/USD</span>
                   </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2">
-                    <Image
-                      src="/arbitrum.svg"
-                      alt="arbitrum"
-                      width={16}
-                      height={16}
-                    />
-                    <span>Arbitrum Sepolia</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2">
-                    <DatafeedData data="price" pair={Pair.ETH_USD} />
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <DatafeedData data="date" pair={Pair.ETH_USD} />
-                </TableCell>
-                <TableCell
-                  width={210}
-                  className={cn(isTradeEnabled ? "" : "rounded-r-md")}
+                </div>
+              </div>
+              <div className="reverse-button-container">
+                <button className="reverse-button" onClick={handleReverse}>
+                  &#x21C5;
+                </button>
+              </div>
+
+              <div className="token-section">
+                <label htmlFor="tokenTo">To</label>
+                <select
+                  id="tokenTo"
+                  value={tokenTo}
+                  onChange={(e) => setTokenTo(e.target.value)}
+                  className="input-field"
                 >
-                  <div className="grid w-[210px] grid-cols-2 items-center gap-2">
-                    <div className="flex items-center space-x-2">
-                      <Image
-                        src="/binance.svg"
-                        alt="binance"
-                        width={16}
-                        height={16}
-                      />
-                      <ExchangePrice
-                        source={ExchangePlatform.BINANCE}
-                        pair={Pair.ETH_USD}
-                      />
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Image
-                        src="/coinbase.svg"
-                        alt="coinbase"
-                        width={16}
-                        height={16}
-                      />
-                      <ExchangePrice
-                        source={ExchangePlatform.COINBASE}
-                        pair={Pair.ETH_USD}
-                      />
-                    </div>
-                  </div>
-                </TableCell>
-                {isTradeEnabled && (
-                  <TableCell className="rounded-r-md text-right">
-                    <TradeButton pair={Pair.ETH_USD} />
-                  </TableCell>
-                )}
-              </TableRow>
-              <TableRow className="rounded-md bg-[rgb(43,49,60)]/40">
-                <TableCell className="rounded-l-md">
-                  <div className="flex items-center space-x-2">
-                    <Image src="/avax.svg" alt="arb" width={16} height={16} />
-                    <span>AVAX/USD</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2">
-                    <Image
-                      src="/arbitrum.svg"
-                      alt="arbitrum"
-                      width={16}
-                      height={16}
-                    />
-                    <span>Arbitrum Sepolia</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2">
-                    <DatafeedData data="price" pair={Pair.AVAX_USD} />
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <DatafeedData data="date" pair={Pair.AVAX_USD} />
-                </TableCell>
-                <TableCell
-                  width={210}
-                  className={cn(isTradeEnabled ? "" : "rounded-r-md")}
-                >
-                  <div className="grid w-[210px] grid-cols-2 items-center gap-2">
-                    <div className="flex items-center space-x-2">
-                      <Image
-                        src="/binance.svg"
-                        alt="binance"
-                        width={16}
-                        height={16}
-                      />
-                      <ExchangePrice
-                        source={ExchangePlatform.BINANCE}
-                        pair={Pair.AVAX_USD}
-                      />
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Image
-                        src="/coinbase.svg"
-                        alt="coinbase"
-                        width={16}
-                        height={16}
-                      />
-                      <ExchangePrice
-                        source={ExchangePlatform.COINBASE}
-                        pair={Pair.AVAX_USD}
-                      />
-                    </div>
-                  </div>
-                </TableCell>
-                {isTradeEnabled && (
-                  <TableCell className="rounded-r-md text-right">
-                    <TradeButton pair={Pair.AVAX_USD} />
-                  </TableCell>
-                )}
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
+                  <option value="">Select Token</option>
+                  {tokens.map((token, index) => (
+                    <option key={index} value={token.address}>
+                      {token.name} ({token.symbol})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="swap-summary">
+                <p>Exchange Rate: {exchangeRate}</p>
+                <p>Estimated Output: {estimatedOutput}</p>
+                <p>Slippage:</p>
+                <p>Price Impact:</p>
+              </div>
+              <button className="swap-button" onClick={handleSwap}>
+                Swap
+              </button>
+            </div>
+            <div className="phased-tokens-section">
+              <h2 className="section-title">Available Tokens by Phases</h2>
+              {phasedTokens.map((token, index) => (
+                <div key={index} className="phased-token-card">
+                  <p>
+                    <strong>Name:</strong> {token.name}
+                  </p>
+                  <p>
+                    <strong>Symbol:</strong> {token.symbol}
+                  </p>
+                  <p>
+                    <strong>Total Supply:</strong>{" "}
+                    {formatNumber(token.totalSupply, token.decimals)}
+                  </p>
+                  <p>
+                    <strong>Decimals:</strong> {token.decimals}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </main>
       </div>
     </div>
   )
 }
+
+export default Swap
