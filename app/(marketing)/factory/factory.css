@@ -48,8 +48,8 @@ body {
   width: calc(100% - 80px);
   padding: 40px;
   background-color: var(--background-light);
-  border: 1px solid var(--border-light);
-  border-radius: 15px;
+  border: 2px solid var(--border-light);
+  border-radius: 10px;
   margin: 15px auto 100px auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

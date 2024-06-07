@@ -285,7 +285,7 @@ body {
   }
   .amount-container {
     margin-right: 0.5rem;
-    width: 65%;
+    width: 50%; /* Make the amount container less wide */
   }
   .amount-input-with-price {
     width: 85%;
@@ -293,5 +293,6 @@ body {
   }
   .input-field {
     margin-right: 0px;
+    width: 80%; /* Make the token input selection wider */
   }
 }
