@@ -85,6 +85,7 @@ body {
 
 .token-amount-container {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
 }
@@ -95,10 +96,8 @@ body {
   border-radius: 5px;
   color: var(--foreground-light);
   padding: 10px;
-  margin-right: 10px;
   flex: 1;
-  width: 100%;
-  padding-right: 50px;
+  margin-right: 10px;
 }
 
 .dark .input-field {
@@ -118,27 +117,32 @@ body {
 .amount-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
   flex: 1;
   position: relative;
 }
 
 .amount-container input {
   margin-top: 5px;
-  width: 150px;
+  width: 90px;
 }
 
 .amount-input-with-price {
   display: flex;
   flex-direction: column;
   position: relative;
-  width: 75%;
-  margin-right: 10px;
+  width: 65%;
+  margin-right: 0.5rem;
   align-items: flex-start;
 }
 
 .amount-input-with-price .input-field-with-price {
-  margin-bottom: 5px; /* Add margin to separate amount input and price info */
+  padding-top: 2px;
+  padding-bottom: 20px;
+  margin-left: 10px;
+  width: 100%;
+  background-color: var(--input-dark);
+  color: var(--foreground-dark);
 }
 /* Hide the up/down arrows in the number input */
 .input[type="number"]::-webkit-outer-spin-button,
@@ -170,7 +174,6 @@ body {
   flex: 1;
   margin: 0 4px;
 }
-
 .quick-select-buttons button:hover {
   background-color: var(--secondary-light);
 }
@@ -283,40 +286,23 @@ body {
     padding: 20px;
     margin: 20px auto;
   }
-  .amount-container {
-    margin-right: 1.5rem;
-    width: 50%;
+  .token-amount-container {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .input-field {
-    margin-right: 0px;
-    width: 90%; /* Make the token input selection wider */
+  .amount-container {
+    width: 100%;
+    margin-top: 10px;
   }
-  .input-field-with-price {
-    padding-top: 2px; /* Add padding to the top */
-    padding-bottom: 20px; /* Add padding to the bottom */
-    width: 50%;
-    background-color: var(--input-dark);
-    color: var(--foreground-dark);
+
+  .amount-input-with-price {
+    width: 100%;
+    margin-right: 0;
   }
 
   .quick-select-buttons {
-    display: flex;
-    justify-content: space-between;
-    width: 65%;
-    position: absolute;
-    top: -30px;
-  }
-
-  .quick-select-buttons button {
-    padding: 2px 2px;
-    background-color: var(--primary-light);
-    border: none;
-    border-radius: 5px;
-    color: var(--text-light);
-    font-size: 10px;
-    cursor: pointer;
-    flex: 1;
-    margin: 0 2px;
+    width: 100%;
+    top: -25px;
   }
 }
