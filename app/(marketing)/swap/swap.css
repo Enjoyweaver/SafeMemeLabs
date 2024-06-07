@@ -290,7 +290,7 @@ body {
     display: flex;
     justify-content: space-between;
     width: 70%;
-    position: absolute;
+    position: relative;
   }
 
   .quick-select-buttons button {

@@ -1,36 +1,3 @@
-:root {
-  --background-light: #ffffff;
-  --foreground-light: #000000;
-  --primary-light: #04c44e; /* Pink */
-  --secondary-light: #b80f5e; /* Green */
-  --primary-light: #04c44e; /* Pink */
-  --accent-light: #04c44e; /* Dark Green */
-  --border-light: #04c44e;
-  --text-light: #000000;
-
-  --input-light: #e3e4e6;
-  --input-dark: #1a1a2e;
-
-  --background-dark: #000000;
-  --foreground-dark: #ffffff;
-  --primary-dark: #df1584; /* Pink */
-  --secondary-dark: #41b80a; /* Green */
-  --accent-dark: #41b80a; /* Dark Green */
-  --border-dark: #41b80a;
-  --text-dark: #ffffff;
-}
-
-body {
-  background-color: var(--background-light) !important;
-  color: var(--foreground-light) !important;
-  font-family: Arial, sans-serif !important;
-}
-
-.dark body {
-  background-color: var(--background-dark) !important;
-  color: var(--foreground-dark) !important;
-}
-
 .container {
   width: 100%;
   max-width: 1200px;
