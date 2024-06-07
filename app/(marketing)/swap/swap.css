@@ -278,11 +278,17 @@ body {
 }
 
 @media screen and (max-width: 620px) {
+  .swap-container {
+    width: calc(100% - 40px);
+    padding: 20px;
+    margin: 20px auto;
+  }
   .amount-container {
     margin-right: 0.5rem;
   }
   .amount-input-with-price {
-    width: 75%;
+    width: 85%;
+    margin-right: 0.5rem;
   }
   .input-field {
     margin-right: 0px;

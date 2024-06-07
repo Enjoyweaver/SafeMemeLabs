@@ -308,6 +308,15 @@ body {
     font-size: 12px;
     padding: 8px 16px;
   }
+  .tokenTypeButton:hover {
+    background-color: var(--secondary-light);
+    transform: scale(1.05);
+  }
+
+  .tokenTypeButton.active {
+    background-color: var(--input-dark);
+    color: white;
+  }
 }
 
 @media screen and (max-width: 480px) {
@@ -320,6 +329,15 @@ body {
     font-size: 11px;
     padding: 7px 14px;
   }
+  .tokenTypeButton:hover {
+    background-color: var(--secondary-light);
+    transform: scale(1.05);
+  }
+
+  .tokenTypeButton.active {
+    background-color: var(--input-dark);
+    color: white;
+  }
 }
 
 @media screen and (max-width: 360px) {
@@ -331,6 +349,16 @@ body {
   .tokenTypeButton {
     font-size: 10px;
     padding: 6px 12px;
+  }
+
+  .tokenTypeButton:hover {
+    background-color: var(--secondary-light);
+    transform: scale(1.05);
+  }
+
+  .tokenTypeButton.active {
+    background-color: var(--input-dark);
+    color: white;
   }
 }
 
