@@ -17,7 +17,7 @@ import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import { tokenDeployerDetails } from "../../../Constants/config"
-import "./profile.css"
+import "@/styles/profile.css"
 
 // Import the dashboard CSS for consistent styling
 

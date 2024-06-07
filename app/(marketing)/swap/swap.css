@@ -288,11 +288,19 @@ body {
     width: 20%;
   }
   .amount-input-with-price {
-    width: 85%;
+    width: 50%;
     margin-right: 0.5rem;
   }
   .input-field {
     margin-right: 0px;
     width: 90%; /* Make the token input selection wider */
+  }
+  .input-field-with-price {
+    padding-top: 2px; /* Add padding to the top */
+    padding-bottom: 20px; /* Add padding to the bottom */
+    margin-left: 10px;
+    width: 60%;
+    background-color: var(--input-dark);
+    color: var(--foreground-dark);
   }
 }
