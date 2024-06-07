@@ -328,8 +328,4 @@ body {
     flex-direction: column;
     align-items: flex-end;
   }
-
-  .price-info {
-    left: 10px;
-  }
 }

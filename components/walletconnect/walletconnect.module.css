@@ -210,6 +210,8 @@
     transform: translateX(0); /* Center the container on mobile */
     gap: 8px;
     max-width: 100%; /* Allow full width on mobile */
+    display: flex;
+    justify-content: center; /* Center the options */
   }
   .networkOption {
     font-size: 10px;

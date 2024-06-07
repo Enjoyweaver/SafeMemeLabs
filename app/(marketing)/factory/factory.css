@@ -223,7 +223,7 @@ body {
   .tokenDeployer {
     width: calc(100% - 40px);
     padding: 20px;
-    margin: 50px auto;
+    margin: 20px auto;
   }
 
   .title {
