@@ -98,7 +98,7 @@ body {
   margin-right: 10px;
   flex: 1;
   width: 100%;
-  padding-right: 70px;
+  padding-right: 50px;
 }
 
 .dark .input-field {
@@ -131,10 +131,14 @@ body {
 .amount-input-with-price {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
   position: relative;
   width: 75%;
   margin-right: 10px;
+  align-items: flex-start;
+}
+
+.amount-input-with-price .input-field-with-price {
+  margin-bottom: 5px; /* Add margin to separate amount input and price info */
 }
 /* Hide the up/down arrows in the number input */
 .input[type="number"]::-webkit-outer-spin-button,
@@ -261,16 +265,6 @@ body {
   background-color: var(--secondary-dark);
 }
 
-.amount-input-with-price {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* Changed to flex-start to align price below the amount */
-}
-
-.amount-input-with-price .input-field-with-price {
-  margin-bottom: 5px; /* Add margin to separate amount input and price info */
-}
-
 .price-info {
   position: absolute;
   bottom: 5px; /* Position the price at the bottom of the input field */
@@ -289,5 +283,8 @@ body {
   }
   .amount-input-with-price {
     margin-right: 1.5rem;
+  }
+  .input-field {
+    margin-right: 0px;
   }
 }
