@@ -192,14 +192,13 @@
     margin: 5px 10px;
     height: auto;
   }
+
   .connectButtonContainer {
-    position: relative;
-    top: auto; /* Reset top position */
-    order: 2; /* Move the connect button to the bottom of the network options */
-    margin-top: 20px; /* Add margin for separation */
-    width: 100%; /* Ensure full width */
     display: flex;
-    justify-content: center; /* Center the button */
+    align-items: center;
+    justify-content: center; /* Center the button horizontally */
+    position: absolute;
+    margin-left: 2rem;
   }
   .networkOptionsContainer {
     padding: 5px;
