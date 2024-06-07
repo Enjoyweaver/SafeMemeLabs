@@ -178,13 +178,8 @@
     height: auto;
   }
   .connectButtonContainer {
-    position: relative;
-    top: auto; /* Reset top position */
-    order: 1; /* Move the connect button to the bottom of the network options */
     margin-top: 20px; /* Add margin for separation */
-  }
-  .networkOptionsContainer {
-    padding: 5px;
+    order: 1; /* Ensure the connect button is below the network options */
   }
   .networkOptions {
     transform: translateX(0); /* Center the container on mobile */
