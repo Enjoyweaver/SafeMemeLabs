@@ -183,6 +183,9 @@
   .toShow {
     display: block;
   }
+  .navbar {
+    padding: 0;
+  }
   .navbarLi {
     font-size: 14px;
     line-height: 20px;
