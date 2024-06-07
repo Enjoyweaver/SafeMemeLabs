@@ -285,13 +285,13 @@ body {
   }
   .amount-container {
     margin-right: 0.5rem;
-    width: 85%;
+    width: 65%;
   }
   .amount-input-with-price {
     width: 85%;
     margin-right: 0.5rem;
   }
   .input-field {
-    margin-right: 5px;
+    margin-right: 0px;
   }
 }
