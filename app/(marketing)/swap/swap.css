@@ -133,6 +133,16 @@ body {
   position: relative;
   width: 75%;
 }
+/* Hide the up/down arrows in the number input */
+.input[type="number"]::-webkit-outer-spin-button,
+.input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input[type="number"] {
+  -moz-appearance: textfield;
+}
 
 .quick-select-buttons {
   display: flex;
@@ -270,7 +280,6 @@ body {
   color: var(--secondary-dark);
 }
 
-/* Mobile styling */
 @media (max-width: 768px) {
   .swap-container {
     margin: 20px auto;
@@ -289,7 +298,7 @@ body {
   .input-field {
     margin-right: 0;
     margin-bottom: 10px;
-    width: 40%;
+    width: 100%; /* Ensure input fields take full width on mobile */
   }
 
   .amount-container {
@@ -302,7 +311,7 @@ body {
   }
 
   .amount-input-with-price {
-    width: 50%;
+    width: 100%; /* Ensure amount/price container takes full width on mobile */
   }
 
   .price-info {

@@ -152,70 +152,74 @@ export function Navbar() {
         <MobileNav />
       </div>
       <div className={styles.navbar}>
-        <div className={styles.networkOptions}>
-          {chainDetails.map((chain, index) => (
-            <button
-              key={chain.chainId}
-              className={`${styles.networkOption} ${
-                chain.chainId === activeChainId ? styles.active : ""
-              }`}
-              onClick={() => {
-                dropdownAction(() => switchNetwork?.(chain.chainId))
-                setActiveChainId(chain.chainId) // Update active chain ID on click
-              }}
-            >
-              <Image
-                src={chain.logo}
-                alt={chain.name}
-                className={styles.chainLogo}
-                height={20}
-                width={20}
-              />
-              <span className={styles.chainName}>{chain.name}</span>
-            </button>
-          ))}
-        </div>
-        <div className={styles.connectButtonContainer}>
-          {isClient ? (
-            isConnected ? (
-              <div
-                className={styles.navbarLi}
-                onClick={toggleConnectMenuOpen}
-                ref={dropdownRef}
+        <div className={styles.networkOptionsContainer}>
+          <div className={styles.networkOptions}>
+            {chainDetails.map((chain, index) => (
+              <button
+                key={chain.chainId}
+                className={`${styles.networkOption} ${
+                  chain.chainId === activeChainId ? styles.active : ""
+                }`}
+                onClick={() => {
+                  dropdownAction(() => switchNetwork?.(chain.chainId))
+                  setActiveChainId(chain.chainId) // Update active chain ID on click
+                }}
               >
-                <MinidenticonImg
-                  username={String(address)}
-                  saturation={90}
-                  width={30}
-                  height={30}
-                  lightness={50}
-                />
-                <p className={`${styles.connectText} ${styles.toHide}`}>
-                  {address
-                    ? `${address.slice(0, 6)}...${address.slice(-4)}`
-                    : "Error"}
-                </p>
                 <Image
-                  src="/assets/icons/dropdown.svg"
-                  alt="dropdown"
-                  width={15}
-                  height={15}
-                  className={styles.dropdownIcon}
+                  src={chain.logo}
+                  alt={chain.name}
+                  className={styles.chainLogo}
+                  height={20}
+                  width={20}
                 />
-              </div>
+                <span className={styles.chainName}>{chain.name}</span>
+              </button>
+            ))}
+          </div>
+          <div className={styles.connectButtonContainer}>
+            {isClient ? (
+              isConnected ? (
+                <div
+                  className={styles.navbarLi}
+                  onClick={toggleConnectMenuOpen}
+                  ref={dropdownRef}
+                >
+                  <MinidenticonImg
+                    username={String(address)}
+                    saturation={90}
+                    width={30}
+                    height={30}
+                    lightness={50}
+                  />
+                  <p className={`${styles.connectText} ${styles.toHide}`}>
+                    {address
+                      ? `${address.slice(0, 6)}...${address.slice(-4)}`
+                      : "Error"}
+                  </p>
+                  <Image
+                    src="/assets/icons/dropdown.svg"
+                    alt="dropdown"
+                    width={15}
+                    height={15}
+                    className={styles.dropdownIcon}
+                  />
+                </div>
+              ) : (
+                <div
+                  className={`${styles.navbarLi} ${styles.connectButton}`}
+                  onClick={toggleConnectOpen}
+                >
+                  <p className={styles.connectText}>Connect</p>
+                </div>
+              )
             ) : (
               <div
-                className={`${styles.navbarLi} ${styles.connectButton}`}
-                onClick={toggleConnectOpen}
+                className={`${styles.navbarLi} ${styles.connectButtonWhite}`}
               >
-                <p className={styles.connectText}>Connect</p>
+                <p className={styles.connectText}>Loading...</p>
               </div>
-            )
-          ) : (
-            <div className={`${styles.navbarLi} ${styles.connectButtonWhite}`}>
-              <p className={styles.connectText}>Loading...</p>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </nav>
