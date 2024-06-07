@@ -92,11 +92,11 @@ export default function MyTokens(): JSX.Element {
 
     for (let i = 0; i < groupedData.length; i++) {
       namedData.push({
-        name: groupedData[i][0]?.result,
-        symbol: groupedData[i][1]?.result,
-        supply: groupedData[i][2]?.result,
-        decimals: groupedData[i][3]?.result,
-        antiWhalePercentage: groupedData[i][4]?.result,
+        name: groupedData[i][0].result,
+        symbol: groupedData[i][1].result,
+        supply: groupedData[i][2].result,
+        decimals: groupedData[i][3].result,
+        antiWhalePercentage: groupedData[i][4].result,
       })
     }
 
@@ -177,14 +177,12 @@ export default function MyTokens(): JSX.Element {
                               </p>
                               <p>
                                 <strong>Max Tokens per Holder:</strong>{" "}
-                                {token.antiWhalePercentage && token.supply
-                                  ? formatNumber(
-                                      (Number(token.supply) *
-                                        Number(token.antiWhalePercentage)) /
-                                        100,
-                                      token.decimals
-                                    )
-                                  : "N/A"}
+                                {formatNumber(
+                                  (Number(token.supply) *
+                                    Number(token.antiWhalePercentage)) /
+                                    100,
+                                  token.decimals
+                                )}
                               </p>
                             </div>
                             <TokenHoldersList

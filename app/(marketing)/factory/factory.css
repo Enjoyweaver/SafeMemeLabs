@@ -1,9 +1,10 @@
 :root {
   --background-light: #ffffff;
   --foreground-light: #000000;
-  --primary-light: #04c44e; /* Green */
-  --secondary-light: #b80f5e; /* Pink */
-  --accent-light: #04c44e; /* Green */
+  --primary-light: #04c44e; /* Pink */
+  --secondary-light: #b80f5e; /* Green */
+  --primary-light: #04c44e; /* Pink */
+  --accent-light: #04c44e; /* Dark Green */
   --border-light: #04c44e;
   --text-light: #000000;
 
@@ -14,7 +15,7 @@
   --foreground-dark: #ffffff;
   --primary-dark: #df1584; /* Pink */
   --secondary-dark: #41b80a; /* Green */
-  --accent-dark: #41b80a; /* Green */
+  --accent-dark: #41b80a; /* Dark Green */
   --border-dark: #41b80a;
   --text-dark: #ffffff;
 }
