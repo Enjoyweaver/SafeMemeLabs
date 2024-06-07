@@ -297,11 +297,11 @@ body {
 
   .quick-select-buttons {
     top: -20px;
-    width: 100%;
+    width: 50%;
   }
 
   .amount-input-with-price {
-    width: 100%;
+    width: 60%;
   }
 
   .price-info {
