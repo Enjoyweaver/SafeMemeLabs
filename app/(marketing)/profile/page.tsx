@@ -125,7 +125,7 @@ export default function MyTokens(): JSX.Element {
               />
             )}
             <div className="myTokensHeading">
-              <h1 className="pagetitle">My Tokens</h1>
+              <h1 className="pagetitle">My Profile</h1>
               <p className="subheading">See all the tokens you have created!</p>
               <p className="tokenCount">
                 Number of Tokens Created: {tokenCount}

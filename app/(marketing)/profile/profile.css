@@ -1,10 +1,9 @@
 :root {
   --background-light: #ffffff;
   --foreground-light: #000000;
-  --primary-light: #04c44e; /* Pink */
-  --secondary-light: #b80f5e; /* Green */
-  --primary-light: #04c44e; /* Pink */
-  --accent-light: #04c44e; /* Dark Green */
+  --primary-light: #04c44e;
+  --secondary-light: #b80f5e;
+  --accent-light: #04c44e;
   --border-light: #04c44e;
   --text-light: #000000;
 
@@ -13,9 +12,9 @@
 
   --background-dark: #000000;
   --foreground-dark: #ffffff;
-  --primary-dark: #df1584; /* Pink */
-  --secondary-dark: #41b80a; /* Green */
-  --accent-dark: #41b80a; /* Dark Green */
+  --primary-dark: #df1584;
+  --secondary-dark: #41b80a;
+  --accent-dark: #41b80a;
   --border-dark: #41b80a;
   --text-dark: #ffffff;
 }
@@ -98,7 +97,7 @@ body {
 
 .dashboard {
   padding: 20px !important;
-  max-width: 100px !important; /* Adjusted max-width */
+  max-width: 1100px !important; /* Adjusted max-width */
   margin: 0 auto !important;
   text-align: center !important;
   background-color: var(--background-light) !important;
