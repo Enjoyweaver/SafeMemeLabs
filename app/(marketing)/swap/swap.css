@@ -287,10 +287,7 @@ body {
     margin-right: 1.5rem;
     width: 50%;
   }
-  .amount-input-with-price {
-    width: 50%;
-    margin-right: 0.5rem;
-  }
+
   .input-field {
     margin-right: 0px;
     width: 90%; /* Make the token input selection wider */
