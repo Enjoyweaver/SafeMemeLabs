@@ -284,7 +284,7 @@ body {
     margin: 20px auto;
   }
   .amount-container {
-    margin-right: 0.5rem;
+    margin-right: 1.5rem;
     width: 50%; /* Make the amount container less wide */
   }
   .amount-input-with-price {
