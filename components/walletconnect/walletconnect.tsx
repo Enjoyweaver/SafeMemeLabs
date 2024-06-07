@@ -152,30 +152,28 @@ export function Navbar() {
         <MobileNav />
       </div>
       <div className={styles.navbar}>
-        <div className={styles.networkOptionsContainer}>
-          <div className={styles.networkOptions}>
-            {chainDetails.map((chain, index) => (
-              <button
-                key={chain.chainId}
-                className={`${styles.networkOption} ${
-                  chain.chainId === activeChainId ? styles.active : ""
-                }`}
-                onClick={() => {
-                  dropdownAction(() => switchNetwork?.(chain.chainId))
-                  setActiveChainId(chain.chainId) // Update active chain ID on click
-                }}
-              >
-                <Image
-                  src={chain.logo}
-                  alt={chain.name}
-                  className={styles.chainLogo}
-                  height={20}
-                  width={20}
-                />
-                <span className={styles.chainName}>{chain.name}</span>
-              </button>
-            ))}
-          </div>
+        <div className={styles.networkOptions}>
+          {chainDetails.map((chain, index) => (
+            <button
+              key={chain.chainId}
+              className={`${styles.networkOption} ${
+                chain.chainId === activeChainId ? styles.active : ""
+              }`}
+              onClick={() => {
+                dropdownAction(() => switchNetwork?.(chain.chainId))
+                setActiveChainId(chain.chainId) // Update active chain ID on click
+              }}
+            >
+              <Image
+                src={chain.logo}
+                alt={chain.name}
+                className={styles.chainLogo}
+                height={20}
+                width={20}
+              />
+              <span className={styles.chainName}>{chain.name}</span>
+            </button>
+          ))}
         </div>
         <div className={styles.connectButtonContainer}>
           {isClient ? (

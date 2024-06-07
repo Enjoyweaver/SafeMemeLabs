@@ -179,8 +179,9 @@
   }
   .connectButtonContainer {
     position: relative;
-    top: 20px; /* Adjust as necessary to place the button above the blockchain selections */
-    order: -1; /* Move the connect button above the network options */
+    top: auto; /* Reset top position */
+    order: 1; /* Move the connect button to the bottom of the network options */
+    margin-top: 20px; /* Add margin for separation */
   }
   .networkOptionsContainer {
     padding: 5px;
@@ -212,7 +213,7 @@
     height: auto;
   }
   .connectButtonContainer {
-    top: 15px; /* Adjust as necessary to place the button above the blockchain selections */
+    margin-top: 15px; /* Adjust as necessary for more separation */
   }
   .networkOption {
     font-size: 9px;
@@ -235,7 +236,7 @@
     height: auto;
   }
   .connectButtonContainer {
-    top: 10px; /* Adjust as necessary to place the button above the blockchain selections */
+    margin-top: 10px; /* Adjust as necessary for more separation */
   }
   .networkOption {
     font-size: 8px;
@@ -258,7 +259,7 @@
     height: auto;
   }
   .connectButtonContainer {
-    top: 5px; /* Adjust as necessary to place the button above the blockchain selections */
+    margin-top: 5px; /* Adjust as necessary for more separation */
   }
   .networkOption {
     font-size: 7px;
@@ -270,32 +271,5 @@
   }
   .chainName {
     font-size: 7px;
-  }
-}
-
-@media screen and (max-width: 620px) {
-  .networkOptionsContainer {
-    padding: 5px;
-  }
-
-  .networkOptions {
-    transform: translateX(0); /* Center the container on mobile */
-    gap: 8px;
-    max-width: 100%; /* Allow full width on mobile */
-  }
-
-  .networkOption {
-    font-size: 10px;
-    padding: 3px;
-  }
-
-  .chainLogo {
-    height: 16px;
-    width: 16px;
-    margin-right: 3px;
-  }
-
-  .chainName {
-    font-size: 10px;
   }
 }
