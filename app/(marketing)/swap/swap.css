@@ -289,7 +289,7 @@ body {
   .quick-select-buttons {
     display: flex;
     justify-content: space-between;
-    width: 75%;
+    width: 70%;
     position: absolute;
     top: -30px;
   }
@@ -308,8 +308,8 @@ body {
   .amount-input-with-price {
     display: flex;
     flex-direction: column;
-    position: relative;
-    width: 75%;
+    position: absolute;
+    width: 80%;
     margin-right: 0rem;
     align-items: flex-start;
   }

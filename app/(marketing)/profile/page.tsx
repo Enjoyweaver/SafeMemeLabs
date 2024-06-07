@@ -19,8 +19,6 @@ import { Navbar } from "@/components/walletconnect/walletconnect"
 import { tokenDeployerDetails } from "../../../Constants/config"
 import "@/styles/profile.css"
 
-// Import the dashboard CSS for consistent styling
-
 export default function MyTokens(): JSX.Element {
   const [isClient, setIsClient] = useState(false)
   const [tokenCount, setTokenCount] = useState<number>(0)
@@ -94,11 +92,11 @@ export default function MyTokens(): JSX.Element {
 
     for (let i = 0; i < groupedData.length; i++) {
       namedData.push({
-        name: groupedData[i][0].result,
-        symbol: groupedData[i][1].result,
-        supply: groupedData[i][2].result,
-        decimals: groupedData[i][3].result,
-        antiWhalePercentage: groupedData[i][4].result,
+        name: groupedData[i][0]?.result,
+        symbol: groupedData[i][1]?.result,
+        supply: groupedData[i][2]?.result,
+        decimals: groupedData[i][3]?.result,
+        antiWhalePercentage: groupedData[i][4]?.result,
       })
     }
 
@@ -179,12 +177,14 @@ export default function MyTokens(): JSX.Element {
                               </p>
                               <p>
                                 <strong>Max Tokens per Holder:</strong>{" "}
-                                {formatNumber(
-                                  (Number(token.supply) *
-                                    token.antiWhalePercentage) /
-                                    100,
-                                  token.decimals
-                                )}
+                                {token.antiWhalePercentage && token.supply
+                                  ? formatNumber(
+                                      (Number(token.supply) *
+                                        Number(token.antiWhalePercentage)) /
+                                        100,
+                                      token.decimals
+                                    )
+                                  : "N/A"}
                               </p>
                             </div>
                             <TokenHoldersList
