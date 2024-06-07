@@ -134,7 +134,7 @@ body {
   align-items: flex-end;
   position: relative;
   width: 75%;
-  margin-left: 5px;
+  margin-right: 10px;
 }
 /* Hide the up/down arrows in the number input */
 .input[type="number"]::-webkit-outer-spin-button,
@@ -286,5 +286,8 @@ body {
 @media screen and (max-width: 620px) {
   .amount-container {
     margin-right: 1rem;
+  }
+  .amount-input-with-price {
+    margin-right: 1.5rem;
   }
 }
