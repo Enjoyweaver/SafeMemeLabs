@@ -61,9 +61,6 @@ const chainDetails = [
     chainId: 31,
     logo: "/assets/icons/logos/rootstock.png",
   },
-  // { name: "Stellar", chainId: 161, logo: "/assets/icons/logos/stellar.png" },
-  // { name: "Polkadot", chainId: 0, logo: "/assets/icons/logos/polkadot.png" },
-  // { name: "Stacks", chainId: 576, logo: "/assets/icons/logos/stacks.png" },
 ]
 
 export function Navbar() {
@@ -176,61 +173,50 @@ export function Navbar() {
               </button>
             ))}
           </div>
-          <div className={styles.connectButtonContainer}>
-            {isClient ? (
-              isConnected ? (
-                <div ref={dropdownRef}>
-                  <div
-                    className={styles.navbarLi}
-                    onClick={toggleConnectMenuOpen}
-                  >
-                    <MinidenticonImg
-                      username={String(address)}
-                      saturation={90}
-                      width={30}
-                      height={30}
-                      lightness={50}
-                    />
-                    <p className={`${styles.connectText} ${styles.toHide}`}>
-                      {address
-                        ? `${address.slice(0, 6)}...${address.slice(-4)}`
-                        : "Error"}
-                    </p>
-                    <Image
-                      src="/assets/icons/dropdown.svg"
-                      alt="dropdown"
-                      width={15}
-                      height={15}
-                      className={styles.dropdownIcon}
-                    />
-                  </div>
-                  {connectMenuOpen && (
-                    <div className={styles.dropdownMenu}>
-                      <button
-                        className={styles.disconnectButton}
-                        onClick={() => disconnect()}
-                      >
-                        Disconnect
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div
-                  className={`${styles.navbarLi} ${styles.connectButton}`}
-                  onClick={toggleConnectOpen}
-                >
-                  <p className={styles.connectText}>Connect</p>
-                </div>
-              )
-            ) : (
-              <div
-                className={`${styles.navbarLi} ${styles.connectButtonWhite}`}
-              >
-                <p className={styles.connectText}>Loading...</p>
+          {isClient && isConnected ? (
+            <div ref={dropdownRef} className={styles.connectButtonContainer}>
+              <div className={styles.navbarLi} onClick={toggleConnectMenuOpen}>
+                <MinidenticonImg
+                  username={String(address)}
+                  saturation={90}
+                  width={30}
+                  height={30}
+                  lightness={50}
+                />
+                <p className={`${styles.connectText} ${styles.toHide}`}>
+                  {address
+                    ? `${address.slice(0, 6)}...${address.slice(-4)}`
+                    : "Error"}
+                </p>
+                <Image
+                  src="/assets/icons/dropdown.svg"
+                  alt="dropdown"
+                  width={15}
+                  height={15}
+                  className={styles.dropdownIcon}
+                />
               </div>
-            )}
-          </div>
+              {connectMenuOpen && (
+                <div className={styles.dropdownMenu}>
+                  <button
+                    className={styles.disconnectButton}
+                    onClick={() => disconnect()}
+                  >
+                    Disconnect
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className={styles.connectButtonContainerMobile}>
+              <div
+                className={`${styles.navbarLi} ${styles.connectButton}`}
+                onClick={toggleConnectOpen}
+              >
+                <p className={styles.connectText}>Connect</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </nav>

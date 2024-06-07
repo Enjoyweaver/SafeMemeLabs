@@ -106,11 +106,13 @@ body {
   color: var(--foreground-dark);
 }
 
-.input-field.with-price {
-  height: 60px; /* Adjust the height to accommodate both the amount and price */
-  padding-top: 10px; /* Add padding to the top */
-  padding-bottom: 30px; /* Add padding to the bottom */
-  position: relative; /* Set position relative to contain the price info */
+.input-field-with-price {
+  padding-top: 2px; /* Add padding to the top */
+  padding-bottom: 20px; /* Add padding to the bottom */
+  margin-left: 10px;
+  width: 100%;
+  background-color: var(--input-dark);
+  color: var(--foreground-dark);
 }
 
 .amount-container {
@@ -132,6 +134,7 @@ body {
   align-items: flex-end;
   position: relative;
   width: 75%;
+  margin-left: 5px;
 }
 /* Hide the up/down arrows in the number input */
 .input[type="number"]::-webkit-outer-spin-button,
@@ -264,7 +267,7 @@ body {
   align-items: flex-start; /* Changed to flex-start to align price below the amount */
 }
 
-.amount-input-with-price .input-field {
+.amount-input-with-price .input-field-with-price {
   margin-bottom: 5px; /* Add margin to separate amount input and price info */
 }
 

@@ -331,7 +331,7 @@ const TokenSwap: React.FC = () => {
                         value={amount}
                         onChange={handleAmountChange}
                         placeholder="Amount"
-                        className="input-field with-price"
+                        className="input-field-with-price"
                         inputMode="numeric"
                       />
                       <div className="price-info">
@@ -379,7 +379,7 @@ const TokenSwap: React.FC = () => {
                         id="estimatedOutput"
                         value={estimatedOutput}
                         disabled
-                        className="input-field with-price"
+                        className="input-field-with-price"
                         inputMode="numeric"
                       />
                       <div className="price-info">
