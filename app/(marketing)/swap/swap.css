@@ -286,4 +286,31 @@ body {
     padding: 20px;
     margin: 20px auto;
   }
+  .quick-select-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 75%;
+    position: absolute;
+    top: -30px;
+  }
+
+  .quick-select-buttons button {
+    padding: 3px 3px;
+    background-color: var(--primary-light);
+    border: none;
+    border-radius: 5px;
+    color: var(--text-light);
+    font-size: 10px;
+    cursor: pointer;
+    flex: 1;
+    margin: 0 3px;
+  }
+  .amount-input-with-price {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 75%;
+    margin-right: 0rem;
+    align-items: flex-start;
+  }
 }
