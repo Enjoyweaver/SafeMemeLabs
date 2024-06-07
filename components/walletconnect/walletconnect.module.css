@@ -163,7 +163,19 @@
 .toShow {
   display: none;
 }
+.dropdownMenu {
+  position: absolute;
+  top: 100%; /* Position right below the address container */
+  left: 50%; /* Center align */
+  transform: translateX(-50%); /* Center align */
 
+  border: 1px solid #ccc; /* Border color */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow */
+  z-index: 1000; /* Ensure it appears above other elements */
+  padding: 10px; /* Padding inside the dropdown */
+  text-align: center; /* Center text */
+}
 @media screen and (max-width: 620px) {
   .toHide {
     display: none;

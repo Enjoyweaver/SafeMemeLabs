@@ -179,30 +179,41 @@ export function Navbar() {
           <div className={styles.connectButtonContainer}>
             {isClient ? (
               isConnected ? (
-                <div
-                  className={styles.navbarLi}
-                  onClick={toggleConnectMenuOpen}
-                  ref={dropdownRef}
-                >
-                  <MinidenticonImg
-                    username={String(address)}
-                    saturation={90}
-                    width={30}
-                    height={30}
-                    lightness={50}
-                  />
-                  <p className={`${styles.connectText} ${styles.toHide}`}>
-                    {address
-                      ? `${address.slice(0, 6)}...${address.slice(-4)}`
-                      : "Error"}
-                  </p>
-                  <Image
-                    src="/assets/icons/dropdown.svg"
-                    alt="dropdown"
-                    width={15}
-                    height={15}
-                    className={styles.dropdownIcon}
-                  />
+                <div ref={dropdownRef}>
+                  <div
+                    className={styles.navbarLi}
+                    onClick={toggleConnectMenuOpen}
+                  >
+                    <MinidenticonImg
+                      username={String(address)}
+                      saturation={90}
+                      width={30}
+                      height={30}
+                      lightness={50}
+                    />
+                    <p className={`${styles.connectText} ${styles.toHide}`}>
+                      {address
+                        ? `${address.slice(0, 6)}...${address.slice(-4)}`
+                        : "Error"}
+                    </p>
+                    <Image
+                      src="/assets/icons/dropdown.svg"
+                      alt="dropdown"
+                      width={15}
+                      height={15}
+                      className={styles.dropdownIcon}
+                    />
+                  </div>
+                  {connectMenuOpen && (
+                    <div className={styles.dropdownMenu}>
+                      <button
+                        className={styles.disconnectButton}
+                        onClick={() => disconnect()}
+                      >
+                        Disconnect
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div
