@@ -290,28 +290,43 @@ body {
     font-size: 1.5rem;
   }
 
+  .token-section {
+    height: 60px;
+  }
   .token-amount-container {
-    flex-direction: column;
-    align-items: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .token-select-container {
+    width: 50%; /* Ensure select takes up half the width */
   }
 
   .input-field {
-    margin-right: 0;
-    margin-bottom: 10px;
-    width: 100%; /* Ensure input fields take full width on mobile */
+    width: 50%; /* Ensure input fields take full width on mobile */
   }
 
   .amount-container {
-    width: 100%;
+    width: 50%; /* Ensure amount container takes up half the width */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
   }
 
   .quick-select-buttons {
-    top: -20px;
-    width: 50%;
+    width: 100%; /* Ensure quick-select buttons take full width of amount container */
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px; /* Add margin for separation */
   }
 
   .amount-input-with-price {
-    width: 100%; /* Ensure amount/price container takes full width on mobile */
+    width: 50%; /* Ensure amount/price container takes full width on mobile */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
   }
 
   .price-info {

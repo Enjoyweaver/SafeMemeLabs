@@ -178,8 +178,21 @@
     height: auto;
   }
   .connectButtonContainer {
+    position: relative;
+    top: auto; /* Reset top position */
+    order: 2; /* Move the connect button to the bottom of the network options */
     margin-top: 20px; /* Add margin for separation */
-    order: 1; /* Ensure the connect button is below the network options */
+    width: 100%; /* Ensure full width */
+    display: flex;
+    justify-content: center; /* Center the button */
+  }
+  .networkOptionsContainer {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
   }
   .networkOptions {
     transform: translateX(0); /* Center the container on mobile */
@@ -197,74 +210,5 @@
   }
   .chainName {
     font-size: 10px;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .navbarLi {
-    font-size: 12px;
-    line-height: 18px;
-    margin: 4px 8px;
-    height: auto;
-  }
-  .connectButtonContainer {
-    margin-top: 15px; /* Adjust as necessary for more separation */
-  }
-  .networkOption {
-    font-size: 9px;
-    padding: 2px;
-  }
-  .chainLogo {
-    height: 14px;
-    width: 14px;
-  }
-  .chainName {
-    font-size: 9px;
-  }
-}
-
-@media screen and (max-width: 360px) {
-  .navbarLi {
-    font-size: 10px;
-    line-height: 16px;
-    margin: 3px 6px;
-    height: auto;
-  }
-  .connectButtonContainer {
-    margin-top: 10px; /* Adjust as necessary for more separation */
-  }
-  .networkOption {
-    font-size: 8px;
-    padding: 1px;
-  }
-  .chainLogo {
-    height: 12px;
-    width: 12px;
-  }
-  .chainName {
-    font-size: 8px;
-  }
-}
-
-@media screen and (max-width: 320px) {
-  .navbarLi {
-    font-size: 8px;
-    line-height: 14px;
-    margin: 2px 4px;
-    height: auto;
-  }
-  .connectButtonContainer {
-    margin-top: 5px; /* Adjust as necessary for more separation */
-  }
-  .networkOption {
-    font-size: 7px;
-    padding: 1px;
-  }
-  .chainLogo {
-    height: 10px;
-    width: 10px;
-  }
-  .chainName {
-    font-size: 7px;
   }
 }
