@@ -282,7 +282,8 @@ body {
     margin-right: 0.5rem;
   }
   .amount-input-with-price {
-    margin-right: 0.75rem;
+    margin-right: 1.5rem;
+    width: 55%;
   }
   .input-field {
     margin-right: 0px;

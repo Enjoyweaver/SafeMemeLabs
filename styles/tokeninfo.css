@@ -5,7 +5,7 @@
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: 1rem;
   margin-bottom: 10px;
   color: var(--primary-light);
 }
@@ -15,16 +15,16 @@
 }
 
 .total {
-  margin-bottom: 20px;
-  font-size: 1.2rem;
+  font-size: 0.9rem;
 }
 
 .transaction {
-  margin-bottom: 15px;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
 }
 
 .subtitle {
-  font-size: 1.3rem;
+  font-size: 1rem;
   margin-bottom: 5px;
   color: var(--secondary-light);
 }
@@ -35,7 +35,7 @@
 
 .loading,
 .error {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: var(--primary-light);
 }
 
