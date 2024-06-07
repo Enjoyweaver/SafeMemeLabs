@@ -15,13 +15,14 @@ export const marketingConfig: MarketingConfig = {
       href: "/blog",
     },
     {
-      title: "Create Token",
-      href: "/factory",
-    },
-    {
       title: "Dashboard",
       href: "/tokendashboard",
     },
+    {
+      title: "Create Token",
+      href: "/factory",
+    },
+
     // {
     //   title: "Provide LP",
     //    href: "/lp",

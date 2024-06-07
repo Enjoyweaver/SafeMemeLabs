@@ -21,6 +21,7 @@ const Dashboard = () => {
   const [tokenCount, setTokenCount] = useState<number>(0)
   const [selectedTab, setSelectedTab] = useState("competitors")
   const [phasedTokens, setPhasedTokens] = useState([]) // State to store phased tokens
+  const [pairs, setPairs] = useState([]) // State to store pairs
 
   useEffect(() => {
     setIsClient(true)
@@ -166,69 +167,6 @@ const Dashboard = () => {
     </>
   )
 
-  const renderUserMemes = () => (
-    <>
-      <h1 className="pagetitle">Memes you created using SafeMemes</h1>
-      {isClient && isConnected && contracts && contracts.length === 0 && (
-        <p>No tokens available.</p>
-      )}
-      {isClient &&
-        isConnected &&
-        contracts &&
-        contracts.length > 0 &&
-        tempTokenData &&
-        tempTokenData.length > 0 &&
-        splitData(tempTokenData).map((token, index: number) => (
-          <div className="meme" key={index}>
-            <div className="meme-header">
-              <h3>
-                {token.name} ({token.symbol})
-              </h3>
-              <Image
-                src="/images/logo.png" // You can dynamically set the logo URL if available
-                alt={`${token.name} logo`}
-                width={50}
-                height={50}
-                className="token-logo"
-              />
-            </div>
-
-            <div className="meme-details">
-              <p>
-                <strong>Contract Address:</strong> {contracts[index]}
-              </p>
-              <p>
-                <strong>Supply:</strong>{" "}
-                {formatNumber(Number(token.supply), token.decimals)}
-              </p>
-              <p>
-                <strong>Decimals:</strong> {token.decimals}
-              </p>
-              <p>
-                <strong>Anti-Whale Percentage:</strong>{" "}
-                {token.antiWhalePercentage}%
-              </p>
-
-              <p>
-                <strong>Max Tokens per Holder:</strong>{" "}
-                {formatNumber(
-                  (Number(token.supply) * token.antiWhalePercentage) / 100,
-                  token.decimals
-                )}
-              </p>
-            </div>
-            <TokenHoldersList
-              tokenAddress={contracts[index]}
-              chainId={chain?.id}
-            />
-            <DexData tokenAddress={contracts[index]} chainId={chain?.id} />
-          </div>
-        ))}
-      {!isClient && <p>Loading...</p>}
-      {isClient && !isConnected && <p>No Account Connected</p>}
-    </>
-  )
-
   const renderTechStackMemes = () => (
     <>
       <h2>
@@ -290,13 +228,6 @@ const Dashboard = () => {
               )}
             </button>
             <button
-              className={selectedTab === "user" ? "active" : ""}
-              onClick={() => setSelectedTab("user")}
-            >
-              Your Memes
-              {selectedTab === "user" && <div className="tab-indicator"></div>}
-            </button>
-            <button
               className={selectedTab === "tech" ? "active" : ""}
               onClick={() => setSelectedTab("tech")}
             >
@@ -307,7 +238,6 @@ const Dashboard = () => {
 
           <div className="content">
             {selectedTab === "competitors" && renderCompetitorsMemes()}
-            {selectedTab === "user" && renderUserMemes()}
             {selectedTab === "tech" && renderTechStackMemes()}
           </div>
         </div>
