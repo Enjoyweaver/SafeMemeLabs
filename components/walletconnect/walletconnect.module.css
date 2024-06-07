@@ -96,6 +96,12 @@
   justify-content: center;
 }
 
+.connectButtonContainerMobile {
+  display: flex;
+  justify-content: center; /* Center the button horizontally */
+  width: 100%;
+}
+
 .networkOptionsContainer {
   margin-top: 20px;
   display: flex;

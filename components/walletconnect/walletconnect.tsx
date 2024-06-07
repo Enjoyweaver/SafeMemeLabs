@@ -149,31 +149,31 @@ export function Navbar() {
         <MobileNav />
       </div>
       <div className={styles.navbar}>
-        <div className={styles.networkOptionsContainer}>
-          <div className={styles.networkOptions}>
-            {chainDetails.map((chain, index) => (
-              <button
-                key={chain.chainId}
-                className={`${styles.networkOption} ${
-                  chain.chainId === activeChainId ? styles.active : ""
-                }`}
-                onClick={() => {
-                  dropdownAction(() => switchNetwork?.(chain.chainId))
-                  setActiveChainId(chain.chainId) // Update active chain ID on click
-                }}
-              >
-                <Image
-                  src={chain.logo}
-                  alt={chain.name}
-                  className={styles.chainLogo}
-                  height={20}
-                  width={20}
-                />
-                <span className={styles.chainName}>{chain.name}</span>
-              </button>
-            ))}
-          </div>
-          {isClient && isConnected ? (
+        {isClient && isConnected ? (
+          <div className={styles.networkOptionsContainer}>
+            <div className={styles.networkOptions}>
+              {chainDetails.map((chain, index) => (
+                <button
+                  key={chain.chainId}
+                  className={`${styles.networkOption} ${
+                    chain.chainId === activeChainId ? styles.active : ""
+                  }`}
+                  onClick={() => {
+                    dropdownAction(() => switchNetwork?.(chain.chainId))
+                    setActiveChainId(chain.chainId) // Update active chain ID on click
+                  }}
+                >
+                  <Image
+                    src={chain.logo}
+                    alt={chain.name}
+                    className={styles.chainLogo}
+                    height={20}
+                    width={20}
+                  />
+                  <span className={styles.chainName}>{chain.name}</span>
+                </button>
+              ))}
+            </div>
             <div ref={dropdownRef} className={styles.connectButtonContainer}>
               <div className={styles.navbarLi} onClick={toggleConnectMenuOpen}>
                 <MinidenticonImg
@@ -207,17 +207,17 @@ export function Navbar() {
                 </div>
               )}
             </div>
-          ) : (
-            <div className={styles.connectButtonContainerMobile}>
-              <div
-                className={`${styles.navbarLi} ${styles.connectButton}`}
-                onClick={toggleConnectOpen}
-              >
-                <p className={styles.connectText}>Connect</p>
-              </div>
+          </div>
+        ) : (
+          <div className={styles.connectButtonContainerMobile}>
+            <div
+              className={`${styles.navbarLi} ${styles.connectButton}`}
+              onClick={toggleConnectOpen}
+            >
+              <p className={styles.connectText}>Connect</p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </nav>
   )
