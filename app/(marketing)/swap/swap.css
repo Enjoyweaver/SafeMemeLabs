@@ -286,23 +286,4 @@ body {
     padding: 20px;
     margin: 20px auto;
   }
-  .token-amount-container {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .amount-container {
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .amount-input-with-price {
-    width: 100%;
-    margin-right: 0;
-  }
-
-  .quick-select-buttons {
-    width: 100%;
-    top: -25px;
-  }
 }
