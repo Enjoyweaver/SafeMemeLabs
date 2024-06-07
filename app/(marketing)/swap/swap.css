@@ -279,10 +279,10 @@ body {
 
 @media screen and (max-width: 620px) {
   .amount-container {
-    margin-right: 1rem;
+    margin-right: 0.5rem;
   }
   .amount-input-with-price {
-    margin-right: 1.5rem;
+    margin-right: 0.75rem;
   }
   .input-field {
     margin-right: 0px;
