@@ -291,16 +291,16 @@ body {
     justify-content: space-between;
     width: 60%;
     position: relative;
-    top: -35px;
+    top: -25px;
     margin-right: 1rem;
   }
 
   .amount-container {
-    top: -15px;
+    top: -25px;
   }
 
   .amount-containerTo {
-    top: -25px;
+    top: -15px;
   }
 
   .quick-select-buttons button {
