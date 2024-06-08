@@ -1,9 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import emailjs from "@emailjs/browser"
 import { useAccount } from "wagmi"
-
-// Ensure this import is present
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
@@ -14,15 +13,11 @@ const SAFEMEME_WALLET_ADDRESS = "0x8cfeb8Eacdfe56C5C3B529e5EBf9F76399d8Ca49"
 
 const FeedbackPage = () => {
   const { isConnected, address } = useAccount()
-  const [feedback, setFeedback] = useState<
-    { text: string; address: string; status: "pending" | "approved" }[]
-  >(Array(FEEDBACK_ENTRIES).fill({ text: "", address: "", status: "pending" }))
-  const [featureRequests, setFeatureRequests] = useState<
-    { id: number; text: string; votes: number; address: string }[]
-  >([])
-  const [checklistItems, setChecklistItems] = useState<
-    { id: number; text: string; completed: boolean }[]
-  >([
+  const [feedback, setFeedback] = useState(
+    Array(FEEDBACK_ENTRIES).fill({ text: "", address: "", status: "open" })
+  )
+  const [featureRequests, setFeatureRequests] = useState([])
+  const [checklistItems, setChecklistItems] = useState([
     {
       id: 1,
       text: "Improve the users profile page URL to reference their wallet address",
@@ -91,15 +86,15 @@ const FeedbackPage = () => {
       completed: false,
     },
   ])
-  const [newFeatureRequest, setNewFeatureRequest] = useState<string>("")
-  const [hasSubmittedFeatureRequest, setHasSubmittedFeatureRequest] = useState<
-    Set<string>
-  >(new Set())
+  const [newFeatureRequest, setNewFeatureRequest] = useState("")
+  const [hasSubmittedFeatureRequest, setHasSubmittedFeatureRequest] = useState(
+    new Set()
+  )
   const [isClient, setIsClient] = useState(false)
-  const [votedItems, setVotedItems] = useState<Set<number>>(new Set())
-  const [pendingFeedback, setPendingFeedback] = useState<
-    { text: string; address: string }[]
-  >([])
+  const [votedItems, setVotedItems] = useState(new Set())
+  const [pendingFeedback, setPendingFeedback] = useState([])
+
+  const formRef = useRef(null)
 
   useEffect(() => {
     setIsClient(true)
@@ -135,41 +130,73 @@ const FeedbackPage = () => {
         address: SAFEMEME_WALLET_ADDRESS,
       },
     ])
+    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY)
   }, [])
 
-  const handleFeedbackChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
+  const handleFeedbackChange = (e, index) => {
     const newFeedback = [...feedback]
     newFeedback[index] = {
       text: e.target.value,
       address: address || "",
-      status: "pending",
+      status: "open",
     }
     setFeedback(newFeedback)
   }
 
-  const handleSubmitFeedback = () => {
+  const handleSubmitFeedback = async (index) => {
     if (isConnected) {
-      console.log("Feedback submitted:", feedback)
-      setPendingFeedback([
+      if (feedback[index].text === "" || feedback[index].status !== "open") {
+        alert("Please enter feedback before submitting.")
+        return
+      }
+
+      const newPendingFeedback = [
         ...pendingFeedback,
-        ...feedback.filter((item) => item.status === "pending"),
-      ])
-      setFeedback(
-        feedback.map((item) =>
-          item.status === "pending" ? { ...item, status: "approved" } : item
-        )
-      )
+        { ...feedback[index], status: "pending" },
+      ]
+      setPendingFeedback(newPendingFeedback)
+
+      const newFeedback = [...feedback]
+      newFeedback[index].status = "pending"
+      setFeedback(newFeedback)
+
+      // Populate form data and send email
+      if (formRef.current) {
+        const form = formRef.current
+        const userAddress = feedback[index].address
+        const userFeedback = feedback[index].text
+
+        // Assign values to form inputs
+        form.elements["user_address"].value = userAddress
+        form.elements["user_feedback"].value = userFeedback
+
+        // Debugging: Log values to check if they are correctly assigned
+        console.log("Form Data before sending:")
+        console.log("User Address:", form.elements["user_address"].value)
+        console.log("User Feedback:", form.elements["user_feedback"].value)
+
+        try {
+          const response = await emailjs.sendForm(
+            process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+            process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+            form,
+            process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+          )
+          console.log(
+            "Feedback sent successfully!",
+            response.status,
+            response.text
+          )
+        } catch (err) {
+          console.error("Failed to send feedback.", err)
+        }
+      }
     } else {
       alert("Please connect your wallet to submit feedback.")
     }
   }
 
-  const handleFeatureRequestChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFeatureRequestChange = (e) => {
     setNewFeatureRequest(e.target.value)
   }
 
@@ -198,7 +225,7 @@ const FeedbackPage = () => {
     }
   }
 
-  const handleVote = (id: number, direction: "up" | "down") => {
+  const handleVote = (id, direction) => {
     if (isConnected) {
       if (votedItems.has(id)) {
         alert("You can only vote once per item.")
@@ -225,7 +252,7 @@ const FeedbackPage = () => {
     }
   }
 
-  const handleToggleChecklistItem = (id: number) => {
+  const handleToggleChecklistItem = (id) => {
     if (address === SAFEMEME_WALLET_ADDRESS) {
       setChecklistItems((prevItems) =>
         prevItems.map((item) =>
@@ -246,13 +273,17 @@ const FeedbackPage = () => {
     }
   }, [address])
 
-  const getShortAddress = (addr: string) =>
-    `${addr.slice(0, 6)}...${addr.slice(-4)}`
+  const getShortAddress = (addr) => `${addr.slice(0, 6)}...${addr.slice(-4)}`
 
   return (
     <div className="feedbackBody">
       <Navbar />
       <div className="feedbackContainer">
+        <form ref={formRef} style={{ display: "none" }}>
+          <input type="text" name="user_address" />
+          <input type="text" name="user_feedback" />
+        </form>
+
         <div className="feedbackSection feedbackLeft">
           <h2 className="feedbackTitle">Feedback</h2>
           {feedback.map((item, index) => (
@@ -274,13 +305,21 @@ const FeedbackPage = () => {
                 {getShortAddress(item.address)}
               </a>
               <span className={`feedbackStatus ${item.status}`}>
-                {item.status === "pending" ? "Pending" : "Approved"}
+                {item.status === "open"
+                  ? "Open for feedback"
+                  : item.status === "pending"
+                  ? "Pending"
+                  : "Approved"}
               </span>
+              <button
+                onClick={() => handleSubmitFeedback(index)}
+                className="feedbackButton"
+                disabled={!isConnected || item.status !== "open"}
+              >
+                Submit Feedback
+              </button>
             </div>
           ))}
-          <button onClick={handleSubmitFeedback} className="feedbackButton">
-            Submit Feedback
-          </button>
         </div>
 
         <div className="feedbackSection feedbackRight">

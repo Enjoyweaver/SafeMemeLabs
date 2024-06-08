@@ -89,13 +89,13 @@ body.feedbackBody {
 }
 
 .feedbackButton {
-  margin-top: 10px;
   padding: 10px 20px;
   background-color: var(--primary-light-fb);
   color: var(--text-light-fb);
   border: none;
   cursor: pointer;
   font-family: "Courier New", Courier, monospace;
+  margin-bottom: 1rem;
 }
 
 .dark .feedbackButton {
@@ -236,4 +236,12 @@ body.feedbackBody {
   .checklistItem button {
     margin-top: 5px;
   }
+}
+
+/* New styles for feedback submit buttons */
+.feedbackInputContainer .feedbackButton {
+  padding: 5px 15px;
+  font-size: 14px;
+  margin-top: 0;
+  margin-left: 10px;
 }

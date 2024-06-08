@@ -35,6 +35,9 @@ dependencies:
   '@editorjs/table':
     specifier: ^2.2.1
     version: 2.3.0
+  '@emailjs/browser':
+    specifier: ^4.3.3
+    version: 4.3.3
   '@hackbg/chainlink-datastreams-consumer':
     specifier: github:hackbg/chainlink-datastreams-consumer
     version: github.com/hackbg/chainlink-datastreams-consumer/30a54ea62aae6ebbc268f11b3cd06e1248496788
@@ -185,6 +188,9 @@ dependencies:
   decimal.js:
     specifier: ^10.4.3
     version: 10.4.3
+  emailjs-com:
+    specifier: ^3.2.0
+    version: 3.2.0
   ethers:
     specifier: ^5.5.3
     version: 5.7.2
@@ -1025,6 +1031,11 @@ packages:
 
   /@effect-ts/system@0.57.5:
     resolution: {integrity: sha512-/crHGujo0xnuHIYNc1VgP0HGJGFSoSqq88JFXe6FmFyXPpWt8Xu39LyLg7rchsxfXFeEdA9CrIZvLV5eswXV5g==}
+    dev: false
+
+  /@emailjs/browser@4.3.3:
+    resolution: {integrity: sha512-ltpt2S/WVREIBXptxYAVYBvXb2O6yTUYiRUWF8OLikMxlmiGsIgKpgHppikNd4Df0uAav7jCsQKcOJ3TJFUx5g==}
+    engines: {node: '>=14.0.0'}
     dev: false
 
   /@esbuild-plugins/node-resolve@0.1.4(esbuild@0.21.4):
@@ -6957,6 +6968,12 @@ packages:
       inherits: 2.0.4
       minimalistic-assert: 1.0.1
       minimalistic-crypto-utils: 1.0.1
+    dev: false
+
+  /emailjs-com@3.2.0:
+    resolution: {integrity: sha512-Prbz3E1usiAwGjMNYRv6EsJ5c373cX7/AGnZQwOfrpNJrygQJ15+E9OOq4pU8yC977Z5xMetRfc3WmDX6RcjAA==}
+    engines: {node: '>=12.0.0'}
+    deprecated: The SDK name changed to @emailjs/browser
     dev: false
 
   /emoji-regex@10.3.0:
