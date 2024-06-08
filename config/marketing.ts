@@ -43,5 +43,9 @@ export const marketingConfig: MarketingConfig = {
       title: "Feedback",
       href: "/feedback",
     },
+    {
+      title: "Frames",
+      href: "/frame",
+    },
   ],
 }
