@@ -287,7 +287,7 @@ export const priceFeedAddresses: {
 
 export const rpcUrls: { [key: string]: string } = {
   "4002": "https://rpc.testnet.fantom.network/",
-  "250": "https://rpcapi.fantom.network/",
+  "250": "https://rpc.ankr.com/fantom/",
   "137": "https://polygon-rpc.com/",
   "43114": "https://api.avax.network/ext/bc/C/rpc",
   "30": "https://public-node.rsk.co",

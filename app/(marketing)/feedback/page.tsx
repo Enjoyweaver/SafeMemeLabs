@@ -19,105 +19,103 @@ const FeedbackPage = () => {
   const [featureRequests, setFeatureRequests] = useState([])
   const [checklistItems, setChecklistItems] = useState([
     {
-      id: 1,
+      text: "Improve mobile swap UI",
+      completed: false,
+      status: "open",
+    },
+    {
+      text: "Update token factory page to only allow token deploying until the swap is done",
+      completed: false,
+      status: "open",
+    },
+    {
       text: "Improve the users profile page URL to reference their wallet address",
       completed: false,
       status: "open",
     },
     {
-      id: 2,
       text: "Display the users earnings, when they were received, and their current worth on the profile page",
       completed: false,
       status: "open",
     },
     {
-      id: 3,
       text: "Show the volume and trade activity of tokens listed on the user's profile page",
       completed: false,
       status: "open",
     },
     {
-      id: 4,
       text: "Display the total number of all tokens minted, their volume, and number of trades on the main dashboard",
       completed: false,
       status: "open",
     },
-    { id: 5, text: "Touch grass every day", completed: false, status: "open" },
+    { text: "Touch grass every day", completed: false, status: "open" },
     {
-      id: 6,
       text: "Update the token generation contracts to Vyper",
       completed: false,
       status: "open",
     },
     {
-      id: 7,
       text: "Install brownie to deploy Vyper contracts",
       completed: false,
       status: "open",
     },
     {
-      id: 8,
       text: "Update the swap contracts to Vyper",
       completed: false,
       status: "open",
     },
     {
-      id: 9,
       text: "Implement a secure method for storing private keys",
       completed: false,
       status: "open",
     },
     {
-      id: 10,
       text: "Integrate automated tests for smart contracts",
       completed: false,
       status: "open",
     },
     {
-      id: 11,
       text: "Conduct a comprehensive security audit",
       completed: false,
       status: "open",
     },
     {
-      id: 12,
       text: "Implement rate limiting to prevent abuse of the DEX",
       completed: false,
       status: "open",
     },
     {
-      id: 13,
       text: "Ensure proper handling of failed transactions",
       completed: false,
       status: "open",
     },
     {
-      id: 14,
       text: "Monitor gas prices and optimize contract calls",
       completed: false,
       status: "open",
     },
     {
-      id: 15,
       text: "Add detailed logging and monitoring for trade activities",
       completed: false,
       status: "open",
     },
     {
-      id: 16,
       text: "Add Chainlink Data Streams for Arbitrum",
       completed: true,
       status: "Completed",
     },
     {
-      id: 17,
       text: "Add Chainlink Data Feeds for Avalanche, Base, and Fantom",
       completed: true,
       status: "Completed",
     },
     {
-      id: 18,
       text: "Create safe token generator on Avalanche, Base, Degen, Fantom, and Rootstock",
+      completed: true,
+      status: "Completed",
+    },
+    {
+      text: "Implement Frames into our Nextjs app",
       completed: true,
       status: "Completed",
     },
@@ -138,31 +136,26 @@ const FeedbackPage = () => {
     setIsClient(true)
     setFeatureRequests([
       {
-        id: 1,
         text: "Safe Token Swap",
         votes: 0,
         address: SAFEMEME_WALLET_ADDRESS,
       },
       {
-        id: 2,
         text: "Update smart contracts to Vyper",
         votes: 0,
         address: SAFEMEME_WALLET_ADDRESS,
       },
       {
-        id: 3,
         text: "Twitter link to profile",
         votes: 0,
         address: SAFEMEME_WALLET_ADDRESS,
       },
       {
-        id: 4,
         text: "User created Frames",
         votes: 0,
         address: SAFEMEME_WALLET_ADDRESS,
       },
       {
-        id: 5,
         text: "Create Dynamic NFTs",
         votes: 0,
         address: SAFEMEME_WALLET_ADDRESS,
@@ -250,7 +243,6 @@ const FeedbackPage = () => {
       setFeatureRequests((prevRequests) => [
         ...prevRequests,
         {
-          id: prevRequests.length + 1,
           text: newFeatureRequest,
           votes: 0,
           address: address || SAFEMEME_WALLET_ADDRESS,
@@ -314,16 +306,16 @@ const FeedbackPage = () => {
     )
   }
 
-  const handleVote = (id, direction) => {
+  const handleVote = (index, direction) => {
     if (isConnected) {
-      if (votedItems.has(id)) {
+      if (votedItems.has(index)) {
         alert("You can only vote once per item.")
         return
       }
 
       const updatedFeatureRequests = featureRequests
-        .map((req) =>
-          req.id === id
+        .map((req, i) =>
+          i === index
             ? { ...req, votes: req.votes + (direction === "up" ? 1 : -1) }
             : req
         )
@@ -331,7 +323,7 @@ const FeedbackPage = () => {
 
       setFeatureRequests(updatedFeatureRequests)
 
-      const updatedVotedItems = new Set(votedItems).add(id)
+      const updatedVotedItems = new Set(votedItems).add(index)
       setVotedItems(updatedVotedItems)
 
       saveVotesToLocalStorage(updatedFeatureRequests, updatedVotedItems)
@@ -344,10 +336,10 @@ const FeedbackPage = () => {
     localStorage.setItem("checklistItems", JSON.stringify(items))
   }
 
-  const handleToggleChecklistItem = (id, status) => {
+  const handleToggleChecklistItem = (index, status) => {
     if (address === SAFEMEME_WALLET_ADDRESS) {
-      const updatedItems = checklistItems.map((item) =>
-        item.id === id
+      const updatedItems = checklistItems.map((item, i) =>
+        i === index
           ? { ...item, status: status, completed: status === "completed" }
           : item
       )
@@ -456,17 +448,13 @@ const FeedbackPage = () => {
         <div className="feedbackSection feedbackRight">
           <h2 className="feedbackTitle">Feature Requests</h2>
           <ul className="feedbackUl">
-            {featureRequests.map((request) => (
-              <li key={request.id} className="feedbackLi">
+            {featureRequests.map((request, index) => (
+              <li key={index} className="feedbackLi">
                 <span>{request.text}</span>
                 <div>
-                  <button onClick={() => handleVote(request.id, "up")}>
-                    👍
-                  </button>
+                  <button onClick={() => handleVote(index, "up")}>👍</button>
                   <span>{request.votes}</span>
-                  <button onClick={() => handleVote(request.id, "down")}>
-                    👎
-                  </button>
+                  <button onClick={() => handleVote(index, "down")}>👎</button>
                 </div>
                 <a
                   href={`/profile/${request.address}`}
@@ -503,8 +491,8 @@ const FeedbackPage = () => {
           <h2 className="feedbackTitle">To-Do List</h2>
 
           <ul className="feedbackUl">
-            {checklistItems.map((item) => (
-              <li key={item.id} className="checklistItem">
+            {checklistItems.map((item, index) => (
+              <li key={index} className="checklistItem">
                 <span
                   style={{
                     textDecoration: item.completed ? "line-through" : "none",
@@ -515,16 +503,14 @@ const FeedbackPage = () => {
                 {item.status !== "Completed" && (
                   <button
                     onClick={() =>
-                      handleToggleChecklistItem(item.id, "inProgress")
+                      handleToggleChecklistItem(index, "inProgress")
                     }
                   >
                     {item.status === "inProgress" ? "In Progress" : "Start"}
                   </button>
                 )}
                 <button
-                  onClick={() =>
-                    handleToggleChecklistItem(item.id, "completed")
-                  }
+                  onClick={() => handleToggleChecklistItem(index, "completed")}
                 >
                   {item.completed ? "☑️" : "Complete"}
                 </button>

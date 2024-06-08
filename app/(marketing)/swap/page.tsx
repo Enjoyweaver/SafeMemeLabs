@@ -35,6 +35,7 @@ const TokenSwap: React.FC = () => {
   const [amount, setAmount] = useState<number>(1)
   const [estimatedOutput, setEstimatedOutput] = useState<number>(0)
   const [deployedTokens, setDeployedTokens] = useState([]) // State to store fetched tokens
+  const [walletTokens, setWalletTokens] = useState([]) // State to store wallet tokens
   const [isClient, setIsClient] = useState(false) // State to track if we are on the client
 
   const chainId = chain ? chain.id : Object.keys(tokenDeployerDetails)[0]
@@ -189,10 +190,46 @@ const TokenSwap: React.FC = () => {
     setIsClient(true)
   }, [])
 
-  const handleTokenFromChange = (
+  const fetchWalletTokens = async () => {
+    if (!isConnected || !address) return
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const tokenBalances = await Promise.all(
+      deployedTokens.map(async (token) => {
+        const contract = new ethers.Contract(token.address, erc20ABI, provider)
+        const balance = await contract.balanceOf(address)
+        return {
+          ...token,
+          balance: ethers.utils.formatUnits(balance, token.decimals),
+        }
+      })
+    )
+
+    setWalletTokens(
+      tokenBalances.filter((token) => parseFloat(token.balance) > 0)
+    )
+  }
+
+  useEffect(() => {
+    fetchWalletTokens()
+  }, [address, deployedTokens])
+
+  const handleTokenFromChange = async (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setSelectedTokenFrom(event.target.value)
+    const selectedValue = event.target.value
+    setSelectedTokenFrom(selectedValue)
+
+    if (selectedValue) {
+      const [selectedChainId, selectedSymbol] = selectedValue.split("-")
+      const walletToken = walletTokens.find(
+        (token) =>
+          token.chainId === selectedChainId && token.symbol === selectedSymbol
+      )
+      if (walletToken) {
+        setAmount(parseFloat(walletToken.balance))
+      }
+    }
   }
 
   const handleTokenToChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -227,13 +264,6 @@ const TokenSwap: React.FC = () => {
           )
           await dexContract.swap(tokenFrom, tokenTo, amount)
           console.log("Tokens swapped:", tokenFrom, tokenTo, amount)
-        }
-        // Function to get tokens for the current chain
-        const getTokensForCurrentChain = () => {
-          const currentChainId = chain
-            ? chain.id
-            : Object.keys(tokenDeployerDetails)[0]
-          return tokenBOptions[currentChainId] || []
         }
 
         await swapTokens(provider, selectedTokenFrom, selectedTokenTo, amount)
@@ -281,8 +311,15 @@ const TokenSwap: React.FC = () => {
   }))
 
   const combinedTokens = [
-    ...allTokens,
+    ...getTokensForCurrentChain().map((token) => ({
+      chainId: chain ? chain.id : Object.keys(tokenDeployerDetails)[0],
+      ...token,
+    })),
     ...deployedTokens.map((token) => ({
+      chainId,
+      ...token,
+    })),
+    ...walletTokens.map((token) => ({
       chainId,
       ...token,
     })),
@@ -311,7 +348,8 @@ const TokenSwap: React.FC = () => {
                         key={index}
                         value={`${token.chainId}-${token.symbol}`}
                       >
-                        {token.symbol}
+                        {token.symbol}{" "}
+                        {token.balance ? `(${token.balance})` : ""}
                       </option>
                     ))}
                   </select>
@@ -339,7 +377,7 @@ const TokenSwap: React.FC = () => {
                         tokenPrices[selectedTokenFrom.split("-")[0]]
                           ? `$${tokenPrices[selectedTokenFrom.split("-")[0]][
                               selectedTokenFrom.split("-")[1]
-                            ]?.toFixed(2)}`
+                            ]?.toFixed(4)}`
                           : "Select a token"}
                       </div>
                     </div>
@@ -387,7 +425,7 @@ const TokenSwap: React.FC = () => {
                         tokenPrices[selectedTokenTo.split("-")[0]]
                           ? `$${tokenPrices[selectedTokenTo.split("-")[0]][
                               selectedTokenTo.split("-")[1]
-                            ]?.toFixed(2)}`
+                            ]?.toFixed(4)}`
                           : "Select a token"}
                       </div>
                     </div>
