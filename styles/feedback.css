@@ -1,0 +1,199 @@
+:root {
+  --background-light-fb: #ffffff;
+  --foreground-light-fb: #000000;
+  --primary-light-fb: #04c44e;
+  --secondary-light-fb: #b80f5e;
+  --accent-light-fb: #04c44e;
+  --border-light-fb: #04c44e;
+  --text-light-fb: #000000;
+
+  --background-dark-fb: #000000;
+  --foreground-dark-fb: #ffffff;
+  --primary-dark-fb: #df1584;
+  --secondary-dark-fb: #41b80a;
+  --accent-dark-fb: #41b80a;
+  --border-dark-fb: #41b80a;
+  --text-dark-fb: #ffffff;
+}
+
+body.feedbackBody {
+  background-color: var(--background-light-fb);
+  color: var(--foreground-light-fb);
+  font-family: "Courier New", Courier, monospace;
+}
+
+.dark body.feedbackBody {
+  background-color: var(--background-dark-fb);
+  color: var(--foreground-dark-fb);
+}
+
+.feedbackContainer {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 3rem auto;
+  padding: 0 1rem;
+}
+
+.feedbackSection {
+  flex: 1 1 30%;
+  padding: 20px;
+  border: 1px solid var(--border-light-fb);
+  margin-bottom: 1rem;
+}
+
+.dark .feedbackSection {
+  border: 1px solid var(--border-dark-fb);
+}
+
+.feedbackLeft {
+  background-color: #f4f4f4;
+}
+
+.dark .feedbackLeft {
+  background-color: #333;
+}
+
+.feedbackRight {
+  background-color: #eaeaea;
+}
+
+.dark .feedbackRight {
+  background-color: #444;
+}
+
+.feedbackTitle {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: var(--primary-light-fb);
+}
+
+.dark .feedbackTitle {
+  color: var(--primary-dark-fb);
+}
+
+.feedbackInput {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-light-fb);
+  background-color: var(--background-light-fb);
+  color: var(--text-light-fb);
+  font-family: "Courier New", Courier, monospace;
+  margin-bottom: 10px;
+}
+
+.dark .feedbackInput {
+  border: 1px solid var(--border-dark-fb);
+  background-color: var(--background-dark-fb);
+  color: var(--text-dark-fb);
+}
+
+.feedbackButton {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: var(--primary-light-fb);
+  color: var(--text-light-fb);
+  border: none;
+  cursor: pointer;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.dark .feedbackButton {
+  background-color: var(--primary-dark-fb);
+  color: var(--text-dark-fb);
+}
+
+.feedbackButton:hover {
+  background-color: var(--secondary-light-fb);
+}
+
+.dark .feedbackButton:hover {
+  background-color: var(--secondary-dark-fb);
+}
+
+.feedbackUl {
+  list-style-type: none;
+  padding: 0;
+}
+
+.feedbackLi {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid var(--border-light-fb);
+}
+
+.dark .feedbackLi {
+  border-bottom: 1px solid var(--border-dark-fb);
+}
+
+.feedbackLi span {
+  flex: 1;
+}
+
+.feedbackLi div {
+  display: flex;
+  align-items: center;
+}
+
+.feedbackLi div button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  font-size: 18px;
+}
+
+.feedbackWallet {
+  margin-left: 10px;
+  font-size: 0.8rem;
+}
+
+.feedbackStatus {
+  font-size: 0.8rem;
+  margin-left: 10px;
+}
+
+.feedbackStatus.pending {
+  color: orange;
+}
+
+.feedbackStatus.approved {
+  color: green;
+}
+
+.checklistItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid var(--border-light-fb);
+}
+
+.dark .checklistItem {
+  border-bottom: 1px solid var(--border-dark-fb);
+}
+
+.checklistItem span {
+  flex: 1;
+}
+
+.checklistItem button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  font-size: 18px;
+  background-color: var(--primary-light-fb);
+  color: var(--text-light-fb);
+  border: none;
+  cursor: pointer;
+}
+
+.dark .checklistItem button {
+  background-color: var(--primary-dark-fb);
+  color: var(--text-dark-fb);
+}
+
+@media (max-width: 768px) {
+  .feedbackSection {
+    flex: 1 1 100%;
+  }
+}
