@@ -22,70 +22,89 @@ const FeedbackPage = () => {
       id: 1,
       text: "Improve the users profile page URL to reference their wallet address",
       completed: false,
+      status: "open",
     },
     {
       id: 2,
       text: "Display the users earnings, when they were received, and their current worth on the profile page",
       completed: false,
+      status: "open",
     },
     {
       id: 3,
       text: "Show the volume and trade activity of tokens listed on the user's profile page",
       completed: false,
+      status: "open",
     },
     {
       id: 4,
       text: "Display the total number of all tokens minted, their volume, and number of trades on the main dashboard",
       completed: false,
+      status: "open",
     },
-    { id: 5, text: "Touch grass every day", completed: false },
+    { id: 5, text: "Touch grass every day", completed: false, status: "open" },
     {
       id: 6,
       text: "Update the token generation contracts to Vyper",
       completed: false,
+      status: "open",
     },
     {
       id: 7,
       text: "Install brownie to deploy Vyper contracts",
       completed: false,
+      status: "open",
     },
-    { id: 8, text: "Update the swap contracts to Vyper", completed: false },
+    {
+      id: 8,
+      text: "Update the swap contracts to Vyper",
+      completed: false,
+      status: "open",
+    },
     {
       id: 9,
       text: "Implement a secure method for storing private keys",
       completed: false,
+      status: "open",
     },
     {
       id: 10,
       text: "Integrate automated tests for smart contracts",
       completed: false,
+      status: "open",
     },
     {
       id: 11,
       text: "Conduct a comprehensive security audit",
       completed: false,
+      status: "open",
     },
     {
       id: 12,
       text: "Implement rate limiting to prevent abuse of the DEX",
       completed: false,
+      status: "open",
     },
     {
       id: 13,
       text: "Ensure proper handling of failed transactions",
       completed: false,
+      status: "open",
     },
     {
       id: 14,
       text: "Monitor gas prices and optimize contract calls",
       completed: false,
+      status: "open",
     },
     {
       id: 15,
       text: "Add detailed logging and monitoring for trade activities",
       completed: false,
+      status: "open",
     },
   ])
+
   const [newFeatureRequest, setNewFeatureRequest] = useState("")
   const [hasSubmittedFeatureRequest, setHasSubmittedFeatureRequest] = useState(
     new Set()
@@ -263,6 +282,20 @@ const FeedbackPage = () => {
     }
   }
 
+  const saveVotesToLocalStorage = (
+    updatedFeatureRequests,
+    updatedVotedItems
+  ) => {
+    localStorage.setItem(
+      "featureRequests",
+      JSON.stringify(updatedFeatureRequests)
+    )
+    localStorage.setItem(
+      `votedItems-${address}`,
+      JSON.stringify([...updatedVotedItems])
+    )
+  }
+
   const handleVote = (id, direction) => {
     if (isConnected) {
       if (votedItems.has(id)) {
@@ -270,39 +303,56 @@ const FeedbackPage = () => {
         return
       }
 
-      setFeatureRequests((prevRequests) =>
-        prevRequests
-          .map((req) =>
-            req.id === id
-              ? { ...req, votes: req.votes + (direction === "up" ? 1 : -1) }
-              : req
-          )
-          .sort((a, b) => b.votes - a.votes)
-      )
+      const updatedFeatureRequests = featureRequests
+        .map((req) =>
+          req.id === id
+            ? { ...req, votes: req.votes + (direction === "up" ? 1 : -1) }
+            : req
+        )
+        .sort((a, b) => b.votes - a.votes)
 
-      setVotedItems(new Set(votedItems).add(id))
-      localStorage.setItem(
-        `votedItems-${address}`,
-        JSON.stringify([...votedItems, id])
-      )
+      setFeatureRequests(updatedFeatureRequests)
+
+      const updatedVotedItems = new Set(votedItems).add(id)
+      setVotedItems(updatedVotedItems)
+
+      saveVotesToLocalStorage(updatedFeatureRequests, updatedVotedItems)
     } else {
       alert("Please connect your wallet to vote.")
     }
   }
 
-  const handleToggleChecklistItem = (id) => {
+  const saveChecklistToLocalStorage = (items) => {
+    localStorage.setItem("checklistItems", JSON.stringify(items))
+  }
+
+  const handleToggleChecklistItem = (id, status) => {
     if (address === SAFEMEME_WALLET_ADDRESS) {
-      setChecklistItems((prevItems) =>
-        prevItems.map((item) =>
-          item.id === id ? { ...item, completed: !item.completed } : item
-        )
+      const updatedItems = checklistItems.map((item) =>
+        item.id === id
+          ? { ...item, status: status, completed: status === "completed" }
+          : item
       )
+      setChecklistItems(updatedItems)
+      saveChecklistToLocalStorage(updatedItems)
     } else {
       alert("Only SafeMeme wallet can check or uncheck items.")
     }
   }
 
   useEffect(() => {
+    const storedChecklistItems = localStorage.getItem("checklistItems")
+    if (storedChecklistItems) {
+      setChecklistItems(JSON.parse(storedChecklistItems))
+    }
+  }, [])
+
+  useEffect(() => {
+    const storedFeatureRequests = localStorage.getItem("featureRequests")
+    if (storedFeatureRequests) {
+      setFeatureRequests(JSON.parse(storedFeatureRequests))
+    }
+
     if (address) {
       const storedVotes = localStorage.getItem(`votedItems-${address}`)
       if (storedVotes) {
@@ -312,6 +362,25 @@ const FeedbackPage = () => {
   }, [address])
 
   const getShortAddress = (addr) => `${addr.slice(0, 6)}...${addr.slice(-4)}`
+
+  const resetChecklist = () => {
+    const resetItems = checklistItems.map((item) => ({
+      ...item,
+      completed: false,
+      status: "open",
+    }))
+    setChecklistItems(resetItems)
+    saveChecklistToLocalStorage(resetItems)
+  }
+
+  const resetVotes = () => {
+    const resetFeatureRequests = featureRequests.map((request) => ({
+      ...request,
+      votes: 0,
+    }))
+    setFeatureRequests(resetFeatureRequests)
+    saveVotesToLocalStorage(resetFeatureRequests, new Set())
+  }
 
   return (
     <div className="feedbackBody">
@@ -392,6 +461,7 @@ const FeedbackPage = () => {
               </li>
             ))}
           </ul>
+
           <h3 className="feedbackTitle">Submit a Feature Request</h3>
           <input
             type="text"
@@ -408,8 +478,10 @@ const FeedbackPage = () => {
             Submit Feature Request
           </button>
         </div>
+
         <div className="feedbackSection feedbackChecklist">
           <h2 className="feedbackTitle">To-Do List</h2>
+
           <ul className="feedbackUl">
             {checklistItems.map((item) => (
               <li key={item.id} className="checklistItem">
@@ -420,8 +492,19 @@ const FeedbackPage = () => {
                 >
                   {item.text}
                 </span>
-                <button onClick={() => handleToggleChecklistItem(item.id)}>
-                  {item.completed ? "☑️" : "☐"}
+                <button
+                  onClick={() =>
+                    handleToggleChecklistItem(item.id, "inProgress")
+                  }
+                >
+                  {item.status === "inProgress" ? "In Progress" : "Start"}
+                </button>
+                <button
+                  onClick={() =>
+                    handleToggleChecklistItem(item.id, "completed")
+                  }
+                >
+                  {item.completed ? "☑️" : "Complete"}
                 </button>
               </li>
             ))}

@@ -180,7 +180,7 @@ body.feedbackBody {
 .checklistItem button {
   margin-left: 10px;
   padding: 5px 10px;
-  font-size: 18px;
+  font-size: 14px;
   background-color: var(--primary-light-fb);
   color: var(--text-light-fb);
   border: none;
@@ -206,10 +206,17 @@ body.feedbackBody {
     flex-direction: column;
     align-items: flex-start;
     width: 100%;
+    padding: 10px;
   }
 
   .feedbackLi div {
-    justify-content: flex-start;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .feedbackLi span {
     width: 100%;
   }
 
@@ -236,6 +243,35 @@ body.feedbackBody {
   .checklistItem button {
     margin-top: 5px;
   }
+
+  .feedbackUl {
+    padding: 0;
+    width: 100%;
+  }
+
+  .feedbackLi div button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+  }
+
+  .feedbackTitle {
+    width: 100%;
+    text-align: center;
+  }
+
+  .feedbackRight .feedbackButton {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .feedbackRight input.feedbackInput {
+    margin-top: 10px;
+  }
+
+  .feedbackRight .resetButton {
+    margin-top: 10px;
+  }
 }
 
 /* New styles for feedback submit buttons */
@@ -244,4 +280,29 @@ body.feedbackBody {
   font-size: 14px;
   margin-top: 0;
   margin-left: 10px;
+}
+
+/* New styles for reset button */
+.resetButton {
+  background-color: var(--secondary-light-fb);
+  color: var(--text-light-fb);
+  border: none;
+  cursor: pointer;
+  font-family: "Courier New", Courier, monospace;
+  padding: 10px 20px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.dark .resetButton {
+  background-color: var(--secondary-dark-fb);
+  color: var(--text-dark-fb);
+}
+
+.resetButton:hover {
+  background-color: var(--primary-light-fb);
+}
+
+.dark .resetButton:hover {
+  background-color: var(--primary-dark-fb);
 }

@@ -35,17 +35,17 @@ export const marketingConfig: MarketingConfig = {
     //   title: "SafeMeme",
     //   href: "/safememe",
     //  },
-    {
-      title: "Profile",
-      href: "/profile",
-    },
+    // {
+    //   title: "Profile",
+    //   href: "/profile",
+    // },
     {
       title: "Feedback",
       href: "/feedback",
     },
-    {
-      title: "Frames",
-      href: "/frame",
-    },
+    // {
+    //  title: "Frames",
+    //  href: "/frame",
+    // },
   ],
 }
