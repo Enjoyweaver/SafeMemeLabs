@@ -112,13 +112,25 @@ const FeedbackPage = () => {
       },
       {
         id: 2,
-        text: "Twitter link to profile",
+        text: "Update smart contracts to Vyper",
         votes: 0,
         address: SAFEMEME_WALLET_ADDRESS,
       },
       {
         id: 3,
-        text: "NFT Dashboard",
+        text: "Twitter link to profile",
+        votes: 0,
+        address: SAFEMEME_WALLET_ADDRESS,
+      },
+      {
+        id: 4,
+        text: "User created Frames",
+        votes: 0,
+        address: SAFEMEME_WALLET_ADDRESS,
+      },
+      {
+        id: 5,
+        text: "Create Dynamic NFTs",
         votes: 0,
         address: SAFEMEME_WALLET_ADDRESS,
       },
