@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import emailjs from "@emailjs/browser"
+import emailjs from "emailjs-com"
 import { useAccount } from "wagmi"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
@@ -94,7 +94,8 @@ const FeedbackPage = () => {
   const [votedItems, setVotedItems] = useState(new Set())
   const [pendingFeedback, setPendingFeedback] = useState([])
 
-  const formRef = useRef(null)
+  const feedbackFormRef = useRef(null)
+  const featureFormRef = useRef(null)
 
   useEffect(() => {
     setIsClient(true)
@@ -161,19 +162,21 @@ const FeedbackPage = () => {
       setFeedback(newFeedback)
 
       // Populate form data and send email
-      if (formRef.current) {
-        const form = formRef.current
+      if (feedbackFormRef.current) {
+        const form = feedbackFormRef.current
         const userAddress = feedback[index].address
         const userFeedback = feedback[index].text
 
         // Assign values to form inputs
         form.elements["user_address"].value = userAddress
         form.elements["user_feedback"].value = userFeedback
+        form.elements["message_type"].value = "Feedback"
 
         // Debugging: Log values to check if they are correctly assigned
         console.log("Form Data before sending:")
         console.log("User Address:", form.elements["user_address"].value)
         console.log("User Feedback:", form.elements["user_feedback"].value)
+        console.log("Message Type:", form.elements["message_type"].value)
 
         try {
           const response = await emailjs.sendForm(
@@ -200,10 +203,10 @@ const FeedbackPage = () => {
     setNewFeatureRequest(e.target.value)
   }
 
-  const handleSubmitFeatureRequest = () => {
+  const handleSubmitFeatureRequest = async () => {
     if (isConnected) {
-      if (hasSubmittedFeatureRequest.has(address)) {
-        alert("You can only submit one feature request.")
+      if (newFeatureRequest === "") {
+        alert("Please enter a feature request before submitting.")
         return
       }
 
@@ -219,6 +222,41 @@ const FeedbackPage = () => {
       setHasSubmittedFeatureRequest(
         new Set(hasSubmittedFeatureRequest).add(address)
       )
+
+      // Populate form data and send email
+      if (featureFormRef.current) {
+        const form = featureFormRef.current
+        const userAddress = address || SAFEMEME_WALLET_ADDRESS
+        const userFeedback = newFeatureRequest
+
+        // Assign values to form inputs
+        form.elements["user_address"].value = userAddress
+        form.elements["user_feedback"].value = userFeedback
+        form.elements["message_type"].value = "Feature Request"
+
+        // Debugging: Log values to check if they are correctly assigned
+        console.log("Form Data before sending:")
+        console.log("User Address:", form.elements["user_address"].value)
+        console.log("User Feedback:", form.elements["user_feedback"].value)
+        console.log("Message Type:", form.elements["message_type"].value)
+
+        try {
+          const response = await emailjs.sendForm(
+            process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+            process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+            form,
+            process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+          )
+          console.log(
+            "Feature request sent successfully!",
+            response.status,
+            response.text
+          )
+        } catch (err) {
+          console.error("Failed to send feature request.", err)
+        }
+      }
+
       setNewFeatureRequest("")
     } else {
       alert("Please connect your wallet to submit a feature request.")
@@ -279,9 +317,15 @@ const FeedbackPage = () => {
     <div className="feedbackBody">
       <Navbar />
       <div className="feedbackContainer">
-        <form ref={formRef} style={{ display: "none" }}>
+        <form ref={feedbackFormRef} style={{ display: "none" }}>
           <input type="text" name="user_address" />
           <input type="text" name="user_feedback" />
+          <input type="text" name="message_type" />
+        </form>
+        <form ref={featureFormRef} style={{ display: "none" }}>
+          <input type="text" name="user_address" />
+          <input type="text" name="user_feedback" />
+          <input type="text" name="message_type" />
         </form>
 
         <div className="feedbackSection feedbackLeft">
