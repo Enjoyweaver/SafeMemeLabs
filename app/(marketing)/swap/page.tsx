@@ -410,7 +410,7 @@ const TokenSwap: React.FC = () => {
                       </option>
                     ))}
                   </select>
-                  <div className="amount-container">
+                  <div className="amount-containerTo">
                     <div className="amount-input-with-price">
                       <input
                         type="number"

@@ -138,7 +138,7 @@ body {
 
 .amount-input-with-price .input-field-with-price {
   padding-top: 2px;
-  padding-bottom: 20px;
+  padding-bottom: 25px;
   margin-left: 10px;
   width: 100%;
   background-color: var(--input-dark);
@@ -296,7 +296,11 @@ body {
   }
 
   .amount-container {
-    top: -5px;
+    top: -15px;
+  }
+
+  .amount-containerTo {
+    top: -25px;
   }
 
   .quick-select-buttons button {
