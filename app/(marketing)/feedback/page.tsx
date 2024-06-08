@@ -103,6 +103,24 @@ const FeedbackPage = () => {
       completed: false,
       status: "open",
     },
+    {
+      id: 16,
+      text: "Add Chainlink Data Streams for Arbitrum",
+      completed: true,
+      status: "Completed",
+    },
+    {
+      id: 17,
+      text: "Add Chainlink Data Feeds for Avalanche, Base, and Fantom",
+      completed: true,
+      status: "Completed",
+    },
+    {
+      id: 18,
+      text: "Create safe token generator on Avalanche, Base, Degen, Fantom, and Rootstock",
+      completed: true,
+      status: "Completed",
+    },
   ])
 
   const [newFeatureRequest, setNewFeatureRequest] = useState("")
@@ -334,7 +352,7 @@ const FeedbackPage = () => {
           : item
       )
       setChecklistItems(updatedItems)
-      saveChecklistToLocalStorage(updatedItems)
+      saveChecklistToLocalStorage(updatedItems) // Ensure items are saved after update
     } else {
       alert("Only SafeMeme wallet can check or uncheck items.")
     }
@@ -461,7 +479,9 @@ const FeedbackPage = () => {
               </li>
             ))}
           </ul>
-
+          <button onClick={resetVotes} className="feedbackButton resetButton">
+            Reset Votes
+          </button>
           <h3 className="feedbackTitle">Submit a Feature Request</h3>
           <input
             type="text"
@@ -492,13 +512,15 @@ const FeedbackPage = () => {
                 >
                   {item.text}
                 </span>
-                <button
-                  onClick={() =>
-                    handleToggleChecklistItem(item.id, "inProgress")
-                  }
-                >
-                  {item.status === "inProgress" ? "In Progress" : "Start"}
-                </button>
+                {item.status !== "Completed" && (
+                  <button
+                    onClick={() =>
+                      handleToggleChecklistItem(item.id, "inProgress")
+                    }
+                  >
+                    {item.status === "inProgress" ? "In Progress" : "Start"}
+                  </button>
+                )}
                 <button
                   onClick={() =>
                     handleToggleChecklistItem(item.id, "completed")
@@ -509,6 +531,12 @@ const FeedbackPage = () => {
               </li>
             ))}
           </ul>
+          <button
+            onClick={resetChecklist}
+            className="feedbackButton resetButton"
+          >
+            Reset Checklist
+          </button>
         </div>
       </div>
     </div>

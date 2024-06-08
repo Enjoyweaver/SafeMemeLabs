@@ -272,6 +272,78 @@ body.feedbackBody {
   .feedbackRight .resetButton {
     margin-top: 10px;
   }
+
+  /* Center contents of feedbackRight section */
+  .feedbackRight {
+    align-items: center;
+    text-align: center;
+  }
+
+  .feedbackRight ul {
+    padding-left: 0;
+  }
+
+  .feedbackRight .feedbackLi {
+    align-items: center;
+    text-align: center;
+  }
+
+  .feedbackRight .feedbackLi div {
+    justify-content: center;
+  }
+
+  .feedbackRight .feedbackLi a {
+    text-align: center;
+  }
+
+  /* Style checklist buttons side by side */
+  .checklistItem {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .checklistItem button {
+    margin: 0;
+    flex: 1;
+  }
+
+  .checklistItem button + button {
+    margin-top: 5px;
+  }
+
+  .checklistItem span + button {
+    margin-top: 5px;
+  }
+
+  .checklistItem span {
+    margin-bottom: 5px;
+  }
+
+  .feedbackChecklist .feedbackUl {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .feedbackChecklist .checklistItem {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .feedbackChecklist .checklistItem span {
+    flex: 2;
+    margin-bottom: 0;
+  }
+
+  .feedbackChecklist .checklistItem button {
+    flex: 1;
+    margin-top: 0;
+    margin-left: 5px;
+  }
 }
 
 /* New styles for feedback submit buttons */
@@ -305,4 +377,8 @@ body.feedbackBody {
 
 .dark .resetButton:hover {
   background-color: var(--primary-dark-fb);
+}
+
+.resetButton {
+  display: none;
 }
