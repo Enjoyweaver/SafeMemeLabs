@@ -296,7 +296,7 @@ body.feedbackBody {
     text-align: center;
   }
 
-  /* Style checklist buttons side by side */
+  /* Style checklist buttons side by side and underneath the text */
   .checklistItem {
     display: flex;
     flex-direction: column;
@@ -312,37 +312,29 @@ body.feedbackBody {
     margin-top: 5px;
   }
 
-  .checklistItem span + button {
-    margin-top: 5px;
-  }
-
   .checklistItem span {
     margin-bottom: 5px;
+    width: 100%;
   }
 
   .feedbackChecklist .feedbackUl {
-    display: flex;
-    flex-direction: column;
     width: 100%;
   }
 
   .feedbackChecklist .checklistItem {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: flex-start;
     width: 100%;
   }
 
   .feedbackChecklist .checklistItem span {
-    flex: 2;
-    margin-bottom: 0;
+    margin-bottom: 5px;
   }
 
   .feedbackChecklist .checklistItem button {
-    flex: 1;
-    margin-top: 0;
-    margin-left: 5px;
+    width: 48%;
+    margin: 0 1% 5px 1%;
   }
 }
 
