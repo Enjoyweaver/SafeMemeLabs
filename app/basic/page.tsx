@@ -6,11 +6,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Safe Frame",
     description: "A Farcaster Frame Demo",
-    images: [`${process.env.NEXT_PUBLIC_SITE_URL}/site-preview.jpg`],
+    images: [`${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`],
   },
   other: {
     "fc:frame": "vNext",
-    "fc:frame:image": `${process.env.NEXT_PUBLIC_SITE_URL}/site-preview.jpg`,
+    "fc:frame:image": `${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`,
     "fc:frame:post_url": `${process.env.NEXT_PUBLIC_SITE_URL}/api/basic?id=1`,
     "fc:frame:button:1": "Start",
   },

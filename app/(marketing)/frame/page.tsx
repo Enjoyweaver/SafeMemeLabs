@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { getFrameMetadata } from "@coinbase/onchainkit/frame"
+import { getFrameMetadata } from "@coinbase/onchainkit"
 
 const frameMetadata = getFrameMetadata({
   buttons: [
@@ -8,7 +8,7 @@ const frameMetadata = getFrameMetadata({
     },
   ],
   image: {
-    src: `${process.env.NEXT_PUBLIC_SITE_URL}/logo.svg`,
+    src: `${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`,
   },
   input: {
     text: "Your Email",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Safe Frame",
     description: "Another, more advanced frame example",
-    images: [`${process.env.NEXT_PUBLIC_SITE_URL}/logo.svg`],
+    images: [`${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`],
   },
   other: {
     ...frameMetadata,
