@@ -39,9 +39,9 @@ export const marketingConfig: MarketingConfig = {
       title: "Profile",
       href: "/profile",
     },
-    //{
-    //  title: "Feedback",
-    //   href: "/feedback",
-    // },
+    {
+      title: "Feedback",
+      href: "/feedback",
+    },
   ],
 }
