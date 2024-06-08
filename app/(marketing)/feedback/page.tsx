@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 
+// Ensure this import is present
+
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import "@/styles/feedback.css"
@@ -251,16 +253,14 @@ const FeedbackPage = () => {
                 className="feedbackInput"
                 disabled={!isConnected || item.status === "approved"}
               />
-              {item.address && item.status === "approved" && (
-                <a
-                  href={`/profile/${item.address}`}
-                  className="feedbackWallet"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {getShortAddress(item.address)}
-                </a>
-              )}
+              <a
+                href={`/profile/${item.address}`}
+                className="feedbackWallet"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {getShortAddress(item.address)}
+              </a>
               <span className={`feedbackStatus ${item.status}`}>
                 {item.status === "pending" ? "Pending" : "Approved"}
               </span>
