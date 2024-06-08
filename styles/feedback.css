@@ -193,7 +193,35 @@ body.feedbackBody {
 }
 
 @media (max-width: 768px) {
+  .feedbackContainer {
+    flex-direction: column;
+  }
+
   .feedbackSection {
     flex: 1 1 100%;
+    margin-bottom: 20px;
+  }
+
+  .feedbackLi {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .feedbackLi div {
+    justify-content: flex-start;
+  }
+
+  .feedbackWallet,
+  .feedbackStatus {
+    margin-top: 5px;
+  }
+
+  .checklistItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .checklistItem button {
+    margin-top: 5px;
   }
 }
