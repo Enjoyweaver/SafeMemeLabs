@@ -289,8 +289,9 @@ body {
   .quick-select-buttons {
     display: flex;
     justify-content: space-between;
-    width: 70%;
+    width: 60%;
     position: relative;
+    top: -30px;
   }
 
   .quick-select-buttons button {

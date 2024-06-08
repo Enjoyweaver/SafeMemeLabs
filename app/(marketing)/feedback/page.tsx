@@ -112,7 +112,7 @@ const FeedbackPage = () => {
       },
       {
         id: 2,
-        text: "Twitter postable link",
+        text: "Twitter link to profile",
         votes: 0,
         address: SAFEMEME_WALLET_ADDRESS,
       },

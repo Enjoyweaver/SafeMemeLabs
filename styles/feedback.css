@@ -205,20 +205,32 @@ body.feedbackBody {
   .feedbackLi {
     flex-direction: column;
     align-items: flex-start;
+    width: 100%;
   }
 
   .feedbackLi div {
     justify-content: flex-start;
+    width: 100%;
   }
 
   .feedbackWallet,
   .feedbackStatus {
     margin-top: 5px;
+    width: 100%;
+  }
+
+  .feedbackInputContainer {
+    width: 100%;
+  }
+
+  .feedbackInput {
+    width: 100%;
   }
 
   .checklistItem {
     flex-direction: column;
     align-items: flex-start;
+    width: 100%;
   }
 
   .checklistItem button {
