@@ -23,11 +23,7 @@ const FeedbackPage = () => {
       completed: false,
       status: "open",
     },
-    {
-      text: "Update token factory page to only allow token deploying until the swap is done",
-      completed: false,
-      status: "open",
-    },
+
     {
       text: "Improve disconnect button UI",
       completed: false,
@@ -103,6 +99,11 @@ const FeedbackPage = () => {
       text: "Add detailed logging and monitoring for trade activities",
       completed: false,
       status: "open",
+    },
+    {
+      text: "Update token factory page to only allow token deploying until the swap is done",
+      completed: true,
+      status: "Completed",
     },
     {
       text: "Improve mobile swap UI",
