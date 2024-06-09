@@ -73,7 +73,7 @@ body {
 .swap-field {
   border: 1px solid var(--border-light);
   border-radius: 5px;
-  padding: 20px 0 20px 20px;
+  padding: 10px 0 10px 10px;
   margin-bottom: 10px;
 }
 
@@ -131,15 +131,17 @@ body {
   align-items: center;
   flex: 1;
   position: relative;
+  height: 60px; /* Increase height */
+  width: 70%; /* Increase width */
 }
 
 .amount-container .amount-containerTo input {
   margin-top: 5px;
-  width: 90px;
+  width: 100px;
 }
 .amount-containerTo input {
   margin-top: 5px;
-  width: 90px;
+  width: 100px;
 }
 
 .amount-input-with-price {
@@ -180,15 +182,23 @@ body {
 }
 
 /* Hide the up/down arrows in the number input for Chrome, Safari, Edge, and Opera */
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.amount-input-with-price input[type="number"]::-webkit-outer-spin-button,
+.amount-input-with-price input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
 }
 
 /* Hide the up/down arrows in the number input for Firefox */
-input[type="number"] {
-  -moz-appearance: textfield;
+.amount-input-with-price input[type="number"] {
+  -moz-appearance: textfield !important;
+  appearance: textfield !important; /* Added this line for broader compatibility */
+}
+
+/* Remove white border on focus */
+.amount-input-with-price input[type="number"]:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
 }
 
 .quick-select-buttons {
@@ -336,7 +346,7 @@ input[type="number"] {
     width: 60%;
     position: relative;
     top: -24px;
-    margin-right: 1rem;
+    margin-right: 1.2rem;
   }
 
   .disclaimer {
@@ -354,6 +364,8 @@ input[type="number"] {
 
   .amount-containerTo {
     top: -32px;
+    height: 70px; /* Adjust height for mobile */
+    width: 85%; /* Adjust width for mobile */
   }
 
   .quick-select-buttons button {
