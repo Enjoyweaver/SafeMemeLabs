@@ -16,7 +16,7 @@ export const marketingConfig: MarketingConfig = {
     },
     {
       title: "Dashboard",
-      href: "/dashboard",
+      href: "/memedashboard",
     },
     {
       title: "Create Token",
