@@ -16,7 +16,7 @@ export const marketingConfig: MarketingConfig = {
     },
     {
       title: "Dashboard",
-      href: "/tokendashboard",
+      href: "/dashboard",
     },
     {
       title: "Create Token",
@@ -47,5 +47,9 @@ export const marketingConfig: MarketingConfig = {
     //  title: "Frames",
     //  href: "/frame",
     // },
+    {
+      title: "Rewards",
+      href: "/rewards",
+    },
   ],
 }
