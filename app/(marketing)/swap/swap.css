@@ -161,6 +161,14 @@ body {
   background-color: var(--input-dark);
   color: var(--foreground-dark);
 }
+.input-field-with-price {
+  padding-top: 2px;
+  padding-bottom: 25px;
+  margin-left: 10px;
+  width: 100%;
+  background-color: var(--input-dark);
+  color: var(--foreground-dark);
+}
 /* Hide the up/down arrows in the number input */
 .input[type="number"]::-webkit-outer-spin-button,
 .input[type="number"]::-webkit-inner-spin-button {
@@ -327,6 +335,8 @@ body {
 
   .amount-containerTo {
     top: -32px;
+    background-color: var(--input-dark);
+    color: var(--foreground-dark);
   }
 
   .quick-select-buttons button {
