@@ -73,7 +73,7 @@ body {
 .swap-field {
   border: 1px solid var(--border-light);
   border-radius: 5px;
-  padding: 10px;
+  padding: 20px 0 20px 20px;
   margin-bottom: 10px;
 }
 
@@ -113,7 +113,7 @@ body {
 .input-field-with-price {
   padding-top: 2px; /* Add padding to the top */
   padding-bottom: 20px; /* Add padding to the bottom */
-  margin-left: 10px;
+  padding-left: 10px; /* Add padding to the left */
   width: 100%;
 }
 
@@ -123,7 +123,6 @@ body {
   align-items: center;
   flex: 1;
   position: relative;
-  margin-left: 1rem;
 }
 
 .amount-containerTo {
@@ -132,7 +131,6 @@ body {
   align-items: center;
   flex: 1;
   position: relative;
-  margin-left: 1rem;
 }
 
 .amount-container .amount-containerTo input {
@@ -151,15 +149,34 @@ body {
   width: 65%;
   margin-right: 0.5rem;
   align-items: flex-start;
+  background-color: var(
+    --input-light
+  ); /* Ensure background color is consistent */
+}
+
+.dark .amount-input-with-price {
+  background-color: var(
+    --input-dark
+  ); /* Ensure background color is consistent */
 }
 
 .amount-input-with-price .input-field-with-price {
   padding-top: 2px;
   padding-bottom: 25px;
+  padding-left: 10px; /* Add padding to the left */
   margin-left: 10px;
   width: 100%;
-  background-color: var(--input-dark);
-  color: var(--foreground-dark);
+  background-color: var(
+    --input-light
+  ); /* Ensure background color is consistent */
+  color: var(--foreground-light); /* Ensure text color is consistent */
+}
+
+.dark .amount-input-with-price .input-field-with-price {
+  background-color: var(
+    --input-dark
+  ); /* Ensure background color is consistent */
+  color: var(--foreground-dark); /* Ensure text color is consistent */
 }
 
 /* Hide the up/down arrows in the number input */
@@ -240,7 +257,7 @@ body {
 .swap-field input {
   width: 100%;
   padding: 10px;
-  border: 1px solid var(--border-light);
+  border: 10px solid var(--border-light);
   border-radius: 5px;
 }
 
@@ -292,6 +309,7 @@ body {
   left: 10px; /* Adjust to push the price to the left */
   font-size: 14px;
   color: var(--secondary-light);
+  margin-left: 0.5rem;
 }
 
 .dark .price-info {
