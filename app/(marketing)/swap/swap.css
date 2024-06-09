@@ -346,7 +346,7 @@ body {
     width: 60%;
     position: relative;
     top: -24px;
-    margin-right: 1.2rem;
+    margin-right: 1.4rem;
   }
 
   .disclaimer {
@@ -364,7 +364,7 @@ body {
 
   .amount-containerTo {
     top: -32px;
-    height: 70px; /* Adjust height for mobile */
+    height: 40px; /* Adjust height for mobile */
     width: 85%; /* Adjust width for mobile */
   }
 
