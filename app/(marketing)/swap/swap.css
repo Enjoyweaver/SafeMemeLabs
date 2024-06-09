@@ -179,14 +179,15 @@ body {
   color: var(--foreground-dark); /* Ensure text color is consistent */
 }
 
-/* Hide the up/down arrows in the number input */
-.input[type="number"]::-webkit-outer-spin-button,
-.input[type="number"]::-webkit-inner-spin-button {
+/* Hide the up/down arrows in the number input for Chrome, Safari, Edge, and Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-.input[type="number"] {
+/* Hide the up/down arrows in the number input for Firefox */
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
