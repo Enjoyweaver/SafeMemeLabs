@@ -298,7 +298,14 @@ body {
   color: var(--secondary-dark);
 }
 
+.quick-select-buttonsTo {
+  display: none;
+}
+
 @media screen and (max-width: 620px) {
+  .quick-select-buttonsTo {
+    display: none;
+  }
   .swap-container {
     width: calc(100% - 40px);
     padding: 20px;
@@ -328,8 +335,6 @@ body {
 
   .amount-containerTo {
     top: -32px;
-    background-color: var(--primary-light);
-    margin-right: 10px;
   }
 
   .quick-select-buttons button {

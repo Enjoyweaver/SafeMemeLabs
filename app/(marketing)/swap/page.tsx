@@ -415,6 +415,14 @@ const TokenSwap: React.FC = () => {
                     ))}
                   </select>
                   <div className="amount-containerTo">
+                    <div className="quick-select-buttonsTo">
+                      <button onClick={() => handleQuickSelect(25)}>25%</button>
+                      <button onClick={() => handleQuickSelect(50)}>50%</button>
+                      <button onClick={() => handleQuickSelect(75)}>75%</button>
+                      <button onClick={() => handleQuickSelect(100)}>
+                        Max
+                      </button>
+                    </div>
                     <div className="amount-input-with-price">
                       <input
                         type="number"
