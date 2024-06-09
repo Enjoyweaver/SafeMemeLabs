@@ -331,7 +331,7 @@ const TokenSwap: React.FC = () => {
       <div className="flex min-h-screen flex-col">
         <h1 className="disclaimer">
           Disclaimer: This is just for testing purposes. <br></br>
-          We will accounce when our swap goes live.
+          We will announce when our swap goes live.
         </h1>
         <main className="flex-1">
           <div className="swap-container">
