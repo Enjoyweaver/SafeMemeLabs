@@ -132,7 +132,7 @@ body {
   flex: 1;
   position: relative;
   height: 60px; /* Increase height */
-  width: 70%; /* Increase width */
+  width: 80%; /* Increase width */
 }
 
 .amount-container .amount-containerTo input {
@@ -364,8 +364,8 @@ body {
 
   .amount-containerTo {
     top: -32px;
-    height: 25px; /* Adjust height for mobile */
-    width: 85%; /* Adjust width for mobile */
+    height: 23px; /* Adjust height for mobile */
+    /*width: 85%;  Adjust width for mobile */
   }
 
   .quick-select-buttons button {
