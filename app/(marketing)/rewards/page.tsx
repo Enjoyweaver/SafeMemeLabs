@@ -17,14 +17,17 @@ const RewardsPage = () => {
   const { address } = useAccount() // Get the connected wallet address
 
   const [canClaim, setCanClaim] = useState(false)
+  const excludedAddresses = [
+    "0x8cfeb8Eacdfe56C5C3B529e5EBf9F76399d8Ca49".toLowerCase(),
+    "0x0FE3c2b440AE55eC003165D71F5212B2B8c7ec97".toLowerCase(),
+  ]
 
   useEffect(() => {
     if (
       holders.some(
         (holder) => holder.address.toLowerCase() === address?.toLowerCase()
       ) ||
-      address?.toLowerCase() ===
-        "0x8cfeb8Eacdfe56C5C3B529e5EBf9F76399d8Ca49".toLowerCase()
+      excludedAddresses.includes(address?.toLowerCase())
     ) {
       setCanClaim(true)
     } else {
@@ -39,7 +42,7 @@ const RewardsPage = () => {
 
   // Function to shorten addresses
   const shortenAddress = (address) => {
-    return `${address.slice(0, 6)}...${address.slice(-6)}`
+    return `${address.slice(0, 6)}...${address.slice(-4)}`
   }
 
   const handleClaim = () => {
@@ -100,20 +103,25 @@ const RewardsPage = () => {
               </tr>
             </thead>
             <tbody>
-              {holders.map((holder, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{shortenAddress(holder.address)}</td>
-                  <td>
-                    {formatNumber(
-                      (holder.balance / Math.pow(10, 18)).toFixed(2)
-                    )}
-                  </td>
-                  <td>Mad Token Claim</td>
-                  <td>Share MemeBox Earnings</td>
-                  <td>Your Choice</td>
-                </tr>
-              ))}
+              {holders
+                .filter(
+                  (holder) =>
+                    !excludedAddresses.includes(holder.address.toLowerCase())
+                )
+                .map((holder, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{shortenAddress(holder.address)}</td>
+                    <td>
+                      {formatNumber(
+                        (holder.balance / Math.pow(10, 18)).toFixed(2)
+                      )}
+                    </td>
+                    <td>Mad Token Claim</td>
+                    <td>Share MemeBox Earnings</td>
+                    <td>Your Choice</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
