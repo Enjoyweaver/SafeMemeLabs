@@ -37,6 +37,11 @@ const RewardsPage = () => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
   }
 
+  // Function to shorten addresses
+  const shortenAddress = (address) => {
+    return `${address.slice(0, 6)}...${address.slice(-6)}`
+  }
+
   const handleClaim = () => {
     if (canClaim) {
       // Logic for claiming rewards
@@ -62,7 +67,17 @@ const RewardsPage = () => {
           These wallets have bought $bubbles and haven't sold anything, and for
           supporting us as we build SafeMeme Labs, we will be sharing some of
           our early successes with them. The rewards are not explicitly defined
-          just yet, though they will be well worth the late reveal.
+          just yet, though they will be well worth the late reveal. <br></br>
+          <br></br>You can find more information about $bubbles on our{" "}
+          <a href="/memedashboard">Dashboard</a> and also about MemeBox where we
+          launched the token{" "}
+          <a href="https://twitter.com/MemeBoxFi">@MemeBoxFi</a>. Check out the
+          token on{" "}
+          <a href="https://dexscreener.com/fantom/0x0FE3c2b440AE55eC003165D71F5212B2B8c7ec97">
+            Dex Screener
+          </a>
+          . You can buy $bubbles at{" "}
+          <a href="https://memebox.fi/#/swap">https://memebox.fi/#/swap</a>.
         </p>
         <button
           className="claimButton"
@@ -71,32 +86,37 @@ const RewardsPage = () => {
         >
           Claim Rewards
         </button>
-        <table className="rewardsTable">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Wallet Address</th>
-              <th>Token Amount</th>
-              <th>1st Reward</th>
-              <th>2nd Reward</th>
-              <th>3rd Reward</th>
-            </tr>
-          </thead>
-          <tbody>
-            {holders.map((holder, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td>{holder.address}</td>
-                <td>
-                  {formatNumber((holder.balance / Math.pow(10, 18)).toFixed(2))}
-                </td>
-                <td>Mad Token Claim</td>
-                <td>Profile Boost</td>
-                <td>Your Choice</td>
+
+        <div className="rewardsTableContainer">
+          <table className="rewardsTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Wallet Address</th>
+                <th>Token Amount</th>
+                <th>1st Reward</th>
+                <th>2nd Reward</th>
+                <th>3rd Reward</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {holders.map((holder, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{shortenAddress(holder.address)}</td>
+                  <td>
+                    {formatNumber(
+                      (holder.balance / Math.pow(10, 18)).toFixed(2)
+                    )}
+                  </td>
+                  <td>Mad Token Claim</td>
+                  <td>Share MemeBox Earnings</td>
+                  <td>Your Choice</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

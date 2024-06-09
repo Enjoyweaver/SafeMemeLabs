@@ -20,11 +20,6 @@ const FeedbackPage = () => {
   const [featureRequests, setFeatureRequests] = useState([])
   const [checklistItems, setChecklistItems] = useState([
     {
-      text: "Create dashboard component showing first 100 $bubbles tokenholders that havent sold yet",
-      completed: false,
-      status: "open",
-    },
-    {
       text: "Update metadata for all pages",
       completed: false,
       status: "open",
@@ -105,6 +100,11 @@ const FeedbackPage = () => {
       text: "Add detailed logging and monitoring for trade activities",
       completed: false,
       status: "open",
+    },
+    {
+      text: "Create dashboard component showing first 100 $bubbles tokenholders that havent sold yet",
+      completed: true,
+      status: "Completed",
     },
     {
       text: "Update token factory page to only allow token deploying until the swap is done",
