@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Link from "next/link"
 import emailjs from "emailjs-com"
 import { useAccount } from "wagmi"
 
@@ -18,6 +19,11 @@ const FeedbackPage = () => {
   )
   const [featureRequests, setFeatureRequests] = useState([])
   const [checklistItems, setChecklistItems] = useState([
+    {
+      text: "Create dashboard component showing first 100 $bubbles tokenholders that havent sold yet",
+      completed: false,
+      status: "open",
+    },
     {
       text: "Update metadata for all pages",
       completed: false,
@@ -406,6 +412,15 @@ const FeedbackPage = () => {
   return (
     <div className="feedbackBody">
       <Navbar />
+      <div>
+        <p className="blogLink">
+          Learn more about this page in our Feedback{" "}
+          <Link href="/blog/feedback">
+            <span className="underline-link">Blog</span>
+          </Link>{" "}
+          post.
+        </p>
+      </div>
       <div className="feedbackContainer">
         <form ref={feedbackFormRef} style={{ display: "none" }}>
           <input type="text" name="user_address" />
@@ -500,7 +515,6 @@ const FeedbackPage = () => {
 
         <div className="feedbackSection feedbackChecklist">
           <h2 className="feedbackTitle">To-Do List</h2>
-
           <ul className="feedbackUl">
             {checklistItems.map((item, index) => (
               <li key={index} className="checklistItem">
@@ -511,20 +525,24 @@ const FeedbackPage = () => {
                 >
                   {item.text}
                 </span>
-                {item.status !== "Completed" && (
+                <div className="buttonContainer">
+                  {item.status !== "Completed" && (
+                    <button
+                      onClick={() =>
+                        handleToggleChecklistItem(index, "inProgress")
+                      }
+                    >
+                      {item.status === "inProgress" ? "In Progress" : "Start"}
+                    </button>
+                  )}
                   <button
                     onClick={() =>
-                      handleToggleChecklistItem(index, "inProgress")
+                      handleToggleChecklistItem(index, "completed")
                     }
                   >
-                    {item.status === "inProgress" ? "In Progress" : "Start"}
+                    {item.completed ? "☑️" : "Complete"}
                   </button>
-                )}
-                <button
-                  onClick={() => handleToggleChecklistItem(index, "completed")}
-                >
-                  {item.completed ? "☑️" : "Complete"}
-                </button>
+                </div>
               </li>
             ))}
           </ul>
