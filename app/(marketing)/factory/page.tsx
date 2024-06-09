@@ -61,6 +61,10 @@ export default function Factory(): JSX.Element {
   const [showModal, setShowModal] = useState(false)
   const [modalMessage, setModalMessage] = useState("")
 
+  // New state variable to control the enabled/disabled state of the "SafeMeme Launched" button
+  const [isSafeMemeLaunchedEnabled, setIsSafeMemeLaunchedEnabled] =
+    useState(false)
+
   useEffect(() => {
     setIsClient(true)
   }, [])
@@ -181,7 +185,12 @@ export default function Factory(): JSX.Element {
         message={modalMessage}
         onClose={() => setShowModal(false)}
       />
-      <div>
+      <div className="flex min-h-screen flex-col">
+        <h1 className="disclaimer">
+          Disclaimer: Only the SafeMeme Deployed functionality is live right
+          now. <br></br>We will announce when the SafeMeme Launched
+          functionality is live.
+        </h1>
         {isClient && chainId && !tokenDeployerDetails[chainId] && (
           <ChangeNetwork
             changeNetworkToChainId={250}
@@ -211,7 +220,11 @@ export default function Factory(): JSX.Element {
                 className={`tokenTypeButton ${
                   tokenType === "safeMemeTokenLaunched" ? "active" : ""
                 }`}
-                onClick={() => setTokenType("safeMemeTokenLaunched")}
+                onClick={() =>
+                  isSafeMemeLaunchedEnabled &&
+                  setTokenType("safeMemeTokenLaunched")
+                }
+                disabled={!isSafeMemeLaunchedEnabled} // Conditionally disable the button
               >
                 SafeMeme Launched
               </button>

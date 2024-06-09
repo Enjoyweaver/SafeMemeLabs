@@ -208,6 +208,13 @@ body {
   display: inline-block;
 }
 
+.disclaimer {
+  text-align: center;
+  font-size: 1.3rem;
+  color: var(--primary-light);
+  margin-top: 30px;
+}
+
 .errorCollapsed {
   width: 100%;
   cursor: pointer;
@@ -225,6 +232,15 @@ body {
     width: calc(100% - 40px);
     padding: 20px;
     margin: 50px auto;
+  }
+
+  .disclaimer {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--primary-light);
+    margin-top: 20px;
+    width: 100%;
+    margin: 0 auto;
   }
 
   .title {
@@ -274,7 +290,7 @@ body {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 5rem;
+  margin-top: 3rem;
 }
 
 .tokenTypeButton {
