@@ -19,12 +19,12 @@ const FeedbackPage = () => {
   const [featureRequests, setFeatureRequests] = useState([])
   const [checklistItems, setChecklistItems] = useState([
     {
-      text: "Improve mobile swap UI",
+      text: "Update token factory page to only allow token deploying until the swap is done",
       completed: false,
       status: "open",
     },
     {
-      text: "Update token factory page to only allow token deploying until the swap is done",
+      text: "Improve disconnect button UI",
       completed: false,
       status: "open",
     },
@@ -98,6 +98,11 @@ const FeedbackPage = () => {
       text: "Add detailed logging and monitoring for trade activities",
       completed: false,
       status: "open",
+    },
+    {
+      text: "Improve mobile swap UI",
+      completed: true,
+      status: "Completed",
     },
     {
       text: "Add Chainlink Data Streams for Arbitrum",
