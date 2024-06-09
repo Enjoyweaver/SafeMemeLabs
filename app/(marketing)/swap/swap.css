@@ -328,6 +328,8 @@ body {
 
   .amount-containerTo {
     top: -32px;
+    background-color: var(--primary-light);
+    margin-right: 10px;
   }
 
   .quick-select-buttons button {
