@@ -19,6 +19,11 @@ const FeedbackPage = () => {
   const [featureRequests, setFeatureRequests] = useState([])
   const [checklistItems, setChecklistItems] = useState([
     {
+      text: "Update metadata for all pages",
+      completed: false,
+      status: "open",
+    },
+    {
       text: "Update token factory page to only allow token deploying until the swap is done",
       completed: false,
       status: "open",
