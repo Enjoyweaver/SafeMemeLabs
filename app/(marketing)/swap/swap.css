@@ -311,6 +311,7 @@ body {
     padding: 20px;
     margin: 20px auto;
   }
+
   .quick-select-buttons {
     display: flex;
     justify-content: space-between;
@@ -335,8 +336,6 @@ body {
 
   .amount-containerTo {
     top: -32px;
-    background-color: var(--input-dark);
-    color: var(--foreground-dark);
   }
 
   .quick-select-buttons button {
@@ -350,6 +349,7 @@ body {
     flex: 1;
     margin: 0 3px;
   }
+
   .amount-input-with-price {
     display: flex;
     flex-direction: column;
@@ -357,5 +357,10 @@ body {
     width: 80%;
     margin-right: 0rem;
     align-items: flex-start;
+  }
+
+  .dark .amount-containerTo {
+    top: -32px;
+    /* Ensure this matches the light mode for consistency */
   }
 }
