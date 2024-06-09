@@ -330,7 +330,7 @@ const TokenSwap: React.FC = () => {
       <Navbar />
       <div className="flex min-h-screen flex-col">
         <h1 className="disclaimer">
-          Disclaimer: This is just for testing purposes at this point. <br></br>
+          Disclaimer: This is just for testing purposes. <br></br>
           We will accounce when our swap goes live.
         </h1>
         <main className="flex-1">

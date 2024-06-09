@@ -55,13 +55,10 @@ body {
 }
 
 .disclaimer {
-  width: calc(100% - 200px);
-
-  margin: 0px auto;
   text-align: center;
   font-size: 1.3rem;
   color: var(--primary-light);
-  margin-top: 20px;
+  margin-top: 30px;
 }
 .dark .page-title {
   color: var(--primary-dark);
@@ -316,12 +313,21 @@ body {
     margin-right: 1rem;
   }
 
+  .disclaimer {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--primary-light);
+    margin-top: 20px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
   .amount-container {
-    top: -25px;
+    top: -22px;
   }
 
   .amount-containerTo {
-    top: -15px;
+    top: -25px;
   }
 
   .quick-select-buttons button {
