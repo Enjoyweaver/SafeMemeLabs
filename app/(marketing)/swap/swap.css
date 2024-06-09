@@ -161,14 +161,7 @@ body {
   background-color: var(--input-dark);
   color: var(--foreground-dark);
 }
-.input-field-with-price {
-  padding-top: 2px;
-  padding-bottom: 25px;
-  margin-left: 10px;
-  width: 100%;
-  background-color: var(--input-dark);
-  color: var(--foreground-dark);
-}
+
 /* Hide the up/down arrows in the number input */
 .input[type="number"]::-webkit-outer-spin-button,
 .input[type="number"]::-webkit-inner-spin-button {
@@ -311,7 +304,6 @@ body {
     padding: 20px;
     margin: 20px auto;
   }
-
   .quick-select-buttons {
     display: flex;
     justify-content: space-between;
@@ -349,7 +341,6 @@ body {
     flex: 1;
     margin: 0 3px;
   }
-
   .amount-input-with-price {
     display: flex;
     flex-direction: column;
@@ -357,10 +348,5 @@ body {
     width: 80%;
     margin-right: 0rem;
     align-items: flex-start;
-  }
-
-  .dark .amount-containerTo {
-    top: -32px;
-    /* Ensure this matches the light mode for consistency */
   }
 }
