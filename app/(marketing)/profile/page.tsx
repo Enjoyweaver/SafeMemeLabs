@@ -17,7 +17,7 @@ import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import { tokenDeployerDetails } from "../../../Constants/config"
-import "@/styles/profile.module.css"
+import "@/styles/profile.css"
 
 export default function MyTokens(): JSX.Element {
   const [isClient, setIsClient] = useState(false)
