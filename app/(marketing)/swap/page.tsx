@@ -105,7 +105,7 @@ const TokenSwap: React.FC = () => {
     }
   }, [tempTokenData, tempTokenDataError])
 
-  function splitData(data: any) {
+  function splitData(data) {
     const groupedData = []
     const namedData = []
     for (let i = 0; i < data.length; i += 4) {
@@ -125,65 +125,43 @@ const TokenSwap: React.FC = () => {
 
   useEffect(() => {
     const fetchTokenPrices = async () => {
-      const allTokenPrices: {
-        [key: string]: { [symbol: string]: number | null }
-      } = {}
+      const allTokenPrices = {}
 
-      const aggregatorV3InterfaceABI = [
-        {
-          inputs: [],
-          name: "latestRoundData",
-          outputs: [
-            { internalType: "uint80", name: "roundId", type: "uint80" },
-            { internalType: "int256", name: "answer", type: "int256" },
-            { internalType: "uint256", name: "startedAt", type: "uint256" },
-            { internalType: "uint256", name: "updatedAt", type: "uint256" },
-            {
-              internalType: "uint80",
-              name: "answeredInRound",
-              type: "uint80",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-      ]
+      const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
+      const priceOracle = new ethers.Contract(
+        priceFeedAddresses[chainId], // Ensure this points to the PriceOracle contract address
+        [
+          {
+            inputs: [
+              { internalType: "address", name: "token", type: "address" },
+            ],
+            name: "getPrice",
+            outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+            stateMutability: "view",
+            type: "function",
+          },
+        ],
+        provider
+      )
 
-      for (const [chainId, tokens] of Object.entries(tokenBOptions)) {
-        const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
-        const chainPrices: { [symbol: string]: number | null } = {}
-
-        for (const token of tokens) {
-          const priceFeedAddress =
-            priceFeedAddresses[chainId]?.[`${token.symbol}/USD`]
-          if (!priceFeedAddress) continue
-
-          try {
-            const priceFeed = new ethers.Contract(
-              priceFeedAddress,
-              aggregatorV3InterfaceABI,
-              provider
-            )
-            const roundData = await priceFeed.latestRoundData()
-            const price = parseFloat(
-              ethers.utils.formatUnits(roundData.answer, 8)
-            )
-            chainPrices[token.symbol] = price
-          } catch (error) {
-            console.error(`Error fetching price for ${token.symbol}:`, error)
-            chainPrices[token.symbol] = null
-          }
+      for (const token of tokenBOptions[chainId] || []) {
+        try {
+          const price = await priceOracle.getPrice(token.address)
+          allTokenPrices[token.symbol] = parseFloat(
+            ethers.utils.formatUnits(price, 18)
+          )
+        } catch (error) {
+          console.error(`Error fetching price for ${token.symbol}:`, error)
+          allTokenPrices[token.symbol] = null
         }
-
-        allTokenPrices[chainId] = chainPrices
       }
 
-      setTokenPrices(allTokenPrices)
+      setTokenPrices({ [chainId]: allTokenPrices })
       setLoading(false)
     }
 
     fetchTokenPrices()
-  }, [])
+  }, [chainId])
 
   useEffect(() => {
     // Ensure this code runs only on the client
@@ -256,17 +234,29 @@ const TokenSwap: React.FC = () => {
     if (isConnected && amount > 0 && selectedTokenFrom && selectedTokenTo) {
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const swapTokens = async (provider, tokenFrom, tokenTo, amount) => {
-          const dexContract = new ethers.Contract(
-            dexAddress,
-            dexABI,
-            provider.getSigner()
-          )
-          await dexContract.swap(tokenFrom, tokenTo, amount)
-          console.log("Tokens swapped:", tokenFrom, tokenTo, amount)
-        }
+        const signer = provider.getSigner()
+        const dexContract = new ethers.Contract(dexAddress, dexABI, signer)
 
-        await swapTokens(provider, selectedTokenFrom, selectedTokenTo, amount)
+        // Approve the DEX to spend tokens
+        const tokenContract = new ethers.Contract(
+          selectedTokenFrom,
+          erc20ABI,
+          signer
+        )
+        const decimals = deployedTokens.find(
+          (token) => token.address === selectedTokenFrom
+        ).decimals
+        const amountInWei = ethers.utils.parseUnits(amount.toString(), decimals)
+        await tokenContract.approve(dexAddress, amountInWei)
+
+        // Perform the swap
+        await dexContract.swap(selectedTokenFrom, selectedTokenTo, amountInWei)
+        console.log(
+          "Tokens swapped:",
+          selectedTokenFrom,
+          selectedTokenTo,
+          amount
+        )
       } catch (error) {
         console.error("Swap failed:", error)
       }

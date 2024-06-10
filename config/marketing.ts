@@ -32,13 +32,13 @@ export const marketingConfig: MarketingConfig = {
       href: "/swap",
     },
     //{
-    //   title: "SafeMeme",
-    //   href: "/safememe",
-    //  },
-    // {
-    //   title: "Profile",
-    //   href: "/profile",
-    // },
+    //  title: "SafeMeme",
+    //  href: "/safememe",
+    //},
+    {
+      title: "Profile",
+      href: "/profile",
+    },
     {
       title: "Feedback",
       href: "/feedback",

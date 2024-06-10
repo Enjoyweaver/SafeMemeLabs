@@ -249,7 +249,7 @@ const SafeMemeBlogPost = () => {
         </main>
 
         <section className="audit-section">
-          <h2 className="first-contract-title ">ERC-20 Standard</h2>
+          <h2 className="first-contract-title">ERC-20 Standard</h2>
 
           <h3 className="subsection-title">Introduction</h3>
           <p className="audit-content">
@@ -271,11 +271,11 @@ const SafeMemeBlogPost = () => {
           </ul>
           <p className="audit-content">
             The ERC-20 standard was created to serve administrative purposes
-            like airdrops only, so security was not a factor. Thats why we are
+            like airdrops only, so security was not a factor. That's why we are
             expanding on the security considerations of our contracts below.
           </p>
 
-          <h2 className="contract-title ">Factory Contract</h2>
+          <h2 className="contract-title">Factory Contract</h2>
 
           <h3 className="subsection-title">Purpose</h3>
           <p className="audit-content">
@@ -365,7 +365,7 @@ const SafeMemeBlogPost = () => {
             </li>
           </ul>
 
-          <h2 className="contract-title ">Locker Contract</h2>
+          <h2 className="contract-title">Locker Contract</h2>
 
           <h3 className="subsection-title">Purpose</h3>
           <p className="audit-content">
@@ -413,9 +413,13 @@ const SafeMemeBlogPost = () => {
               emitted properly to allow for accurate tracking and auditing of
               token activities.
             </li>
+            <li>
+              <strong>Reentrancy Protection:</strong> Add reentrancy protection
+              to the unlock function to prevent reentrancy attacks.
+            </li>
           </ul>
 
-          <h2 className="contract-title ">Manager Contract</h2>
+          <h2 className="contract-title">Manager Contract</h2>
 
           <h3 className="subsection-title">Purpose</h3>
           <p className="audit-content">
@@ -464,9 +468,14 @@ const SafeMemeBlogPost = () => {
               emitted properly to allow for accurate tracking and auditing of
               token activities.
             </li>
+            <li>
+              <strong>Reentrancy Protection:</strong> Add reentrancy protection
+              to the receiveTokens and createLiquidityPair functions to prevent
+              reentrancy attacks.
+            </li>
           </ul>
 
-          <h2 className="contract-title ">Router Contract</h2>
+          <h2 className="contract-title">Router Contract</h2>
 
           <h3 className="subsection-title">Purpose</h3>
           <p className="audit-content">
@@ -524,6 +533,44 @@ const SafeMemeBlogPost = () => {
               <strong>Event Emission:</strong> Ensure all relevant events are
               emitted properly to allow for accurate tracking and auditing of
               token activities.
+            </li>
+            <li>
+              <strong>Reentrancy Protection:</strong> Add reentrancy protection
+              to functions handling token transfers to prevent reentrancy
+              attacks.
+            </li>
+          </ul>
+
+          <h2 className="contract-title">Oracle Contract</h2>
+
+          <h3 className="subsection-title">Purpose</h3>
+          <p className="audit-content">
+            The Oracle.sol contract is designed to provide reliable price data
+            for the tokens. It ensures that token prices are accurately tracked
+            and updated to facilitate proper token listings and swaps.
+          </p>
+
+          <h3 className="subsection-title">Scope</h3>
+          <p className="audit-content">
+            The Oracle.sol contract handles the following:
+          </p>
+          <ul className="audit-list">
+            <li>Setting and updating the price of tokens.</li>
+            <li>Providing the current price of tokens.</li>
+            <li>Managing authorized addresses that can set token prices.</li>
+          </ul>
+
+          <h3 className="subsection-title">Areas of Consideration</h3>
+          <ul className="audit-list">
+            <li>
+              <strong>Authorization Management:</strong> Ensure that only
+              authorized addresses can set token prices to prevent price
+              manipulation.
+            </li>
+            <li>
+              <strong>Event Emission:</strong> Emit events when token prices are
+              set or when authorized addresses are added or removed to maintain
+              transparency and track changes.
             </li>
           </ul>
         </section>

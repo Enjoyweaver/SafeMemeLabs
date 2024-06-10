@@ -2,22 +2,21 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import { erc20ABI } from "@/ABIs/erc20"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
-import DexData from "@/APIs/exchangedata"
-import TokenHoldersList from "@/APIs/tokeninfo"
 import {
-  erc20ABI,
   useAccount,
   useContractRead,
   useContractReads,
   useNetwork,
 } from "wagmi"
 
-import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import { tokenDeployerDetails } from "../../../Constants/config"
 import "@/styles/profile.css"
+import DexData from "@/APIs/exchangedata"
+import TokenHoldersList from "@/APIs/tokeninfo"
 
 export default function MyTokens(): JSX.Element {
   const [isClient, setIsClient] = useState(false)
@@ -34,7 +33,7 @@ export default function MyTokens(): JSX.Element {
     ? chain.id
     : Object.keys(tokenDeployerDetails)[0]
 
-  const { data: contracts } = useContractRead({
+  const { data: contracts, error: contractsError } = useContractRead({
     address: tokenDeployerDetails[chainId] as `0x${string}`,
     abi: tokenDeployerABI,
     functionName: "getTokensDeployedByUser",
@@ -43,10 +42,14 @@ export default function MyTokens(): JSX.Element {
   })
 
   useEffect(() => {
+    if (contractsError) {
+      console.error("Contracts Error: ", contractsError)
+    }
     if (contracts) {
+      console.log("Contracts: ", contracts)
       setTokenCount(contracts.length)
     }
-  }, [contracts])
+  }, [contracts, contractsError])
 
   const contractRequests = contracts?.map((contract) => [
     {
@@ -76,20 +79,26 @@ export default function MyTokens(): JSX.Element {
     },
   ])
 
-  const { data: tempTokenData } = useContractReads({
+  const { data: tempTokenData, error: tempTokenDataError } = useContractReads({
     contracts: contractRequests?.flat(),
     enabled: !!contractRequests?.length,
   })
 
-  function splitData(data: any) {
-    const groupedData: any[] = []
-    const namedData: any[] = []
-    const chunkSize: any = 5
-
-    for (let i = 0; i < data.length; i += chunkSize) {
-      groupedData.push(data.slice(i, i + chunkSize))
+  useEffect(() => {
+    if (tempTokenDataError) {
+      console.error("Temp Token Data Error: ", tempTokenDataError)
     }
+    if (tempTokenData) {
+      console.log("Temp Token Data: ", tempTokenData)
+    }
+  }, [tempTokenData, tempTokenDataError])
 
+  function splitData(data: any) {
+    const groupedData = []
+    const namedData = []
+    for (let i = 0; i < data.length; i += 5) {
+      groupedData.push(data.slice(i, i + 5))
+    }
     for (let i = 0; i < groupedData.length; i++) {
       namedData.push({
         name: groupedData[i][0].result,
@@ -99,8 +108,7 @@ export default function MyTokens(): JSX.Element {
         antiWhalePercentage: groupedData[i][4].result,
       })
     }
-
-    return namedData
+    return namedData.reverse() // Reverse the namedData to match the reverse order display
   }
 
   const formatNumber = (number: number, decimals: number) => {
@@ -140,61 +148,65 @@ export default function MyTokens(): JSX.Element {
                   tempTokenData &&
                   tempTokenData.length > 0 && (
                     <div className="meme-container">
-                      {splitData(tempTokenData)
-                        .reverse()
-                        .map((token, index: number) => (
-                          <div key={index} className="meme">
-                            <div className="meme-header">
-                              <h3>
-                                {token.name} ({token.symbol})
-                              </h3>
-                              <Image
-                                src="/images/logo.png"
-                                alt={`${token.name} logo`}
-                                width={50}
-                                height={50}
-                                className="token-logo"
-                              />
-                            </div>
-                            <div className="meme-details">
-                              <p>
-                                <strong>Contract Address:</strong>{" "}
-                                {contracts[index]}
-                              </p>
-                              <p>
-                                <strong>Supply:</strong>{" "}
-                                {formatNumber(
-                                  Number(token.supply),
-                                  token.decimals
-                                )}
-                              </p>
-                              <p>
-                                <strong>Decimals:</strong> {token.decimals}
-                              </p>
-                              <p>
-                                <strong>Anti-Whale Percentage:</strong>{" "}
-                                {token.antiWhalePercentage}%
-                              </p>
-                              <p>
-                                <strong>Max Tokens per Holder:</strong>{" "}
-                                {formatNumber(
-                                  (Number(token.supply) *
-                                    Number(token.antiWhalePercentage)) /
-                                    100,
-                                  token.decimals
-                                )}
-                              </p>
-                            </div>
-                            <TokenHoldersList
-                              tokenAddress={contracts[index]}
-                              chainId={chain?.id}
-                            />
-                            <DexData
-                              tokenAddress={contracts[index]}
-                              chainId={chain?.id}
+                      {splitData(tempTokenData).map((token, index: number) => (
+                        <div className="meme" key={index}>
+                          <div className="meme-header">
+                            <h3>
+                              {token.name} ({token.symbol})
+                            </h3>
+                            <Image
+                              src="/images/logo.png" // You can dynamically set the logo URL if available
+                              alt={`${token.name} logo`}
+                              width={50}
+                              height={50}
+                              className="token-logo"
                             />
                           </div>
-                        ))}
+
+                          <div className="meme-details">
+                            <p>
+                              <strong>Contract Address:</strong>{" "}
+                              {contracts[contracts.length - 1 - index]}
+                            </p>
+                            <p>
+                              <strong>Supply:</strong>{" "}
+                              {formatNumber(
+                                Number(token.supply),
+                                token.decimals
+                              )}
+                            </p>
+                            <p>
+                              <strong>Decimals:</strong> {token.decimals}
+                            </p>
+                            <p>
+                              <strong>Anti-Whale Percentage:</strong>{" "}
+                              {token.antiWhalePercentage}%
+                            </p>
+
+                            <p>
+                              <strong>Max Tokens per Holder:</strong>{" "}
+                              {formatNumber(
+                                (Number(token.supply) *
+                                  token.antiWhalePercentage) /
+                                  100,
+                                token.decimals
+                              )}
+                            </p>
+                          </div>
+                          <TokenHoldersList
+                            tokenAddress={
+                              contracts[contracts.length - 1 - index]
+                            }
+                            chainId={chain?.id}
+                          />
+                          <DexData
+                            tokenAddress={
+                              contracts[contracts.length - 1 - index]
+                            }
+                            chainId={chain?.id}
+                          />
+                        </div>
+                      ))}
                     </div>
                   )}
               </>

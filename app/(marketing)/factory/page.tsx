@@ -4,7 +4,6 @@ import { ChangeEvent, useEffect, useState } from "react"
 import Link from "next/link"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
-// Import the new ABI
 import { toast } from "react-toastify"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
@@ -17,6 +16,7 @@ import {
   managerDetails,
   tokenBOptions,
   tokenDeployerDetails,
+  tokenLauncherDetails,
 } from "@/Constants/config"
 import { useDebounce } from "usehooks-ts"
 import {
@@ -61,18 +61,15 @@ export default function Factory(): JSX.Element {
   const [showModal, setShowModal] = useState(false)
   const [modalMessage, setModalMessage] = useState("")
 
-  // New state variable to control the enabled/disabled state of the "SafeMeme Launched" button
-  const [isSafeMemeLaunchedEnabled, setIsSafeMemeLaunchedEnabled] =
-    useState(false)
-
   useEffect(() => {
     setIsClient(true)
   }, [])
 
   useEffect(() => {
     if (chain && chain.id) {
-      setLocker(lockerDetails[chain.id]?.safeMemeToken || "")
-      setManager(managerDetails[chain.id]?.safeMemeToken || "")
+      console.log("Current chain ID:", chain.id)
+      setLocker(lockerDetails[chain.id] || "")
+      setManager(managerDetails[chain.id] || "")
     }
   }, [chain])
 
@@ -101,10 +98,22 @@ export default function Factory(): JSX.Element {
 
   const chainId: string | number = chain ? chain.id : 250
 
-  const { data: deployFee } = useContractRead({
-    address: tokenDeployerDetails[chainId]?.safeMemeToken as `0x${string}`,
-    abi: tokenDeployerABI,
+  const { data: deployFee, error: readError } = useContractRead({
+    address:
+      tokenType === "safeMemeTokenLaunched"
+        ? (tokenLauncherDetails[chainId] as `0x${string}`)
+        : (tokenDeployerDetails[chainId] as `0x${string}`),
+    abi:
+      tokenType === "safeMemeTokenLaunched"
+        ? tokenLauncherABI
+        : tokenDeployerABI,
     functionName: "creationFee",
+    onError: (error) => {
+      console.error("Error fetching creation fee:", error)
+    },
+    onSuccess: (data) => {
+      console.log("Creation fee fetched:", data)
+    },
   })
 
   const {
@@ -113,29 +122,43 @@ export default function Factory(): JSX.Element {
     isError: isPrepareError,
     isLoading: isLoadingPrepare,
   } = usePrepareContractWrite({
-    address: chainId
-      ? ((tokenType === "safeMemeTokenLaunched"
-          ? tokenDeployerDetails[chainId]?.safeMemeTokenLaunched
-          : tokenDeployerDetails[chainId]?.safeMemeToken) as `0x${string}`)
-      : undefined,
+    address:
+      tokenType === "safeMemeTokenLaunched"
+        ? (tokenLauncherDetails[chainId] as `0x${string}`)
+        : (tokenDeployerDetails[chainId] as `0x${string}`),
     abi:
       tokenType === "safeMemeTokenLaunched"
         ? tokenLauncherABI
         : tokenDeployerABI,
     functionName: "deployToken",
-    args: [
-      dSymbol,
-      dName,
-      dDecimals ? Number(dDecimals) : 18,
-      BigInt(dSupply),
-      Number(dAntiWhalePercentage),
-      ...(tokenType === "safeMemeTokenLaunched"
-        ? [dLocker, dManager, dSelectedTokenB]
-        : []),
-    ],
+    args:
+      tokenType === "safeMemeTokenLaunched"
+        ? [
+            dSymbol,
+            dName,
+            dDecimals ? Number(dDecimals) : 18,
+            BigInt(dSupply),
+            Number(dAntiWhalePercentage),
+            dLocker,
+            dManager,
+            dSelectedTokenB,
+          ]
+        : [
+            dSymbol,
+            dName,
+            dDecimals ? Number(dDecimals) : 18,
+            BigInt(dSupply),
+            Number(dAntiWhalePercentage),
+          ],
     value: deployFee,
     cacheTime: 0,
   })
+
+  useEffect(() => {
+    if (prepareError) {
+      console.error("Error preparing contract write:", prepareError)
+    }
+  }, [prepareError])
 
   const {
     data,
@@ -145,6 +168,12 @@ export default function Factory(): JSX.Element {
     error,
     isError,
   } = useContractWrite(config)
+
+  useEffect(() => {
+    if (error) {
+      console.error("Error writing contract:", error)
+    }
+  }, [error])
 
   const {
     data: useWaitData,
@@ -186,11 +215,6 @@ export default function Factory(): JSX.Element {
         onClose={() => setShowModal(false)}
       />
       <div className="flex min-h-screen flex-col">
-        <h1 className="disclaimer">
-          Disclaimer: Only the SafeMeme Deployed functionality is live right
-          now. <br></br>We will announce when the SafeMeme Launched
-          functionality is live.
-        </h1>
         {isClient && chainId && !tokenDeployerDetails[chainId] && (
           <ChangeNetwork
             changeNetworkToChainId={250}
@@ -204,7 +228,7 @@ export default function Factory(): JSX.Element {
               <button
                 className={`tokenTypeButton ${
                   tokenType === "safeMemeToken" ? "active" : ""
-                }`}
+                } hideButton`} // Add 'hideButton' class
                 onClick={() => setTokenType("safeMemeToken")}
               >
                 SafeMeme Deployed
@@ -219,12 +243,8 @@ export default function Factory(): JSX.Element {
               <button
                 className={`tokenTypeButton ${
                   tokenType === "safeMemeTokenLaunched" ? "active" : ""
-                }`}
-                onClick={() =>
-                  isSafeMemeLaunchedEnabled &&
-                  setTokenType("safeMemeTokenLaunched")
-                }
-                disabled={!isSafeMemeLaunchedEnabled} // Conditionally disable the button
+                } hideButton`} // Add 'hideButton' class
+                onClick={() => setTokenType("safeMemeTokenLaunched")}
               >
                 SafeMeme Launched
               </button>
@@ -295,7 +315,7 @@ export default function Factory(): JSX.Element {
                 <label className="inputTitle">Anti-Whale Percentage*</label>
                 <input
                   onKeyDown={(evt) =>
-                    ["e", "E", "+", "-"].includes(evt.key) &&
+                    ["e", "E", "+", "-", "."].includes(evt.key) &&
                     evt.preventDefault()
                   }
                   onChange={setAntiWhalePercentageInput}
@@ -334,7 +354,6 @@ export default function Factory(): JSX.Element {
               <button
                 onClick={handleDeployClick}
                 className={`deployButton ${
-                  !isPrepareError &&
                   isConnected &&
                   isFormFilled() &&
                   Number(decimals) >= 0 &&
@@ -347,17 +366,16 @@ export default function Factory(): JSX.Element {
                     : "disabled"
                 }`}
                 disabled={
-                  !isPrepareError &&
-                  isConnected &&
-                  isFormFilled() &&
-                  Number(decimals) >= 0 &&
-                  Number(decimals) <= 18 &&
-                  Number(supply) >= 0 &&
-                  Number(antiWhalePercentage) > 0 &&
-                  Number(antiWhalePercentage) <= 3 &&
-                  !(isLoadingTransaction || isLoadingWrite)
-                    ? false
-                    : true
+                  !(
+                    isConnected &&
+                    isFormFilled() &&
+                    Number(decimals) >= 0 &&
+                    Number(decimals) <= 18 &&
+                    Number(supply) >= 0 &&
+                    Number(antiWhalePercentage) > 0 &&
+                    Number(antiWhalePercentage) <= 3 &&
+                    !(isLoadingTransaction || isLoadingWrite)
+                  )
                 }
               >
                 {isClient

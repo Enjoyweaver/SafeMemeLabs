@@ -210,7 +210,7 @@ body {
 
 .disclaimer {
   text-align: center;
-  font-size: 1.3rem;
+  font-size: 1rem;
   color: var(--primary-light);
   margin-top: 30px;
 }
@@ -447,4 +447,8 @@ body {
 
 .dark .tokenTypeButtonPopup::after {
   border-color: var(--foreground-dark) transparent transparent transparent;
+}
+
+.hideButton {
+  display: none;
 }
