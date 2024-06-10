@@ -11,6 +11,7 @@ import {
   useNetwork,
 } from "wagmi"
 
+import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import { tokenDeployerDetails } from "../../../Constants/config"
