@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import {
+  oracleDetails,
   priceFeedAddresses,
   rpcUrls,
   tokenBOptions,
@@ -88,6 +89,12 @@ const TokenSwap: React.FC = () => {
       abi: erc20ABI,
       functionName: "decimals",
     },
+    {
+      address: contract.result,
+      abi: erc20ABI,
+      functionName: "balanceOf",
+      args: [address],
+    },
   ])
 
   const { data: tempTokenData, error: tempTokenDataError } = useContractReads({
@@ -101,84 +108,153 @@ const TokenSwap: React.FC = () => {
     }
     if (tempTokenData) {
       console.log("Temp Token Data: ", tempTokenData)
-      setDeployedTokens(splitData(tempTokenData))
+      console.log("All Contracts Data: ", allContracts)
+      setDeployedTokens(splitData(tempTokenData, allContracts))
     }
-  }, [tempTokenData, tempTokenDataError])
+  }, [tempTokenData, tempTokenDataError, allContracts])
 
-  function splitData(data) {
+  function splitData(data, allContracts) {
     const groupedData = []
     const namedData = []
-    for (let i = 0; i < data.length; i += 4) {
-      groupedData.push(data.slice(i, i + 4))
+
+    // Group the data into chunks of 5
+    for (let i = 0; i < data.length; i += 5) {
+      groupedData.push(data.slice(i, i + 5))
     }
+
+    console.log("Grouped Data:", groupedData)
+    console.log("All Contracts:", allContracts)
+
+    // Process each group
     for (let i = 0; i < groupedData.length; i++) {
-      namedData.push({
-        address: allContracts[i].result,
-        name: groupedData[i][0].result,
-        symbol: groupedData[i][1].result,
-        supply: groupedData[i][2].result,
-        decimals: groupedData[i][3].result,
-      })
+      const contract = allContracts[i]
+      const group = groupedData[i]
+
+      console.log(`Processing index ${i}:`, { contract, group })
+
+      // Check if the contract exists and has a 'result' property
+      if (contract && contract.result && group.length === 5) {
+        // Check if all elements in the group exist and have a 'result' property
+        if (
+          group[0]?.result &&
+          group[1]?.result &&
+          group[2]?.result &&
+          group[3]?.result
+        ) {
+          namedData.push({
+            address: contract.result,
+            name: group[0].result,
+            symbol: group[1].result,
+            supply: group[2].result,
+            decimals: group[3].result,
+          })
+        } else {
+          console.error(
+            `Error processing data at index ${i}: Some group elements are missing 'result' properties`,
+            {
+              contract,
+              group,
+            }
+          )
+        }
+      } else {
+        console.error(
+          `Error processing data at index ${i}: Contract is undefined or missing 'result' property`,
+          {
+            contract,
+            group,
+          }
+        )
+      }
     }
+
     return namedData
   }
 
   useEffect(() => {
     const fetchTokenPrices = async () => {
-      const allTokenPrices = {}
+      const allTokenPrices: {
+        [key: string]: { [symbol: string]: number | null }
+      } = {}
 
-      const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
-      const priceOracle = new ethers.Contract(
-        priceFeedAddresses[chainId], // Ensure this points to the PriceOracle contract address
-        [
-          {
-            inputs: [
-              { internalType: "address", name: "token", type: "address" },
-            ],
-            name: "getPrice",
-            outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-            stateMutability: "view",
-            type: "function",
-          },
-        ],
-        provider
-      )
+      const aggregatorV3InterfaceABI = [
+        {
+          inputs: [],
+          name: "latestRoundData",
+          outputs: [
+            { internalType: "uint80", name: "roundId", type: "uint80" },
+            { internalType: "int256", name: "answer", type: "int256" },
+            { internalType: "uint256", name: "startedAt", type: "uint256" },
+            { internalType: "uint256", name: "updatedAt", type: "uint256" },
+            {
+              internalType: "uint80",
+              name: "answeredInRound",
+              type: "uint80",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ]
 
-      for (const token of tokenBOptions[chainId] || []) {
-        try {
-          const price = await priceOracle.getPrice(token.address)
-          allTokenPrices[token.symbol] = parseFloat(
-            ethers.utils.formatUnits(price, 18)
-          )
-        } catch (error) {
-          console.error(`Error fetching price for ${token.symbol}:`, error)
-          allTokenPrices[token.symbol] = null
+      for (const [chainId, tokens] of Object.entries(tokenBOptions)) {
+        const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
+        const chainPrices: { [symbol: string]: number | null } = {}
+
+        for (const token of tokens) {
+          const priceFeedAddress =
+            priceFeedAddresses[chainId]?.[`${token.symbol}/USD`]
+          if (!priceFeedAddress) continue
+
+          try {
+            const priceFeed = new ethers.Contract(
+              priceFeedAddress,
+              aggregatorV3InterfaceABI,
+              provider
+            )
+            const roundData = await priceFeed.latestRoundData()
+            const price = parseFloat(
+              ethers.utils.formatUnits(roundData.answer, 8)
+            )
+            chainPrices[token.symbol] = price
+          } catch (error) {
+            console.error(`Error fetching price for ${token.symbol}:`, error)
+            chainPrices[token.symbol] = null
+          }
         }
+
+        allTokenPrices[chainId] = chainPrices
       }
 
-      setTokenPrices({ [chainId]: allTokenPrices })
+      setTokenPrices(allTokenPrices)
       setLoading(false)
     }
 
     fetchTokenPrices()
-  }, [chainId])
-
-  useEffect(() => {
-    // Ensure this code runs only on the client
-    setIsClient(true)
   }, [])
 
   const fetchWalletTokens = async () => {
     if (!isConnected || !address) return
 
     const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+    console.log("Deployed Tokens: ", deployedTokens) // Debugging log
+
     const tokenBalances = await Promise.all(
       deployedTokens.map(async (token) => {
         const contract = new ethers.Contract(token.address, erc20ABI, provider)
-        const balance = await contract.balanceOf(address)
-        return {
-          ...token,
-          balance: ethers.utils.formatUnits(balance, token.decimals),
+        try {
+          const balance = await contract.balanceOf(address)
+          return {
+            ...token,
+            balance: ethers.utils.formatUnits(balance, token.decimals),
+          }
+        } catch (error) {
+          console.error(
+            `Failed to fetch balance for token ${token.address}:`,
+            error
+          )
+          return { ...token, balance: "0" } // Handle the error case
         }
       })
     )
@@ -283,6 +359,11 @@ const TokenSwap: React.FC = () => {
     }
   }, [amount, selectedTokenFrom, selectedTokenTo, tokenPrices])
 
+  useEffect(() => {
+    // Ensure this code runs only on the client
+    setIsClient(true)
+  }, [])
+
   if (!isClient) {
     // Render nothing on the server
     return null
@@ -300,19 +381,15 @@ const TokenSwap: React.FC = () => {
     ...token,
   }))
 
+  // Combine native tokens and wallet tokens with balance
   const combinedTokens = [
-    ...getTokensForCurrentChain().map((token) => ({
-      chainId: chain ? chain.id : Object.keys(tokenDeployerDetails)[0],
-      ...token,
-    })),
-    ...deployedTokens.map((token) => ({
-      chainId,
-      ...token,
-    })),
-    ...walletTokens.map((token) => ({
-      chainId,
-      ...token,
-    })),
+    ...allTokens,
+    ...walletTokens
+      .filter((token) => parseFloat(token.balance) > 0)
+      .map((token) => ({
+        chainId,
+        ...token,
+      })),
   ]
 
   return (

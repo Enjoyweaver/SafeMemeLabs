@@ -93,7 +93,7 @@ export const tokenLauncherDetails: {
   "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
   "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
   "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
-  "4002": "0x7c2aCB1840a565f728E3C5f4a09Be602DFB17F44",
+  "4002": "0x99cdd02e65CE4f30f80Ff8787f02f934984032e7",
   "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
   "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
   "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
@@ -214,6 +214,20 @@ export const routerDetails: {
   "31": "YourRouterAddressForRootstockTestnetLaunched",
   "148": "YourRouterAddressForAnotherChainLaunched",
   "501": "YourRouterAddressForSolanaTestnetLaunched",
+}
+
+export const oracleDetails: { [key: string]: string } = {
+  "137": "YourOracleAddressForPolygon",
+  "250": "YourOracleAddressForFantom",
+  "4002": "0xc21765271ddc445ccffa71fac875d5c20cc25fd5",
+  "64165": "YourOracleAddressForFantomTestnet2",
+  "666666666": "YourOracleAddressForDegen",
+  "8453": "YourOracleAddressForDegen2",
+  "43114": "YourOracleAddressForAvalanche",
+  "30": "YourOracleAddressForRootstock",
+  "31": "YourOracleAddressForRootstockTestnet",
+  "148": "YourOracleAddressForAnotherChain",
+  "501": "YourOracleAddressForSolanaTestnet",
 }
 
 export const tokenBOptions: {

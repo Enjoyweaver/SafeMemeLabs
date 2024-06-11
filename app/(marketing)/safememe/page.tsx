@@ -575,6 +575,404 @@ const SafeMemeBlogPost = () => {
           </ul>
         </section>
       </div>
+      <h1 className="page-title">
+        SafeMeme Token Standard: Technical Specifications
+      </h1>
+      <p className="blog-content">
+        The SafeMeme token standard provides a secure token launch with an
+        anti-whale mechanism and progressive unlocking based on liquidity
+        thresholds. Below are the technical details for the contracts to be
+        implemented.
+      </p>
+
+      <h2 className="section-title">Token Creation Scenarios</h2>
+
+      <p className="blog-content">
+        There are two scenarios for creating SafeMeme tokens:
+      </p>
+      <ul className="tech-list">
+        <li>
+          <strong>SafeMeme Deployed</strong>: Uses <code>Deployer.sol</code> to
+          create SafeMeme tokens and send 100% of the supply to the user for
+          listing on an exchange of their choice.
+        </li>
+        <li>
+          <strong>SafeMeme Launched</strong>: Uses <code>Launcher.sol</code> to
+          create SafeMeme tokens, sending 5% to the Manager contract and locking
+          95% in the Locker contract, for deployment on the app's DEX.
+        </li>
+      </ul>
+
+      <h3 className="contract-title">ERC-20 Standard</h3>
+      <p className="blog-content">
+        The ERC-20 contract implements the standard ERC-20 functions and events.
+      </p>
+      <ul className="tech-list">
+        <li>
+          <strong>Modifiers</strong>: none
+        </li>
+        <li>
+          <strong>Events</strong>: Transfer, Approval
+        </li>
+        <li>
+          <strong>Functions</strong>:
+          <ul>
+            <li>
+              <code>totalSupply(): uint256</code> - Returns the total token
+              supply.
+            </li>
+            <li>
+              <code>balanceOf(address account): uint256</code> - Returns the
+              token balance of the specified account.
+            </li>
+            <li>
+              <code>transfer(address recipient, uint256 amount): bool</code> -
+              Transfers tokens to the specified address.
+            </li>
+            <li>
+              <code>allowance(address owner, address spender): uint256</code> -
+              Returns the remaining tokens that spender is allowed to spend on
+              behalf of the owner.
+            </li>
+            <li>
+              <code>approve(address spender, uint256 amount): bool</code> -
+              Approves the specified amount for spending by the spender.
+            </li>
+            <li>
+              <code>
+                transferFrom(address sender, address recipient, uint256 amount):
+                bool
+              </code>{" "}
+              - Transfers tokens from sender to recipient using the allowance
+              mechanism.
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3 className="contract-title">Factory Contracts</h3>
+      <p className="blog-content">
+        The Factory contracts are responsible for deploying new SafeMeme tokens.
+      </p>
+
+      <h4 className="subsection-title">Deployer.sol</h4>
+      <p className="blog-content">
+        Creates the SafeMeme tokens and sends 100% to the user.
+      </p>
+      <ul className="tech-list">
+        <li>
+          <strong>Modifiers</strong>:
+          <ul>
+            <li>
+              <code>onlyOwner</code> - Restricts access to owner-only functions.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Events</strong>:
+          <ul>
+            <li>
+              <code>TokenDeployed(address tokenAddress)</code> - Emitted when a
+              new token is deployed.
+            </li>
+            <li>
+              <code>FeeCollected(address collector, uint256 amount)</code> -
+              Emitted when the creation fee is collected.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Functions</strong>:
+          <ul>
+            <li>
+              <code>setCreationFee(uint256 fee)</code> - Sets the token creation
+              fee.
+            </li>
+            <li>
+              <code>
+                deployToken(string name, string symbol, uint256 totalSupply)
+              </code>{" "}
+              - Deploys a new SafeMeme token and sends 100% to the user.
+            </li>
+            <li>
+              <code>withdrawFees()</code> - Allows the owner to withdraw
+              collected fees.
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <h4 className="subsection-title">Launcher.sol</h4>
+      <p className="blog-content">
+        Creates the SafeMeme tokens, sending 5% to the Manager and 95% to the
+        Locker. Also receives information about the future paired token (Token
+        B).
+      </p>
+      <ul className="tech-list">
+        <li>
+          <strong>Modifiers</strong>:
+          <ul>
+            <li>
+              <code>onlyOwner</code> - Restricts access to owner-only functions.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Events</strong>:
+          <ul>
+            <li>
+              <code>TokenDeployed(address tokenAddress)</code> - Emitted when a
+              new token is deployed.
+            </li>
+            <li>
+              <code>FeeCollected(address collector, uint256 amount)</code> -
+              Emitted when the creation fee is collected.
+            </li>
+            <li>
+              <code>
+                TokensDistributed(address manager, address locker, uint256
+                managerAmount, uint256 lockerAmount)
+              </code>{" "}
+              - Emitted when tokens are distributed to Manager and Locker
+              contracts.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Functions</strong>:
+          <ul>
+            <li>
+              <code>setCreationFee(uint256 fee)</code> - Sets the token creation
+              fee.
+            </li>
+            <li>
+              <code>
+                deployToken(string name, string symbol, uint256 totalSupply,
+                address tokenB)
+              </code>{" "}
+              - Deploys a new SafeMeme token, sends 5% to Manager and 95% to
+              Locker, and stores information about Token B.
+            </li>
+            <li>
+              <code>withdrawFees()</code> - Allows the owner to withdraw
+              collected fees.
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3 className="contract-title">Locker Contract</h3>
+      <p className="blog-content">
+        The Locker.sol contract locks and gradually unlocks the token supply
+        based on liquidity thresholds.
+      </p>
+      <ul className="tech-list">
+        <li>
+          <strong>Modifiers</strong>:
+          <ul>
+            <li>
+              <code>onlyManager</code> - Restricts access to manager-only
+              functions.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Events</strong>:
+          <ul>
+            <li>
+              <code>TokensLocked(uint256 amount)</code> - Emitted when tokens
+              are locked.
+            </li>
+            <li>
+              <code>TokensUnlocked(uint256 amount)</code> - Emitted when tokens
+              are unlocked.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Functions</strong>:
+          <ul>
+            <li>
+              <code>lockTokens(uint256 amount)</code> - Locks the specified
+              amount of tokens.
+            </li>
+            <li>
+              <code>unlockTokens()</code> - Unlocks 5% of the total supply each
+              time the Manager contract receives 5000 Token B's, sending them to
+              the Router contract.
+            </li>
+            <li>
+              <code>getLockedTokens(): uint256</code> - Returns the amount of
+              locked tokens.
+            </li>
+            <li>
+              <code>getUnlockedPhases(): uint256</code> - Returns the number of
+              unlock phases completed.
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3 className="contract-title">Manager Contract</h3>
+      <p className="blog-content">
+        The Manager.sol contract manages token reception, sales, and coordinates
+        unlocking.
+      </p>
+      <ul className="tech-list">
+        <li>
+          <strong>Modifiers</strong>:
+          <ul>
+            <li>
+              <code>onlyAuthorized</code> - Restricts access to authorized
+              functions.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Events</strong>:
+          <ul>
+            <li>
+              <code>TokensReceived(address from, uint256 amount)</code> -
+              Emitted when tokens are received.
+            </li>
+            <li>
+              <code>LiquidityPairCreated(address pair)</code> - Emitted when a
+              liquidity pair is created.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Functions</strong>:
+          <ul>
+            <li>
+              <code>receiveTokens(uint256 amount)</code> - Receives 5% of Token
+              A supply from Launcher.sol and tracks the amount received.
+            </li>
+            <li>
+              <code>unlockTokens()</code> - Triggers token unlocks from the
+              Locker contract based on thresholds.
+            </li>
+            <li>
+              <code>createLiquidityPair(address tokenA, address tokenB)</code> -
+              Manages the creation of liquidity pairs.
+            </li>
+            <li>
+              <code>sellTokens()</code> - Sells Token A at a set price until the
+              5% supply is exhausted, with the price determined by dividing the
+              number of Token B's by the 5% total supply.
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3 className="contract-title">Router Contract</h3>
+      <p className="blog-content">
+        The Router.sol contract manages initial token listing and swaps.
+      </p>
+      <ul className="tech-list">
+        <li>
+          <strong>Modifiers</strong>:
+          <ul>
+            <li>
+              <code>onlyManager</code> - Restricts access to manager-only
+              functions.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Events</strong>:
+          <ul>
+            <li>
+              <code>LiquidityAdded(uint256 amount)</code> - Emitted when
+              liquidity is added.
+            </li>
+            <li>
+              <code>TokenListed(uint256 price, uint256 amount)</code> - Emitted
+              when tokens are listed.
+            </li>
+            <li>
+              <code>
+                TokenSwapped(address from, address to, uint256 amount)
+              </code>{" "}
+              - Emitted when a token swap occurs.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Functions</strong>:
+          <ul>
+            <li>
+              <code>setManager(address manager)</code> - Sets the manager
+              contract responsible for liquidity management.
+            </li>
+            <li>
+              <code>addLiquidity(uint256 amount)</code> - Adds liquidity to the
+              DEX.
+            </li>
+            <li>
+              <code>listTokens(uint256 price, uint256 amount)</code> - Lists
+              tokens at a calculated rate.
+            </li>
+            <li>
+              <code>swapTokens(address[] path, uint256 amount)</code> -
+              Facilitates token swaps.
+            </li>
+            <li>
+              <code>getInitialPrice(): uint256</code> - Returns the initial
+              price per token.
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3 className="contract-title">Oracle Contract</h3>
+      <p className="blog-content">
+        The Oracle.sol contract provides reliable price data for tokens.
+      </p>
+      <ul className="tech-list">
+        <li>
+          <strong>Modifiers</strong>:
+          <ul>
+            <li>
+              <code>onlyAuthorized</code> - Restricts access to authorized
+              functions.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Events</strong>:
+          <ul>
+            <li>
+              <code>PriceUpdated(uint256 price)</code> - Emitted when token
+              prices are updated.
+            </li>
+            <li>
+              <code>AuthorizedAddressUpdated(address authorized)</code> -
+              Emitted when an authorized address is added or removed.
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Functions</strong>:
+          <ul>
+            <li>
+              <code>setPrice(uint256 price)</code> - Sets the token price.
+            </li>
+            <li>
+              <code>getPrice(): uint256</code> - Returns the current token
+              price.
+            </li>
+            <li>
+              <code>authorizeAddress(address addr)</code> - Adds an authorized
+              address.
+            </li>
+            <li>
+              <code>deauthorizeAddress(address addr)</code> - Removes an
+              authorized address.
+            </li>
+          </ul>
+        </li>
+      </ul>
     </div>
   )
 }
