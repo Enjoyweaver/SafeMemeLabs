@@ -8,15 +8,17 @@ export const tokenLauncherABI = [
       },
       {
         internalType: "address",
-        name: "_liquidityManager",
+        name: "_locker",
         type: "address",
       },
       {
         internalType: "address",
-        name: "_router",
+        name: "_manager",
         type: "address",
       },
     ],
+    name: "constructor",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "constructor",
   },
@@ -59,21 +61,6 @@ export const tokenLauncherABI = [
         internalType: "uint8",
         name: "_antiWhalePercentage",
         type: "uint8",
-      },
-      {
-        internalType: "address",
-        name: "_locker",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_manager",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_tokenB",
-        type: "address",
       },
     ],
     name: "deployToken",
@@ -121,71 +108,6 @@ export const tokenLauncherABI = [
         internalType: "uint256",
         name: "",
         type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "creationFee",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "feeCollector",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "liquidityManager",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "router",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "tokensDeployed",
-    outputs: [
-      {
-        internalType: "address[]",
-        name: "",
-        type: "address[]",
       },
     ],
     stateMutability: "view",

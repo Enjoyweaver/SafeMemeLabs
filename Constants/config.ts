@@ -93,7 +93,7 @@ export const tokenLauncherDetails: {
   "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
   "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
   "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
-  "4002": "0x79b206abd08adc1b1c5d72ba7bd38d04511e985f",
+  "4002": "0x37dE5F23325026aD6ef3CA30aaB91aA9E827bF07",
   "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
   "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
   "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
@@ -173,7 +173,7 @@ export const lockerDetails: {
 } = {
   "137": "YourLockerAddressForPolygonLaunched",
   "250": "YourLockerAddressForFantomLaunched",
-  "4002": "YourLockerAddressForFantomTestnetLaunched",
+  "4002": "0x3e6b44b5c0f9720e22b50d4f328448af63919b80",
   "64165": "YourLockerAddressForFantomTestnet2Launched",
   "666666666": "YourLockerAddressForDegenLaunched",
   "8453": "YourLockerAddressForDegen2Launched",

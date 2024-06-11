@@ -41,7 +41,7 @@ export default function Factory(): JSX.Element {
   const [decimals, setDecimals] = useState<string>("")
   const [antiWhalePercentage, setAntiWhalePercentage] = useState<string>("")
   const [selectedTokenB, setSelectedTokenB] = useState<string>("")
-  const [locker, setLocker] = useState<string>("")
+  const [tokenLauncher, settokenLauncher] = useState<string>("")
   const [manager, setManager] = useState<string>("")
 
   const dName = useDebounce(name, 500)
@@ -50,7 +50,7 @@ export default function Factory(): JSX.Element {
   const dDecimals = useDebounce(decimals, 500)
   const dAntiWhalePercentage = useDebounce(antiWhalePercentage, 500)
   const dSelectedTokenB = useDebounce(selectedTokenB, 500)
-  const dLocker = useDebounce(locker, 500)
+  const dtokenLauncher = useDebounce(tokenLauncher, 500)
   const dManager = useDebounce(manager, 500)
 
   const [isClient, setIsClient] = useState(false)
@@ -67,9 +67,19 @@ export default function Factory(): JSX.Element {
 
   useEffect(() => {
     if (chain && chain.id) {
-      console.log("Current chain ID:", chain.id)
-      setLocker(lockerDetails[chain.id] || "")
-      setManager(managerDetails[chain.id] || "")
+      const launcherAddress = tokenLauncherDetails[chain.id] || ""
+      const managerAddress = managerDetails[chain.id] || ""
+      const deployerAddress = tokenDeployerDetails[chain.id] || ""
+
+      console.log("Launcher Address:", launcherAddress)
+      console.log("Manager Address:", managerAddress)
+      console.log("Deployer Address:", deployerAddress)
+
+      if (!launcherAddress || !managerAddress) {
+        console.error(`Missing addresses for chain ID ${chain.id}`)
+      }
+      settokenLauncher(launcherAddress)
+      setManager(managerAddress)
     }
   }, [chain])
 
@@ -131,25 +141,13 @@ export default function Factory(): JSX.Element {
         ? tokenLauncherABI
         : tokenDeployerABI,
     functionName: "deployToken",
-    args:
-      tokenType === "safeMemeTokenLaunched"
-        ? [
-            dSymbol,
-            dName,
-            dDecimals ? Number(dDecimals) : 18,
-            BigInt(dSupply),
-            Number(dAntiWhalePercentage),
-            dLocker,
-            dManager,
-            dSelectedTokenB,
-          ]
-        : [
-            dSymbol,
-            dName,
-            dDecimals ? Number(dDecimals) : 18,
-            BigInt(dSupply),
-            Number(dAntiWhalePercentage),
-          ],
+    args: [
+      dSymbol,
+      dName,
+      dDecimals ? Number(dDecimals) : 18,
+      BigInt(dSupply),
+      Number(dAntiWhalePercentage),
+    ],
     value: deployFee,
     cacheTime: 0,
   })
@@ -195,6 +193,10 @@ export default function Factory(): JSX.Element {
   })
 
   const handleDeployClick = () => {
+    if (!tokenLauncher || !manager) {
+      toast.error("Configuration error: Missing required addresses.")
+      return
+    }
     setModalMessage(
       "Depending on which blockchain you created a token on, it could take anywhere from 2 seconds to 20 seconds."
     )
