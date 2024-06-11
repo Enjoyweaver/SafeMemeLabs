@@ -17,19 +17,6 @@ export const tokenLauncherABI = [
         type: "address",
       },
     ],
-    name: "constructor",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_newFee",
-        type: "uint256",
-      },
-    ],
     name: "changeCreationFee",
     outputs: [],
     stateMutability: "nonpayable",
@@ -75,42 +62,51 @@ export const tokenLauncherABI = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "withdrawFees",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    inputs: [
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+    ],
+    name: "OwnableInvalidOwner",
+    type: "error",
   },
   {
     inputs: [
       {
         internalType: "address",
-        name: "_user",
+        name: "account",
         type: "address",
       },
     ],
-    name: "getTokensDeployedByUser",
-    outputs: [
+    name: "OwnableUnauthorizedAccount",
+    type: "error",
+  },
+  {
+    anonymous: false,
+    inputs: [
       {
-        internalType: "address[]",
-        name: "",
-        type: "address[]",
+        indexed: true,
+        internalType: "address",
+        name: "previousOwner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
       },
     ],
-    stateMutability: "view",
-    type: "function",
+    name: "OwnershipTransferred",
+    type: "event",
   },
   {
     inputs: [],
-    name: "getDeployedTokenCount",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -135,26 +131,97 @@ export const tokenLauncherABI = [
         type: "string",
       },
     ],
-    name: "TokenDeployed",
+    name: "TokenLaunched",
     type: "event",
   },
   {
-    anonymous: false,
     inputs: [
       {
-        indexed: true,
         internalType: "address",
-        name: "recipient",
+        name: "newOwner",
         type: "address",
       },
+    ],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "creationFee",
+    outputs: [
       {
-        indexed: false,
         internalType: "uint256",
-        name: "amount",
+        name: "",
         type: "uint256",
       },
     ],
-    name: "FeeWithdrawn",
-    type: "event",
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getTokensDeployedByUser",
+    outputs: [
+      {
+        internalType: "address[]",
+        name: "",
+        type: "address[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "tokensDeployed",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getDeployedTokenCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
   },
 ] as const
