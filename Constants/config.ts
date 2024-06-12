@@ -93,7 +93,7 @@ export const tokenLauncherDetails: {
   "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
   "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
   "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
-  "4002": "0xb1f6208683dc40193aeb8266f6223c0248e405e1",
+  "4002": "0x1caa7ce47Bbd91c5D8861E4326654f1A588ecCFb",
   "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
   "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
   "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
@@ -248,10 +248,9 @@ export const tokenBOptions: {
   [key: string]: { address: string; symbol: string }[]
 } = {
   "4002": [
-    { address: "0x0000000000000000000000000000000000000000", symbol: "FTM" },
+    { address: "0x9BFbF5219184C28A3bc6eBc5F07e247739bdFea3", symbol: "FTM" },
   ],
   "250": [
-    { address: "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", symbol: "wFTM" },
     { address: "0x4e15361fd6b4bb609fa63c81a2be19d873717870", symbol: "FTM" },
   ],
   "137": [

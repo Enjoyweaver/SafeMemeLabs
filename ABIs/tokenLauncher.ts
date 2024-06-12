@@ -1,4 +1,4 @@
-export const tokenDeployerABI = [
+export const tokenLauncherABI = [
   {
     inputs: [
       {
@@ -38,6 +38,11 @@ export const tokenDeployerABI = [
         internalType: "uint8",
         name: "_antiWhalePercentage",
         type: "uint8",
+      },
+      {
+        internalType: "address",
+        name: "_tokenB", // Address of TokenB
+        type: "address",
       },
     ],
     name: "deployToken",

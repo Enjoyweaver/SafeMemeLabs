@@ -12,8 +12,6 @@ import "./factory.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
 import {
-  lockerDetails,
-  managerDetails,
   tokenBOptions,
   tokenDeployerDetails,
   tokenLauncherDetails,
@@ -41,8 +39,7 @@ export default function Factory(): JSX.Element {
   const [decimals, setDecimals] = useState<string>("")
   const [antiWhalePercentage, setAntiWhalePercentage] = useState<string>("")
   const [selectedTokenB, setSelectedTokenB] = useState<string>("")
-  const [tokenLauncher, settokenLauncher] = useState<string>("")
-  const [manager, setManager] = useState<string>("")
+  const [tokenLauncher, setTokenLauncher] = useState<string>("")
 
   const dName = useDebounce(name, 500)
   const dSymbol = useDebounce(symbol, 500)
@@ -50,8 +47,7 @@ export default function Factory(): JSX.Element {
   const dDecimals = useDebounce(decimals, 500)
   const dAntiWhalePercentage = useDebounce(antiWhalePercentage, 500)
   const dSelectedTokenB = useDebounce(selectedTokenB, 500)
-  const dtokenLauncher = useDebounce(tokenLauncher, 500)
-  const dManager = useDebounce(manager, 500)
+  const dTokenLauncher = useDebounce(tokenLauncher, 500)
 
   const [isClient, setIsClient] = useState(false)
   const [errorMenu, setErrorMenu] = useState(false)
@@ -68,18 +64,18 @@ export default function Factory(): JSX.Element {
   useEffect(() => {
     if (chain && chain.id) {
       const launcherAddress = tokenLauncherDetails[chain.id] || ""
-      const managerAddress = managerDetails[chain.id] || ""
       const deployerAddress = tokenDeployerDetails[chain.id] || ""
 
       console.log("Launcher Address:", launcherAddress)
-      console.log("Manager Address:", managerAddress)
       console.log("Deployer Address:", deployerAddress)
 
-      if (!launcherAddress || !managerAddress) {
+      if (!launcherAddress) {
         console.error(`Missing addresses for chain ID ${chain.id}`)
       }
-      settokenLauncher(launcherAddress)
-      setManager(managerAddress)
+      setTokenLauncher(launcherAddress)
+
+      // Ensure selectedTokenB is set based on current chain
+      setSelectedTokenB(tokenBOptions[chain.id]?.[0]?.address || "")
     }
   }, [chain])
 
@@ -203,7 +199,10 @@ export default function Factory(): JSX.Element {
   })
 
   const handleDeployClick = () => {
-    if (!tokenLauncher || !manager) {
+    if (
+      tokenType === "safeMemeTokenLaunched" &&
+      (!tokenLauncher || !selectedTokenB)
+    ) {
       toast.error("Configuration error: Missing required addresses.")
       return
     }
@@ -240,7 +239,7 @@ export default function Factory(): JSX.Element {
               <button
                 className={`tokenTypeButton ${
                   tokenType === "safeMemeToken" ? "active" : ""
-                } hideButton`} // Add 'hideButton' class
+                } hideButton`}
                 onClick={() => setTokenType("safeMemeToken")}
               >
                 SafeMeme Deployed
@@ -255,7 +254,7 @@ export default function Factory(): JSX.Element {
               <button
                 className={`tokenTypeButton ${
                   tokenType === "safeMemeTokenLaunched" ? "active" : ""
-                } hideButton`} // Add 'hideButton' class
+                } hideButton`}
                 onClick={() => setTokenType("safeMemeTokenLaunched")}
               >
                 SafeMeme Launched
