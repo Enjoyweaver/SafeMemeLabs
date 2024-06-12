@@ -8,8 +8,6 @@ import { useAccount } from "wagmi"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
-// Assuming wagmi is used for wallet connection
-
 const RewardsPage = () => {
   const tokenAddress = "0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA"
   const chainId = 250

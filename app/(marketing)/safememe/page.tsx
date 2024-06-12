@@ -973,6 +973,248 @@ const SafeMemeBlogPost = () => {
           </ul>
         </li>
       </ul>
+      <h1>
+        Technical Specifications for "Touching Grass" (GRASS) Token Contracts
+      </h1>
+      <h2>1. ClaimContract.sol</h2>
+      <h3>Events</h3>
+      <ul>
+        <li>
+          <code>TokensClaimed(address indexed user, uint256 amount)</code>:
+          Emitted when a user claims their daily GRASS tokens.
+        </li>
+        <li>
+          <code>TokenAdded(address indexed token)</code>: Emitted when a new
+          token is added to the approved list.
+        </li>
+        <li>
+          <code>TokenRemoved(address indexed token)</code>: Emitted when a token
+          is removed from the approved list.
+        </li>
+      </ul>
+      <h3>Modifiers</h3>
+      <ul>
+        <li>
+          <code>onlyOncePerDay(address user)</code>: Ensures that users can only
+          claim once per day.
+        </li>
+        <li>
+          <code>onlyOwner()</code>: Ensures that only the contract owner can
+          call certain functions.
+        </li>
+      </ul>
+      <h3>Functions</h3>
+      <ul>
+        <li>
+          <code>initialize(uint256 initialSupply, address token) external</code>
+          : Initializes the contract with the total supply of GRASS tokens and
+          sets the initial approved token.
+        </li>
+        <li>
+          <code>setDailyClaimAmount(uint256 amount) external</code>: Sets the
+          initial daily claim amount.
+        </li>
+        <li>
+          <code>addApprovedToken(address token) external</code>: Adds a token to
+          the list of approved tokens.
+        </li>
+        <li>
+          <code>removeApprovedToken(address token) external</code>: Removes a
+          token from the list of approved tokens.
+        </li>
+        <li>
+          <code>claimTokens(address token) external</code>: Allows users to
+          claim their daily GRASS tokens.
+        </li>
+        <li>
+          <code>increaseClaimAmount(address user) internal</code>: Increases the
+          claim amount for users based on their streak.
+        </li>
+        <li>
+          <code>resetClaimStreak(address user) internal</code>: Resets the claim
+          streak if a user misses a day.
+        </li>
+        <li>
+          <code>depositTokens(address token, uint256 amount) external</code>:
+          Allows the owner to deposit tokens into the contract.
+        </li>
+        <li>
+          <code>balanceOf(address token) external view returns (uint256)</code>:
+          Returns the token balance of the contract.
+        </li>
+      </ul>
+      <h3>Scope</h3>
+      <ul>
+        <li>
+          <strong>Initialization</strong>: Set up the initial token supply and
+          daily claim amount.
+        </li>
+        <li>
+          <strong>Daily Claims</strong>: Manage and track user claims, ensuring
+          they can only claim once per day and increasing rewards for
+          consecutive claims.
+        </li>
+        <li>
+          <strong>Token Management</strong>: Add and remove approved tokens for
+          claims.
+        </li>
+        <li>
+          <strong>Events and Logging</strong>: Emit events for user claims and
+          token management for off-chain tracking and analytics.
+        </li>
+      </ul>
+
+      <h2>2. SaleContract.sol</h2>
+      <h3>Events</h3>
+      <ul>
+        <li>
+          <code>
+            TokensSold(address indexed buyer, uint256 amount, uint256 price)
+          </code>
+          : Emitted when tokens are sold.
+        </li>
+        <li>
+          <code>
+            LiquidityProvided(uint256 tokenAmount, uint256 pairAmount)
+          </code>
+          : Emitted when liquidity is added to the pool.
+        </li>
+      </ul>
+      <h3>Modifiers</h3>
+      <ul>
+        <li>
+          <code>onlyDuringSalePeriod()</code>: Ensures functions are called only
+          during active sale periods.
+        </li>
+        <li>
+          <code>onlyAfterSale()</code>: Ensures functions are called only after
+          the initial sale period.
+        </li>
+        <li>
+          <code>onlyOwner()</code>: Ensures that only the contract owner can
+          call certain functions.
+        </li>
+      </ul>
+      <h3>Functions</h3>
+      <ul>
+        <li>
+          <code>
+            initialize(uint256 totalSupply, uint256 saleStartTime, uint256
+            saleEndTime, uint256 fixedPrice, address approvedToken) external
+          </code>
+          : Initializes the contract with the total supply of GRASS tokens, sale
+          start and end times, the fixed price for the initial sale, and the
+          approved token.
+        </li>
+        <li>
+          <code>
+            buyTokens(uint256 amount) external payable onlyDuringSalePeriod
+          </code>
+          : Allows users to buy GRASS tokens during the sale period.
+        </li>
+        <li>
+          <code>provideLiquidity() external onlyAfterSale</code>: Uses the
+          proceeds from the initial sale to provide liquidity in the pool.
+        </li>
+        <li>
+          <code>setDynamicPricing() external onlyAfterSale</code>: Adjusts the
+          price of tokens for subsequent sales based on market conditions.
+        </li>
+      </ul>
+      <h3>Scope</h3>
+      <ul>
+        <li>
+          <strong>Initial Sale</strong>: Manage the initial fixed-price sale of
+          GRASS tokens.
+        </li>
+        <li>
+          <strong>Liquidity Provision</strong>: Allocate proceeds from the
+          initial sale to create a liquidity pool.
+        </li>
+        <li>
+          <strong>Dynamic Pricing</strong>: Implement dynamic pricing for
+          subsequent token sales.
+        </li>
+      </ul>
+
+      <h2>3. TransactionTaxContract.sol</h2>
+      <h3>Events</h3>
+      <ul>
+        <li>
+          <code>
+            TaxCollected(address indexed from, address indexed to, uint256
+            amount)
+          </code>
+          : Emitted when the transaction tax is collected.
+        </li>
+        <li>
+          <code>TokensBurned(uint256 amount)</code>: Emitted when tokens are
+          burned.
+        </li>
+      </ul>
+      <h3>Modifiers</h3>
+      <ul>
+        <li>
+          <code>
+            validTransaction(address from, address to, uint256 amount)
+          </code>
+          : Ensures valid transactions subject to the tax.
+        </li>
+        <li>
+          <code>onlyOwner()</code>: Ensures that only the contract owner can
+          call certain functions.
+        </li>
+      </ul>
+      <h3>Functions</h3>
+      <ul>
+        <li>
+          <code>
+            initialize(uint256 taxRate, address claimPool, address
+            liquidityPool, address burnAddress) external
+          </code>
+          : Initializes the contract with the tax rate and addresses for the
+          claim pool, liquidity pool, and burn address.
+        </li>
+        <li>
+          <code>addApprovedToken(address token) external</code>: Adds a token to
+          the list of approved tokens.
+        </li>
+        <li>
+          <code>removeApprovedToken(address token) external</code>: Removes a
+          token from the list of approved tokens.
+        </li>
+        <li>
+          <code>
+            applyTransactionTax(address from, address to, uint256 amount,
+            address token) external validTransaction(from, to, amount)
+          </code>
+          : Applies the transaction tax to token transfers.
+        </li>
+        <li>
+          <code>distributeTax(uint256 amount, address token) internal</code>:
+          Distributes the collected tax to the claim pool, liquidity pool, and
+          burn wallet.
+        </li>
+        <li>
+          <code>burnTokens(uint256 amount, address token) internal</code>: Burns
+          the specified amount of tokens.
+        </li>
+      </ul>
+      <h3>Scope</h3>
+      <ul>
+        <li>
+          <strong>Transaction Tax Implementation</strong>: Apply a transaction
+          tax on all GRASS token transfers.
+        </li>
+        <li>
+          <strong>Tax Distribution</strong>: Distribute the collected tax to the
+          claim pool, liquidity pool, and burn wallet.
+        </li>
+        <li>
+          <strong>Token Burning</strong>: Reduce the total supply by burning a
+          portion of the collected tax.
+        </li>
+      </ul>
     </div>
   )
 }

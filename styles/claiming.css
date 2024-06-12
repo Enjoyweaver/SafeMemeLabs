@@ -1,0 +1,78 @@
+:root {
+  --background-light-grass: #ffffff;
+  --foreground-light-grass: #000000;
+  --primary-light-grass: #04c44e;
+  --secondary-light-grass: #b80f5e;
+  --accent-light-grass: #04c44e;
+  --border-light-grass: #04c44e;
+  --text-light-grass: #000000;
+
+  --background-dark-grass: #000000;
+  --foreground-dark-grass: #ffffff;
+  --primary-dark-grass: #df1584;
+  --secondary-dark-grass: #41b80a;
+  --accent-dark-grass: #41b80a;
+  --border-dark-grass: #41b80a;
+  --text-dark-grass: #ffffff;
+}
+
+body.grassPageBody {
+  background-color: var(--background-light-grass);
+  color: var(--foreground-light-grass);
+  font-family: "Courier New", Courier, monospace;
+}
+
+.dark body.grassPageBody {
+  background-color: var(--background-dark-grass);
+  color: var(--foreground-dark-grass);
+}
+
+.grassPageContainer {
+  max-width: 800px;
+  margin: 3rem auto;
+  padding: 1rem;
+  border: 1px solid var(--border-light-grass);
+  background-color: var(--background-light-grass);
+}
+
+.dark .grassPageContainer {
+  border: 1px solid var(--border-dark-grass);
+  background-color: var(--background-dark-grass);
+}
+
+.grassPageContainer h1 {
+  font-size: 2rem;
+  color: var(--primary-light-grass);
+}
+
+.dark .grassPageContainer h1 {
+  color: var(--primary-dark-grass);
+}
+
+.grassPageContainer p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.claimButton {
+  padding: 10px 20px;
+  background-color: var(--primary-light-grass);
+  color: var(--text-light-grass);
+  border: none;
+  cursor: pointer;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.dark .claimButton {
+  background-color: var(--primary-dark-grass);
+  color: var(--text-dark-grass);
+}
+
+.claimButton:hover {
+  background-color: var(--secondary-light-grass);
+}
+
+.dark .claimButton:hover {
+  background-color: var(--secondary-dark-grass);
+}
