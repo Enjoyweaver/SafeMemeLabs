@@ -93,7 +93,7 @@ export const tokenLauncherDetails: {
   "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
   "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
   "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
-  "4002": "0x99cdd02e65CE4f30f80Ff8787f02f934984032e7",
+  "4002": "0x4D5C463392549258A70CF9037025eFd28E0D6329",
   "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
   "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
   "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
@@ -173,7 +173,7 @@ export const lockerDetails: {
 } = {
   "137": "YourLockerAddressForPolygonLaunched",
   "250": "YourLockerAddressForFantomLaunched",
-  "4002": "0x3e6b44b5c0f9720e22b50d4f328448af63919b80",
+  "4002": "0x2bb471e62097f1579742f90e35158077d13221be",
   "64165": "YourLockerAddressForFantomTestnet2Launched",
   "666666666": "YourLockerAddressForDegenLaunched",
   "8453": "YourLockerAddressForDegen2Launched",
@@ -189,7 +189,7 @@ export const managerDetails: {
 } = {
   "137": "YourManagerAddressForPolygonLaunched",
   "250": "YourManagerAddressForFantomLaunched",
-  "4002": "0x118a984d43d95adb18e4f5195923f69393589acb",
+  "4002": "0x907aeec9cc50b7c3dcf1858901c1f2a672c59c99",
   "64165": "YourManagerAddressForFantomTestnet2Launched",
   "666666666": "YourManagerAddressForDegenLaunched",
   "8453": "YourManagerAddressForDegen2Launched",
@@ -205,7 +205,7 @@ export const routerDetails: {
 } = {
   "137": "YourRouterAddressForPolygonLaunched",
   "250": "YourRouterAddressForFantomLaunched",
-  "4002": "0xb68971834547e589c482d6ebbac390f1b64aff95",
+  "4002": "0x575b62e0064b377afe6317b4432c681959815f24",
   "64165": "YourRouterAddressForFantomTestnet2Launched",
   "666666666": "YourRouterAddressForDegenLaunched",
   "8453": "YourRouterAddressForDegen2Launched",
@@ -214,6 +214,20 @@ export const routerDetails: {
   "31": "YourRouterAddressForRootstockTestnetLaunched",
   "148": "YourRouterAddressForAnotherChainLaunched",
   "501": "YourRouterAddressForSolanaTestnetLaunched",
+}
+
+export const senderDetails: { [key: string]: string } = {
+  "137": "YourOracleAddressForPolygon",
+  "250": "YourOracleAddressForFantom",
+  "4002": "0x2620762c2ae51b3c6bb8b18e9b371b3db1458dd5",
+  "64165": "YourOracleAddressForFantomTestnet2",
+  "666666666": "YourOracleAddressForDegen",
+  "8453": "YourOracleAddressForDegen2",
+  "43114": "YourOracleAddressForAvalanche",
+  "30": "YourOracleAddressForRootstock",
+  "31": "YourOracleAddressForRootstockTestnet",
+  "148": "YourOracleAddressForAnotherChain",
+  "501": "YourOracleAddressForSolanaTestnet",
 }
 
 export const oracleDetails: { [key: string]: string } = {

@@ -6,16 +6,6 @@ export const tokenLauncherABI = [
         name: "_creationFee",
         type: "uint256",
       },
-      {
-        internalType: "address",
-        name: "_locker",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_manager",
-        type: "address",
-      },
     ],
     name: "changeCreationFee",
     outputs: [],
@@ -48,6 +38,11 @@ export const tokenLauncherABI = [
         internalType: "uint8",
         name: "_antiWhalePercentage",
         type: "uint8",
+      },
+      {
+        internalType: "address",
+        name: "_tokenB",
+        type: "address",
       },
     ],
     name: "deployToken",

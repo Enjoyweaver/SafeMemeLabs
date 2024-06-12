@@ -31,6 +31,7 @@ export default function MyTokens(): JSX.Element {
   const [launchedTokenCount, setLaunchedTokenCount] = useState<number>(0)
   const [contracts, setContracts] = useState<string[]>([])
   const [launchedContracts, setLaunchedContracts] = useState<string[]>([])
+  const [deployedTokenData, setDeployedTokenData] = useState<any[]>([])
   const [launchedTokenData, setLaunchedTokenData] = useState<any[]>([])
 
   useEffect(() => {
@@ -44,6 +45,7 @@ export default function MyTokens(): JSX.Element {
     ? chain.id
     : Object.keys(tokenDeployerDetails)[0]
 
+  // Fetch deployed contracts
   const { data: deployerContracts, error: deployerContractsError } =
     useContractRead({
       address: tokenDeployerDetails[chainId] as `0x${string}`,
@@ -53,6 +55,7 @@ export default function MyTokens(): JSX.Element {
       enabled: !!address,
     })
 
+  // Fetch launched contracts
   const { data: launcherContracts, error: launcherContractsError } =
     useContractRead({
       address: tokenLauncherDetails[chainId] as `0x${string}`,
@@ -111,60 +114,70 @@ export default function MyTokens(): JSX.Element {
     ])
     .flat()
 
-  const { data: tempTokenData, error: tempTokenDataError } = useContractReads({
-    contracts: deployerContractRequests,
-    enabled: !!deployerContractRequests?.length,
-  })
+  const launcherContractRequests = launchedContracts
+    ?.map((contract) => [
+      {
+        address: contract,
+        abi: erc20ABI,
+        functionName: "name",
+      },
+      {
+        address: contract,
+        abi: erc20ABI,
+        functionName: "symbol",
+      },
+      {
+        address: contract,
+        abi: erc20ABI,
+        functionName: "totalSupply",
+      },
+      {
+        address: contract,
+        abi: erc20ABI,
+        functionName: "decimals",
+      },
+      {
+        address: contract,
+        abi: erc20ABI,
+        functionName: "antiWhalePercentage",
+      },
+    ])
+    .flat()
 
-  useEffect(() => {
-    if (tempTokenDataError) {
-      console.error("Temp Token Data Error: ", tempTokenDataError)
-    }
-    if (tempTokenData) {
-      console.log("Temp Token Data: ", tempTokenData)
-    }
-  }, [tempTokenData, tempTokenDataError])
-
-  useEffect(() => {
-    if (launcherContracts && launcherContracts.length > 0) {
-      const fetchLaunchedTokenData = async () => {
-        const tokenData = []
-        for (const contract of launcherContracts) {
-          const name = await fetchTokenData(contract, "name")
-          const symbol = await fetchTokenData(contract, "symbol")
-          const totalSupply = await fetchTokenData(contract, "totalSupply")
-          const decimals = await fetchTokenData(contract, "decimals")
-          const antiWhalePercentage = await fetchTokenData(
-            contract,
-            "antiWhalePercentage"
-          )
-
-          tokenData.push({
-            contract,
-            name,
-            symbol,
-            totalSupply,
-            decimals,
-            antiWhalePercentage,
-          })
-        }
-        setLaunchedTokenData(tokenData)
-      }
-      fetchLaunchedTokenData()
-    }
-  }, [launcherContracts])
-
-  const fetchTokenData = async (contractAddress, functionName) => {
-    const { data, error } = await useContractRead({
-      address: contractAddress as `0x${string}`,
-      abi: erc20ABI,
-      functionName,
+  const { data: deployerTokenData, error: deployerTokenDataError } =
+    useContractReads({
+      contracts: deployerContractRequests,
+      enabled: !!deployerContractRequests?.length,
     })
-    if (error) {
-      console.error(`Error fetching ${functionName}: `, error)
+
+  const { data: launcherTokenData, error: launcherTokenDataError } =
+    useContractReads({
+      contracts: launcherContractRequests,
+      enabled: !!launcherContractRequests?.length,
+    })
+
+  useEffect(() => {
+    if (deployerTokenDataError) {
+      console.error("Deployer Token Data Error: ", deployerTokenDataError)
     }
-    return data
-  }
+    if (deployerTokenData) {
+      console.log("Deployer Token Data: ", deployerTokenData)
+      setDeployedTokenData(splitData(deployerTokenData))
+    }
+
+    if (launcherTokenDataError) {
+      console.error("Launcher Token Data Error: ", launcherTokenDataError)
+    }
+    if (launcherTokenData) {
+      console.log("Launcher Token Data: ", launcherTokenData)
+      setLaunchedTokenData(splitData(launcherTokenData))
+    }
+  }, [
+    deployerTokenData,
+    deployerTokenDataError,
+    launcherTokenData,
+    launcherTokenDataError,
+  ])
 
   function splitData(data: any) {
     const groupedData = []
@@ -222,10 +235,10 @@ export default function MyTokens(): JSX.Element {
                 )}
                 {contracts &&
                   contracts.length > 0 &&
-                  tempTokenData &&
-                  tempTokenData.length > 0 && (
+                  deployedTokenData &&
+                  deployedTokenData.length > 0 && (
                     <div className="meme-container">
-                      {splitData(tempTokenData).map((token, index: number) => (
+                      {deployedTokenData.map((token, index: number) => (
                         <div className="meme" key={index}>
                           <div className="meme-header">
                             <h3>
@@ -314,12 +327,16 @@ export default function MyTokens(): JSX.Element {
                           <div className="meme-details">
                             <p>
                               <strong>Contract Address:</strong>{" "}
-                              {token.contract}
+                              {
+                                launchedContracts[
+                                  launchedContracts.length - 1 - index
+                                ]
+                              }
                             </p>
                             <p>
                               <strong>Supply:</strong>{" "}
                               {formatNumber(
-                                Number(token.totalSupply),
+                                Number(token.supply),
                                 token.decimals
                               )}
                             </p>
@@ -341,11 +358,19 @@ export default function MyTokens(): JSX.Element {
                             </p>
                           </div>
                           <TokenHoldersList
-                            tokenAddress={token.contract}
+                            tokenAddress={
+                              launchedContracts[
+                                launchedContracts.length - 1 - index
+                              ]
+                            }
                             chainId={chain?.id}
                           />
                           <DexData
-                            tokenAddress={token.contract}
+                            tokenAddress={
+                              launchedContracts[
+                                launchedContracts.length - 1 - index
+                              ]
+                            }
                             chainId={chain?.id}
                           />
                         </div>

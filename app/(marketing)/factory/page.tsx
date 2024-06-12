@@ -141,13 +141,23 @@ export default function Factory(): JSX.Element {
         ? tokenLauncherABI
         : tokenDeployerABI,
     functionName: "deployToken",
-    args: [
-      dSymbol,
-      dName,
-      dDecimals ? Number(dDecimals) : 18,
-      BigInt(dSupply),
-      Number(dAntiWhalePercentage),
-    ],
+    args:
+      tokenType === "safeMemeTokenLaunched"
+        ? [
+            dSymbol,
+            dName,
+            dDecimals ? Number(dDecimals) : 18,
+            BigInt(dSupply),
+            Number(dAntiWhalePercentage),
+            dSelectedTokenB,
+          ]
+        : [
+            dSymbol,
+            dName,
+            dDecimals ? Number(dDecimals) : 18,
+            BigInt(dSupply),
+            Number(dAntiWhalePercentage),
+          ],
     value: deployFee,
     cacheTime: 0,
   })
