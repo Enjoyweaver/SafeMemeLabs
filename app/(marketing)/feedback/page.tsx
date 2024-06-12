@@ -20,6 +20,11 @@ const FeedbackPage = () => {
   const [featureRequests, setFeatureRequests] = useState([])
   const [checklistItems, setChecklistItems] = useState([
     {
+      text: "Create dashboard for created tokens",
+      completed: false,
+      status: "open",
+    },
+    {
       text: "Update metadata for all pages",
       completed: false,
       status: "open",

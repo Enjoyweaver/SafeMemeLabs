@@ -54,7 +54,7 @@ const TokenInfo = ({ tokenAddress, chainId }) => {
   }
 
   return (
-    <div>
+    <div className="token-info-container">
       <h2 className="title">Transaction Summary</h2>
       <p className="total">
         <strong>Total Transactions:</strong> {total_count || "N/A"}

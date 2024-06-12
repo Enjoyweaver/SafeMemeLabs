@@ -1,3 +1,4 @@
+// TokenSwap component file (TokenSwap.tsx)
 "use client"
 
 import React, { useEffect, useState } from "react"
@@ -22,7 +23,10 @@ import "./swap.css"
 import { erc20ABI } from "@/ABIs/erc20"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 
-const TokenSwap: React.FC = () => {
+const TokenSwap: React.FC<{
+  tokenAddress: string | null
+  hideNavbar?: boolean
+}> = ({ tokenAddress, hideNavbar }) => {
   const { chain } = useNetwork()
   const { address, isConnected } = useAccount()
   const [tokenPrices, setTokenPrices] = useState<{
@@ -394,12 +398,8 @@ const TokenSwap: React.FC = () => {
 
   return (
     <div>
-      <Navbar />
+      {!hideNavbar && <Navbar />}
       <div className="flex min-h-screen flex-col">
-        <h1 className="disclaimer">
-          Disclaimer: This is just for testing purposes. <br></br>
-          We will announce when our swap goes live.
-        </h1>
         <main className="flex-1">
           <div className="swap-container">
             <h1 className="page-title">Token Swap</h1>

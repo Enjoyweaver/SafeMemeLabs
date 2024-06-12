@@ -1,11 +1,55 @@
-.dark {
-  background-color: var(--background-dark);
-  color: var(--foreground-dark);
-  border: 1px solid var(--border-dark);
+:root {
+  --background-light: #ffffff;
+  --foreground-light: #000000;
+  --primary-light: #04c44e;
+  --secondary-light: #b80f5e;
+  --accent-light: #04c44e;
+  --border-light: #04c44e;
+  --text-light: #000000;
+
+  --input-light: #e3e4e6;
+  --input-dark: #1a1a2e;
+
+  --background-dark: #000000;
+  --foreground-dark: #ffffff;
+  --primary-dark: #df1584;
+  --secondary-dark: #41b80a;
+  --accent-dark: #41b80a;
+  --border-dark: #41b80a;
+  --text-dark: #ffffff;
+}
+
+body {
+  background-color: var(--background-light) !important;
+  color: var(--foreground-light) !important;
+  font-family: Arial, sans-serif !important;
+}
+
+.dark body {
+  background-color: var(--background-dark) !important;
+  color: var(--foreground-dark) !important;
+}
+
+.token-info-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  background-color: var(--background-light) !important;
+  border: 1px solid var(--primary-light);
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  box-sizing: border-box;
+}
+
+.dark .token-info-container {
+  background-color: var(--background-dark) !important;
+  border: 1px solid var(--primary-dark);
+  background-color: rgba(0, 0, 0, 0.2) !important;
 }
 
 .title {
-  font-size: 1rem;
+  font-size: 1.5rem;
   margin-bottom: 10px;
   color: var(--primary-light);
 }
@@ -15,16 +59,26 @@
 }
 
 .total {
-  font-size: 0.9rem;
+  font-size: 1rem;
+  color: var(--foreground-light);
+}
+
+.dark .total {
+  color: var(--foreground-dark);
 }
 
 .transaction {
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   font-size: 0.9rem;
+  color: var(--foreground-light);
+}
+
+.dark .transaction {
+  color: var(--foreground-dark);
 }
 
 .subtitle {
-  font-size: 1rem;
+  font-size: 1.2rem;
   margin-bottom: 5px;
   color: var(--secondary-light);
 }
@@ -42,16 +96,4 @@
 .dark .loading,
 .dark .error {
   color: var(--primary-dark);
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.token-logo {
-  width: 50px;
-  height: 50px;
-  margin-left: 10px;
 }

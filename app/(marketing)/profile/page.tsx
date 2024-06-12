@@ -16,13 +16,10 @@ import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import {
-  lockerDetails,
-  managerDetails,
   tokenDeployerDetails,
   tokenLauncherDetails,
 } from "../../../Constants/config"
 import "@/styles/profile.css"
-import DexData from "@/APIs/exchangedata"
 import TokenHoldersList from "@/APIs/tokeninfo"
 
 export default function MyTokens(): JSX.Element {
@@ -289,12 +286,6 @@ export default function MyTokens(): JSX.Element {
                             }
                             chainId={chain?.id}
                           />
-                          <DexData
-                            tokenAddress={
-                              contracts[contracts.length - 1 - index]
-                            }
-                            chainId={chain?.id}
-                          />
                         </div>
                       ))}
                     </div>
@@ -347,25 +338,17 @@ export default function MyTokens(): JSX.Element {
                               <strong>Anti-Whale Percentage:</strong>{" "}
                               {token.antiWhalePercentage}%
                             </p>
-
                             <p>
-                              <strong>Locker Address:</strong>{" "}
-                              {lockerDetails[chainId]}
-                            </p>
-                            <p>
-                              <strong>Manager Address:</strong>{" "}
-                              {managerDetails[chainId]}
+                              <strong>Max Tokens per Holder:</strong>{" "}
+                              {formatNumber(
+                                (Number(token.supply) *
+                                  token.antiWhalePercentage) /
+                                  100,
+                                token.decimals
+                              )}
                             </p>
                           </div>
                           <TokenHoldersList
-                            tokenAddress={
-                              launchedContracts[
-                                launchedContracts.length - 1 - index
-                              ]
-                            }
-                            chainId={chain?.id}
-                          />
-                          <DexData
                             tokenAddress={
                               launchedContracts[
                                 launchedContracts.length - 1 - index
