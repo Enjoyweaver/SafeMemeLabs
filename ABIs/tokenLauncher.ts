@@ -1,4 +1,4 @@
-export const tokenLauncherABI = [
+export const tokenDeployerABI = [
   {
     inputs: [
       {
@@ -38,11 +38,6 @@ export const tokenLauncherABI = [
         internalType: "uint8",
         name: "_antiWhalePercentage",
         type: "uint8",
-      },
-      {
-        internalType: "address",
-        name: "_tokenB",
-        type: "address",
       },
     ],
     name: "deployToken",
@@ -126,7 +121,7 @@ export const tokenLauncherABI = [
         type: "string",
       },
     ],
-    name: "TokenLaunched",
+    name: "TokenDeployed",
     type: "event",
   },
   {
@@ -203,15 +198,6 @@ export const tokenLauncherABI = [
         type: "address",
       },
     ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    constant: true,
-    inputs: [{ name: "_owner", type: "address" }],
-    name: "balanceOf",
-    outputs: [{ name: "balance", type: "uint256" }],
-    payable: false,
     stateMutability: "view",
     type: "function",
   },

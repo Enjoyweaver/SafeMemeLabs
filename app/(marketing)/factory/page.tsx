@@ -149,7 +149,7 @@ export default function Factory(): JSX.Element {
             dDecimals ? Number(dDecimals) : 18,
             BigInt(dSupply),
             Number(dAntiWhalePercentage),
-            dSelectedTokenB,
+            dSelectedTokenB, // Include TokenB address
           ]
         : [
             dSymbol,
