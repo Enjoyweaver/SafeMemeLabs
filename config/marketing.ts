@@ -27,10 +27,10 @@ export const marketingConfig: MarketingConfig = {
     //   title: "Provide LP",
     //    href: "/lp",
     // },
-    {
-      title: "Swap",
-      href: "/swap",
-    },
+    //{
+    //  title: "Swap",
+    //  href: "/swap",
+    //},
     // {
     //    title: "SafeMeme",
     //   href: "/safememe",
@@ -51,13 +51,17 @@ export const marketingConfig: MarketingConfig = {
       title: "Rewards",
       href: "/rewards",
     },
-    //{
-    //  title: "Tokens",
-    //  href: "/alltokens",
-    //},
+    //  {
+    //    title: "Tokens",
+    //    href: "/alltokens",
+    //  },
     //{
     //  title: "claim",
     //  href: "/claim",
     //},
+    //{
+    //  title: "Manager",
+    //  href: "/claimmanager",
+    // },
   ],
 }
