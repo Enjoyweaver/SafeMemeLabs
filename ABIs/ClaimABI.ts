@@ -1,10 +1,77 @@
-const ClaimABI = [
+export const ClaimABI = [
   {
     type: "constructor",
     name: "",
     inputs: [],
     outputs: [],
     stateMutability: "nonpayable",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_creationFee",
+        type: "uint256",
+      },
+    ],
+    name: "changeCreationFee",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_name",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "_symbol",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "_contractURI",
+        type: "string",
+      },
+      {
+        internalType: "address[]",
+        name: "_trustedForwarders",
+        type: "address[]",
+      },
+      {
+        internalType: "address",
+        name: "_saleRecipient",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_platformFeeRecipient",
+        type: "address",
+      },
+      {
+        internalType: "uint128",
+        name: "_platformFeeBps",
+        type: "uint128",
+      },
+      {
+        internalType: "uint256",
+        name: "_maxTotalSupply",
+        type: "uint256",
+      },
+    ],
+    name: "deployToken",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "payable",
+    type: "function",
   },
   {
     type: "event",
@@ -113,6 +180,20 @@ const ClaimABI = [
     ],
     outputs: [],
     anonymous: false,
+  },
+
+  {
+    inputs: [],
+    name: "creationFee",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
   },
   {
     type: "event",
@@ -1761,5 +1842,3 @@ const ClaimABI = [
     stateMutability: "view",
   },
 ]
-
-export default ClaimABI

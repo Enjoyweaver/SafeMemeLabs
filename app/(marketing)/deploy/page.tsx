@@ -4,7 +4,13 @@ import React, { useEffect, useState } from "react"
 import ClaimABI from "@/ABIs/ClaimABI"
 import { tokenClaimDetails } from "@/Constants/config"
 import { ethers } from "ethers"
-import { useAccount } from "wagmi"
+import {
+  useAccount,
+  useContractWrite,
+  useNetwork,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+} from "wagmi"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
@@ -12,8 +18,8 @@ import "@/styles/claimmanager.css"
 
 const ClaimComponent = () => {
   const { address, isConnected, connector } = useAccount()
-  const [claimContract, setClaimContract] = useState(null)
-  const [signer, setSigner] = useState(null)
+  const { chain } = useNetwork()
+  const [signer, setSigner] = useState<any>(null)
 
   // State variables for contract initialization
   const [name, setName] = useState("")
@@ -26,9 +32,9 @@ const ClaimComponent = () => {
   const [maxTotalSupply, setMaxTotalSupply] = useState("")
 
   // State variables for claim conditions
-  const [claimConditions, setClaimConditions] = useState([])
+  const [claimConditions, setClaimConditions] = useState<any[]>([])
   const [quantity, setQuantity] = useState(0)
-  const [merkleProof, setMerkleProof] = useState([])
+  const [merkleProof, setMerkleProof] = useState<any[]>([])
   const [conditionId, setConditionId] = useState(0)
   const [phaseName, setPhaseName] = useState("")
   const [startTimestamp, setStartTimestamp] = useState("")
@@ -44,54 +50,90 @@ const ClaimComponent = () => {
         const ethersProvider = new ethers.providers.Web3Provider(provider)
         const signer = ethersProvider.getSigner()
         setSigner(signer)
-
-        const network = await ethersProvider.getNetwork()
-        const contractAddress = tokenClaimDetails[network.chainId]
-
-        const contract = new ethers.Contract(contractAddress, ClaimABI, signer)
-        setClaimContract(contract)
       }
     }
     getSigner()
   }, [connector])
 
-  const initializeContract = async () => {
-    if (claimContract && signer) {
-      const tx = await claimContract.initialize(
-        await signer.getAddress(),
-        name,
-        symbol,
-        contractURI,
-        trustedForwarders.split(","),
-        saleRecipient,
-        platformFeeRecipient,
-        parseInt(platformFeeBps)
+  const claimDeployerAddress = chain ? tokenClaimDetails[chain.id] : ""
+
+  const { config } = usePrepareContractWrite({
+    address: claimDeployerAddress,
+    abi: ClaimABI,
+    functionName: "initialize",
+    args: [
+      address,
+      name,
+      symbol,
+      contractURI,
+      trustedForwarders ? trustedForwarders.split(",") : [],
+      saleRecipient,
+      platformFeeRecipient,
+      parseInt(platformFeeBps),
+    ],
+    onError: (error) => {
+      console.error("Error preparing contract write:", error)
+    },
+  })
+
+  const { data, isLoading, isSuccess, write, error } = useContractWrite(config)
+
+  const { isLoading: isTxLoading, isSuccess: isTxSuccess } =
+    useWaitForTransaction({
+      hash: data?.hash,
+      onError: (error) => {
+        console.error("Error during transaction:", error)
+      },
+      onSuccess: (data) => {
+        console.log("Transaction successful:", data)
+      },
+    })
+
+  const createToken = () => {
+    if (
+      !name ||
+      !symbol ||
+      !contractURI ||
+      !saleRecipient ||
+      !platformFeeRecipient ||
+      !platformFeeBps
+    ) {
+      console.error(
+        "All fields except Trusted Forwarders are required for creating the token."
       )
-      await tx.wait()
-      console.log("Contract initialized")
+      return
     }
+    write?.()
   }
 
   const setConditions = async () => {
-    if (claimContract) {
-      const tx = await claimContract.setClaimConditions(claimConditions, true)
-      await tx.wait()
-      console.log("Claim conditions set")
+    try {
+      if (claimContract) {
+        const tx = await claimContract.setClaimConditions(claimConditions, true)
+        await tx.wait()
+        console.log("Claim conditions set")
+      }
+    } catch (error) {
+      console.error("Error setting claim conditions:", error)
     }
   }
 
   const claimTokens = async () => {
-    if (claimContract) {
-      const tx = await claimContract.claimTokens(
-        conditionId,
-        quantity,
-        merkleProof,
-        {
-          value: ethers.utils.parseEther("0.01"), // Adjust the value as needed
-        }
-      )
-      await tx.wait()
-      console.log("Tokens claimed")
+    try {
+      if (claimContract) {
+        const tx = await claimContract.claimTokens(
+          conditionId,
+          quantity,
+          merkleProof,
+          {
+            value: ethers.utils.parseEther("0.01"), // Adjust the value as needed
+          }
+        )
+        await tx.wait()
+        console.log("Tokens claimed")
+      }
+    } catch (error) {
+      console.error("Error claiming tokens:", error)
     }
   }
 
@@ -119,7 +161,7 @@ const ClaimComponent = () => {
       <Navbar />
       <div className="container">
         <div className="section">
-          <h2 className="section-title">Initialize Contract</h2>
+          <h2 className="section-title">Create Token</h2>
           <input
             placeholder="Name"
             value={name}
@@ -162,8 +204,14 @@ const ClaimComponent = () => {
             onChange={(e) => setPlatformFeeBps(e.target.value)}
             className="input"
           />
-          <button onClick={initializeContract} className="claim-button">
-            Initialize Contract
+          <input
+            placeholder="Max Total Supply"
+            value={maxTotalSupply}
+            onChange={(e) => setMaxTotalSupply(e.target.value)}
+            className="input"
+          />
+          <button onClick={createToken} className="claim-button">
+            {isLoading || isTxLoading ? "Creating Token..." : "Create Token"}
           </button>
         </div>
 
