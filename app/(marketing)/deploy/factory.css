@@ -1,0 +1,455 @@
+:root {
+  --background-light: #ffffff;
+  --foreground-light: #000000;
+  --primary-light: #04c44e; /* Pink */
+  --secondary-light: #b80f5e; /* Green */
+  --primary-light: #04c44e; /* Pink */
+  --accent-light: #04c44e; /* Dark Green */
+  --border-light: #04c44e;
+  --text-light: #000000;
+
+  --input-light: #e3e4e6;
+  --input-dark: #1a1a2e;
+
+  --background-dark: #000000;
+  --foreground-dark: #ffffff;
+  --primary-dark: #df1584; /* Pink */
+  --secondary-dark: #41b80a; /* Green */
+  --accent-dark: #41b80a; /* Dark Green */
+  --border-dark: #41b80a;
+  --text-dark: #ffffff;
+}
+
+body {
+  background-color: var(--background-light) !important;
+  color: var(--foreground-light) !important;
+  font-family: Arial, sans-serif !important;
+}
+
+.dark body {
+  background-color: var(--background-dark) !important;
+  color: var(--foreground-dark) !important;
+}
+
+.pageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 10vh;
+}
+
+.spacer {
+  height: 20vh; /* Adjust the height as needed for your layout */
+}
+
+.tokenDeployer {
+  max-width: 600px;
+  width: calc(100% - 80px);
+  padding: 40px;
+  background-color: var(--background-light);
+  border: 2px solid var(--border-light);
+  border-radius: 15px;
+  margin: 15px auto 100px auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark .tokenDeployer {
+  background-color: var(--background-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.title {
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--foreground-light);
+  margin-bottom: 10px;
+}
+
+.dark .title {
+  color: var(--foreground-dark);
+}
+
+.subtitle {
+  font-size: 1.2em;
+  color: var(--secondary-light);
+  margin-bottom: 20px;
+}
+
+.dark .subtitle {
+  color: var(--secondary-dark);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.inputGroup {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.inputTitle {
+  font-size: 1em;
+  margin-bottom: 5px;
+  color: var(--foreground-light);
+  text-align: left;
+  width: 100%;
+}
+
+.dark .inputTitle {
+  color: var(--foreground-dark);
+}
+
+.inputDescription {
+  margin-top: 5px;
+  font-size: 0.8em;
+  color: #818181;
+}
+
+.tokenInput {
+  font-size: 1em;
+  padding: 12px;
+  border-radius: 5px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.3s ease-in-out;
+  background-color: var(--input-light);
+  color: var(--foreground-light);
+  border: 1px solid var(--border-light);
+}
+
+.dark .tokenInput {
+  background-color: var(--input-dark);
+  color: var(--foreground-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.deployButton {
+  color: #fff;
+  border-radius: 25px;
+  background-color: var(--accent-light);
+  border: none;
+  padding: 12px;
+  font-size: 1em;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.deployButton:hover {
+  background-color: var(--secondary-light);
+}
+
+.deployButton.enabled {
+  background-color: green;
+  color: white;
+}
+
+.dark .deployButton {
+  background-color: var(--accent-dark);
+}
+
+.dark .deployButton:hover {
+  background-color: var(--secondary-dark);
+}
+
+.dark .deployButton.enabled {
+  background-color: green;
+}
+
+.error {
+  color: #ff2828;
+  margin: 2px 0px;
+}
+
+.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #ff2828;
+  margin: 2px 0px;
+}
+
+.title {
+  font-size: 1.5em;
+  margin: 0;
+  color: rgb(69, 67, 78);
+  font-weight: bold;
+}
+
+.errorText {
+  color: #f1f0f0;
+  overflow-wrap: break-word;
+}
+
+.errorSection {
+  border: 1px solid #b8b8b8;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: white;
+  margin-top: 20px;
+}
+
+.dark .errorSection {
+  background-color: var(--background-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.errorHeader {
+  color: #f3f3f3;
+  font-size: 1.5em;
+  margin: 0;
+  display: inline-block;
+}
+
+.disclaimer {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--primary-light);
+  margin-top: 30px;
+}
+
+.errorCollapsed {
+  width: 100%;
+  cursor: pointer;
+}
+
+.errorDropdown {
+  vertical-align: middle;
+  float: right;
+  filter: invert(15%) sepia(0%) saturate(1%) hue-rotate(40deg) brightness(30%)
+    contrast(90%);
+}
+
+@media (max-width: 600px) {
+  .tokenDeployer {
+    width: calc(100% - 40px);
+    padding: 20px;
+    margin: 50px auto;
+  }
+
+  .disclaimer {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--primary-light);
+    margin-top: 20px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .title {
+    font-size: 1.5em;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 1em;
+    margin-bottom: 15px;
+  }
+
+  .inputGroup {
+    margin-bottom: 15px;
+  }
+
+  .inputTitle {
+    font-size: 0.9em;
+    margin-bottom: 3px;
+  }
+
+  .tokenInput {
+    font-size: 0.9em;
+    padding: 10px;
+  }
+
+  .deployButton,
+  .myTokensButton {
+    padding: 10px;
+    font-size: 0.9em;
+  }
+
+  .errorSection {
+    padding: 15px;
+  }
+
+  .errorHeader {
+    font-size: 1.2em;
+  }
+
+  .errorText {
+    font-size: 0.9em;
+  }
+}
+
+.tokenTypeButtonsContainer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 3rem;
+}
+
+.tokenTypeButton {
+  font-size: 14px;
+  padding: 10px 20px;
+  background-color: var(--primary-light);
+  border: 2px solid var(--border-light);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.tokenTypeButton:hover {
+  background-color: var(--secondary-light);
+  transform: scale(1.05);
+}
+
+.tokenTypeButton.active {
+  background-color: var(--input-dark);
+  color: white;
+}
+
+@media screen and (max-width: 620px) {
+  .tokenTypeButtonsContainer {
+    flex-direction: row; /* Change to row */
+    align-items: center;
+    gap: 10px; /* Adjust the gap for mobile view */
+    margin-top: 2.3rem;
+  }
+
+  .tokenTypeButton {
+    font-size: 12px;
+    padding: 8px 16px;
+  }
+  .tokenTypeButton {
+    background-color: var(--primary-light);
+    border: 2px solid var(--border-light);
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .tokenTypeButton:hover {
+    background-color: var(--secondary-light);
+    transform: scale(1.05);
+  }
+
+  .tokenTypeButton.active {
+    background-color: var(--input-dark);
+    color: white;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .tokenTypeButtonsContainer {
+    gap: 15px;
+    margin-top: 2rem;
+  }
+
+  .tokenTypeButton {
+    font-size: 11px;
+    padding: 7px 14px;
+  }
+  .tokenTypeButton {
+    background-color: var(--primary-light);
+    border: 2px solid var(--border-light);
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .tokenTypeButton:hover {
+    background-color: var(--secondary-light);
+    transform: scale(1.05);
+  }
+
+  .tokenTypeButton.active {
+    background-color: var(--input-dark);
+    color: white;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .tokenTypeButtonsContainer {
+    gap: 10px;
+    margin-top: 1.5rem;
+  }
+
+  .tokenTypeButton {
+    font-size: 10px;
+    padding: 6px 12px;
+  }
+  .tokenTypeButton {
+    background-color: var(--primary-light);
+    border: 2px solid var(--border-light);
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .tokenTypeButton:hover {
+    background-color: var(--secondary-light);
+    transform: scale(1.05);
+  }
+
+  .tokenTypeButton.active {
+    background-color: var(--input-dark);
+    color: white;
+  }
+}
+
+.tokenTypeButtonContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.tokenTypeButtonPopup {
+  visibility: hidden;
+  width: 200px;
+  background-color: var(--foreground-light);
+  color: var(--background-light);
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1000;
+  bottom: 125%; /* Position above the button */
+  left: 50%;
+  margin-left: -100px; /* Center the popup */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.dark .tokenTypeButtonPopup {
+  background-color: var(--foreground-dark);
+  color: var(--background-dark);
+}
+
+.tokenTypeButtonContainer:hover .tokenTypeButtonPopup {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tokenTypeButtonPopup::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--foreground-light) transparent transparent transparent;
+}
+
+.dark .tokenTypeButtonPopup::after {
+  border-color: var(--foreground-dark) transparent transparent transparent;
+}
+
+/*.hideButton {
+/ display: none;
+}
+*/

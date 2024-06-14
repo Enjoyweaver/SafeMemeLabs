@@ -2,7 +2,6 @@
 
 import { ChangeEvent, useEffect, useState } from "react"
 import Link from "next/link"
-import { ClaimABI } from "@/ABIs/ClaimABI"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
 import { toast } from "react-toastify"
@@ -14,7 +13,6 @@ import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
 import {
   tokenBOptions,
-  tokenClaimDetails,
   tokenDeployerDetails,
   tokenLauncherDetails,
 } from "@/Constants/config"
@@ -42,12 +40,6 @@ export default function Factory(): JSX.Element {
   const [antiWhalePercentage, setAntiWhalePercentage] = useState<string>("")
   const [selectedTokenB, setSelectedTokenB] = useState<string>("")
   const [tokenLauncher, setTokenLauncher] = useState<string>("")
-  const [contractURI, setContractURI] = useState<string>("")
-  const [trustedForwarders, setTrustedForwarders] = useState<string>("")
-  const [saleRecipient, setSaleRecipient] = useState<string>("")
-  const [platformFeeRecipient, setPlatformFeeRecipient] = useState<string>("")
-  const [platformFeeBps, setPlatformFeeBps] = useState<string>("")
-  const [maxTotalSupply, setMaxTotalSupply] = useState<string>("")
 
   const dName = useDebounce(name, 500)
   const dSymbol = useDebounce(symbol, 500)
@@ -56,12 +48,6 @@ export default function Factory(): JSX.Element {
   const dAntiWhalePercentage = useDebounce(antiWhalePercentage, 500)
   const dSelectedTokenB = useDebounce(selectedTokenB, 500)
   const dTokenLauncher = useDebounce(tokenLauncher, 500)
-  const dContractURI = useDebounce(contractURI, 500)
-  const dTrustedForwarders = useDebounce(trustedForwarders, 500)
-  const dSaleRecipient = useDebounce(saleRecipient, 500)
-  const dPlatformFeeRecipient = useDebounce(platformFeeRecipient, 500)
-  const dPlatformFeeBps = useDebounce(platformFeeBps, 500)
-  const dMaxTotalSupply = useDebounce(maxTotalSupply, 500)
 
   const [isClient, setIsClient] = useState(false)
   const [errorMenu, setErrorMenu] = useState(false)
@@ -79,24 +65,16 @@ export default function Factory(): JSX.Element {
     if (chain && chain.id) {
       const launcherAddress = tokenLauncherDetails[chain.id] || ""
       const deployerAddress = tokenDeployerDetails[chain.id] || ""
-      const claimAddress = tokenClaimDetails[chain.id] || ""
 
-      console.log("Chain ID:", chain.id)
       console.log("Launcher Address:", launcherAddress)
       console.log("Deployer Address:", deployerAddress)
-      console.log("Claim Address:", claimAddress)
 
       if (!launcherAddress) {
-        console.error(`Missing launcher address for chain ID ${chain.id}`)
+        console.error(`Missing addresses for chain ID ${chain.id}`)
       }
-      if (!deployerAddress) {
-        console.error(`Missing deployer address for chain ID ${chain.id}`)
-      }
-      if (!claimAddress) {
-        console.error(`Missing claim address for chain ID ${chain.id}`)
-      }
-
       setTokenLauncher(launcherAddress)
+
+      // Ensure selectedTokenB is set based on current chain
       setSelectedTokenB(tokenBOptions[chain.id]?.[0]?.address || "")
     }
   }, [chain])
@@ -113,31 +91,16 @@ export default function Factory(): JSX.Element {
     setAntiWhalePercentage(e.target.value)
   const setTokenBAddress = (e: ChangeEvent<HTMLSelectElement>) =>
     setSelectedTokenB(e.target.value)
-  const setContractURIInput = (e: ChangeEvent<HTMLInputElement>) =>
-    setContractURI(e.target.value)
-  const setTrustedForwardersInput = (e: ChangeEvent<HTMLInputElement>) =>
-    setTrustedForwarders(e.target.value)
-  const setSaleRecipientInput = (e: ChangeEvent<HTMLInputElement>) =>
-    setSaleRecipient(e.target.value)
-  const setPlatformFeeRecipientInput = (e: ChangeEvent<HTMLInputElement>) =>
-    setPlatformFeeRecipient(e.target.value)
-  const setPlatformFeeBpsInput = (e: ChangeEvent<HTMLInputElement>) =>
-    setPlatformFeeBps(e.target.value)
-  const setMaxTotalSupplyInput = (e: ChangeEvent<HTMLInputElement>) =>
-    setMaxTotalSupply(e.target.value)
 
   const isFormFilled = (): boolean =>
     name.trim().length > 0 &&
     symbol.trim().length > 0 &&
-    (tokenType === "safeMemeToken" ||
-      (tokenType === "safeMemeTokenLaunched" &&
-        selectedTokenB.trim().length > 0) ||
-      (tokenType === "safeMemeClaim" &&
-        contractURI.trim().length > 0 &&
-        saleRecipient.trim().length > 0 &&
-        platformFeeRecipient.trim().length > 0 &&
-        platformFeeBps.trim().length > 0 &&
-        maxTotalSupply.trim().length > 0))
+    supply.trim().length > 0 &&
+    antiWhalePercentage.trim().length > 0 &&
+    decimals.trim().length > 0 &&
+    (tokenType === "safeMemeTokenLaunched"
+      ? selectedTokenB.trim().length > 0
+      : true)
 
   const chainId: string | number = chain ? chain.id : 250
 
@@ -145,14 +108,10 @@ export default function Factory(): JSX.Element {
     address:
       tokenType === "safeMemeTokenLaunched"
         ? (tokenLauncherDetails[chainId] as `0x${string}`)
-        : tokenType === "safeMemeClaim"
-        ? (tokenClaimDetails[chainId] as `0x${string}`)
         : (tokenDeployerDetails[chainId] as `0x${string}`),
     abi:
       tokenType === "safeMemeTokenLaunched"
         ? tokenLauncherABI
-        : tokenType === "safeMemeClaim"
-        ? ClaimABI
         : tokenDeployerABI,
     functionName: "creationFee",
     onError: (error) => {
@@ -172,14 +131,10 @@ export default function Factory(): JSX.Element {
     address:
       tokenType === "safeMemeTokenLaunched"
         ? (tokenLauncherDetails[chainId] as `0x${string}`)
-        : tokenType === "safeMemeClaim"
-        ? (tokenClaimDetails[chainId] as `0x${string}`)
         : (tokenDeployerDetails[chainId] as `0x${string}`),
     abi:
       tokenType === "safeMemeTokenLaunched"
         ? tokenLauncherABI
-        : tokenType === "safeMemeClaim"
-        ? ClaimABI
         : tokenDeployerABI,
     functionName: "deployToken",
     args:
@@ -191,17 +146,6 @@ export default function Factory(): JSX.Element {
             BigInt(dSupply),
             Number(dAntiWhalePercentage),
             dSelectedTokenB, // Include TokenB address
-          ]
-        : tokenType === "safeMemeClaim"
-        ? [
-            dName,
-            dSymbol,
-            dContractURI,
-            dTrustedForwarders.split(",").map((addr) => addr.trim()), // Ensure addresses are trimmed and split correctly
-            dSaleRecipient,
-            dPlatformFeeRecipient,
-            BigInt(dPlatformFeeBps), // Ensure this is BigInt if needed
-            BigInt(dMaxTotalSupply),
           ]
         : [
             dSymbol,
@@ -218,15 +162,7 @@ export default function Factory(): JSX.Element {
     if (prepareError) {
       console.error("Error preparing contract write:", prepareError)
     }
-    console.log("Config prepared:", config)
-  }, [prepareError, config])
-
-  useEffect(() => {
-    if (prepareError) {
-      console.error("Error preparing contract write:", prepareError)
-    }
-    console.log("Config prepared:", config)
-  }, [prepareError, config])
+  }, [prepareError])
 
   const {
     data,
@@ -268,10 +204,6 @@ export default function Factory(): JSX.Element {
       (!tokenLauncher || !selectedTokenB)
     ) {
       toast.error("Configuration error: Missing required addresses.")
-      return
-    }
-    if (tokenType === "safeMemeClaim" && !tokenClaimDetails[chainId]) {
-      toast.error("Configuration error: Missing claim address.")
       return
     }
     setModalMessage(
@@ -333,19 +265,6 @@ export default function Factory(): JSX.Element {
                 at different liquidity levels.
               </div>
             </div>
-            <div className="tokenTypeButtonContainer">
-              <button
-                className={`tokenTypeButton ${
-                  tokenType === "safeMemeClaim" ? "active" : ""
-                } hideButton`}
-                onClick={() => setTokenType("safeMemeClaim")}
-              >
-                SafeMeme Claim
-              </button>
-              <div className="tokenTypeButtonPopup">
-                Create a SafeMeme Claim token with specific conditions.
-              </div>
-            </div>
           </div>
 
           <div className="tokenDeployer">
@@ -372,159 +291,87 @@ export default function Factory(): JSX.Element {
                   value={symbol}
                 />
               </div>
-              {tokenType !== "safeMemeClaim" && (
-                <>
-                  <div className="inputGroup">
-                    <label className="inputTitle">Token Supply*</label>
-                    <input
-                      onKeyDown={(evt) =>
-                        ["e", "E", "+", "-", "."].includes(evt.key) &&
-                        evt.preventDefault()
-                      }
-                      onChange={setTokenSupply}
-                      className="tokenInput"
-                      placeholder="21000000"
-                      type="number"
-                      value={supply}
-                    />
-                  </div>
-                  <div className="inputGroup">
-                    <label className="inputTitle">Decimals</label>
-                    <input
-                      onKeyDown={(evt) =>
-                        ["e", "E", "+", "-"].includes(evt.key) &&
-                        evt.preventDefault()
-                      }
-                      onChange={setTokenDecimals}
-                      className="tokenInput"
-                      placeholder="18"
-                      type="number"
-                      value={decimals}
-                    />
-                    {!(Number(decimals) >= 0 && Number(decimals) <= 18) && (
-                      <p className="error">Decimals must be from 0 to 18</p>
-                    )}
-                  </div>
-                  <div className="inputGroup">
-                    <label className="inputTitle">Anti-Whale Percentage*</label>
-                    <input
-                      onKeyDown={(evt) =>
-                        ["e", "E", "+", "-", "."].includes(evt.key) &&
-                        evt.preventDefault()
-                      }
-                      onChange={setAntiWhalePercentageInput}
-                      className="tokenInput"
-                      placeholder="3"
-                      type="number"
-                      value={antiWhalePercentage}
-                    />
-                    {!(
-                      Number(antiWhalePercentage) > 0 &&
-                      Number(antiWhalePercentage) <= 3
-                    ) && (
-                      <p className="error">
-                        Percentage must be greater than 0 and less than or equal
-                        to 3
-                      </p>
-                    )}
-                  </div>
-                  {isClient && tokenType === "safeMemeTokenLaunched" && (
-                    <div className="inputGroup">
-                      <label className="inputTitle">Token B Address*</label>
-                      <select
-                        onChange={setTokenBAddress}
-                        className="tokenInput"
-                        value={selectedTokenB}
-                      >
-                        <option value="">Select Token B</option>
-                        {tokenBOptions[chainId]?.map((token) => (
-                          <option key={token.address} value={token.address}>
-                            {token.symbol}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-                </>
-              )}
-              {tokenType === "safeMemeClaim" && (
-                <>
-                  <div className="inputGroup">
-                    <label className="inputTitle">Contract URI*</label>
-                    <input
-                      onChange={setContractURIInput}
-                      className="tokenInput"
-                      placeholder="https://example.com/contract"
-                      value={contractURI}
-                    />
-                  </div>
-                  <div className="inputGroup">
-                    <label className="inputTitle">Trusted Forwarders*</label>
-                    <input
-                      onChange={setTrustedForwardersInput}
-                      className="tokenInput"
-                      placeholder="0xabc...,0xdef..."
-                      value={trustedForwarders}
-                    />
-                  </div>
-                  <div className="inputGroup">
-                    <label className="inputTitle">Sale Recipient*</label>
-                    <input
-                      onChange={setSaleRecipientInput}
-                      className="tokenInput"
-                      placeholder="0xabc..."
-                      value={saleRecipient}
-                    />
-                  </div>
-                  <div className="inputGroup">
-                    <label className="inputTitle">
-                      Platform Fee Recipient*
-                    </label>
-                    <input
-                      onChange={setPlatformFeeRecipientInput}
-                      className="tokenInput"
-                      placeholder="0xabc..."
-                      value={platformFeeRecipient}
-                    />
-                  </div>
-                  <div className="inputGroup">
-                    <label className="inputTitle">Platform Fee BPS*</label>
-                    <input
-                      onKeyDown={(evt) =>
-                        ["e", "E", "+", "-", "."].includes(evt.key) &&
-                        evt.preventDefault()
-                      }
-                      onChange={setPlatformFeeBpsInput}
-                      className="tokenInput"
-                      placeholder="500"
-                      type="number"
-                      value={platformFeeBps}
-                    />
-                  </div>
-                  <div className="inputGroup">
-                    <label className="inputTitle">Max Total Supply*</label>
-                    <input
-                      onKeyDown={(evt) =>
-                        ["e", "E", "+", "-", "."].includes(evt.key) &&
-                        evt.preventDefault()
-                      }
-                      onChange={setMaxTotalSupplyInput}
-                      className="tokenInput"
-                      placeholder="1000000"
-                      type="number"
-                      value={maxTotalSupply}
-                    />
-                  </div>
-                </>
+              <div className="inputGroup">
+                <label className="inputTitle">Token Supply*</label>
+                <input
+                  onKeyDown={(evt) =>
+                    ["e", "E", "+", "-", "."].includes(evt.key) &&
+                    evt.preventDefault()
+                  }
+                  onChange={setTokenSupply}
+                  className="tokenInput"
+                  placeholder="21000000"
+                  type="number"
+                  value={supply}
+                />
+              </div>
+              <div className="inputGroup">
+                <label className="inputTitle">Decimals</label>
+                <input
+                  onKeyDown={(evt) =>
+                    ["e", "E", "+", "-"].includes(evt.key) &&
+                    evt.preventDefault()
+                  }
+                  onChange={setTokenDecimals}
+                  className="tokenInput"
+                  placeholder="18"
+                  type="number"
+                  value={decimals}
+                />
+                {!(Number(decimals) >= 0 && Number(decimals) <= 18) && (
+                  <p className="error">Decimals must be from 0 to 18</p>
+                )}
+              </div>
+              <div className="inputGroup">
+                <label className="inputTitle">Anti-Whale Percentage*</label>
+                <input
+                  onKeyDown={(evt) =>
+                    ["e", "E", "+", "-", "."].includes(evt.key) &&
+                    evt.preventDefault()
+                  }
+                  onChange={setAntiWhalePercentageInput}
+                  className="tokenInput"
+                  placeholder="3"
+                  type="number"
+                  value={antiWhalePercentage}
+                />
+                {!(
+                  Number(antiWhalePercentage) > 0 &&
+                  Number(antiWhalePercentage) <= 3
+                ) && (
+                  <p className="error">
+                    Percentage must be greater than 0 and less than or equal to
+                    3
+                  </p>
+                )}
+              </div>
+              {isClient && tokenType === "safeMemeTokenLaunched" && (
+                <div className="inputGroup">
+                  <label className="inputTitle">Token B Address*</label>
+                  <select
+                    onChange={setTokenBAddress}
+                    className="tokenInput"
+                    value={selectedTokenB}
+                  >
+                    <option value="">Select Token B</option>
+                    {tokenBOptions[chainId]?.map((token) => (
+                      <option key={token.address} value={token.address}>
+                        {token.symbol}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               )}
               <button
                 onClick={handleDeployClick}
                 className={`deployButton ${
                   isConnected &&
                   isFormFilled() &&
-                  (tokenType !== "safeMemeClaim" ||
-                    (Number(platformFeeBps) >= 0 &&
-                      Number(maxTotalSupply) > 0)) &&
+                  Number(decimals) >= 0 &&
+                  Number(decimals) <= 18 &&
+                  Number(supply) >= 0 &&
+                  Number(antiWhalePercentage) > 0 &&
+                  Number(antiWhalePercentage) <= 3 &&
                   !(isLoadingTransaction || isLoadingWrite)
                     ? "enabled"
                     : "disabled"
@@ -533,9 +380,11 @@ export default function Factory(): JSX.Element {
                   !(
                     isConnected &&
                     isFormFilled() &&
-                    (tokenType !== "safeMemeClaim" ||
-                      (Number(platformFeeBps) >= 0 &&
-                        Number(maxTotalSupply) > 0)) &&
+                    Number(decimals) >= 0 &&
+                    Number(decimals) <= 18 &&
+                    Number(supply) >= 0 &&
+                    Number(antiWhalePercentage) > 0 &&
+                    Number(antiWhalePercentage) <= 3 &&
                     !(isLoadingTransaction || isLoadingWrite)
                   )
                 }

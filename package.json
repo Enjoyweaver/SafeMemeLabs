@@ -85,6 +85,7 @@
     "decimal.js": "^10.4.3",
     "emailjs-com": "^3.2.0",
     "ethers": "^5.5.3",
+    "express": "^4.19.2",
     "file-loader": "^6.2.0",
     "lucide-react": "^0.92.0",
     "markdown-wasm": "^1.2.0",

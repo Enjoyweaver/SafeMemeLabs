@@ -46,3 +46,5 @@ $$ \$$$ $$ |
 $$ |\$ /$$ |
 $$ | \_/ $$ |
 \_\_| \_\_|
+
+hndl roostock: https://rootstock-testnet.blockscout.com/address/0x6eaeFfe712A4f42cf5Fd8cfa189673D5BeC1D6C0?tab=read_contract

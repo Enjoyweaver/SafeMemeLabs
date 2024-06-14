@@ -59,9 +59,9 @@ export const marketingConfig: MarketingConfig = {
     //  title: "claim",
     //  href: "/claim",
     //},
-    {
-      title: "Manager",
-      href: "/deploy",
-    },
+    //{
+    //  title: "Manager",
+    //  href: "/deploy",
+    // },
   ],
 }
