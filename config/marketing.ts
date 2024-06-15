@@ -15,9 +15,13 @@ export const marketingConfig: MarketingConfig = {
       href: "/blog",
     },
     {
-      title: "Dashboard",
-      href: "/memedashboard",
+      title: "All Tokens",
+      href: "/alltokens",
     },
+    //{
+    //  title: "Our Memes",
+    //  href: "/ourmemes",
+    // },
     {
       title: "Create Token",
       href: "/factory",
@@ -51,10 +55,7 @@ export const marketingConfig: MarketingConfig = {
       title: "Rewards",
       href: "/rewards",
     },
-    {
-      title: "Tokens",
-      href: "/alltokens",
-    },
+
     //{
     //  title: "claim",
     //  href: "/claim",

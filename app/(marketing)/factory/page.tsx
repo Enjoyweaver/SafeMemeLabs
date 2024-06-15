@@ -31,7 +31,7 @@ import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { capitalizeFirstLetter } from "../../../utils/capitilizeFirstLetter"
 import Modal from "./Modal"
 
-export default function Factory({ tokenAddress, hideNavbar }): JSX.Element {
+export default function Factory(): JSX.Element {
   const [tokenType, setTokenType] = useState<string>("safeMemeToken")
   const [name, setName] = useState<string>("")
   const [symbol, setSymbol] = useState<string>("")
@@ -219,8 +219,7 @@ export default function Factory({ tokenAddress, hideNavbar }): JSX.Element {
 
   return (
     <>
-      {!hideNavbar && <Navbar />}
-
+      <Navbar />
       <Modal
         show={showModal}
         message={modalMessage}
@@ -273,100 +272,112 @@ export default function Factory({ tokenAddress, hideNavbar }): JSX.Element {
             <p className="subtitle">
               Easily create and deploy your custom token
             </p>
-            <div className="token-swap-container">
-              <div className="form">
-                <div className="inputGroup">
-                  <label className="inputTitle">Token Name*</label>
-                  <input
-                    onChange={setTokenName}
-                    className="tokenInput"
-                    placeholder="Degen"
-                    value={name}
-                  />
-                </div>
-                <div className="inputGroup">
-                  <label className="inputTitle">Token Symbol*</label>
-                  <input
-                    onChange={setTokenSymbol}
-                    className="tokenInput"
-                    placeholder="Degen"
-                    value={symbol}
-                  />
-                </div>
-                <div className="inputGroup">
-                  <label className="inputTitle">Token Supply*</label>
-                  <input
-                    onKeyDown={(evt) =>
-                      ["e", "E", "+", "-", "."].includes(evt.key) &&
-                      evt.preventDefault()
-                    }
-                    onChange={setTokenSupply}
-                    className="tokenInput"
-                    placeholder="21000000"
-                    type="number"
-                    value={supply}
-                  />
-                </div>
-                <div className="inputGroup">
-                  <label className="inputTitle">Decimals</label>
-                  <input
-                    onKeyDown={(evt) =>
-                      ["e", "E", "+", "-"].includes(evt.key) &&
-                      evt.preventDefault()
-                    }
-                    onChange={setTokenDecimals}
-                    className="tokenInput"
-                    placeholder="18"
-                    type="number"
-                    value={decimals}
-                  />
-                  {!(Number(decimals) >= 0 && Number(decimals) <= 18) && (
-                    <p className="error">Decimals must be from 0 to 18</p>
-                  )}
-                </div>
-                <div className="inputGroup">
-                  <label className="inputTitle">Anti-Whale Percentage*</label>
-                  <input
-                    onKeyDown={(evt) =>
-                      ["e", "E", "+", "-", "."].includes(evt.key) &&
-                      evt.preventDefault()
-                    }
-                    onChange={setAntiWhalePercentageInput}
-                    className="tokenInput"
-                    placeholder="3"
-                    type="number"
-                    value={antiWhalePercentage}
-                  />
-                  {!(
-                    Number(antiWhalePercentage) > 0 &&
-                    Number(antiWhalePercentage) <= 3
-                  ) && (
-                    <p className="error">
-                      Percentage must be greater than 0 and less than or equal
-                      to 3
-                    </p>
-                  )}
-                </div>
-                {isClient && tokenType === "safeMemeTokenLaunched" && (
-                  <div className="inputGroup">
-                    <label className="inputTitle">Token B Address*</label>
-                    <select
-                      onChange={setTokenBAddress}
-                      className="tokenInput"
-                      value={selectedTokenB}
-                    >
-                      <option value="">Select Token B</option>
-                      {tokenBOptions[chainId]?.map((token) => (
-                        <option key={token.address} value={token.address}>
-                          {token.symbol}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+            <div className="form">
+              <div className="inputGroup">
+                <label className="inputTitle">Token Name*</label>
+                <input
+                  onChange={setTokenName}
+                  className="tokenInput"
+                  placeholder="Degen"
+                  value={name}
+                />
+              </div>
+              <div className="inputGroup">
+                <label className="inputTitle">Token Symbol*</label>
+                <input
+                  onChange={setTokenSymbol}
+                  className="tokenInput"
+                  placeholder="Degen"
+                  value={symbol}
+                />
+              </div>
+              <div className="inputGroup">
+                <label className="inputTitle">Token Supply*</label>
+                <input
+                  onKeyDown={(evt) =>
+                    ["e", "E", "+", "-", "."].includes(evt.key) &&
+                    evt.preventDefault()
+                  }
+                  onChange={setTokenSupply}
+                  className="tokenInput"
+                  placeholder="21000000"
+                  type="number"
+                  value={supply}
+                />
+              </div>
+              <div className="inputGroup">
+                <label className="inputTitle">Decimals</label>
+                <input
+                  onKeyDown={(evt) =>
+                    ["e", "E", "+", "-"].includes(evt.key) &&
+                    evt.preventDefault()
+                  }
+                  onChange={setTokenDecimals}
+                  className="tokenInput"
+                  placeholder="18"
+                  type="number"
+                  value={decimals}
+                />
+                {!(Number(decimals) >= 0 && Number(decimals) <= 18) && (
+                  <p className="error">Decimals must be from 0 to 18</p>
                 )}
-                <button
-                  onClick={handleDeployClick}
-                  className={`deployButton ${
+              </div>
+              <div className="inputGroup">
+                <label className="inputTitle">Anti-Whale Percentage*</label>
+                <input
+                  onKeyDown={(evt) =>
+                    ["e", "E", "+", "-", "."].includes(evt.key) &&
+                    evt.preventDefault()
+                  }
+                  onChange={setAntiWhalePercentageInput}
+                  className="tokenInput"
+                  placeholder="3"
+                  type="number"
+                  value={antiWhalePercentage}
+                />
+                {!(
+                  Number(antiWhalePercentage) > 0 &&
+                  Number(antiWhalePercentage) <= 3
+                ) && (
+                  <p className="error">
+                    Percentage must be greater than 0 and less than or equal to
+                    3
+                  </p>
+                )}
+              </div>
+              {isClient && tokenType === "safeMemeTokenLaunched" && (
+                <div className="inputGroup">
+                  <label className="inputTitle">Token B Address*</label>
+                  <select
+                    onChange={setTokenBAddress}
+                    className="tokenInput"
+                    value={selectedTokenB}
+                  >
+                    <option value="">Select Token B</option>
+                    {tokenBOptions[chainId]?.map((token) => (
+                      <option key={token.address} value={token.address}>
+                        {token.symbol}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <button
+                onClick={handleDeployClick}
+                className={`deployButton ${
+                  isConnected &&
+                  isFormFilled() &&
+                  Number(decimals) >= 0 &&
+                  Number(decimals) <= 18 &&
+                  Number(supply) >= 0 &&
+                  Number(antiWhalePercentage) > 0 &&
+                  Number(antiWhalePercentage) <= 3 &&
+                  !(isLoadingTransaction || isLoadingWrite)
+                    ? "enabled"
+                    : "disabled"
+                }`}
+                disabled={
+                  !(
                     isConnected &&
                     isFormFilled() &&
                     Number(decimals) >= 0 &&
@@ -375,94 +386,76 @@ export default function Factory({ tokenAddress, hideNavbar }): JSX.Element {
                     Number(antiWhalePercentage) > 0 &&
                     Number(antiWhalePercentage) <= 3 &&
                     !(isLoadingTransaction || isLoadingWrite)
-                      ? "enabled"
-                      : "disabled"
-                  }`}
-                  disabled={
-                    !(
-                      isConnected &&
-                      isFormFilled() &&
-                      Number(decimals) >= 0 &&
-                      Number(decimals) <= 18 &&
-                      Number(supply) >= 0 &&
-                      Number(antiWhalePercentage) > 0 &&
-                      Number(antiWhalePercentage) <= 3 &&
-                      !(isLoadingTransaction || isLoadingWrite)
-                    )
+                  )
+                }
+              >
+                {isClient
+                  ? isConnected
+                    ? isLoadingTransaction || isLoadingWrite
+                      ? "Minting..."
+                      : `Deploy (${
+                          deployFee && Number(deployFee) * 10 ** -18
+                        } ${chain ? chain.nativeCurrency.symbol : "Fantom"})`
+                    : "Not Connected"
+                  : "Loading..."}
+              </button>
+              <p className="inputDescription">(*) is a required field</p>
+              {isSuccessTransaction &&
+                toast.success(
+                  "Token successfully deployed! Go to My Tokens right behind this to check it out! Then grab the contract address and import it into your wallet.",
+                  {
+                    toastId: String(useWaitData),
+                    position: "top-right",
                   }
-                >
-                  {isClient
-                    ? isConnected
-                      ? isLoadingTransaction || isLoadingWrite
-                        ? "Minting..."
-                        : `Deploy (${
-                            deployFee && Number(deployFee) * 10 ** -18
-                          } ${chain ? chain.nativeCurrency.symbol : "Fantom"})`
-                      : "Not Connected"
-                    : "Loading..."}
-                </button>
-                <p className="inputDescription">(*) is a required field</p>
-                {isSuccessTransaction &&
-                  toast.success(
-                    "Token successfully deployed! Go to My Tokens right behind this to check it out! Then grab the contract address and import it into your wallet.",
-                    {
-                      toastId: String(useWaitData),
-                      position: "top-right",
-                    }
-                  ) &&
-                  ""}
-                {isSuccessTransaction && (
-                  <Link href="/mytokens">
-                    <button className="myTokensButton">My Tokens</button>
-                  </Link>
-                )}
-                {isClient && isConnected && (
-                  <div className="errorSection">
-                    {isPrepareError ? (
-                      <div
-                        onClick={toggleErrorMenuOpen}
-                        className="errorCollapsed"
-                      >
-                        <p className="errorHeader">
-                          ❌ Contract Execution Error
-                        </p>
-                        <Image
-                          src="/assets/icons/dropdown.svg"
-                          alt="dropdown"
-                          width={25}
-                          height={25}
-                          className="errorDropdown"
-                        />
-                      </div>
-                    ) : (
-                      <div className="errorCollapsed">
-                        {!isLoadingPrepare ? (
-                          <p className="errorHeader">✅ All Clear</p>
-                        ) : (
-                          <p className="errorHeader">⏳ Loading</p>
-                        )}
-                      </div>
-                    )}
-                    {errorMenu &&
-                      isPrepareError &&
-                      (!isLoadingPrepare ? (
-                        <p className="errorText">
-                          {prepareError?.cause
-                            ? capitalizeFirstLetter(prepareError?.details + ".")
-                            : prepareError?.message.includes(
-                                "v1: Invalid Decimals"
-                              )
-                            ? "v1: Invalid Decimals"
-                            : capitalizeFirstLetter(
-                                prepareError?.message + "."
-                              )}
-                        </p>
+                ) &&
+                ""}
+              {isSuccessTransaction && (
+                <Link href="/mytokens">
+                  <button className="myTokensButton">My Tokens</button>
+                </Link>
+              )}
+              {isClient && isConnected && (
+                <div className="errorSection">
+                  {isPrepareError ? (
+                    <div
+                      onClick={toggleErrorMenuOpen}
+                      className="errorCollapsed"
+                    >
+                      <p className="errorHeader">❌ Contract Execution Error</p>
+                      <Image
+                        src="/assets/icons/dropdown.svg"
+                        alt="dropdown"
+                        width={25}
+                        height={25}
+                        className="errorDropdown"
+                      />
+                    </div>
+                  ) : (
+                    <div className="errorCollapsed">
+                      {!isLoadingPrepare ? (
+                        <p className="errorHeader">✅ All Clear</p>
                       ) : (
-                        <p className="errorText">Loading...</p>
-                      ))}
-                  </div>
-                )}
-              </div>
+                        <p className="errorHeader">⏳ Loading</p>
+                      )}
+                    </div>
+                  )}
+                  {errorMenu &&
+                    isPrepareError &&
+                    (!isLoadingPrepare ? (
+                      <p className="errorText">
+                        {prepareError?.cause
+                          ? capitalizeFirstLetter(prepareError?.details + ".")
+                          : prepareError?.message.includes(
+                              "v1: Invalid Decimals"
+                            )
+                          ? "v1: Invalid Decimals"
+                          : capitalizeFirstLetter(prepareError?.message + ".")}
+                      </p>
+                    ) : (
+                      <p className="errorText">Loading...</p>
+                    ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

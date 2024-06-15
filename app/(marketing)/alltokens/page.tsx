@@ -10,12 +10,13 @@ import { useContractRead, useContractReads, useNetwork } from "wagmi"
 
 import {
   blockExplorerUrls,
+  chains,
+  // Import chains here
   tokenDeployerDetails,
   tokenLauncherDetails,
 } from "../../../Constants/config"
 import TokenSwap from "../swap/page"
 import "@/styles/allTokens.css"
-import TokenHoldersList from "@/APIs/tokeninfo"
 
 export default function AllTokens(): JSX.Element {
   const [isClient, setIsClient] = useState(false)
@@ -23,6 +24,8 @@ export default function AllTokens(): JSX.Element {
   const [deployedTokenData, setDeployedTokenData] = useState<any[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedToken, setSelectedToken] = useState<string | null>(null)
+  const [filteredData, setFilteredData] = useState<any[]>([])
+  const [selectedBlockchain, setSelectedBlockchain] = useState<string>("")
 
   useEffect(() => {
     setIsClient(true)
@@ -135,9 +138,19 @@ export default function AllTokens(): JSX.Element {
 
   useEffect(() => {
     if (tokenDataResult) {
-      setDeployedTokenData(splitData(tokenDataResult))
+      const splitTokens = splitData(tokenDataResult)
+      setDeployedTokenData(splitTokens)
+      setFilteredData(splitTokens)
     }
   }, [tokenDataResult])
+
+  useEffect(() => {
+    if (selectedBlockchain) {
+      filterTokensByBlockchain()
+    } else {
+      setFilteredData(deployedTokenData)
+    }
+  }, [selectedBlockchain, deployedTokenData])
 
   function splitData(data: any) {
     const groupedData = []
@@ -152,6 +165,7 @@ export default function AllTokens(): JSX.Element {
         supply: groupedData[i][2].result,
         decimals: groupedData[i][3].result,
         antiWhalePercentage: groupedData[i][4].result,
+        chainId: chainId, // Add chainId to each token data object
       })
     }
     return namedData.reverse() // Reverse the namedData to match the reverse order display
@@ -179,6 +193,22 @@ export default function AllTokens(): JSX.Element {
 
   const shortenAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`
+  }
+
+  const getBlockchainName = (chainId) => {
+    const chain = chains.find((chain) => chain.id === Number(chainId))
+    return chain ? chain.name : "Unknown Blockchain"
+  }
+
+  const filterTokensByBlockchain = () => {
+    const filteredTokens = deployedTokenData.filter(
+      (token) => getBlockchainName(token.chainId) === selectedBlockchain
+    )
+    setFilteredData(filteredTokens)
+  }
+
+  const handleFilterChange = (e) => {
+    setSelectedBlockchain(e.target.value)
   }
 
   const customStyles = {
@@ -213,15 +243,27 @@ export default function AllTokens(): JSX.Element {
         <main className="flex-1">
           <div className="dashboard">
             <div className="myTokensHeading">
-              <h1 className="pagetitle">All Tokens Created per Blockchain</h1>
+              <h1 className="pagetitle">All Tokens Created</h1>
               <p className="subheading">
-                See all the tokens created on SafeMeme Labs by blockchain
+                See all the tokens created on SafeMeme Labs
               </p>
+              <select
+                className="filter-dropdown"
+                value={selectedBlockchain}
+                onChange={handleFilterChange}
+              >
+                <option value="">All Blockchains</option>
+                {chains.map((chain) => (
+                  <option key={chain.id} value={chain.name}>
+                    {chain.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="token-container">
-              {deployedTokenData.length > 0 && (
+              {filteredData.length > 0 && (
                 <div className="meme-container">
-                  {deployedTokenData.map((token, index: number) => (
+                  {filteredData.map((token, index: number) => (
                     <div className="meme" key={index}>
                       <div className="meme-header">
                         <h3>
@@ -237,6 +279,10 @@ export default function AllTokens(): JSX.Element {
                       </div>
 
                       <div className="meme-details">
+                        <p>
+                          <strong>Blockchain:</strong>{" "}
+                          {getBlockchainName(token.chainId)}
+                        </p>
                         <p>
                           <strong>Contract Address:</strong>{" "}
                           <a
@@ -271,10 +317,7 @@ export default function AllTokens(): JSX.Element {
                           )}
                         </p>
                       </div>
-                      <TokenHoldersList
-                        tokenAddress={contracts[contracts.length - 1 - index]}
-                        chainId={chain?.id}
-                      />
+
                       <button
                         className="buy-token-button"
                         onClick={() =>

@@ -33,7 +33,7 @@ body {
 
 .dashboard {
   padding: 20px !important;
-  max-width: 1100px !important; /* Adjusted max-width */
+  max-width: 100% !important; /* Adjusted max-width */
   margin: 0 auto !important;
   text-align: center !important;
   background-color: var(--background-light) !important;
@@ -101,6 +101,7 @@ body {
   flex-wrap: wrap;
   gap: 20px; /* Add space between cards */
   justify-content: space-between; /* Ensure cards are evenly spaced */
+  max-width: 100%;
 }
 
 .meme {
@@ -154,7 +155,7 @@ body {
 
 .meme-details p {
   color: var(--foreground-light) !important;
-  margin: 5px 0;
+  margin: 1px 0px;
 }
 
 .meme-details p strong {
@@ -240,4 +241,24 @@ body {
     max-height: 90% !important;
     width: 90% !important;
   }
+}
+
+.filter-dropdown {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 10px 0;
+  background-color: #000;
+  color: #00ff00;
+  border: 2px solid #00ff00;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.2s, color 0.2s;
+  appearance: none; /* Remove default dropdown arrow */
+}
+
+.filter-dropdown:hover {
+  background-color: #00ff00;
+  color: #000;
 }
