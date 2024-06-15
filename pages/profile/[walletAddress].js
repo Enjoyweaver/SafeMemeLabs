@@ -4,7 +4,7 @@ import { useRouter } from "next/router"
 import { erc20ABI } from "@/ABIs/erc20"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
-import { useContractRead, useContractReads, useNetwork } from "wagmi"
+import { useContractRead, useContractReads } from "wagmi"
 
 import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { Navbar } from "@/components/walletconnect/walletconnect"
@@ -28,35 +28,45 @@ function ProfilePage() {
   const [deployedTokenData, setDeployedTokenData] = useState([])
   const [launchedTokenData, setLaunchedTokenData] = useState([])
 
+  const router = useRouter()
+  const { walletAddress } = router.query
+
   useEffect(() => {
     setIsClient(true)
   }, [])
 
-  const { chain } = useNetwork()
-  const router = useRouter()
-  const { walletAddress } = router.query
+  const chainId = 250 // Default to Fantom chain ID
 
-  const chainId = chain ? chain.id : Object.keys(tokenDeployerDetails)[0]
+  const {
+    data: deployerContracts,
+    error: deployerContractsError,
+    refetch: refetchDeployerContracts,
+  } = useContractRead({
+    address: tokenDeployerDetails[chainId],
+    abi: tokenDeployerABI,
+    functionName: "getTokensDeployedByUser",
+    args: [walletAddress],
+    enabled: false, // initially disable
+  })
 
-  // Fetch deployed contracts
-  const { data: deployerContracts, error: deployerContractsError } =
-    useContractRead({
-      address: tokenDeployerDetails[chainId],
-      abi: tokenDeployerABI,
-      functionName: "getTokensDeployedByUser",
-      args: [walletAddress],
-      enabled: !!walletAddress,
-    })
+  const {
+    data: launcherContracts,
+    error: launcherContractsError,
+    refetch: refetchLauncherContracts,
+  } = useContractRead({
+    address: tokenLauncherDetails[chainId],
+    abi: tokenLauncherABI,
+    functionName: "getTokensDeployedByUser",
+    args: [walletAddress],
+    enabled: false, // initially disable
+  })
 
-  // Fetch launched contracts
-  const { data: launcherContracts, error: launcherContractsError } =
-    useContractRead({
-      address: tokenLauncherDetails[chainId],
-      abi: tokenLauncherABI,
-      functionName: "getTokensDeployedByUser",
-      args: [walletAddress],
-      enabled: !!walletAddress,
-    })
+  useEffect(() => {
+    if (walletAddress) {
+      refetchDeployerContracts()
+      refetchLauncherContracts()
+    }
+  }, [walletAddress])
 
   useEffect(() => {
     if (deployerContractsError) {
@@ -137,17 +147,35 @@ function ProfilePage() {
     ])
     .flat()
 
-  const { data: deployerTokenData, error: deployerTokenDataError } =
-    useContractReads({
-      contracts: deployerContractRequests,
-      enabled: !!deployerContractRequests?.length,
-    })
+  const {
+    data: deployerTokenData,
+    error: deployerTokenDataError,
+    refetch: refetchDeployerTokenData,
+  } = useContractReads({
+    contracts: deployerContractRequests,
+    enabled: false, // initially disable
+  })
 
-  const { data: launcherTokenData, error: launcherTokenDataError } =
-    useContractReads({
-      contracts: launcherContractRequests,
-      enabled: !!launcherContractRequests?.length,
-    })
+  const {
+    data: launcherTokenData,
+    error: launcherTokenDataError,
+    refetch: refetchLauncherTokenData,
+  } = useContractReads({
+    contracts: launcherContractRequests,
+    enabled: false, // initially disable
+  })
+
+  useEffect(() => {
+    if (contracts.length > 0) {
+      refetchDeployerTokenData()
+    }
+  }, [contracts])
+
+  useEffect(() => {
+    if (launchedContracts.length > 0) {
+      refetchLauncherTokenData()
+    }
+  }, [launchedContracts])
 
   useEffect(() => {
     if (deployerTokenDataError) {
@@ -210,7 +238,7 @@ function ProfilePage() {
       <div className="flex min-h-screen flex-col">
         <main className="flex-1">
           <div className="dashboard">
-            {isClient && chainId && !tokenDeployerDetails[chainId] && (
+            {isClient && !tokenDeployerDetails[chainId] && (
               <ChangeNetwork
                 changeNetworkToChainId={250}
                 dappName={"SafeMeme Labs"}
@@ -300,7 +328,7 @@ function ProfilePage() {
                             tokenAddress={
                               contracts[contracts.length - 1 - index]
                             }
-                            chainId={chain?.id}
+                            chainId={chainId}
                           />
                         </div>
                       ))}
@@ -380,7 +408,7 @@ function ProfilePage() {
                                 launchedContracts.length - 1 - index
                               ]
                             }
-                            chainId={chain?.id}
+                            chainId={chainId}
                           />
                         </div>
                       ))}

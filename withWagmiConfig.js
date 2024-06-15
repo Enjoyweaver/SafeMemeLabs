@@ -7,7 +7,7 @@ import {
   polygon,
   rootstock,
 } from "@wagmi/core/chains"
-import { Client, WagmiConfig, configureChains } from "wagmi"
+import { WagmiConfig, configureChains, createConfig } from "wagmi"
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
@@ -19,7 +19,7 @@ const { chains, provider, webSocketProvider } = configureChains(
   [publicProvider()]
 )
 
-const client = new Client({
+const config = createConfig({
   autoConnect: true,
   connectors: [
     new InjectedConnector({ chains }),
@@ -47,11 +47,19 @@ const client = new Client({
   webSocketProvider,
 })
 
-const withWagmiConfig = (Component) => (props) =>
-  (
-    <WagmiConfig client={client}>
+const withWagmiConfig = (Component) => {
+  const WrappedComponent = (props) => (
+    <WagmiConfig config={config}>
       <Component {...props} />
     </WagmiConfig>
   )
+
+  // Set a display name for better debugging
+  WrappedComponent.displayName = `withWagmiConfig(${
+    Component.displayName || Component.name || "Component"
+  })`
+
+  return WrappedComponent
+}
 
 export default withWagmiConfig
