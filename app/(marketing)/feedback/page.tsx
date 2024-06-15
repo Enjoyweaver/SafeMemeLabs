@@ -24,6 +24,11 @@ const FeedbackPage = () => {
       completed: false,
       status: "open",
     },
+    {
+      text: "Create guide / tutorial roadmap",
+      completed: false,
+      status: "open",
+    },
 
     {
       text: "Improve disconnect button UI",

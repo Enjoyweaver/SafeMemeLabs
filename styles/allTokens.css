@@ -252,6 +252,13 @@ body {
   .token-swap-inner {
     transform: scale(1); /* Remove scaling on mobile */
   }
+  .sectionTitle {
+    text-align: center;
+    font-size: 1.3rem;
+    color: var(--primary-light);
+    margin-bottom: 10px;
+    margin-top: 1rem;
+  }
 }
 
 .filter-dropdown {
@@ -272,4 +279,12 @@ body {
 .filter-dropdown:hover {
   background-color: #00ff00;
   color: #000;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2rem;
+  color: var(--primary-light);
+  margin-bottom: 20px;
+  margin-top: 2rem;
 }

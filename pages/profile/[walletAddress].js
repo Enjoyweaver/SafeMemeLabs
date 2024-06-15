@@ -1,17 +1,10 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { useRouter } from "next/router"
 import { erc20ABI } from "@/ABIs/erc20"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
-import {
-  useAccount,
-  useContractRead,
-  useContractReads,
-  useNetwork,
-} from "wagmi"
+import { useContractRead, useContractReads, useNetwork } from "wagmi"
 
 import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { Navbar } from "@/components/walletconnect/walletconnect"
@@ -20,48 +13,49 @@ import {
   blockExplorerUrls,
   tokenDeployerDetails,
   tokenLauncherDetails,
-} from "../../../Constants/config"
+} from "../../Constants/config"
 import "@/styles/allTokens.css"
 import TokenHoldersList from "@/APIs/tokeninfo"
 
-export default function MyTokens(): JSX.Element {
+import withWagmiConfig from "../../withWagmiConfig"
+
+function ProfilePage() {
   const [isClient, setIsClient] = useState(false)
-  const [tokenCount, setTokenCount] = useState<number>(0)
-  const [launchedTokenCount, setLaunchedTokenCount] = useState<number>(0)
-  const [contracts, setContracts] = useState<string[]>([])
-  const [launchedContracts, setLaunchedContracts] = useState<string[]>([])
-  const [deployedTokenData, setDeployedTokenData] = useState<any[]>([])
-  const [launchedTokenData, setLaunchedTokenData] = useState<any[]>([])
+  const [tokenCount, setTokenCount] = useState(0)
+  const [launchedTokenCount, setLaunchedTokenCount] = useState(0)
+  const [contracts, setContracts] = useState([])
+  const [launchedContracts, setLaunchedContracts] = useState([])
+  const [deployedTokenData, setDeployedTokenData] = useState([])
+  const [launchedTokenData, setLaunchedTokenData] = useState([])
 
   useEffect(() => {
     setIsClient(true)
   }, [])
 
-  const { address, isConnected } = useAccount()
   const { chain } = useNetwork()
+  const router = useRouter()
+  const { walletAddress } = router.query
 
-  const chainId: string | number = chain
-    ? chain.id
-    : Object.keys(tokenDeployerDetails)[0]
+  const chainId = chain ? chain.id : Object.keys(tokenDeployerDetails)[0]
 
   // Fetch deployed contracts
   const { data: deployerContracts, error: deployerContractsError } =
     useContractRead({
-      address: tokenDeployerDetails[chainId] as `0x${string}`,
+      address: tokenDeployerDetails[chainId],
       abi: tokenDeployerABI,
       functionName: "getTokensDeployedByUser",
-      args: [address as `0x${string}`],
-      enabled: !!address,
+      args: [walletAddress],
+      enabled: !!walletAddress,
     })
 
   // Fetch launched contracts
   const { data: launcherContracts, error: launcherContractsError } =
     useContractRead({
-      address: tokenLauncherDetails[chainId] as `0x${string}`,
+      address: tokenLauncherDetails[chainId],
       abi: tokenLauncherABI,
       functionName: "getTokensDeployedByUser",
-      args: [address as `0x${string}`],
-      enabled: !!address,
+      args: [walletAddress],
+      enabled: !!walletAddress,
     })
 
   useEffect(() => {
@@ -178,7 +172,7 @@ export default function MyTokens(): JSX.Element {
     launcherTokenDataError,
   ])
 
-  function splitData(data: any) {
+  function splitData(data) {
     const groupedData = []
     const namedData = []
     for (let i = 0; i < data.length; i += 5) {
@@ -196,17 +190,17 @@ export default function MyTokens(): JSX.Element {
     return namedData.reverse() // Reverse the namedData to match the reverse order display
   }
 
-  const formatNumber = (number: number, decimals: number) => {
+  const formatNumber = (number, decimals) => {
     return (number / 10 ** decimals).toLocaleString("en-US", {
       maximumFractionDigits: 2,
     })
   }
 
-  const getBlockExplorerLink = (address: string) => {
+  const getBlockExplorerLink = (address) => {
     return `${blockExplorerUrls[chainId] || ""}${address}`
   }
 
-  const shortenAddress = (address: string) => {
+  const shortenAddress = (address) => {
     return `${address.slice(0, 6)}...${address.slice(-6)}`
   }
 
@@ -224,18 +218,19 @@ export default function MyTokens(): JSX.Element {
               />
             )}
             <div className="myTokensHeading">
-              <h1 className="pagetitle">My Profile</h1>
-              <p className="subheading">See all the tokens you have created!</p>
+              <h1 className="pagetitle">Profile for {walletAddress}</h1>
+              <p className="subheading">
+                See all the tokens created by this address!
+              </p>
               <p className="tokenCount">
                 Number of Tokens Created: {tokenCount}
               </p>
               <p className="tokenCount">
                 Number of Tokens Launched: {launchedTokenCount}
               </p>
-              <Link href={`/profile/${address}`}>View Public Profile</Link>
             </div>
             {!isClient && <p className="myTokensError">Loading...</p>}
-            {isClient && isConnected && (
+            {isClient && walletAddress && (
               <>
                 <h2 className="sectionTitle">SafeMemes Created</h2>
                 {contracts && contracts.length === 0 && (
@@ -246,7 +241,7 @@ export default function MyTokens(): JSX.Element {
                   deployedTokenData &&
                   deployedTokenData.length > 0 && (
                     <div className="meme-container">
-                      {deployedTokenData.map((token, index: number) => (
+                      {deployedTokenData.map((token, index) => (
                         <div className="meme" key={index}>
                           <div className="meme-header">
                             <h3>
@@ -321,7 +316,7 @@ export default function MyTokens(): JSX.Element {
                   launchedTokenData &&
                   launchedTokenData.length > 0 && (
                     <div className="meme-container">
-                      {launchedTokenData.map((token, index: number) => (
+                      {launchedTokenData.map((token, index) => (
                         <div className="meme" key={index}>
                           <div className="meme-header">
                             <h3>
@@ -393,7 +388,7 @@ export default function MyTokens(): JSX.Element {
                   )}
               </>
             )}
-            {isClient && !isConnected && (
+            {isClient && !walletAddress && (
               <p className="myTokensError">No Account Connected</p>
             )}
           </div>
@@ -402,3 +397,5 @@ export default function MyTokens(): JSX.Element {
     </div>
   )
 }
+
+export default withWagmiConfig(ProfilePage)
