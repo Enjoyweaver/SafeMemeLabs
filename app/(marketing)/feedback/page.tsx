@@ -20,7 +20,7 @@ const FeedbackPage = () => {
   const [featureRequests, setFeatureRequests] = useState([])
   const [checklistItems, setChecklistItems] = useState([
     {
-      text: "Create dashboard for created tokens",
+      text: "Research and integrate",
       completed: false,
       status: "open",
     },
@@ -104,6 +104,16 @@ const FeedbackPage = () => {
     {
       text: "Add detailed logging and monitoring for trade activities",
       completed: false,
+      status: "open",
+    },
+    {
+      text: "Add popup swap in the token dashboard under each token",
+      completed: true,
+      status: "open",
+    },
+    {
+      text: "Create dashboard for created tokens",
+      completed: true,
       status: "open",
     },
     {

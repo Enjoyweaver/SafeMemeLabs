@@ -189,13 +189,18 @@ export default function AllTokens(): JSX.Element {
       bottom: "auto",
       marginRight: "-50%",
       transform: "translate(-50%, -50%)",
-      height: "80%",
-      width: "50%",
-      maxWidth: "500px",
+      height: "85%",
+      width: "40%",
+      maxWidth: "600px",
       padding: "0px",
       borderRadius: "8px",
       background: "#fff",
       boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+      display: "flex", // Add flex display to center inner content
+      justifyContent: "center", // Center horizontally
+      alignItems: "center", // Center vertically
+      overflow: "hidden", // Prevent scrollbars
+      boxSizing: "border-box", // Account for padding and border in size
     },
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.75)",
@@ -293,8 +298,10 @@ export default function AllTokens(): JSX.Element {
           contentLabel="Token Swap Modal"
           style={customStyles}
         >
-          <div className="modal-content">
-            <TokenSwap tokenAddress={selectedToken} hideNavbar={true} />
+          <div className="token-swap-container">
+            <div className="token-swap-inner">
+              <TokenSwap tokenAddress={selectedToken} hideNavbar={true} />
+            </div>
           </div>
         </Modal>
       )}

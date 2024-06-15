@@ -31,22 +31,6 @@ body {
   color: var(--foreground-dark) !important;
 }
 
-.flex {
-  display: flex !important;
-}
-
-.min-h-screen {
-  min-height: 100vh !important;
-}
-
-.flex-col {
-  flex-direction: column !important;
-}
-
-.flex-1 {
-  flex: 1 !important;
-}
-
 .dashboard {
   padding: 20px !important;
   max-width: 1100px !important; /* Adjusted max-width */
@@ -62,6 +46,26 @@ body {
 .myTokensHeading {
   text-align: center;
   margin-bottom: 20px;
+}
+
+.token-swap-container {
+  width: 600px; /* Set a fixed width */
+  height: 600px; /* Set a fixed height */
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  background-color: #f9f9f9; /* Example background color */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Ensure no extra space around content */
+  position: relative;
+}
+
+.token-swap-inner {
+  width: 100%; /* Full width of the container */
+  height: 100%; /* Full height of the container */
+  transform: scale(0.75); /* Adjust the scale factor as needed */
+  transform-origin: center; /* Ensure the scaling is centered */
 }
 
 .pagetitle {
@@ -192,12 +196,6 @@ body {
   color: #ccc;
   border-color: #ccc;
   cursor: not-allowed;
-}
-
-.modal-content {
-  padding: 10px;
-  max-height: 100%;
-  overflow-y: auto;
 }
 
 .token-swap {
