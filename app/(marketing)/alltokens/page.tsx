@@ -220,17 +220,17 @@ export default function AllTokens(): JSX.Element {
       marginRight: "-50%",
       transform: "translate(-50%, -50%)",
       height: "85%",
-      width: "40%",
+      width: "90%", // Set width to 90% for better mobile responsiveness
       maxWidth: "600px",
       padding: "0px",
       borderRadius: "8px",
       background: "#fff",
       boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      display: "flex", // Add flex display to center inner content
-      justifyContent: "center", // Center horizontally
-      alignItems: "center", // Center vertically
-      overflow: "hidden", // Prevent scrollbars
-      boxSizing: "border-box", // Account for padding and border in size
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      overflow: "hidden",
+      boxSizing: "border-box",
     },
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.75)",

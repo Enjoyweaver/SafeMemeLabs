@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
-import { tokenDeployerDetails } from "@/Constants/config"
+import { vyperPoolABI } from "@/ABIs/vyperPool"
+import { poolAddressDetails, tokenDeployerDetails } from "@/Constants/config"
 import { ethers } from "ethers"
 import { useAccount, useNetwork } from "wagmi"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
-//import { addLiquidity, createPair } from "./dex"
 import "@/styles/lp.css"
 
 const Liquidity = () => {
@@ -75,14 +75,28 @@ const Liquidity = () => {
     ) {
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
-        await createPair(provider, newToken)
-        await addLiquidity(
-          provider,
-          newToken,
-          amountNewToken,
-          existingToken,
-          amountExistingToken
+        const vyperPoolAddress = poolAddressDetails[chain.id]
+
+        if (!vyperPoolAddress) {
+          console.error("VyperPool address not found for chain ID:", chain.id)
+          return
+        }
+
+        const vyperPoolContract = new ethers.Contract(
+          vyperPoolAddress,
+          vyperPoolABI,
+          provider.getSigner()
         )
+
+        await vyperPoolContract.add_liquidity(
+          [
+            ethers.utils.parseUnits(amountNewToken),
+            ethers.utils.parseUnits(amountExistingToken),
+          ],
+          0 // min_mint_amount, can be adjusted as needed
+        )
+
+        console.log("Liquidity added successfully")
       } catch (error) {
         console.error("Add liquidity failed:", error)
       }

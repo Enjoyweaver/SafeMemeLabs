@@ -53,6 +53,9 @@ dependencies:
   '@nomiclabs/hardhat-ethers':
     specifier: ^2.2.3
     version: 2.2.3(ethers@5.7.2)(hardhat@2.22.5)
+  '@nomiclabs/hardhat-vyper':
+    specifier: ^3.0.6
+    version: 3.0.6(hardhat@2.22.5)
   '@openzeppelin/contracts':
     specifier: ^5.0.2
     version: 5.0.2
@@ -2605,6 +2608,21 @@ packages:
     dependencies:
       ethers: 5.7.2
       hardhat: 2.22.5(ts-node@10.9.2)(typescript@4.7.4)
+    dev: false
+
+  /@nomiclabs/hardhat-vyper@3.0.6(hardhat@2.22.5):
+    resolution: {integrity: sha512-htemsSSF8JYIemL/HI7fTPZfby0uo+5Ue4K9sG42jMdK+wT4wiOxnO4ZFGQAEJTICiDtu2MCfMq0qmCCmrT7ww==}
+    peerDependencies:
+      hardhat: ^2.8.3
+    dependencies:
+      debug: 4.3.5
+      fs-extra: 7.0.1
+      hardhat: 2.22.5(ts-node@10.9.2)(typescript@4.7.4)
+      io-ts: 1.10.4
+      lodash: 4.17.21
+      semver: 6.3.1
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /@opentelemetry/api-logs@0.39.1:

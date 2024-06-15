@@ -27,10 +27,10 @@ export const marketingConfig: MarketingConfig = {
       href: "/factory",
     },
 
-    // {
-    //   title: "Provide LP",
-    //    href: "/lp",
-    // },
+    {
+      title: "Provide LP",
+      href: "/lp",
+    },
     //{
     //  title: "Swap",
     //  href: "/swap",

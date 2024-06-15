@@ -49,23 +49,26 @@ body {
 }
 
 .token-swap-container {
-  width: 600px; /* Set a fixed width */
-  height: 600px; /* Set a fixed height */
+  width: 90%; /* Adjusted to be responsive */
+  max-width: 600px; /* Ensure it doesn't exceed a certain width */
+  height: auto; /* Adjusted to be responsive */
   display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  background-color: #f9f9f9; /* Example background color */
+  justify-content: center;
+  align-items: center;
+  background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden; /* Ensure no extra space around content */
+  overflow: hidden;
   position: relative;
+  padding: 20px; /* Add padding to ensure content doesn't touch edges */
+  box-sizing: border-box;
 }
 
 .token-swap-inner {
-  width: 100%; /* Full width of the container */
-  height: 100%; /* Full height of the container */
-  transform: scale(0.75); /* Adjust the scale factor as needed */
-  transform-origin: center; /* Ensure the scaling is centered */
+  width: 100%;
+  height: auto;
+  transform: scale(0.75);
+  transform-origin: center;
 }
 
 .pagetitle {
@@ -208,7 +211,6 @@ body {
 /* Mobile Styles */
 @media (max-width: 768px) {
   .dashboard {
-    padding: 10px !important;
     max-width: 100% !important;
   }
 
@@ -240,6 +242,15 @@ body {
     padding: 10px !important;
     max-height: 90% !important;
     width: 90% !important;
+  }
+
+  .token-swap-container {
+    width: 100% !important; /* Full width on mobile */
+    padding: 10px; /* Adjust padding for mobile */
+  }
+
+  .token-swap-inner {
+    transform: scale(1); /* Remove scaling on mobile */
   }
 }
 
