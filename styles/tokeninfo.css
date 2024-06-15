@@ -32,7 +32,7 @@ body {
 
 .token-info-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 300px;
   margin: 0 auto;
   padding: 0 20px;
   background-color: var(--background-light) !important;
@@ -49,8 +49,8 @@ body {
 }
 
 .title {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
+  font-size: 1rem;
+  margin-bottom: 0px;
   color: var(--primary-light);
 }
 
@@ -59,7 +59,7 @@ body {
 }
 
 .total {
-  font-size: 1rem;
+  font-size: 0.8rem;
   color: var(--foreground-light);
 }
 
@@ -68,8 +68,8 @@ body {
 }
 
 .transaction {
-  margin-bottom: 10px;
-  font-size: 0.9rem;
+  margin-bottom: 5px;
+  font-size: 0.7rem;
   color: var(--foreground-light);
 }
 
@@ -78,8 +78,8 @@ body {
 }
 
 .subtitle {
-  font-size: 1.2rem;
-  margin-bottom: 5px;
+  font-size: 0.9rem;
+  margin-bottom: 0px;
   color: var(--secondary-light);
 }
 

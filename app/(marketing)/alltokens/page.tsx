@@ -12,11 +12,12 @@ import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import {
+  blockExplorerUrls,
   tokenDeployerDetails,
   tokenLauncherDetails,
 } from "../../../Constants/config"
 import TokenSwap from "../swap/page"
-import "@/styles/profile.css"
+import "@/styles/allTokens.css"
 import TokenHoldersList from "@/APIs/tokeninfo"
 
 export default function AllTokens(): JSX.Element {
@@ -33,9 +34,10 @@ export default function AllTokens(): JSX.Element {
   useEffect(() => {
     setIsClient(true)
     if (typeof window !== "undefined") {
-      setTimeout(() => {
-        Modal.setAppElement("#__next")
-      }, 0)
+      const appElement = document.querySelector("#__next")
+      if (appElement) {
+        Modal.setAppElement(appElement)
+      }
     }
   }, [])
 
@@ -200,6 +202,14 @@ export default function AllTokens(): JSX.Element {
     setIsModalOpen(false)
   }
 
+  const getBlockExplorerLink = (address: string) => {
+    return `${blockExplorerUrls[chainId] || ""}${address}`
+  }
+
+  const shortenAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`
+  }
+
   const customStyles = {
     content: {
       top: "50%",
@@ -267,7 +277,17 @@ export default function AllTokens(): JSX.Element {
                       <div className="meme-details">
                         <p>
                           <strong>Contract Address:</strong>{" "}
-                          {contracts[contracts.length - 1 - index]}
+                          <a
+                            href={getBlockExplorerLink(
+                              contracts[contracts.length - 1 - index]
+                            )}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {shortenAddress(
+                              contracts[contracts.length - 1 - index]
+                            )}
+                          </a>
                         </p>
                         <p>
                           <strong>Supply:</strong>{" "}
@@ -316,10 +336,9 @@ export default function AllTokens(): JSX.Element {
           contentLabel="Token Swap Modal"
           style={customStyles}
         >
-          <TokenSwap tokenAddress={selectedToken} hideNavbar={true} />
-          <button className="close-modal-button" onClick={closeModal}>
-            Close
-          </button>
+          <div className="modal-content">
+            <TokenSwap tokenAddress={selectedToken} hideNavbar={true} />
+          </div>
         </Modal>
       )}
     </div>

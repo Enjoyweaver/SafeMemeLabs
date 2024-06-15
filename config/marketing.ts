@@ -51,9 +51,9 @@ export const marketingConfig: MarketingConfig = {
       title: "Rewards",
       href: "/rewards",
     },
-    //{
-    //  title: "Tokens",
-    //  href: "/alltokens",
+    // {
+    //   title: "Tokens",
+    //   href: "/alltokens",
     // },
     //{
     //  title: "claim",

@@ -1,9 +1,10 @@
 :root {
   --background-light: #ffffff;
   --foreground-light: #000000;
-  --primary-light: #04c44e;
-  --secondary-light: #b80f5e;
-  --accent-light: #04c44e;
+  --primary-light: #04c44e; /* Pink */
+  --secondary-light: #b80f5e; /* Green */
+  --primary-light: #04c44e; /* Pink */
+  --accent-light: #04c44e; /* Dark Green */
   --border-light: #04c44e;
   --text-light: #000000;
 
@@ -12,9 +13,9 @@
 
   --background-dark: #000000;
   --foreground-dark: #ffffff;
-  --primary-dark: #df1584;
-  --secondary-dark: #41b80a;
-  --accent-dark: #41b80a;
+  --primary-dark: #df1584; /* Pink */
+  --secondary-dark: #41b80a; /* Green */
+  --accent-dark: #41b80a; /* Dark Green */
   --border-dark: #41b80a;
   --text-dark: #ffffff;
 }
@@ -30,16 +31,37 @@ body {
   color: var(--foreground-dark) !important;
 }
 
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+.flex {
+  display: flex !important;
+}
+
+.min-h-screen {
+  min-height: 100vh !important;
+}
+
+.flex-col {
+  flex-direction: column !important;
+}
+
+.flex-1 {
+  flex: 1 !important;
+}
+
+.dashboard {
+  padding: 20px !important;
+  max-width: 1100px !important; /* Adjusted max-width */
+  margin: 0 auto !important;
+  text-align: center !important;
   background-color: var(--background-light) !important;
 }
 
-.dark .container {
+.dark .dashboard {
   background-color: var(--background-dark) !important;
+}
+
+.myTokensHeading {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .pagetitle {
@@ -50,61 +72,58 @@ body {
   margin-top: 1rem;
 }
 
-.dashboard {
-  padding: 20px !important;
-  max-width: 1100px !important;
-  margin: 0 auto !important;
-  text-align: center !important;
+.subheading {
+  color: var(--foreground-light) !important;
+}
+
+.dark .subheading {
+  color: var(--foreground-dark) !important;
+}
+
+.token-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 30px;
   background-color: var(--background-light) !important;
 }
 
-.dark .dashboard {
+.dark .token-container {
   background-color: var(--background-dark) !important;
 }
 
-.dashboard .token-container {
+.meme-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  gap: 20px; /* Add space between cards */
+  justify-content: space-between; /* Ensure cards are evenly spaced */
 }
 
-.dashboard h1 {
+.meme {
+  width: calc(33% - 20px); /* Adjust the width to fit three per row with gap */
   margin-bottom: 20px !important;
-  color: var(--primary-light) !important;
-}
-
-.dark .dashboard h1 {
-  color: var(--primary-dark) !important;
-}
-
-.dashboard h3 {
-  margin-bottom: 10px !important;
-  color: var(--secondary-light) !important;
-}
-
-.dark .dashboard h3 {
-  color: var(--secondary-dark) !important;
-}
-
-.token-card {
-  width: 23%;
-  margin-bottom: 20px !important;
-  padding: 10px !important;
+  padding: 15px !important; /* Add padding inside the container */
   border: 1px solid var(--primary-light) !important;
-  border-radius: 5px !important;
+  border-radius: 8px !important; /* Slightly rounded corners */
   background-color: rgba(255, 255, 255, 0.2) !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+  transition: transform 0.2s; /* Smooth transition for scaling */
 }
 
-.dark .token-card {
+.meme:hover {
+  transform: scale(1.05); /* Scale up slightly on hover */
+}
+
+.dark .meme {
   border: 1px solid var(--primary-dark) !important;
   background-color: rgba(0, 0, 0, 0.2) !important;
 }
 
-.token-header {
+.meme-header {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -112,26 +131,115 @@ body {
   padding: 0;
 }
 
-.token-header h3 {
+.meme-header h3 {
   margin: 0;
   margin-right: 10px;
-  font-size: 1rem; /* Adjusted font size */
+  font-size: 1.2rem; /* Adjusted font size */
 }
 
-.token-header .token-logo {
-  width: 30px; /* Adjusted size */
-  height: 30px; /* Adjusted size */
+.meme-header .token-logo {
+  width: 40px;
+  height: 40px;
 }
 
-.token-details {
+.meme-details {
   text-align: left;
-  font-size: 0.8rem; /* Reduced font size */
+  font-size: 0.9rem; /* Reduced font size */
+  width: 100%;
 }
 
-.token-details p {
+.meme-details p {
   color: var(--foreground-light) !important;
+  margin: 5px 0;
 }
 
-.dark .token-details p {
+.meme-details p strong {
+  display: inline-block;
+  width: 180px;
+  color: var(--secondary-dark);
+}
+
+.dark .meme-details p {
   color: var(--foreground-dark) !important;
+}
+
+.token-logo {
+  margin-left: 10px;
+}
+
+.buy-token-button {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 10px 0 10px 0;
+  background-color: #000;
+  color: #00ff00;
+  border: 2px solid #00ff00;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.buy-token-button:hover {
+  background-color: #00ff00;
+  color: #000;
+}
+
+.buy-token-button:disabled {
+  background-color: #555;
+  color: #ccc;
+  border-color: #ccc;
+  cursor: not-allowed;
+}
+
+.modal-content {
+  padding: 10px;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.token-swap {
+  max-height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 10px !important;
+    max-width: 100% !important;
+  }
+
+  .pagetitle {
+    font-size: 1.5rem !important;
+  }
+
+  .meme {
+    width: 100% !important;
+    margin-bottom: 10px !important;
+    padding: 10px 5px !important;
+  }
+
+  .meme-header h3 {
+    font-size: 1rem !important;
+  }
+
+  .meme-details {
+    font-size: 0.8rem !important;
+  }
+
+  .buy-token-button,
+  .close-modal-button {
+    padding: 5px 10px !important;
+    font-size: 0.8rem !important;
+  }
+
+  .modal-content {
+    padding: 10px !important;
+    max-height: 90% !important;
+    width: 90% !important;
+  }
 }

@@ -158,6 +158,17 @@ export const blockExplorerUrls: { [key: string]: string } = {
   "501": "https://explorer.solana.com/tx/", // Add Solana testnet block explorer URL
 }
 
+export const blockExplorers: { [key: string]: string } = {
+  "31": "https://explorer.testnet.rootstock.io/",
+  "250": "https://ftmscan.com/",
+  "4002": "https://testnet.ftmscan.com/",
+  "137": "https://polygonscan.com/",
+  "43114": "https://snowtrace.io/",
+  "30": "https://explorer.rsk.co/",
+  "666666666": "https://degenscan.io/",
+  "501": "https://explorer.solana.com/", // Add Solana testnet block explorer URL
+}
+
 export const chainIdToCovalentChainId: { [key: string]: string } = {
   250: "fantom-mainnet",
   4002: "fantom-testnet",
