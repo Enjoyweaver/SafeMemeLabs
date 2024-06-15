@@ -123,6 +123,14 @@ body {
   background-color: rgba(0, 0, 0, 0.2) !important;
 }
 
+.chain-name {
+  width: 100%;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
 .meme-header {
   display: flex;
   justify-content: center;
@@ -204,6 +212,25 @@ body {
   max-height: 100%;
   overflow-y: auto;
   box-sizing: border-box;
+}
+
+.filter-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filter-container label {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.filter-container select {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid var(--primary-light);
 }
 
 /* Mobile Styles */

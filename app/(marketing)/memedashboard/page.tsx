@@ -2,16 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import { erc20ABI } from "@/ABIs/erc20"
-import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
-import {
-  useAccount,
-  useContractRead,
-  useContractReads,
-  useNetwork,
-} from "wagmi"
 
-import { tokenDeployerDetails } from "../../../Constants/config"
 import "@/styles/dashboard.css"
 import TokenHoldersList from "@/APIs/tokeninfo"
 
@@ -21,7 +12,6 @@ import AllTokens from "../alltokens/page"
 
 const Dashboard = () => {
   const [isClient, setIsClient] = useState(false)
-  const [tokenCount, setTokenCount] = useState<number>(0)
   const [selectedTab, setSelectedTab] = useState("all")
   const [phasedTokens, setPhasedTokens] = useState([]) // State to store phased tokens
   const [pairs, setPairs] = useState([]) // State to store pairs
@@ -29,97 +19,6 @@ const Dashboard = () => {
   useEffect(() => {
     setIsClient(true)
   }, [])
-
-  const { address, isConnected } = useAccount()
-  const { chain } = useNetwork()
-
-  const chainId: string | number = chain
-    ? chain.id
-    : Object.keys(tokenDeployerDetails)[0]
-
-  const { data: contracts, error: contractsError } = useContractRead({
-    address: tokenDeployerDetails[chainId] as `0x${string}`,
-    abi: tokenDeployerABI,
-    functionName: "getTokensDeployedByUser",
-    args: [address as `0x${string}`],
-    enabled: !!address,
-  })
-
-  useEffect(() => {
-    if (contractsError) {
-      console.error("Contracts Error: ", contractsError)
-    }
-    if (contracts) {
-      console.log("Contracts: ", contracts)
-      setTokenCount(contracts.length)
-    }
-  }, [contracts, contractsError])
-
-  const contractRequests = contracts?.map((contract) => [
-    {
-      address: contract,
-      abi: erc20ABI,
-      functionName: "name",
-    },
-    {
-      address: contract,
-      abi: erc20ABI,
-      functionName: "symbol",
-    },
-    {
-      address: contract,
-      abi: erc20ABI,
-      functionName: "totalSupply",
-    },
-    {
-      address: contract,
-      abi: erc20ABI,
-      functionName: "decimals",
-    },
-    {
-      address: contract,
-      abi: erc20ABI,
-      functionName: "antiWhalePercentage",
-    },
-    {
-      address: contract,
-      abi: erc20ABI,
-      functionName: "lockedSupply",
-    },
-  ])
-
-  const { data: tempTokenData, error: tempTokenDataError } = useContractReads({
-    contracts: contractRequests?.flat(),
-    enabled: !!contractRequests?.length,
-  })
-
-  useEffect(() => {
-    if (tempTokenDataError) {
-      console.error("Temp Token Data Error: ", tempTokenDataError)
-    }
-    if (tempTokenData) {
-      console.log("Temp Token Data: ", tempTokenData)
-    }
-  }, [tempTokenData, tempTokenDataError])
-
-  function splitData(data: any) {
-    const groupedData = []
-    const namedData = []
-    for (let i = 0; i < data.length; i += 6) {
-      groupedData.push(data.slice(i, i + 6))
-    }
-    for (let i = 0; i < groupedData.length; i++) {
-      namedData.push({
-        name: groupedData[i][0].result,
-        symbol: groupedData[i][1].result,
-        supply: groupedData[i][2].result,
-        decimals: groupedData[i][3].result,
-        antiWhalePercentage: groupedData[i][4].result,
-        lockedSupply: groupedData[i][5].result,
-      })
-    }
-    return namedData
-  }
 
   const formatNumber = (number: number, decimals: number) => {
     return (number / 10 ** decimals).toLocaleString("en-US", {

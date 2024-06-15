@@ -8,8 +8,6 @@ import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
 import Modal from "react-modal"
 import { useContractRead, useContractReads, useNetwork } from "wagmi"
 
-import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
-
 import {
   blockExplorerUrls,
   tokenDeployerDetails,
@@ -21,12 +19,8 @@ import TokenHoldersList from "@/APIs/tokeninfo"
 
 export default function AllTokens(): JSX.Element {
   const [isClient, setIsClient] = useState(false)
-  const [tokenCount, setTokenCount] = useState<number>(0)
-  const [launchedTokenCount, setLaunchedTokenCount] = useState<number>(0)
   const [contracts, setContracts] = useState<string[]>([])
-  const [launchedContracts, setLaunchedContracts] = useState<string[]>([])
   const [deployedTokenData, setDeployedTokenData] = useState<any[]>([])
-  const [launchedTokenData, setLaunchedTokenData] = useState<any[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedToken, setSelectedToken] = useState<string | null>(null)
 
@@ -41,25 +35,22 @@ export default function AllTokens(): JSX.Element {
   }, [])
 
   const { chain } = useNetwork()
-
   const chainId: string | number = chain
     ? chain.id
     : Object.keys(tokenDeployerDetails)[0]
 
   // Fetch deployed token count
-  const { data: deployerTokenCount, error: deployerTokenCountError } =
-    useContractRead({
-      address: tokenDeployerDetails[chainId] as `0x${string}`,
-      abi: tokenDeployerABI,
-      functionName: "getDeployedTokenCount",
-    })
+  const { data: deployerTokenCount } = useContractRead({
+    address: tokenDeployerDetails[chainId] as `0x${string}`,
+    abi: tokenDeployerABI,
+    functionName: "getDeployedTokenCount",
+  })
 
-  const { data: launcherTokenCount, error: launcherTokenCountError } =
-    useContractRead({
-      address: tokenLauncherDetails[chainId] as `0x${string}`,
-      abi: tokenLauncherABI,
-      functionName: "getDeployedTokenCount",
-    })
+  const { data: launcherTokenCount } = useContractRead({
+    address: tokenLauncherDetails[chainId] as `0x${string}`,
+    abi: tokenLauncherABI,
+    functionName: "getDeployedTokenCount",
+  })
 
   const deployerTokenCountNumber = deployerTokenCount
     ? Number(deployerTokenCount)
@@ -88,38 +79,24 @@ export default function AllTokens(): JSX.Element {
     })
   )
 
-  const { data: deployerContracts, error: deployerContractsError } =
-    useContractReads({
-      contracts: deployerContractAddresses,
-      enabled: deployerContractAddresses.length > 0,
-    })
+  const { data: deployerContracts } = useContractReads({
+    contracts: deployerContractAddresses,
+    enabled: deployerContractAddresses.length > 0,
+  })
 
-  const { data: launcherContracts, error: launcherContractsError } =
-    useContractReads({
-      contracts: launcherContractAddresses,
-      enabled: launcherContractAddresses.length > 0,
-    })
+  const { data: launcherContracts } = useContractReads({
+    contracts: launcherContractAddresses,
+    enabled: launcherContractAddresses.length > 0,
+  })
 
   useEffect(() => {
-    if (deployerContractsError) {
-      console.error("Deployer Contracts Error: ", deployerContractsError)
-    }
-    if (launcherContractsError) {
-      console.error("Launcher Contracts Error: ", launcherContractsError)
-    }
-
     if (deployerContracts && launcherContracts) {
       setContracts([
         ...deployerContracts.map((c) => c.result),
         ...launcherContracts.map((c) => c.result),
       ])
     }
-  }, [
-    deployerContracts,
-    launcherContracts,
-    deployerContractsError,
-    launcherContractsError,
-  ])
+  }, [deployerContracts, launcherContracts])
 
   const contractRequests = contracts
     ?.map((contract) => [
@@ -151,21 +128,16 @@ export default function AllTokens(): JSX.Element {
     ])
     .flat()
 
-  const { data: tokenDataResult, error: tokenDataError } = useContractReads({
+  const { data: tokenDataResult } = useContractReads({
     contracts: contractRequests,
     enabled: !!contractRequests?.length,
   })
 
   useEffect(() => {
-    if (tokenDataError) {
-      console.error("Token Data Error: ", tokenDataError)
-    }
     if (tokenDataResult) {
-      console.log("Token Data: ", tokenDataResult)
       setDeployedTokenData(splitData(tokenDataResult))
-      setLaunchedTokenData(splitData(tokenDataResult))
     }
-  }, [tokenDataResult, tokenDataError])
+  }, [tokenDataResult])
 
   function splitData(data: any) {
     const groupedData = []
@@ -235,13 +207,6 @@ export default function AllTokens(): JSX.Element {
       <div className="flex min-h-screen flex-col">
         <main className="flex-1">
           <div className="dashboard">
-            {isClient && chainId && !tokenDeployerDetails[chainId] && (
-              <ChangeNetwork
-                changeNetworkToChainId={250}
-                dappName={"SafeMeme Labs"}
-                networks={"Fantom and Degen"}
-              />
-            )}
             <div className="myTokensHeading">
               <h1 className="pagetitle">All Tokens Created per Blockchain</h1>
               <p className="subheading">
@@ -249,12 +214,6 @@ export default function AllTokens(): JSX.Element {
               </p>
             </div>
             <div className="token-container">
-              {deployedTokenData.length === 0 && (
-                <p>
-                  Connect your wallet to choose a blockchain to view the created
-                  tokens on.
-                </p>
-              )}
               {deployedTokenData.length > 0 && (
                 <div className="meme-container">
                   {deployedTokenData.map((token, index: number) => (
@@ -264,7 +223,7 @@ export default function AllTokens(): JSX.Element {
                           {token.name} ({token.symbol})
                         </h3>
                         <Image
-                          src="/images/logo.png" // You can dynamically set the logo URL if available
+                          src="/images/logo.png"
                           alt={`${token.name} logo`}
                           width={50}
                           height={50}
