@@ -13,13 +13,16 @@ import {
 
 import { tokenDeployerDetails } from "../../../Constants/config"
 import "@/styles/dashboard.css"
-import DexData from "@/APIs/exchangedata"
 import TokenHoldersList from "@/APIs/tokeninfo"
+
+import AllTokens from "../alltokens/page"
+
+// Import the AllTokens component
 
 const Dashboard = () => {
   const [isClient, setIsClient] = useState(false)
   const [tokenCount, setTokenCount] = useState<number>(0)
-  const [selectedTab, setSelectedTab] = useState("competitors")
+  const [selectedTab, setSelectedTab] = useState("all")
   const [phasedTokens, setPhasedTokens] = useState([]) // State to store phased tokens
   const [pairs, setPairs] = useState([]) // State to store pairs
 
@@ -124,6 +127,8 @@ const Dashboard = () => {
     })
   }
 
+  const renderAllMemes = () => <AllTokens /> // Render the AllTokens component
+
   const renderCompetitorsMemes = () => (
     <>
       <h1 className="pagetitle">
@@ -219,6 +224,13 @@ const Dashboard = () => {
         <div className="dashboard">
           <div className="tabs">
             <button
+              className={selectedTab === "all" ? "active" : ""}
+              onClick={() => setSelectedTab("all")}
+            >
+              All Memes
+              {selectedTab === "all" && <div className="tab-indicator"></div>}
+            </button>
+            <button
               className={selectedTab === "competitors" ? "active" : ""}
               onClick={() => setSelectedTab("competitors")}
             >
@@ -237,6 +249,7 @@ const Dashboard = () => {
           </div>
 
           <div className="content">
+            {selectedTab === "all" && renderAllMemes()}
             {selectedTab === "competitors" && renderCompetitorsMemes()}
             {selectedTab === "tech" && renderTechStackMemes()}
           </div>

@@ -9,7 +9,6 @@ import Modal from "react-modal"
 import { useContractRead, useContractReads, useNetwork } from "wagmi"
 
 import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
-import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import {
   blockExplorerUrls,
@@ -233,7 +232,6 @@ export default function AllTokens(): JSX.Element {
 
   return (
     <div>
-      <Navbar />
       <div className="flex min-h-screen flex-col">
         <main className="flex-1">
           <div className="dashboard">
