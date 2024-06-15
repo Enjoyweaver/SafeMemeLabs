@@ -7,7 +7,7 @@ import {
   polygon,
   rootstock,
 } from "@wagmi/core/chains"
-import { WagmiConfig, configureChains, createClient } from "wagmi"
+import { Client, WagmiConfig, configureChains } from "wagmi"
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
@@ -19,7 +19,7 @@ const { chains, provider, webSocketProvider } = configureChains(
   [publicProvider()]
 )
 
-const client = createClient({
+const client = new Client({
   autoConnect: true,
   connectors: [
     new InjectedConnector({ chains }),
