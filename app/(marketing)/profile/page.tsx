@@ -232,7 +232,7 @@ export default function MyTokens(): JSX.Element {
               <p className="tokenCount">
                 Number of Tokens Launched: {launchedTokenCount}
               </p>
-              <Link href={`/public/${address}`}>View Public Profile</Link>
+              <Link href={`/profile/${address}`}>View Public Profile</Link>
             </div>
             {!isClient && <p className="myTokensError">Loading...</p>}
             {isClient && isConnected && (

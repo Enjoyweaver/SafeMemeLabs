@@ -1,5 +1,5 @@
-// app/profile/[walletAddress].js
 import { useEffect, useState } from "react"
+import Image from "next/image"
 import { useRouter } from "next/router"
 import { erc20ABI } from "@/ABIs/erc20"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
@@ -30,7 +30,9 @@ function ProfilePage() {
 
   useEffect(() => {
     setIsClient(true)
-  }, [])
+    console.log("Router Query: ", router.query)
+    console.log("Wallet Address: ", walletAddress)
+  }, [router.query, walletAddress])
 
   const {
     data: deployerContracts,
@@ -41,7 +43,7 @@ function ProfilePage() {
     abi: tokenDeployerABI,
     functionName: "getTokensDeployedByUser",
     args: [walletAddress],
-    enabled: !!walletAddress,
+    enabled: !!walletAddress, // Enable only when walletAddress is available
   })
 
   const {
@@ -53,7 +55,7 @@ function ProfilePage() {
     abi: tokenLauncherABI,
     functionName: "getTokensDeployedByUser",
     args: [walletAddress],
-    enabled: !!walletAddress,
+    enabled: !!walletAddress, // Enable only when walletAddress is available
   })
 
   useEffect(() => {
@@ -108,7 +110,7 @@ function ProfilePage() {
     refetch: refetchDeployerTokenData,
   } = useContractReads({
     contracts: deployerContractRequests,
-    enabled: contracts.length > 0,
+    enabled: contracts.length > 0, // Enable only when there are contracts
   })
 
   const {
@@ -117,7 +119,7 @@ function ProfilePage() {
     refetch: refetchLauncherTokenData,
   } = useContractReads({
     contracts: launcherContractRequests,
-    enabled: launchedContracts.length > 0,
+    enabled: launchedContracts.length > 0, // Enable only when there are launched contracts
   })
 
   useEffect(() => {
@@ -170,7 +172,7 @@ function ProfilePage() {
         antiWhalePercentage: groupedData[i][4].result,
       })
     }
-    return namedData.reverse()
+    return namedData.reverse() // Reverse the namedData to match the reverse order display
   }
 
   const formatNumber = (number, decimals) => {
@@ -268,7 +270,6 @@ function ProfilePage() {
                               <strong>Anti-Whale Percentage:</strong>{" "}
                               {token.antiWhalePercentage}%
                             </p>
-
                             <p>
                               <strong>Max Tokens per Holder:</strong>{" "}
                               {formatNumber(

@@ -3,7 +3,6 @@ import { withContentlayer } from "next-contentlayer"
 
 import "./env.mjs"
 
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
@@ -13,6 +12,19 @@ const nextConfig = {
     domains: ["avatars.githubusercontent.com"],
   },
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: "script-src 'self' 'unsafe-eval' 'unsafe-inline';",
+          },
+        ],
+      },
+    ]
+  },
   webpack: (config) => {
     config.module.rules.push({
       test: /\.(mp4)$/,
