@@ -19,7 +19,7 @@ const { chains, provider, webSocketProvider } = configureChains(
   [publicProvider()]
 )
 
-const config = createConfig({
+export const config = createConfig({
   autoConnect: true,
   connectors: [
     new InjectedConnector({ chains }),

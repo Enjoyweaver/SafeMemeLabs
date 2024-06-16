@@ -48,3 +48,95 @@ $$ | \_/ $$ |
 \_\_| \_\_|
 
 hndl roostock: https://rootstock-testnet.blockscout.com/address/0x6eaeFfe712A4f42cf5Fd8cfa189673D5BeC1D6C0?tab=read_contract
+
+```
+-root directory
+-/app
+--layout.tsx (with wagmi config)
+--/(marketing)
+---/profile
+----page.tsx (users profile page)
+-withWagmiConfig.js
+-/public
+-/profile -[walletAddress].js
+-/hardhat
+├── contracts/
+│ ├── Claim.sol
+│ ├── extensions/
+│ │ ├── Address.sol
+│ │ ├── Multicall.sol
+│ │ ├── ContractMetadata.sol
+│ │ ├── PlatformFee.sol
+│ │ ├── PrimarySale.sol
+│ │ ├── PermissionsEnumerable.sol
+│ │ ├── Drop.sol
+│ ├── external-deps/
+│ │ ├── openzeppelin/
+│ │ │ ├── metatx/
+│ │ │ │ ├── ERC2771ContextUpgradeable.sol
+│ │ │ ├── token/
+│ │ │ │ ├── ERC20/
+│ │ │ │ │ ├── utils/
+│ │ │ │ │ │ ├── SafeERC20.sol
+│ ├── interfaces/
+│ │ ├── IContractMetadata.sol
+│ ├── lib/
+│ │ ├── CurrencyTransferLib.sol
+│ ├── infra/
+│ │ ├── interface/
+│ │ │ ├── IWETH.sol
+│ ├── vyper/
+│ │ ├── VyperPool.vy
+│
+├── scripts/
+│ ├── deploy_vyper.js
+│ ├── prepare_vyper_pools.js
+│
+├── hardhat.config.js
+├── hardhat.config.vyper.js
+```
+
+-root directory
+-/app
+--layout.tsx (with wagmi config)
+--/(marketing)
+---/profile
+----page.tsx (users profile page)
+-withWagmiConfig.js
+-/public
+-/profile -[walletAddress].js
+-/hardhat
+├── contracts/
+│ ├── Claim.sol
+│ ├── extensions/
+│ │ ├── Address.sol
+│ │ ├── Multicall.sol
+│ │ ├── ContractMetadata.sol
+│ │ ├── PlatformFee.sol
+│ │ ├── PrimarySale.sol
+│ │ ├── PermissionsEnumerable.sol
+│ │ ├── Drop.sol
+│ ├── external-deps/
+│ │ ├── openzeppelin/
+│ │ │ ├── metatx/
+│ │ │ │ ├── ERC2771ContextUpgradeable.sol
+│ │ │ ├── token/
+│ │ │ │ ├── ERC20/
+│ │ │ │ │ ├── utils/
+│ │ │ │ │ │ ├── SafeERC20.sol
+│ ├── interfaces/
+│ │ ├── IContractMetadata.sol
+│ ├── lib/
+│ │ ├── CurrencyTransferLib.sol
+│ ├── infra/
+│ │ ├── interface/
+│ │ │ ├── IWETH.sol
+│ ├── vyper/
+│ │ ├── VyperPool.vy
+│
+├── scripts/
+│ ├── deploy_vyper.js
+│ ├── prepare_vyper_pools.js
+│
+├── hardhat.config.js
+├── hardhat.config.vyper.js

@@ -1,23 +1,19 @@
+// app/profile/[walletAddress].js
 import { useEffect, useState } from "react"
-import Image from "next/image"
 import { useRouter } from "next/router"
 import { erc20ABI } from "@/ABIs/erc20"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
-import { useContractRead, useContractReads } from "wagmi"
-
-import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
-import { Navbar } from "@/components/walletconnect/walletconnect"
-
+import TokenHoldersList from "@/APIs/tokeninfo"
 import {
   blockExplorerUrls,
   tokenDeployerDetails,
   tokenLauncherDetails,
-} from "../../Constants/config"
-import "@/styles/allTokens.css"
-import TokenHoldersList from "@/APIs/tokeninfo"
+} from "@/Constants/config"
+import withWagmiConfig from "@/withWagmiConfig"
+import { useContractRead, useContractReads } from "wagmi"
 
-import withWagmiConfig from "../../withWagmiConfig"
+import { Navbar } from "@/components/walletconnect/walletconnect"
 
 function ProfilePage() {
   const [isClient, setIsClient] = useState(false)
@@ -30,23 +26,22 @@ function ProfilePage() {
 
   const router = useRouter()
   const { walletAddress } = router.query
+  const defaultChainId = 250 // Default to a specific chain ID
 
   useEffect(() => {
     setIsClient(true)
   }, [])
-
-  const chainId = 250 // Default to Fantom chain ID
 
   const {
     data: deployerContracts,
     error: deployerContractsError,
     refetch: refetchDeployerContracts,
   } = useContractRead({
-    address: tokenDeployerDetails[chainId],
+    address: tokenDeployerDetails[defaultChainId],
     abi: tokenDeployerABI,
     functionName: "getTokensDeployedByUser",
     args: [walletAddress],
-    enabled: false, // initially disable
+    enabled: !!walletAddress,
   })
 
   const {
@@ -54,11 +49,11 @@ function ProfilePage() {
     error: launcherContractsError,
     refetch: refetchLauncherContracts,
   } = useContractRead({
-    address: tokenLauncherDetails[chainId],
+    address: tokenLauncherDetails[defaultChainId],
     abi: tokenLauncherABI,
     functionName: "getTokensDeployedByUser",
     args: [walletAddress],
-    enabled: false, // initially disable
+    enabled: !!walletAddress,
   })
 
   useEffect(() => {
@@ -66,7 +61,7 @@ function ProfilePage() {
       refetchDeployerContracts()
       refetchLauncherContracts()
     }
-  }, [walletAddress])
+  }, [walletAddress, refetchDeployerContracts, refetchLauncherContracts])
 
   useEffect(() => {
     if (deployerContractsError) {
@@ -88,62 +83,22 @@ function ProfilePage() {
   ])
 
   const deployerContractRequests = contracts
-    ?.map((contract) => [
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "name",
-      },
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "symbol",
-      },
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "totalSupply",
-      },
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "decimals",
-      },
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "antiWhalePercentage",
-      },
+    .map((contract) => [
+      { address: contract, abi: erc20ABI, functionName: "name" },
+      { address: contract, abi: erc20ABI, functionName: "symbol" },
+      { address: contract, abi: erc20ABI, functionName: "totalSupply" },
+      { address: contract, abi: erc20ABI, functionName: "decimals" },
+      { address: contract, abi: erc20ABI, functionName: "antiWhalePercentage" },
     ])
     .flat()
 
   const launcherContractRequests = launchedContracts
-    ?.map((contract) => [
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "name",
-      },
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "symbol",
-      },
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "totalSupply",
-      },
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "decimals",
-      },
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "antiWhalePercentage",
-      },
+    .map((contract) => [
+      { address: contract, abi: erc20ABI, functionName: "name" },
+      { address: contract, abi: erc20ABI, functionName: "symbol" },
+      { address: contract, abi: erc20ABI, functionName: "totalSupply" },
+      { address: contract, abi: erc20ABI, functionName: "decimals" },
+      { address: contract, abi: erc20ABI, functionName: "antiWhalePercentage" },
     ])
     .flat()
 
@@ -153,7 +108,7 @@ function ProfilePage() {
     refetch: refetchDeployerTokenData,
   } = useContractReads({
     contracts: deployerContractRequests,
-    enabled: false, // initially disable
+    enabled: contracts.length > 0,
   })
 
   const {
@@ -162,20 +117,20 @@ function ProfilePage() {
     refetch: refetchLauncherTokenData,
   } = useContractReads({
     contracts: launcherContractRequests,
-    enabled: false, // initially disable
+    enabled: launchedContracts.length > 0,
   })
 
   useEffect(() => {
     if (contracts.length > 0) {
       refetchDeployerTokenData()
     }
-  }, [contracts])
+  }, [contracts, refetchDeployerTokenData])
 
   useEffect(() => {
     if (launchedContracts.length > 0) {
       refetchLauncherTokenData()
     }
-  }, [launchedContracts])
+  }, [launchedContracts, refetchLauncherTokenData])
 
   useEffect(() => {
     if (deployerTokenDataError) {
@@ -215,7 +170,7 @@ function ProfilePage() {
         antiWhalePercentage: groupedData[i][4].result,
       })
     }
-    return namedData.reverse() // Reverse the namedData to match the reverse order display
+    return namedData.reverse()
   }
 
   const formatNumber = (number, decimals) => {
@@ -225,7 +180,7 @@ function ProfilePage() {
   }
 
   const getBlockExplorerLink = (address) => {
-    return `${blockExplorerUrls[chainId] || ""}${address}`
+    return `${blockExplorerUrls[defaultChainId] || ""}${address}`
   }
 
   const shortenAddress = (address) => {
@@ -238,7 +193,7 @@ function ProfilePage() {
       <div className="flex min-h-screen flex-col">
         <main className="flex-1">
           <div className="dashboard">
-            {isClient && !tokenDeployerDetails[chainId] && (
+            {isClient && !tokenDeployerDetails[defaultChainId] && (
               <ChangeNetwork
                 changeNetworkToChainId={250}
                 dappName={"SafeMeme Labs"}
@@ -276,7 +231,7 @@ function ProfilePage() {
                               {token.name} ({token.symbol})
                             </h3>
                             <Image
-                              src="/images/logo.png" // You can dynamically set the logo URL if available
+                              src="/images/logo.png"
                               alt={`${token.name} logo`}
                               width={50}
                               height={50}
@@ -328,7 +283,7 @@ function ProfilePage() {
                             tokenAddress={
                               contracts[contracts.length - 1 - index]
                             }
-                            chainId={chainId}
+                            chainId={defaultChainId}
                           />
                         </div>
                       ))}
@@ -351,7 +306,7 @@ function ProfilePage() {
                               {token.name} ({token.symbol})
                             </h3>
                             <Image
-                              src="/images/logo.png" // You can dynamically set the logo URL if available
+                              src="/images/logo.png"
                               alt={`${token.name} logo`}
                               width={50}
                               height={50}
@@ -408,7 +363,7 @@ function ProfilePage() {
                                 launchedContracts.length - 1 - index
                               ]
                             }
-                            chainId={chainId}
+                            chainId={defaultChainId}
                           />
                         </div>
                       ))}
