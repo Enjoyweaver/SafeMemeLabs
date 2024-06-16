@@ -11,7 +11,7 @@ import {
   tokenLauncherDetails,
 } from "@/Constants/config"
 import withWagmiConfig from "@/withWagmiConfig"
-import { useContractRead, useContractReads } from "wagmi"
+import { useContractReads } from "wagmi"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
@@ -26,7 +26,6 @@ function ProfilePage() {
 
   const router = useRouter()
   const { walletAddress } = router.query
-  const defaultChainId = 250 // Default to a specific chain ID
 
   useEffect(() => {
     setIsClient(true)
@@ -34,128 +33,101 @@ function ProfilePage() {
     console.log("Wallet Address: ", walletAddress)
   }, [router.query, walletAddress])
 
-  const {
-    data: deployerContracts,
-    error: deployerContractsError,
-    refetch: refetchDeployerContracts,
-  } = useContractRead({
-    address: tokenDeployerDetails[defaultChainId],
-    abi: tokenDeployerABI,
-    functionName: "getTokensDeployedByUser",
-    args: [walletAddress],
-    enabled: !!walletAddress, // Enable only when walletAddress is available
-  })
-
-  const {
-    data: launcherContracts,
-    error: launcherContractsError,
-    refetch: refetchLauncherContracts,
-  } = useContractRead({
-    address: tokenLauncherDetails[defaultChainId],
-    abi: tokenLauncherABI,
-    functionName: "getTokensDeployedByUser",
-    args: [walletAddress],
-    enabled: !!walletAddress, // Enable only when walletAddress is available
-  })
-
   useEffect(() => {
     if (walletAddress) {
-      refetchDeployerContracts()
-      refetchLauncherContracts()
+      fetchAllContracts(walletAddress)
     }
-  }, [walletAddress, refetchDeployerContracts, refetchLauncherContracts])
+  }, [walletAddress])
 
-  useEffect(() => {
-    if (deployerContractsError) {
-      console.error("Deployer Contracts Error: ", deployerContractsError)
+  const fetchAllContracts = async (walletAddress) => {
+    let allDeployerContracts = []
+    let allLauncherContracts = []
+    for (const chainId in tokenDeployerDetails) {
+      const deployerResult = await fetchContractRead({
+        address: tokenDeployerDetails[chainId],
+        abi: tokenDeployerABI,
+        functionName: "getTokensDeployedByUser",
+        args: [walletAddress],
+      })
+      console.log(`Deployer contracts on chain ${chainId}:`, deployerResult)
+      allDeployerContracts = allDeployerContracts.concat(deployerResult)
+
+      const launcherResult = await fetchContractRead({
+        address: tokenLauncherDetails[chainId],
+        abi: tokenLauncherABI,
+        functionName: "getTokensDeployedByUser",
+        args: [walletAddress],
+      })
+      console.log(`Launcher contracts on chain ${chainId}:`, launcherResult)
+      allLauncherContracts = allLauncherContracts.concat(launcherResult)
     }
-    if (launcherContractsError) {
-      console.error("Launcher Contracts Error: ", launcherContractsError)
+    console.log("All Deployer Contracts:", allDeployerContracts)
+    console.log("All Launcher Contracts:", allLauncherContracts)
+
+    setContracts(allDeployerContracts)
+    setLaunchedContracts(allLauncherContracts)
+    setTokenCount(allDeployerContracts.length)
+    setLaunchedTokenCount(allLauncherContracts.length)
+
+    const deployerContractRequests = allDeployerContracts
+      .map((contract) => [
+        { address: contract, abi: erc20ABI, functionName: "name" },
+        { address: contract, abi: erc20ABI, functionName: "symbol" },
+        { address: contract, abi: erc20ABI, functionName: "totalSupply" },
+        { address: contract, abi: erc20ABI, functionName: "decimals" },
+        {
+          address: contract,
+          abi: erc20ABI,
+          functionName: "antiWhalePercentage",
+        },
+      ])
+      .flat()
+
+    const launcherContractRequests = allLauncherContracts
+      .map((contract) => [
+        { address: contract, abi: erc20ABI, functionName: "name" },
+        { address: contract, abi: erc20ABI, functionName: "symbol" },
+        { address: contract, abi: erc20ABI, functionName: "totalSupply" },
+        { address: contract, abi: erc20ABI, functionName: "decimals" },
+        {
+          address: contract,
+          abi: erc20ABI,
+          functionName: "antiWhalePercentage",
+        },
+      ])
+      .flat()
+
+    console.log("Deployer Contract Requests:", deployerContractRequests)
+    console.log("Launcher Contract Requests:", launcherContractRequests)
+
+    fetchTokenData(deployerContractRequests, setDeployedTokenData)
+    fetchTokenData(launcherContractRequests, setLaunchedTokenData)
+  }
+
+  const fetchContractRead = async ({ address, abi, functionName, args }) => {
+    try {
+      const result = await useContractRead({ address, abi, functionName, args })
+      console.log(`Result for ${functionName} with args ${args}:`, result)
+      return result.data
+    } catch (error) {
+      console.error("Contract Read Error: ", error)
+      return []
     }
+  }
 
-    setContracts(deployerContracts || [])
-    setLaunchedContracts(launcherContracts || [])
-    setTokenCount((deployerContracts || []).length)
-    setLaunchedTokenCount((launcherContracts || []).length)
-  }, [
-    deployerContracts,
-    launcherContracts,
-    deployerContractsError,
-    launcherContractsError,
-  ])
-
-  const deployerContractRequests = contracts
-    .map((contract) => [
-      { address: contract, abi: erc20ABI, functionName: "name" },
-      { address: contract, abi: erc20ABI, functionName: "symbol" },
-      { address: contract, abi: erc20ABI, functionName: "totalSupply" },
-      { address: contract, abi: erc20ABI, functionName: "decimals" },
-      { address: contract, abi: erc20ABI, functionName: "antiWhalePercentage" },
-    ])
-    .flat()
-
-  const launcherContractRequests = launchedContracts
-    .map((contract) => [
-      { address: contract, abi: erc20ABI, functionName: "name" },
-      { address: contract, abi: erc20ABI, functionName: "symbol" },
-      { address: contract, abi: erc20ABI, functionName: "totalSupply" },
-      { address: contract, abi: erc20ABI, functionName: "decimals" },
-      { address: contract, abi: erc20ABI, functionName: "antiWhalePercentage" },
-    ])
-    .flat()
-
-  const {
-    data: deployerTokenData,
-    error: deployerTokenDataError,
-    refetch: refetchDeployerTokenData,
-  } = useContractReads({
-    contracts: deployerContractRequests,
-    enabled: contracts.length > 0, // Enable only when there are contracts
-  })
-
-  const {
-    data: launcherTokenData,
-    error: launcherTokenDataError,
-    refetch: refetchLauncherTokenData,
-  } = useContractReads({
-    contracts: launcherContractRequests,
-    enabled: launchedContracts.length > 0, // Enable only when there are launched contracts
-  })
-
-  useEffect(() => {
-    if (contracts.length > 0) {
-      refetchDeployerTokenData()
+  const fetchTokenData = async (contractRequests, setTokenData) => {
+    try {
+      const result = await useContractReads({
+        contracts: contractRequests,
+        enabled: contractRequests.length > 0,
+      })
+      console.log("Token Data Result:", result)
+      setTokenData(splitData(result.data))
+    } catch (error) {
+      console.error("Token Data Error: ", error)
+      setTokenData([])
     }
-  }, [contracts, refetchDeployerTokenData])
-
-  useEffect(() => {
-    if (launchedContracts.length > 0) {
-      refetchLauncherTokenData()
-    }
-  }, [launchedContracts, refetchLauncherTokenData])
-
-  useEffect(() => {
-    if (deployerTokenDataError) {
-      console.error("Deployer Token Data Error: ", deployerTokenDataError)
-    }
-    if (deployerTokenData) {
-      console.log("Deployer Token Data: ", deployerTokenData)
-      setDeployedTokenData(splitData(deployerTokenData))
-    }
-
-    if (launcherTokenDataError) {
-      console.error("Launcher Token Data Error: ", launcherTokenDataError)
-    }
-    if (launcherTokenData) {
-      console.log("Launcher Token Data: ", launcherTokenData)
-      setLaunchedTokenData(splitData(launcherTokenData))
-    }
-  }, [
-    deployerTokenData,
-    deployerTokenDataError,
-    launcherTokenData,
-    launcherTokenDataError,
-  ])
+  }
 
   function splitData(data) {
     const groupedData = []
@@ -181,8 +153,8 @@ function ProfilePage() {
     })
   }
 
-  const getBlockExplorerLink = (address) => {
-    return `${blockExplorerUrls[defaultChainId] || ""}${address}`
+  const getBlockExplorerLink = (address, chainId) => {
+    return `${blockExplorerUrls[chainId] || ""}${address}`
   }
 
   const shortenAddress = (address) => {
@@ -195,13 +167,6 @@ function ProfilePage() {
       <div className="flex min-h-screen flex-col">
         <main className="flex-1">
           <div className="dashboard">
-            {isClient && !tokenDeployerDetails[defaultChainId] && (
-              <ChangeNetwork
-                changeNetworkToChainId={250}
-                dappName={"SafeMeme Labs"}
-                networks={"Fantom and Degen"}
-              />
-            )}
             <div className="myTokensHeading">
               <h1 className="pagetitle">Profile for {walletAddress}</h1>
               <p className="subheading">
@@ -246,7 +211,8 @@ function ProfilePage() {
                               <strong>Contract Address:</strong>{" "}
                               <a
                                 href={getBlockExplorerLink(
-                                  contracts[contracts.length - 1 - index]
+                                  contracts[contracts.length - 1 - index],
+                                  token.chainId
                                 )}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -284,7 +250,7 @@ function ProfilePage() {
                             tokenAddress={
                               contracts[contracts.length - 1 - index]
                             }
-                            chainId={defaultChainId}
+                            chainId={token.chainId}
                           />
                         </div>
                       ))}
@@ -322,7 +288,8 @@ function ProfilePage() {
                                 href={getBlockExplorerLink(
                                   launchedContracts[
                                     launchedContracts.length - 1 - index
-                                  ]
+                                  ],
+                                  token.chainId
                                 )}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -364,7 +331,7 @@ function ProfilePage() {
                                 launchedContracts.length - 1 - index
                               ]
                             }
-                            chainId={defaultChainId}
+                            chainId={token.chainId}
                           />
                         </div>
                       ))}
