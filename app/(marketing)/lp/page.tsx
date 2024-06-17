@@ -1,9 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { exchangeABI } from "@/ABIs/Uniswap/exchange"
-import { factoryABI } from "@/ABIs/Uniswap/factory"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
+import { exchangeABI } from "@/ABIs/vyper/exchange"
+import { factoryABI } from "@/ABIs/vyper/factory"
 import {
   poolAddressDetails,
   tokenDeployerDetails,

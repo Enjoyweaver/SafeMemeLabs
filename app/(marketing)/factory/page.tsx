@@ -2,10 +2,11 @@
 
 import { ChangeEvent, useEffect, useState } from "react"
 import Link from "next/link"
-import { factoryABI } from "@/ABIs/Uniswap/factory"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
-import { vyperTokenABI } from "@/ABIs/vyperToken"
+import { factoryABI } from "@/ABIs/vyper/factory"
+import { tokenVyperABI } from "@/ABIs/vyper/tokenVyper"
+import { ethers } from "ethers"
 // Make sure to add this ABI for the Vyper ERC-20 token contract
 import { toast } from "react-toastify"
 
@@ -19,7 +20,7 @@ import {
   tokenDeployerDetails,
   tokenFactoryDetails,
   tokenLauncherDetails,
-  vyperTokenDetails, // Add the Vyper token details
+  tokenVyperDetails, // Add the Vyper token details
 } from "@/Constants/config"
 import { useDebounce } from "usehooks-ts"
 import {
@@ -70,7 +71,7 @@ export default function Factory(): JSX.Element {
     if (chain && chain.id) {
       const launcherAddress = tokenLauncherDetails[chain.id] || ""
       const deployerAddress = tokenDeployerDetails[chain.id] || ""
-      const vyperAddress = vyperTokenDetails[chain.id] || ""
+      const vyperAddress = tokenVyperDetails[chain.id] || ""
 
       console.log("Launcher Address:", launcherAddress)
       console.log("Deployer Address:", deployerAddress)
@@ -82,7 +83,7 @@ export default function Factory(): JSX.Element {
       if (!deployerAddress && tokenType === "safeMemeToken") {
         console.error(`Missing addresses for chain ID ${chain.id}`)
       }
-      if (!vyperAddress && tokenType === "vyperToken") {
+      if (!vyperAddress && tokenType === "tokenVyper") {
         console.error(`Missing addresses for chain ID ${chain.id}`)
       }
 
@@ -120,14 +121,14 @@ export default function Factory(): JSX.Element {
     address:
       tokenType === "safeMemeTokenLaunched"
         ? (tokenLauncherDetails[chainId] as `0x${string}`)
-        : tokenType === "vyperToken"
-        ? (vyperTokenDetails[chainId] as `0x${string}`)
+        : tokenType === "tokenVyper"
+        ? (tokenVyperDetails[chainId] as `0x${string}`)
         : (tokenDeployerDetails[chainId] as `0x${string}`),
     abi:
       tokenType === "safeMemeTokenLaunched"
         ? tokenLauncherABI
-        : tokenType === "vyperToken"
-        ? vyperTokenABI
+        : tokenType === "tokenVyper"
+        ? tokenVyperABI
         : tokenDeployerABI,
     functionName: "creationFee",
     onError: (error) => {
@@ -147,16 +148,16 @@ export default function Factory(): JSX.Element {
     address:
       tokenType === "safeMemeTokenLaunched"
         ? (tokenLauncherDetails[chainId] as `0x${string}`)
-        : tokenType === "vyperToken"
-        ? (vyperTokenDetails[chainId] as `0x${string}`)
+        : tokenType === "tokenVyper"
+        ? (tokenVyperDetails[chainId] as `0x${string}`)
         : (tokenDeployerDetails[chainId] as `0x${string}`),
     abi:
       tokenType === "safeMemeTokenLaunched"
         ? tokenLauncherABI
-        : tokenType === "vyperToken"
-        ? vyperTokenABI
+        : tokenType === "tokenVyper"
+        ? tokenVyperABI
         : tokenDeployerABI,
-    functionName: "deployToken",
+    functionName: tokenType === "tokenVyper" ? "createToken" : "deployToken",
     args:
       tokenType === "safeMemeTokenLaunched"
         ? [
@@ -167,8 +168,14 @@ export default function Factory(): JSX.Element {
             Number(dAntiWhalePercentage),
             dSelectedTokenB, // Include TokenB address
           ]
-        : tokenType === "vyperToken"
-        ? [dSymbol, dName, dDecimals ? Number(dDecimals) : 18, BigInt(dSupply)]
+        : tokenType === "tokenVyper"
+        ? [
+            ethers.utils.formatBytes32String(dName),
+            ethers.utils.formatBytes32String(dSymbol),
+            dDecimals ? Number(dDecimals) : 18,
+            BigInt(dSupply),
+            Number(dAntiWhalePercentage),
+          ]
         : [
             dSymbol,
             dName,
@@ -232,7 +239,7 @@ export default function Factory(): JSX.Element {
       toast.error("Configuration error: Missing required addresses.")
       return
     }
-    if (tokenType === "vyperToken" && !vyperTokenDetails[chainId]) {
+    if (tokenType === "tokenVyper" && !tokenVyperDetails[chainId]) {
       toast.error("Configuration error: Missing Vyper factory address.")
       return
     }
@@ -324,9 +331,9 @@ export default function Factory(): JSX.Element {
             <div className="tokenTypeButtonContainer">
               <button
                 className={`tokenTypeButton ${
-                  tokenType === "vyperToken" ? "active" : ""
+                  tokenType === "tokenVyper" ? "active" : ""
                 } hideButton`}
-                onClick={() => setTokenType("vyperToken")}
+                onClick={() => setTokenType("tokenVyper")}
               >
                 Vyper ERC-20 Token
               </button>
@@ -392,7 +399,7 @@ export default function Factory(): JSX.Element {
                   <p className="error">Decimals must be from 0 to 18</p>
                 )}
               </div>
-              {isClient && tokenType !== "vyperToken" && (
+              {isClient && tokenType !== "tokenVyper" && (
                 <div className="inputGroup">
                   <label className="inputTitle">Anti-Whale Percentage*</label>
                   <input
@@ -442,7 +449,7 @@ export default function Factory(): JSX.Element {
                   Number(decimals) >= 0 &&
                   Number(decimals) <= 18 &&
                   Number(supply) >= 0 &&
-                  (tokenType !== "vyperToken"
+                  (tokenType !== "tokenVyper"
                     ? Number(antiWhalePercentage) > 0 &&
                       Number(antiWhalePercentage) <= 3
                     : true) &&
@@ -457,7 +464,7 @@ export default function Factory(): JSX.Element {
                     Number(decimals) >= 0 &&
                     Number(decimals) <= 18 &&
                     Number(supply) >= 0 &&
-                    (tokenType !== "vyperToken"
+                    (tokenType !== "tokenVyper"
                       ? Number(antiWhalePercentage) > 0 &&
                         Number(antiWhalePercentage) <= 3
                       : true) &&

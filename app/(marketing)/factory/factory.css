@@ -449,7 +449,6 @@ body {
   border-color: var(--foreground-dark) transparent transparent transparent;
 }
 
-/*.hideButton {
-/ display: none;
+.hideButton {
+  display: none;
 }
-*/

@@ -10,6 +10,32 @@ export const exchangeABI = [
     type: "event",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_creationFee",
+        type: "uint256",
+      },
+    ],
+    name: "changeCreationFee",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "creationFee",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     name: "EthPurchase",
     inputs: [
       { type: "address", name: "buyer", indexed: true },
