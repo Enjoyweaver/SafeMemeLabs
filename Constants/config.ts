@@ -377,3 +377,55 @@ export const poolAddressDetails: { [key: string]: string } = {
   "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
   "501": "YourTokenAddressForSolanaTestnetLaunched",
 }
+
+export const tokenExchangeDetails: { [key: string]: string } = {
+  "666666666": "0xe92163f8038843091c1df18f726cf04526ef9677",
+  "250": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
+  "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
+  "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
+  "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
+  "4002": "0x5979926DB1522391BF837f9F650ECa44bABd5fD2",
+  "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
+  "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
+  "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
+  "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
+  "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
+  "501": "YourTokenAddressForSolanaTestnetLaunched",
+}
+
+export const tokenFactoryDetails: { [key: string]: string } = {
+  "666666666": "0xe92163f8038843091c1df18f726cf04526ef9677",
+  "250": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
+  "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
+  "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
+  "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
+  "4002": "0x17cB86dFB4DD193e4a1c7A29D9cC7532Ea011665",
+  "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
+  "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
+  "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
+  "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
+  "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
+  "501": "YourTokenAddressForSolanaTestnetLaunched",
+}
+export const tokenExchangeTemplateDetails: { [key: string]: string } = {
+  "666666666": "0xe92163f8038843091c1df18f726cf04526ef9677",
+  "250": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
+  "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
+  "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
+  "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
+  "4002": "0x5979926DB1522391BF837f9F650ECa44bABd5fD2",
+  "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
+  "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
+  "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
+  "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
+  "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
+  "501": "YourTokenAddressForSolanaTestnetLaunched",
+}
+
+export const vyperTokenDetails: {
+  [key: string]: string
+} = {
+  "137": "0xYourVyperTokenAddressForPolygon",
+  "250": "0xYourVyperTokenAddressForFantom",
+  "4002": "0x73b0dEc331bbDA6598BD1ba2b03461b950abA17e",
+}

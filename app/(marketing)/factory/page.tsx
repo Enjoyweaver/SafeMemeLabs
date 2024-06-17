@@ -2,8 +2,11 @@
 
 import { ChangeEvent, useEffect, useState } from "react"
 import Link from "next/link"
+import { factoryABI } from "@/ABIs/Uniswap/factory"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
+import { vyperTokenABI } from "@/ABIs/vyperToken"
+// Make sure to add this ABI for the Vyper ERC-20 token contract
 import { toast } from "react-toastify"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
@@ -14,7 +17,9 @@ import Image from "next/image"
 import {
   tokenBOptions,
   tokenDeployerDetails,
+  tokenFactoryDetails,
   tokenLauncherDetails,
+  vyperTokenDetails, // Add the Vyper token details
 } from "@/Constants/config"
 import { useDebounce } from "usehooks-ts"
 import {
@@ -65,19 +70,28 @@ export default function Factory(): JSX.Element {
     if (chain && chain.id) {
       const launcherAddress = tokenLauncherDetails[chain.id] || ""
       const deployerAddress = tokenDeployerDetails[chain.id] || ""
+      const vyperAddress = vyperTokenDetails[chain.id] || ""
 
       console.log("Launcher Address:", launcherAddress)
       console.log("Deployer Address:", deployerAddress)
+      console.log("Vyper Address:", vyperAddress)
 
-      if (!launcherAddress) {
+      if (!launcherAddress && tokenType === "safeMemeTokenLaunched") {
         console.error(`Missing addresses for chain ID ${chain.id}`)
       }
+      if (!deployerAddress && tokenType === "safeMemeToken") {
+        console.error(`Missing addresses for chain ID ${chain.id}`)
+      }
+      if (!vyperAddress && tokenType === "vyperToken") {
+        console.error(`Missing addresses for chain ID ${chain.id}`)
+      }
+
       setTokenLauncher(launcherAddress)
 
       // Ensure selectedTokenB is set based on current chain
       setSelectedTokenB(tokenBOptions[chain.id]?.[0]?.address || "")
     }
-  }, [chain])
+  }, [chain, tokenType])
 
   const setTokenName = (e: ChangeEvent<HTMLInputElement>) =>
     setName(e.target.value)
@@ -96,8 +110,6 @@ export default function Factory(): JSX.Element {
     name.trim().length > 0 &&
     symbol.trim().length > 0 &&
     supply.trim().length > 0 &&
-    antiWhalePercentage.trim().length > 0 &&
-    decimals.trim().length > 0 &&
     (tokenType === "safeMemeTokenLaunched"
       ? selectedTokenB.trim().length > 0
       : true)
@@ -108,10 +120,14 @@ export default function Factory(): JSX.Element {
     address:
       tokenType === "safeMemeTokenLaunched"
         ? (tokenLauncherDetails[chainId] as `0x${string}`)
+        : tokenType === "vyperToken"
+        ? (vyperTokenDetails[chainId] as `0x${string}`)
         : (tokenDeployerDetails[chainId] as `0x${string}`),
     abi:
       tokenType === "safeMemeTokenLaunched"
         ? tokenLauncherABI
+        : tokenType === "vyperToken"
+        ? vyperTokenABI
         : tokenDeployerABI,
     functionName: "creationFee",
     onError: (error) => {
@@ -131,10 +147,14 @@ export default function Factory(): JSX.Element {
     address:
       tokenType === "safeMemeTokenLaunched"
         ? (tokenLauncherDetails[chainId] as `0x${string}`)
+        : tokenType === "vyperToken"
+        ? (vyperTokenDetails[chainId] as `0x${string}`)
         : (tokenDeployerDetails[chainId] as `0x${string}`),
     abi:
       tokenType === "safeMemeTokenLaunched"
         ? tokenLauncherABI
+        : tokenType === "vyperToken"
+        ? vyperTokenABI
         : tokenDeployerABI,
     functionName: "deployToken",
     args:
@@ -147,6 +167,8 @@ export default function Factory(): JSX.Element {
             Number(dAntiWhalePercentage),
             dSelectedTokenB, // Include TokenB address
           ]
+        : tokenType === "vyperToken"
+        ? [dSymbol, dName, dDecimals ? Number(dDecimals) : 18, BigInt(dSupply)]
         : [
             dSymbol,
             dName,
@@ -187,8 +209,10 @@ export default function Factory(): JSX.Element {
     hash: data?.hash,
     onSettled(data, error) {
       if (data) {
+        const tokenAddress = data.contractAddress
+        handleCreateExchange(tokenAddress)
         setModalMessage(
-          "Token successfully deployed! Go to the Dashboard to check it out! Then grab the contract address and import it into your wallet."
+          "Token successfully deployed! Exchange created! Go to the Dashboard to check it out! Then grab the contract address and import it into your wallet."
         )
       } else if (error) {
         setModalMessage(
@@ -198,6 +222,8 @@ export default function Factory(): JSX.Element {
     },
   })
 
+  const factoryAddress = tokenFactoryDetails[chainId]
+
   const handleDeployClick = () => {
     if (
       tokenType === "safeMemeTokenLaunched" &&
@@ -206,11 +232,41 @@ export default function Factory(): JSX.Element {
       toast.error("Configuration error: Missing required addresses.")
       return
     }
+    if (tokenType === "vyperToken" && !vyperTokenDetails[chainId]) {
+      toast.error("Configuration error: Missing Vyper factory address.")
+      return
+    }
     setModalMessage(
       "Depending on which blockchain you created a token on, it could take anywhere from 2 seconds to 20 seconds."
     )
     setShowModal(true)
     write?.()
+  }
+
+  const { config: createExchangeConfig } = usePrepareContractWrite({
+    address: factoryAddress,
+    abi: factoryABI,
+    functionName: "createExchange",
+    args: [data?.contractAddress],
+  })
+
+  const { write: createExchange, data: createExchangeData } =
+    useContractWrite(createExchangeConfig)
+
+  const { isSuccess: isExchangeCreated } = useWaitForTransaction({
+    hash: createExchangeData?.hash,
+    onSuccess() {
+      setModalMessage("Exchange created successfully!")
+      setShowModal(true)
+    },
+    onError(error) {
+      setModalMessage(`Error creating exchange: ${error.message}`)
+      setShowModal(true)
+    },
+  })
+
+  const handleCreateExchange = (tokenAddress: string) => {
+    createExchange?.()
   }
 
   const toggleErrorMenuOpen = () => {
@@ -263,6 +319,20 @@ export default function Factory(): JSX.Element {
                 Create and launch a SafeMeme token on our swap where 5% of the
                 supply is available to trade while the remaining 95% is unlocked
                 at different liquidity levels.
+              </div>
+            </div>
+            <div className="tokenTypeButtonContainer">
+              <button
+                className={`tokenTypeButton ${
+                  tokenType === "vyperToken" ? "active" : ""
+                } hideButton`}
+                onClick={() => setTokenType("vyperToken")}
+              >
+                Vyper ERC-20 Token
+              </button>
+              <div className="tokenTypeButtonPopup">
+                Create a standard ERC-20 token using Vyper smart contract
+                language.
               </div>
             </div>
           </div>
@@ -322,29 +392,31 @@ export default function Factory(): JSX.Element {
                   <p className="error">Decimals must be from 0 to 18</p>
                 )}
               </div>
-              <div className="inputGroup">
-                <label className="inputTitle">Anti-Whale Percentage*</label>
-                <input
-                  onKeyDown={(evt) =>
-                    ["e", "E", "+", "-", "."].includes(evt.key) &&
-                    evt.preventDefault()
-                  }
-                  onChange={setAntiWhalePercentageInput}
-                  className="tokenInput"
-                  placeholder="3"
-                  type="number"
-                  value={antiWhalePercentage}
-                />
-                {!(
-                  Number(antiWhalePercentage) > 0 &&
-                  Number(antiWhalePercentage) <= 3
-                ) && (
-                  <p className="error">
-                    Percentage must be greater than 0 and less than or equal to
-                    3
-                  </p>
-                )}
-              </div>
+              {isClient && tokenType !== "vyperToken" && (
+                <div className="inputGroup">
+                  <label className="inputTitle">Anti-Whale Percentage*</label>
+                  <input
+                    onKeyDown={(evt) =>
+                      ["e", "E", "+", "-", "."].includes(evt.key) &&
+                      evt.preventDefault()
+                    }
+                    onChange={setAntiWhalePercentageInput}
+                    className="tokenInput"
+                    placeholder="3"
+                    type="number"
+                    value={antiWhalePercentage}
+                  />
+                  {!(
+                    Number(antiWhalePercentage) > 0 &&
+                    Number(antiWhalePercentage) <= 3
+                  ) && (
+                    <p className="error">
+                      Percentage must be greater than 0 and less than or equal
+                      to 3
+                    </p>
+                  )}
+                </div>
+              )}
               {isClient && tokenType === "safeMemeTokenLaunched" && (
                 <div className="inputGroup">
                   <label className="inputTitle">Token B Address*</label>
@@ -370,8 +442,10 @@ export default function Factory(): JSX.Element {
                   Number(decimals) >= 0 &&
                   Number(decimals) <= 18 &&
                   Number(supply) >= 0 &&
-                  Number(antiWhalePercentage) > 0 &&
-                  Number(antiWhalePercentage) <= 3 &&
+                  (tokenType !== "vyperToken"
+                    ? Number(antiWhalePercentage) > 0 &&
+                      Number(antiWhalePercentage) <= 3
+                    : true) &&
                   !(isLoadingTransaction || isLoadingWrite)
                     ? "enabled"
                     : "disabled"
@@ -383,8 +457,10 @@ export default function Factory(): JSX.Element {
                     Number(decimals) >= 0 &&
                     Number(decimals) <= 18 &&
                     Number(supply) >= 0 &&
-                    Number(antiWhalePercentage) > 0 &&
-                    Number(antiWhalePercentage) <= 3 &&
+                    (tokenType !== "vyperToken"
+                      ? Number(antiWhalePercentage) > 0 &&
+                        Number(antiWhalePercentage) <= 3
+                      : true) &&
                     !(isLoadingTransaction || isLoadingWrite)
                   )
                 }

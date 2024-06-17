@@ -20,6 +20,11 @@ const FeedbackPage = () => {
   const [featureRequests, setFeatureRequests] = useState([])
   const [checklistItems, setChecklistItems] = useState([
     {
+      text: "Udpdate newly added link for each users profile page",
+      completed: false,
+      status: "open",
+    },
+    {
       text: "Update metadata for all pages",
       completed: false,
       status: "open",

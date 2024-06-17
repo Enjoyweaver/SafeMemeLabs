@@ -1,4 +1,3 @@
-// TokenSwap component file (TokenSwap.tsx)
 "use client"
 
 import React, { useEffect, useState } from "react"
@@ -315,22 +314,22 @@ const TokenSwap: React.FC<{
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = provider.getSigner()
-        const dexContract = new ethers.Contract(dexAddress, dexABI, signer)
-
-        // Approve the DEX to spend tokens
-        const tokenContract = new ethers.Contract(
-          selectedTokenFrom,
-          erc20ABI,
+        const routerContract = new ethers.Contract(
+          routerAddress,
+          routerABI,
           signer
         )
-        const decimals = deployedTokens.find(
-          (token) => token.address === selectedTokenFrom
-        ).decimals
-        const amountInWei = ethers.utils.parseUnits(amount.toString(), decimals)
-        await tokenContract.approve(dexAddress, amountInWei)
+
+        // Approve the DEX to spend tokens
+        await approveTokens(selectedTokenFrom, amount)
 
         // Perform the swap
-        await dexContract.swap(selectedTokenFrom, selectedTokenTo, amountInWei)
+        const amountInWei = ethers.utils.parseUnits(amount.toString(), decimals)
+        await routerContract.swapExactETHForTokens(
+          min_tokens,
+          [selectedTokenFrom, selectedTokenTo],
+          deadline
+        )
         console.log(
           "Tokens swapped:",
           selectedTokenFrom,
@@ -395,6 +394,15 @@ const TokenSwap: React.FC<{
         ...token,
       })),
   ]
+
+  const approveTokens = async (tokenAddress: string, amount: number) => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const signer = provider.getSigner()
+    const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, signer)
+    const decimals = await tokenContract.decimals()
+    const amountInWei = ethers.utils.parseUnits(amount.toString(), decimals)
+    await tokenContract.approve(dexAddress, amountInWei)
+  }
 
   return (
     <div>
