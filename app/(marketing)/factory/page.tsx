@@ -7,7 +7,6 @@ import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
 import { factoryABI } from "@/ABIs/vyper/factory"
 import { tokenVyperABI } from "@/ABIs/vyper/tokenVyper"
 import { ethers } from "ethers"
-// Make sure to add this ABI for the Vyper ERC-20 token contract
 import { toast } from "react-toastify"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
@@ -20,7 +19,7 @@ import {
   tokenDeployerDetails,
   tokenFactoryDetails,
   tokenLauncherDetails,
-  tokenVyperDetails, // Add the Vyper token details
+  tokenVyperDetails,
 } from "@/Constants/config"
 import { useDebounce } from "usehooks-ts"
 import {
@@ -46,7 +45,6 @@ export default function Factory(): JSX.Element {
   const [antiWhalePercentage, setAntiWhalePercentage] = useState<string>("")
   const [selectedTokenB, setSelectedTokenB] = useState<string>("")
   const [tokenLauncher, setTokenLauncher] = useState<string>("")
-
   const dName = useDebounce(name, 500)
   const dSymbol = useDebounce(symbol, 500)
   const dSupply = useDebounce(supply, 500)
@@ -54,7 +52,7 @@ export default function Factory(): JSX.Element {
   const dAntiWhalePercentage = useDebounce(antiWhalePercentage, 500)
   const dSelectedTokenB = useDebounce(selectedTokenB, 500)
   const dTokenLauncher = useDebounce(tokenLauncher, 500)
-
+  const [creationFee, setCreationFee] = useState<string>("")
   const [isClient, setIsClient] = useState(false)
   const [errorMenu, setErrorMenu] = useState(false)
   const { isConnected } = useAccount()
@@ -66,6 +64,29 @@ export default function Factory(): JSX.Element {
   useEffect(() => {
     setIsClient(true)
   }, [])
+
+  useEffect(() => {
+    if (chain && chain.id) {
+      const vyperAddress = tokenVyperDetails[chain.id] || ""
+      if (vyperAddress) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const contract = new ethers.Contract(
+          vyperAddress,
+          tokenVyperABI,
+          provider
+        )
+
+        contract
+          .creationFee()
+          .then((fee: ethers.BigNumber) => {
+            setCreationFee(ethers.utils.formatEther(fee))
+          })
+          .catch((error: any) => {
+            console.error("Error fetching creation fee:", error)
+          })
+      }
+    }
+  }, [chain])
 
   useEffect(() => {
     if (chain && chain.id) {
@@ -186,6 +207,12 @@ export default function Factory(): JSX.Element {
     value: deployFee,
     cacheTime: 0,
   })
+
+  useEffect(() => {
+    if (prepareError) {
+      console.error("Error preparing contract write:", prepareError)
+    }
+  }, [prepareError])
 
   useEffect(() => {
     if (prepareError) {
@@ -399,31 +426,29 @@ export default function Factory(): JSX.Element {
                   <p className="error">Decimals must be from 0 to 18</p>
                 )}
               </div>
-              {isClient && tokenType !== "tokenVyper" && (
-                <div className="inputGroup">
-                  <label className="inputTitle">Anti-Whale Percentage*</label>
-                  <input
-                    onKeyDown={(evt) =>
-                      ["e", "E", "+", "-", "."].includes(evt.key) &&
-                      evt.preventDefault()
-                    }
-                    onChange={setAntiWhalePercentageInput}
-                    className="tokenInput"
-                    placeholder="3"
-                    type="number"
-                    value={antiWhalePercentage}
-                  />
-                  {!(
-                    Number(antiWhalePercentage) > 0 &&
-                    Number(antiWhalePercentage) <= 3
-                  ) && (
-                    <p className="error">
-                      Percentage must be greater than 0 and less than or equal
-                      to 3
-                    </p>
-                  )}
-                </div>
-              )}
+              <div className="inputGroup">
+                <label className="inputTitle">Anti-Whale Percentage*</label>
+                <input
+                  onKeyDown={(evt) =>
+                    ["e", "E", "+", "-", "."].includes(evt.key) &&
+                    evt.preventDefault()
+                  }
+                  onChange={setAntiWhalePercentageInput}
+                  className="tokenInput"
+                  placeholder="3"
+                  type="number"
+                  value={antiWhalePercentage}
+                />
+                {!(
+                  Number(antiWhalePercentage) > 0 &&
+                  Number(antiWhalePercentage) <= 3
+                ) && (
+                  <p className="error">
+                    Percentage must be greater than 0 and less than or equal to
+                    3
+                  </p>
+                )}
+              </div>
               {isClient && tokenType === "safeMemeTokenLaunched" && (
                 <div className="inputGroup">
                   <label className="inputTitle">Token B Address*</label>
@@ -449,10 +474,6 @@ export default function Factory(): JSX.Element {
                   Number(decimals) >= 0 &&
                   Number(decimals) <= 18 &&
                   Number(supply) >= 0 &&
-                  (tokenType !== "tokenVyper"
-                    ? Number(antiWhalePercentage) > 0 &&
-                      Number(antiWhalePercentage) <= 3
-                    : true) &&
                   !(isLoadingTransaction || isLoadingWrite)
                     ? "enabled"
                     : "disabled"
@@ -464,10 +485,6 @@ export default function Factory(): JSX.Element {
                     Number(decimals) >= 0 &&
                     Number(decimals) <= 18 &&
                     Number(supply) >= 0 &&
-                    (tokenType !== "tokenVyper"
-                      ? Number(antiWhalePercentage) > 0 &&
-                        Number(antiWhalePercentage) <= 3
-                      : true) &&
                     !(isLoadingTransaction || isLoadingWrite)
                   )
                 }

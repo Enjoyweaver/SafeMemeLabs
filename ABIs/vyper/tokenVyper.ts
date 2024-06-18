@@ -49,6 +49,19 @@ export const tokenVyperABI = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "creationFee",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     anonymous: false,
     inputs: [
       {
