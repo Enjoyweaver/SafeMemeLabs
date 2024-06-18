@@ -13,7 +13,7 @@ const frameMetadata = getFrameMetadata({
   input: {
     text: "Your Email",
   },
-  //postUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/advanced`,
+  postUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/advanced`,
 })
 
 export const metadata: Metadata = {
