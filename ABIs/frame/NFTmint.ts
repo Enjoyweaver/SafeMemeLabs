@@ -1,4 +1,4 @@
-;[
+export const MintABI = [
   {
     inputs: [],
     stateMutability: "nonpayable",
