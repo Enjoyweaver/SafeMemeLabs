@@ -66,29 +66,6 @@ export default function Factory(): JSX.Element {
 
   useEffect(() => {
     if (chain && chain.id) {
-      const vyperAddress = tokenVyperDetails[chain.id] || ""
-      if (vyperAddress) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const contract = new ethers.Contract(
-          vyperAddress,
-          tokenVyperABI,
-          provider
-        )
-
-        contract
-          .creationFee()
-          .then((fee: ethers.BigNumber) => {
-            setCreationFee(ethers.utils.formatEther(fee))
-          })
-          .catch((error: any) => {
-            console.error("Error fetching creation fee:", error)
-          })
-      }
-    }
-  }, [chain])
-
-  useEffect(() => {
-    if (chain && chain.id) {
       const launcherAddress = tokenLauncherDetails[chain.id] || ""
       const deployerAddress = tokenDeployerDetails[chain.id] || ""
       const vyperAddress = tokenVyperDetails[chain.id] || ""
