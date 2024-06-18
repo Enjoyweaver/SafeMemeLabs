@@ -214,7 +214,6 @@ export default function Factory(): JSX.Element {
     onSettled(data, error) {
       if (data) {
         const tokenAddress = data.contractAddress
-        handleCreateExchange(tokenAddress)
         setModalMessage(
           "Token successfully deployed! Exchange created! Go to the Dashboard to check it out! Then grab the contract address and import it into your wallet."
         )

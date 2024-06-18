@@ -427,5 +427,5 @@ export const tokenVyperDetails: {
 } = {
   "137": "0xYourVyperTokenAddressForPolygon",
   "250": "0xYourVyperTokenAddressForFantom",
-  "4002": "0x66ACf405f0e9557A8164b2a26A0b5439388D1961",
+  "4002": "0x04Acaf5ECED5f0E6f82d8dD361185e38B41CF34E",
 }
