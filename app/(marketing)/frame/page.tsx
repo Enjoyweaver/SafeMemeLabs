@@ -8,7 +8,7 @@ const frameMetadata = getFrameMetadata({
     },
   ],
   image: {
-    src: `${process.env.NEXT_PUBLIC_SITE_URL}/images/luckyducks/Adam_G.jpg`, // Ensure this is a valid image URL
+    src: `${process.env.NEXT_PUBLIC_SITE_URL}/images/luckyducks/Adam G.jpg`, // Ensure this is a valid image URL
   },
   input: {
     text: "Your Wallet Address",
