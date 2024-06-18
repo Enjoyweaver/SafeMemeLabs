@@ -23,6 +23,8 @@ import {
   useWaitForTransaction,
 } from "wagmi"
 
+import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
+
 import { capitalizeFirstLetter } from "../../../utils/capitilizeFirstLetter"
 import Modal from "./Modal"
 
