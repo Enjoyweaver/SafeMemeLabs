@@ -1,38 +1,59 @@
-import type { Metadata } from "next"
-import { getFrameMetadata } from "@coinbase/onchainkit"
+"use client"
 
-const frameMetadata = getFrameMetadata({
-  buttons: [
-    {
-      label: "Sign Up!",
-    },
-  ],
-  image: {
-    src: `${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`,
-  },
-  input: {
-    text: "Your Email",
-  },
-  postUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/advanced`,
-})
-
-export const metadata: Metadata = {
-  title: "Safe Frame",
-  description: "Another, more advanced frame example",
-  openGraph: {
-    title: "Safe Frame",
-    description: "Another, more advanced frame example",
-    images: [`${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`],
-  },
-  other: {
-    ...frameMetadata,
-  },
-}
+import { useState } from "react"
 
 export default function Page() {
+  const [email, setEmail] = useState("")
+  const [userAddress, setUserAddress] = useState("")
+  const [imageUrl, setImageUrl] = useState("")
+  const [message, setMessage] = useState("")
+
+  const handleMint = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userAddress }),
+        }
+      )
+
+      const data = await response.json()
+
+      if (data.success) {
+        setImageUrl(data.imageUrl)
+        setMessage("Minting successful!")
+      } else {
+        setMessage(`Minting failed: ${data.error}`)
+      }
+    } catch (error) {
+      setMessage(`Minting failed: ${error.message}`)
+    }
+  }
+
   return (
     <>
       <h1>Safe Frame</h1>
+      <div>
+        <input
+          type="text"
+          placeholder="Your Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Your Wallet Address"
+          value={userAddress}
+          onChange={(e) => setUserAddress(e.target.value)}
+        />
+        <button onClick={handleMint}>Mint Random NFT</button>
+        {imageUrl && <img src={imageUrl} alt="Minted NFT" />}
+        {message && <p>{message}</p>}
+      </div>
     </>
   )
 }
