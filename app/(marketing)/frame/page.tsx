@@ -34,19 +34,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
-      <h1>Mint NFT</h1>
-      <form
-        method="POST"
-        action={`${process.env.NEXT_PUBLIC_SITE_URL}/api/mint`}
-      >
-        <input type="text" name="email" placeholder="Your Email" />
-        <input
-          type="text"
-          name="userAddress"
-          placeholder="Your Wallet Address"
-        />
-        <button type="submit">Mint Random NFT</button>
-      </form>
+      <h1>Safe Frame</h1>
     </>
   )
 }
