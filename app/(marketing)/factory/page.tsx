@@ -4,7 +4,6 @@ import { ChangeEvent, useEffect, useState } from "react"
 import Link from "next/link"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
-import { factoryABI } from "@/ABIs/vyper/factory"
 import { tokenVyperABI } from "@/ABIs/vyper/tokenVyper"
 import { ethers } from "ethers"
 import { toast } from "react-toastify"
@@ -269,32 +268,6 @@ export default function Factory(): JSX.Element {
     )
     setShowModal(true)
     write?.()
-  }
-
-  const { config: createExchangeConfig } = usePrepareContractWrite({
-    address: factoryAddress,
-    abi: factoryABI,
-    functionName: "createExchange",
-    args: [data?.contractAddress],
-  })
-
-  const { write: createExchange, data: createExchangeData } =
-    useContractWrite(createExchangeConfig)
-
-  const { isSuccess: isExchangeCreated } = useWaitForTransaction({
-    hash: createExchangeData?.hash,
-    onSuccess() {
-      setModalMessage("Exchange created successfully!")
-      setShowModal(true)
-    },
-    onError(error) {
-      setModalMessage(`Error creating exchange: ${error.message}`)
-      setShowModal(true)
-    },
-  })
-
-  const handleCreateExchange = (tokenAddress: string) => {
-    createExchange?.()
   }
 
   const toggleErrorMenuOpen = () => {
