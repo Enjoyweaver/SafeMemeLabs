@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import { ethers } from "ethers"
 
+// Ensure environment variables are defined
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
@@ -308,8 +309,15 @@ async function mintNFT(imageUrl: string, userAddress: string) {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  const body = await req.json()
-  const userAddress = body.userAddress
+  let userAddress
+
+  if (req.headers.get("content-type") === "application/json") {
+    const body = await req.json()
+    userAddress = body.userAddress
+  } else {
+    const formData = await req.formData()
+    userAddress = formData.get("userAddress")
+  }
 
   if (!userAddress) {
     return NextResponse.json(
