@@ -214,12 +214,6 @@ export default function Factory(): JSX.Element {
     }
   }, [prepareError])
 
-  useEffect(() => {
-    if (prepareError) {
-      console.error("Error preparing contract write:", prepareError)
-    }
-  }, [prepareError])
-
   const {
     data,
     isLoading: isLoadingWrite,
