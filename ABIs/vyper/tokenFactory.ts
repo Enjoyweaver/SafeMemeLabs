@@ -3,20 +3,7 @@ export const tokenFactoryABI = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_creationFee",
-        type: "uint256",
-      },
-    ],
-    name: "changeCreationFee",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_creation_fee",
+        name: "creation_fee",
         type: "uint256",
       },
     ],
@@ -27,44 +14,13 @@ export const tokenFactoryABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
+        indexed: false,
         internalType: "address",
-        name: "token_address",
+        name: "addr",
         type: "address",
       },
-      {
-        indexed: false,
-        internalType: "string",
-        name: "symbol",
-        type: "string",
-      },
-      {
-        indexed: false,
-        internalType: "string",
-        name: "name",
-        type: "string",
-      },
     ],
-    name: "TokenDeployed",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "recipient",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "FeeWithdrawn",
+    name: "Log",
     type: "event",
   },
   {
@@ -81,125 +37,256 @@ export const tokenFactoryABI = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "fee_collector",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "deployed_count",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "get_deployed_token_count",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "address",
-        name: "_user",
+        name: "_masterCopy",
         type: "address",
       },
-    ],
-    name: "get_tokens_deployed_by_user",
-    outputs: [
       {
-        internalType: "address[100]",
-        name: "",
-        type: "address[100]",
+        internalType: "address",
+        name: "owner",
+        type: "address",
       },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_new_fee",
-        type: "uint256",
-      },
-    ],
-    name: "change_creation_fee",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "withdraw_fees",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
       {
         internalType: "string",
-        name: "_symbol",
+        name: "name",
         type: "string",
       },
       {
         internalType: "string",
-        name: "_name",
+        name: "symbol",
         type: "string",
       },
       {
-        internalType: "uint8",
-        name: "_decimals",
-        type: "uint8",
-      },
-      {
         internalType: "uint256",
-        name: "_initial_supply",
+        name: "decimals",
         type: "uint256",
       },
       {
-        internalType: "uint8",
-        name: "_anti_whale_percentage",
-        type: "uint8",
+        internalType: "uint256",
+        name: "totalSupply",
+        type: "uint256",
       },
       {
-        internalType: "address",
-        name: "_master_copy",
-        type: "address",
+        internalType: "uint256",
+        name: "antiWhalePercentage",
+        type: "uint256",
       },
     ],
-    name: "deploy_token",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
+    name: "deploy",
+    outputs: [],
     stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_masterCopy",
+        type: "address",
+      },
+      {
+        internalType: "string",
+        name: "name",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "symbol",
+        type: "string",
+      },
+      {
+        internalType: "uint256",
+        name: "decimals",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "totalSupply",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "antiWhalePercentage",
+        type: "uint256",
+      },
+    ],
+    name: "deployTest",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "name",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "symbol",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "decimals",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "totalSupply",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "antiWhalePercentage",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "creationFee",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "name",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "symbol",
+        type: "string",
+      },
+      {
+        internalType: "uint256",
+        name: "decimals",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "totalSupply",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "antiWhalePercentage",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "creationFee",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+      {
+        internalType: "string",
+        name: "name",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "symbol",
+        type: "string",
+      },
+      {
+        internalType: "uint256",
+        name: "decimals",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "totalSupply",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "antiWhalePercentage",
+        type: "uint256",
+      },
+    ],
+    name: "setup",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "kill",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
 ]

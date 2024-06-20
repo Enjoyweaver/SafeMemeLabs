@@ -14,6 +14,7 @@ import "./factory.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
 import {
+  masterVyperTokenCopy,
   tokenBOptions,
   tokenDeployerDetails,
   tokenLauncherDetails,
@@ -55,6 +56,7 @@ export default function Factory(): JSX.Element {
   const [errorMenu, setErrorMenu] = useState(false)
   const { isConnected } = useAccount()
   const { chain } = useNetwork()
+  const { address: ownerAddress } = useAccount()
 
   const [showModal, setShowModal] = useState(false)
   const [modalMessage, setModalMessage] = useState("")
@@ -154,7 +156,7 @@ export default function Factory(): JSX.Element {
         : tokenType === "tokenVyper"
         ? tokenFactoryABI
         : tokenDeployerABI,
-    functionName: tokenType === "tokenVyper" ? "deploy_token" : "deployToken",
+    functionName: tokenType === "tokenVyper" ? "deploy" : "deployToken",
     args:
       tokenType === "safeMemeTokenLaunched"
         ? [
@@ -167,12 +169,13 @@ export default function Factory(): JSX.Element {
           ]
         : tokenType === "tokenVyper"
         ? [
-            dSymbol,
+            masterVyperTokenCopy[chainId], // Master copy address for Vyper tokens
+            ownerAddress, // Ensure owner address is passed correctly
             dName,
+            dSymbol,
             dDecimals ? Number(dDecimals) : 18,
             BigInt(dSupply),
             Number(dAntiWhalePercentage),
-            tokenVyperDetails[chainId], // Master copy address for Vyper tokens
           ]
         : [
             dSymbol,
@@ -238,6 +241,18 @@ export default function Factory(): JSX.Element {
       toast.error("Configuration error: Missing Vyper factory address.")
       return
     }
+
+    console.log("Deploying with args:", {
+      masterCopy: masterVyperTokenCopy[chainId],
+      owner: ownerAddress,
+      name: dName,
+      symbol: dSymbol,
+      decimals: dDecimals ? Number(dDecimals) : 18,
+      totalSupply: BigInt(dSupply),
+      antiWhalePercentage: Number(dAntiWhalePercentage),
+      value: deployFee,
+    })
+
     setModalMessage(
       "Depending on which blockchain you created a token on, it could take anywhere from 2 seconds to 20 seconds."
     )
