@@ -1,17 +1,24 @@
 "use client"
 
 import { ChangeEvent, useEffect, useState } from "react"
+import Link from "next/link"
+import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
+import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
 import { tokenFactoryABI } from "@/ABIs/vyper/tokenFactory"
 import { ethers } from "ethers"
 import { toast } from "react-toastify"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
-import { capitalizeFirstLetter } from "../../../utils/capitilizeFirstLetter"
+import "./factory.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
-import Link from "next/link"
-import { tokenVyperDetails } from "@/Constants/config"
+import {
+  tokenBOptions,
+  tokenDeployerDetails,
+  tokenLauncherDetails,
+  tokenVyperDetails,
+} from "@/Constants/config"
 import { useDebounce } from "usehooks-ts"
 import {
   useAccount,
@@ -24,20 +31,25 @@ import {
 
 import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 
+import { capitalizeFirstLetter } from "../../../utils/capitilizeFirstLetter"
 import Modal from "./Modal"
-import "./factory.css"
 
-export default function VyperTokenPage(): JSX.Element {
+export default function Factory(): JSX.Element {
+  const [tokenType, setTokenType] = useState<string>("safeMemeToken")
   const [name, setName] = useState<string>("")
   const [symbol, setSymbol] = useState<string>("")
   const [supply, setSupply] = useState<string>("")
   const [decimals, setDecimals] = useState<string>("")
   const [antiWhalePercentage, setAntiWhalePercentage] = useState<string>("")
+  const [selectedTokenB, setSelectedTokenB] = useState<string>("")
+  const [tokenLauncher, setTokenLauncher] = useState<string>("")
   const dName = useDebounce(name, 500)
   const dSymbol = useDebounce(symbol, 500)
   const dSupply = useDebounce(supply, 500)
   const dDecimals = useDebounce(decimals, 500)
   const dAntiWhalePercentage = useDebounce(antiWhalePercentage, 500)
+  const dSelectedTokenB = useDebounce(selectedTokenB, 500)
+  const dTokenLauncher = useDebounce(tokenLauncher, 500)
   const [creationFee, setCreationFee] = useState<string>("")
   const [isClient, setIsClient] = useState(false)
   const [errorMenu, setErrorMenu] = useState(false)
@@ -51,18 +63,32 @@ export default function VyperTokenPage(): JSX.Element {
     setIsClient(true)
   }, [])
 
-  const chainId: string | number = chain ? chain.id : 250
-
   useEffect(() => {
     if (chain && chain.id) {
+      const launcherAddress = tokenLauncherDetails[chain.id] || ""
+      const deployerAddress = tokenDeployerDetails[chain.id] || ""
       const vyperAddress = tokenVyperDetails[chain.id] || ""
+
+      console.log("Launcher Address:", launcherAddress)
+      console.log("Deployer Address:", deployerAddress)
       console.log("Vyper Address:", vyperAddress)
 
-      if (!vyperAddress) {
+      if (!launcherAddress && tokenType === "safeMemeTokenLaunched") {
         console.error(`Missing addresses for chain ID ${chain.id}`)
       }
+      if (!deployerAddress && tokenType === "safeMemeToken") {
+        console.error(`Missing addresses for chain ID ${chain.id}`)
+      }
+      if (!vyperAddress && tokenType === "tokenVyper") {
+        console.error(`Missing addresses for chain ID ${chain.id}`)
+      }
+
+      setTokenLauncher(launcherAddress)
+
+      // Ensure selectedTokenB is set based on current chain
+      setSelectedTokenB(tokenBOptions[chain.id]?.[0]?.address || "")
     }
-  }, [chain])
+  }, [chain, tokenType])
 
   const setTokenName = (e: ChangeEvent<HTMLInputElement>) =>
     setName(e.target.value)
@@ -74,17 +100,33 @@ export default function VyperTokenPage(): JSX.Element {
     setDecimals(e.target.value)
   const setAntiWhalePercentageInput = (e: ChangeEvent<HTMLInputElement>) =>
     setAntiWhalePercentage(e.target.value)
+  const setTokenBAddress = (e: ChangeEvent<HTMLSelectElement>) =>
+    setSelectedTokenB(e.target.value)
 
   const isFormFilled = (): boolean =>
     name.trim().length > 0 &&
     symbol.trim().length > 0 &&
-    supply.trim().length > 0
+    supply.trim().length > 0 &&
+    (tokenType === "safeMemeTokenLaunched"
+      ? selectedTokenB.trim().length > 0
+      : true)
 
-  // Fetch the creation fee on page load
+  const chainId: string | number = chain ? chain.id : 250
+
   const { data: deployFee, error: readError } = useContractRead({
-    address: tokenVyperDetails[chainId] as `0x${string}`,
-    abi: tokenFactoryABI,
-    functionName: "creation_fee",
+    address:
+      tokenType === "safeMemeTokenLaunched"
+        ? (tokenLauncherDetails[chainId] as `0x${string}`)
+        : tokenType === "tokenVyper"
+        ? (tokenVyperDetails[chainId] as `0x${string}`)
+        : (tokenDeployerDetails[chainId] as `0x${string}`),
+    abi:
+      tokenType === "safeMemeTokenLaunched"
+        ? tokenLauncherABI
+        : tokenType === "tokenVyper"
+        ? tokenFactoryABI
+        : tokenDeployerABI,
+    functionName: tokenType === "tokenVyper" ? "creation_fee" : "creationFee",
     onError: (error) => {
       console.error("Error fetching creation fee:", error)
     },
@@ -94,49 +136,61 @@ export default function VyperTokenPage(): JSX.Element {
     },
   })
 
-  // Prepare the contract write function for token deployment
   const {
     config,
     error: prepareError,
     isError: isPrepareError,
     isLoading: isLoadingPrepare,
   } = usePrepareContractWrite({
-    address: tokenVyperDetails[chainId] as `0x${string}`,
-    abi: tokenFactoryABI,
-    functionName: "deploy_token",
-    args: [
-      dSymbol && dSymbol.trim()
-        ? ethers.utils.formatBytes32String(dSymbol)
-        : ethers.constants.HashZero,
-      dName && dName.trim()
-        ? ethers.utils.formatBytes32String(dName)
-        : ethers.constants.HashZero,
-      dDecimals ? Number(dDecimals) : 18,
-      dSupply ? BigInt(dSupply) : BigInt(0),
-      dAntiWhalePercentage ? Number(dAntiWhalePercentage) : 0,
-      tokenVyperDetails[chainId] || ethers.constants.AddressZero,
-    ],
+    address:
+      tokenType === "safeMemeTokenLaunched"
+        ? (tokenLauncherDetails[chainId] as `0x${string}`)
+        : tokenType === "tokenVyper"
+        ? (tokenVyperDetails[chainId] as `0x${string}`)
+        : (tokenDeployerDetails[chainId] as `0x${string}`),
+    abi:
+      tokenType === "safeMemeTokenLaunched"
+        ? tokenLauncherABI
+        : tokenType === "tokenVyper"
+        ? tokenFactoryABI
+        : tokenDeployerABI,
+    functionName: tokenType === "tokenVyper" ? "deploy_token" : "deployToken",
+    args:
+      tokenType === "safeMemeTokenLaunched"
+        ? [
+            dSymbol,
+            dName,
+            dDecimals ? Number(dDecimals) : 18,
+            BigInt(dSupply),
+            Number(dAntiWhalePercentage),
+            dSelectedTokenB, // Include TokenB address
+          ]
+        : tokenType === "tokenVyper"
+        ? [
+            dSymbol,
+            dName,
+            dDecimals ? Number(dDecimals) : 18,
+            BigInt(dSupply),
+            Number(dAntiWhalePercentage),
+            tokenVyperDetails[chainId], // Master copy address for Vyper tokens
+          ]
+        : [
+            dSymbol,
+            dName,
+            dDecimals ? Number(dDecimals) : 18,
+            BigInt(dSupply),
+            Number(dAntiWhalePercentage),
+          ],
     value: deployFee,
-    enabled:
-      dSymbol &&
-      dSymbol.trim() &&
-      dName &&
-      dName.trim() &&
-      dSupply &&
-      dSupply.trim() &&
-      dDecimals &&
-      dAntiWhalePercentage,
     cacheTime: 0,
   })
 
-  // Log the preparation error if it occurs
   useEffect(() => {
     if (prepareError) {
       console.error("Error preparing contract write:", prepareError)
     }
   }, [prepareError])
 
-  // Execute the contract write function
   const {
     data,
     isLoading: isLoadingWrite,
@@ -146,14 +200,12 @@ export default function VyperTokenPage(): JSX.Element {
     isError,
   } = useContractWrite(config)
 
-  // Log any contract write errors
   useEffect(() => {
     if (error) {
       console.error("Error writing contract:", error)
     }
   }, [error])
 
-  // Handle the transaction wait
   const {
     data: useWaitData,
     isLoading: isLoadingTransaction,
@@ -174,9 +226,15 @@ export default function VyperTokenPage(): JSX.Element {
     },
   })
 
-  // Handle the deploy button click
   const handleDeployClick = () => {
-    if (!tokenVyperDetails[chainId]) {
+    if (
+      tokenType === "safeMemeTokenLaunched" &&
+      (!tokenLauncher || !selectedTokenB)
+    ) {
+      toast.error("Configuration error: Missing required addresses.")
+      return
+    }
+    if (tokenType === "tokenVyper" && !tokenVyperDetails[chainId]) {
       toast.error("Configuration error: Missing Vyper factory address.")
       return
     }
@@ -200,7 +258,7 @@ export default function VyperTokenPage(): JSX.Element {
         onClose={() => setShowModal(false)}
       />
       <div className="flex min-h-screen flex-col">
-        {isClient && chainId && !tokenVyperDetails[chainId] && (
+        {isClient && chainId && !tokenDeployerDetails[chainId] && (
           <ChangeNetwork
             changeNetworkToChainId={250}
             dappName={"SafeMeme Labs"}
@@ -208,6 +266,53 @@ export default function VyperTokenPage(): JSX.Element {
           />
         )}
         <div>
+          <div className="tokenTypeButtonsContainer">
+            <div className="tokenTypeButtonContainer">
+              <button
+                className={`tokenTypeButton ${
+                  tokenType === "safeMemeToken" ? "active" : ""
+                } hideButton`}
+                onClick={() => setTokenType("safeMemeToken")}
+              >
+                SafeMeme Deployed
+              </button>
+              <div className="tokenTypeButtonPopup">
+                Deploy a SafeMeme token and 100% of the supply will be sent to
+                your wallet for you to choose where to launch it for people to
+                purchase.
+              </div>
+            </div>
+            <div className="tokenTypeButtonContainer">
+              <button
+                className={`tokenTypeButton ${
+                  tokenType === "safeMemeTokenLaunched" ? "active" : ""
+                } hideButton`}
+                onClick={() => setTokenType("safeMemeTokenLaunched")}
+              >
+                SafeMeme Launched
+              </button>
+              <div className="tokenTypeButtonPopup">
+                Create and launch a SafeMeme token on our swap where 5% of the
+                supply is available to trade while the remaining 95% is unlocked
+                at different liquidity levels.
+              </div>
+            </div>
+            <div className="tokenTypeButtonContainer">
+              <button
+                className={`tokenTypeButton ${
+                  tokenType === "tokenVyper" ? "active" : ""
+                } hideButton`}
+                onClick={() => setTokenType("tokenVyper")}
+              >
+                Vyper ERC-20 Token
+              </button>
+              <div className="tokenTypeButtonPopup">
+                Create a standard ERC-20 token using Vyper smart contract
+                language.
+              </div>
+            </div>
+          </div>
+
           <div className="tokenDeployer">
             <h1 className="title">Create Your Token</h1>
             <p className="subtitle">
@@ -286,6 +391,23 @@ export default function VyperTokenPage(): JSX.Element {
                   </p>
                 )}
               </div>
+              {isClient && tokenType === "safeMemeTokenLaunched" && (
+                <div className="inputGroup">
+                  <label className="inputTitle">Token B Address*</label>
+                  <select
+                    onChange={setTokenBAddress}
+                    className="tokenInput"
+                    value={selectedTokenB}
+                  >
+                    <option value="">Select Token B</option>
+                    {tokenBOptions[chainId]?.map((token) => (
+                      <option key={token.address} value={token.address}>
+                        {token.symbol}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <button
                 onClick={handleDeployClick}
                 className={`deployButton ${
