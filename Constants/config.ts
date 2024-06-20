@@ -429,7 +429,7 @@ export const tokenVyperDetails: {
 } = {
   "137": "0xYourVyperTokenAddressForPolygon",
   "250": "0xYourVyperTokenAddressForFantom",
-  "4002": "0x2568811CFfb8286A8dBe481Ef85404202D9a4bD7",
+  "4002": "0x0480cB769Ab2ABEE43B6EaA018E5ac3B5d8D246c",
 }
 
 export const frameFactoryDetails: {

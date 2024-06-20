@@ -1,4 +1,4 @@
-const tokenFactoryABI = [
+export const tokenFactoryABI = [
   {
     inputs: [
       {

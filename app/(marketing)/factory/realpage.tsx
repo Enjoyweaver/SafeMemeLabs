@@ -126,12 +126,13 @@ export default function Factory(): JSX.Element {
         : tokenType === "tokenVyper"
         ? tokenFactoryABI
         : tokenDeployerABI,
-    functionName: "creationFee",
+    functionName: tokenType === "tokenVyper" ? "creation_fee" : "creationFee",
     onError: (error) => {
       console.error("Error fetching creation fee:", error)
     },
     onSuccess: (data) => {
       console.log("Creation fee fetched:", data)
+      setCreationFee(data.toString())
     },
   })
 
@@ -153,7 +154,7 @@ export default function Factory(): JSX.Element {
         : tokenType === "tokenVyper"
         ? tokenFactoryABI
         : tokenDeployerABI,
-    functionName: "deploy_token",
+    functionName: tokenType === "tokenVyper" ? "deploy_token" : "deployToken",
     args:
       tokenType === "safeMemeTokenLaunched"
         ? [
@@ -164,13 +165,21 @@ export default function Factory(): JSX.Element {
             Number(dAntiWhalePercentage),
             dSelectedTokenB, // Include TokenB address
           ]
+        : tokenType === "tokenVyper"
+        ? [
+            dSymbol,
+            dName,
+            dDecimals ? Number(dDecimals) : 18,
+            BigInt(dSupply),
+            Number(dAntiWhalePercentage),
+            tokenVyperDetails[chainId], // Master copy address for Vyper tokens
+          ]
         : [
             dSymbol,
             dName,
             dDecimals ? Number(dDecimals) : 18,
             BigInt(dSupply),
             Number(dAntiWhalePercentage),
-            dTokenLauncher, // Master copy address for Vyper tokens
           ],
     value: deployFee,
     cacheTime: 0,
@@ -216,8 +225,6 @@ export default function Factory(): JSX.Element {
       }
     },
   })
-
-  const factoryAddress = tokenVyperDetails[chainId]
 
   const handleDeployClick = () => {
     if (
