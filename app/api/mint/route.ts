@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { MintABI } from "@/ABIs/frame/NFTmint"
+import MintABI from "@/ABIs/frame/NFTmint"
 import { createClient } from "@supabase/supabase-js"
 import { ethers } from "ethers"
 
@@ -14,7 +14,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // Initialize Supabase client
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-// Function to get a random image URL that has not been minted yet
 const getRandomImage = async () => {
   const { data, error } = await supabase
     .from("minted_images")
@@ -45,7 +44,6 @@ async function markImageAsMinted(imageUrl: string) {
 }
 
 async function mintNFT(imageUrl: string, userAddress: string) {
-  // Ensure environment variables are defined
   const rpcUrl = process.env.RPC_URL
   const privateKey = process.env.PRIVATE_KEY
   const contractAddress = process.env.CONTRACT_ADDRESS
@@ -54,12 +52,11 @@ async function mintNFT(imageUrl: string, userAddress: string) {
     throw new Error("Missing environment variables")
   }
 
-  // Integrate with your blockchain minting logic here
   const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
   const wallet = new ethers.Wallet(privateKey, provider)
   const contract = new ethers.Contract(contractAddress, MintABI, wallet)
 
-  const tx = await contract.mint(userAddress, imageUrl)
+  const tx = await contract.mintNFT(userAddress, imageUrl)
   await tx.wait()
 }
 

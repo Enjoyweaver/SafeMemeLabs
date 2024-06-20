@@ -155,7 +155,8 @@ export const blockExplorerUrls: { [key: string]: string } = {
   "43114": "https://snowtrace.io/tx/",
   "30": "https://explorer.rsk.co/tx/",
   "666666666": "https://degenscan.io/tx/",
-  "501": "https://explorer.solana.com/tx/", // Add Solana testnet block explorer URL
+  "501": "https://explorer.solana.com/tx/",
+  "84532": "https://sepolia-explorer.base.org",
 }
 
 export const blockExplorers: { [key: string]: string } = {
@@ -166,7 +167,8 @@ export const blockExplorers: { [key: string]: string } = {
   "43114": "https://snowtrace.io/",
   "30": "https://explorer.rsk.co/",
   "666666666": "https://degenscan.io/",
-  "501": "https://explorer.solana.com/", // Add Solana testnet block explorer URL
+  "501": "https://explorer.solana.com/",
+  "84532": "https://sepolia.base.org",
 }
 
 export const chainIdToCovalentChainId: { [key: string]: string } = {
@@ -378,13 +380,13 @@ export const poolAddressDetails: { [key: string]: string } = {
   "501": "YourTokenAddressForSolanaTestnetLaunched",
 }
 
-export const tokenExchangeDetails: { [key: string]: string } = {
+export const vyperExchangeDetails: { [key: string]: string } = {
   "666666666": "0xe92163f8038843091c1df18f726cf04526ef9677",
   "250": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
   "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
   "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
   "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
-  "4002": "0x5979926DB1522391BF837f9F650ECa44bABd5fD2",
+  "4002": "0x88a005d9c0Fb4607210124f14031A73590899647",
   "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
   "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
   "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
@@ -393,13 +395,13 @@ export const tokenExchangeDetails: { [key: string]: string } = {
   "501": "YourTokenAddressForSolanaTestnetLaunched",
 }
 
-export const tokenFactoryDetails: { [key: string]: string } = {
+export const vyperExchangeFactoryDetails: { [key: string]: string } = {
   "666666666": "0xe92163f8038843091c1df18f726cf04526ef9677",
   "250": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
   "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
   "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
   "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
-  "4002": "0x8a46c46Ca6cd6FAa8411B2252205Cd5fFb9cC39b",
+  "4002": "0xb10650f1957dcCf7f16b01AB24D825d70A5B9A85",
   "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
   "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
   "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
@@ -427,5 +429,14 @@ export const tokenVyperDetails: {
 } = {
   "137": "0xYourVyperTokenAddressForPolygon",
   "250": "0xYourVyperTokenAddressForFantom",
+  "4002": "0x2568811CFfb8286A8dBe481Ef85404202D9a4bD7",
+}
+
+export const frameFactoryDetails: {
+  [key: string]: string
+} = {
+  "137": "0xYourVyperTokenAddressForPolygon",
+  "250": "0xYourVyperTokenAddressForFantom",
   "4002": "0x04Acaf5ECED5f0E6f82d8dD361185e38B41CF34E",
+  "84532": "0x04Acaf5ECED5f0E6f82d8dD361185e38B41CF34E",
 }
