@@ -40,14 +40,12 @@ export default function Factory(): JSX.Element {
   const [name, setName] = useState<string>("")
   const [symbol, setSymbol] = useState<string>("")
   const [supply, setSupply] = useState<string>("")
-  const [decimals, setDecimals] = useState<string>("")
   const [antiWhalePercentage, setAntiWhalePercentage] = useState<string>("")
   const [selectedTokenB, setSelectedTokenB] = useState<string>("")
   const [tokenLauncher, setTokenLauncher] = useState<string>("")
   const dName = useDebounce(name, 500)
   const dSymbol = useDebounce(symbol, 500)
   const dSupply = useDebounce(supply, 500)
-  const dDecimals = useDebounce(decimals, 500)
   const dAntiWhalePercentage = useDebounce(antiWhalePercentage, 500)
   const dSelectedTokenB = useDebounce(selectedTokenB, 500)
   const dTokenLauncher = useDebounce(tokenLauncher, 500)
@@ -98,8 +96,6 @@ export default function Factory(): JSX.Element {
     setSymbol(e.target.value)
   const setTokenSupply = (e: ChangeEvent<HTMLInputElement>) =>
     setSupply(e.target.value)
-  const setTokenDecimals = (e: ChangeEvent<HTMLInputElement>) =>
-    setDecimals(e.target.value)
   const setAntiWhalePercentageInput = (e: ChangeEvent<HTMLInputElement>) =>
     setAntiWhalePercentage(e.target.value)
   const setTokenBAddress = (e: ChangeEvent<HTMLSelectElement>) =>
@@ -162,28 +158,13 @@ export default function Factory(): JSX.Element {
         ? [
             dSymbol,
             dName,
-            dDecimals ? Number(dDecimals) : 18,
             BigInt(dSupply),
             Number(dAntiWhalePercentage),
             dSelectedTokenB, // Include TokenB address
           ]
         : tokenType === "tokenVyper"
-        ? [
-            masterVyperTokenCopy[chainId], // Master copy address for Vyper tokens
-            ownerAddress, // Ensure owner address is passed correctly
-            dName,
-            dSymbol,
-            dDecimals ? Number(dDecimals) : 18,
-            BigInt(dSupply),
-            Number(dAntiWhalePercentage),
-          ]
-        : [
-            dSymbol,
-            dName,
-            dDecimals ? Number(dDecimals) : 18,
-            BigInt(dSupply),
-            Number(dAntiWhalePercentage),
-          ],
+        ? [dName, dSymbol, BigInt(dSupply), Number(dAntiWhalePercentage)]
+        : [dSymbol, dName, BigInt(dSupply), Number(dAntiWhalePercentage)],
     value: deployFee,
     cacheTime: 0,
   })
@@ -243,11 +224,8 @@ export default function Factory(): JSX.Element {
     }
 
     console.log("Deploying with args:", {
-      masterCopy: masterVyperTokenCopy[chainId],
-      owner: ownerAddress,
       name: dName,
       symbol: dSymbol,
-      decimals: dDecimals ? Number(dDecimals) : 18,
       totalSupply: BigInt(dSupply),
       antiWhalePercentage: Number(dAntiWhalePercentage),
       value: deployFee,
@@ -367,23 +345,6 @@ export default function Factory(): JSX.Element {
                 />
               </div>
               <div className="inputGroup">
-                <label className="inputTitle">Decimals</label>
-                <input
-                  onKeyDown={(evt) =>
-                    ["e", "E", "+", "-"].includes(evt.key) &&
-                    evt.preventDefault()
-                  }
-                  onChange={setTokenDecimals}
-                  className="tokenInput"
-                  placeholder="18"
-                  type="number"
-                  value={decimals}
-                />
-                {!(Number(decimals) >= 0 && Number(decimals) <= 18) && (
-                  <p className="error">Decimals must be from 0 to 18</p>
-                )}
-              </div>
-              <div className="inputGroup">
                 <label className="inputTitle">Anti-Whale Percentage*</label>
                 <input
                   onKeyDown={(evt) =>
@@ -428,8 +389,6 @@ export default function Factory(): JSX.Element {
                 className={`deployButton ${
                   isConnected &&
                   isFormFilled() &&
-                  Number(decimals) >= 0 &&
-                  Number(decimals) <= 18 &&
                   Number(supply) >= 0 &&
                   !(isLoadingTransaction || isLoadingWrite)
                     ? "enabled"
@@ -439,8 +398,6 @@ export default function Factory(): JSX.Element {
                   !(
                     isConnected &&
                     isFormFilled() &&
-                    Number(decimals) >= 0 &&
-                    Number(decimals) <= 18 &&
                     Number(supply) >= 0 &&
                     !(isLoadingTransaction || isLoadingWrite)
                   )

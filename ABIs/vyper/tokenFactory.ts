@@ -3,7 +3,7 @@ export const tokenFactoryABI = [
     inputs: [
       {
         internalType: "uint256",
-        name: "creation_fee",
+        name: "_creation_fee",
         type: "uint256",
       },
     ],
@@ -39,16 +39,6 @@ export const tokenFactoryABI = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "_masterCopy",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
         internalType: "string",
         name: "name",
         type: "string",
@@ -57,11 +47,6 @@ export const tokenFactoryABI = [
         internalType: "string",
         name: "symbol",
         type: "string",
-      },
-      {
-        internalType: "uint256",
-        name: "decimals",
-        type: "uint256",
       },
       {
         internalType: "uint256",
@@ -83,121 +68,11 @@ export const tokenFactoryABI = [
     inputs: [
       {
         internalType: "address",
-        name: "_masterCopy",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "name",
-        type: "string",
-      },
-      {
-        internalType: "string",
-        name: "symbol",
-        type: "string",
-      },
-      {
-        internalType: "uint256",
-        name: "decimals",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "totalSupply",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "antiWhalePercentage",
-        type: "uint256",
-      },
-    ],
-    name: "deployTest",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "owner",
-    outputs: [
-      {
-        internalType: "address",
         name: "",
         type: "address",
       },
     ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "name",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "symbol",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "decimals",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "totalSupply",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "antiWhalePercentage",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "creationFee",
+    name: "balances",
     outputs: [
       {
         internalType: "uint256",
@@ -211,82 +86,33 @@ export const tokenFactoryABI = [
   {
     inputs: [
       {
-        internalType: "string",
-        name: "name",
-        type: "string",
-      },
-      {
-        internalType: "string",
-        name: "symbol",
-        type: "string",
-      },
-      {
-        internalType: "uint256",
-        name: "decimals",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "totalSupply",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "antiWhalePercentage",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "creationFee",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
-    inputs: [
-      {
         internalType: "address",
-        name: "owner",
+        name: "",
         type: "address",
       },
+    ],
+    name: "deployed_tokens",
+    outputs: [
       {
-        internalType: "string",
-        name: "name",
-        type: "string",
-      },
-      {
-        internalType: "string",
-        name: "symbol",
-        type: "string",
-      },
-      {
-        internalType: "uint256",
-        name: "decimals",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "totalSupply",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "antiWhalePercentage",
-        type: "uint256",
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
-    name: "setup",
-    outputs: [],
-    stateMutability: "payable",
+    stateMutability: "view",
     type: "function",
   },
   {
     inputs: [],
-    name: "kill",
-    outputs: [],
-    stateMutability: "nonpayable",
+    name: "deployer",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
 ]
