@@ -40,7 +40,7 @@ export default function Factory(): JSX.Element {
   const [name, setName] = useState<string>("")
   const [symbol, setSymbol] = useState<string>("")
   const [supply, setSupply] = useState<string>("")
-  const [decimals, setDecimals] = useState<string>("")
+  const [decimals, setDecimals] = useState<string>("18")
   const [antiWhalePercentage, setAntiWhalePercentage] = useState<string>("")
   const [selectedTokenB, setSelectedTokenB] = useState<string>("")
   const [tokenLauncher, setTokenLauncher] = useState<string>("")
@@ -70,10 +70,6 @@ export default function Factory(): JSX.Element {
       const launcherAddress = tokenLauncherDetails[chain.id] || ""
       const deployerAddress = tokenDeployerDetails[chain.id] || ""
       const vyperAddress = tokenVyperDetails[chain.id] || ""
-
-      console.log("Launcher Address:", launcherAddress)
-      console.log("Deployer Address:", deployerAddress)
-      console.log("Vyper Address:", vyperAddress)
 
       if (!launcherAddress && tokenType === "safeMemeTokenLaunched") {
         console.error(`Missing addresses for chain ID ${chain.id}`)
@@ -128,15 +124,18 @@ export default function Factory(): JSX.Element {
         : tokenType === "tokenVyper"
         ? tokenFactoryABI
         : tokenDeployerABI,
-    functionName: tokenType === "tokenVyper" ? "creation_fee" : "creationFee",
+    functionName: "creationFee",
     onError: (error) => {
       console.error("Error fetching creation fee:", error)
     },
     onSuccess: (data) => {
-      console.log("Creation fee fetched:", data)
       setCreationFee(data.toString())
     },
   })
+
+  function toBytes32(text: string) {
+    return ethers.utils.formatBytes32String(text)
+  }
 
   const {
     config,
@@ -156,34 +155,50 @@ export default function Factory(): JSX.Element {
         : tokenType === "tokenVyper"
         ? tokenFactoryABI
         : tokenDeployerABI,
-    functionName: tokenType === "tokenVyper" ? "deploy" : "deployToken",
+    functionName: tokenType === "tokenVyper" ? "createToken" : "deployToken",
     args:
       tokenType === "safeMemeTokenLaunched"
         ? [
             dSymbol,
             dName,
             dDecimals ? Number(dDecimals) : 18,
-            BigInt(dSupply),
+            dSupply
+              ? ethers.utils.parseUnits(
+                  dSupply,
+                  dDecimals ? Number(dDecimals) : 18
+                )
+              : ethers.constants.Zero,
             Number(dAntiWhalePercentage),
             dSelectedTokenB, // Include TokenB address
           ]
         : tokenType === "tokenVyper"
         ? [
-            masterVyperTokenCopy[chainId], // Master copy address for Vyper tokens
-            ownerAddress, // Ensure owner address is passed correctly
-            dSymbol,
             dName,
-            BigInt(dSupply),
+            dSymbol,
+            dSupply
+              ? ethers.utils.parseUnits(
+                  dSupply,
+                  dDecimals ? Number(dDecimals) : 18
+                )
+              : ethers.constants.Zero,
+            dDecimals ? Number(dDecimals) : 18,
             Number(dAntiWhalePercentage),
           ]
         : [
             dSymbol,
             dName,
             dDecimals ? Number(dDecimals) : 18,
-            BigInt(dSupply),
+            dSupply
+              ? ethers.utils.parseUnits(
+                  dSupply,
+                  dDecimals ? Number(dDecimals) : 18
+                )
+              : ethers.constants.Zero,
             Number(dAntiWhalePercentage),
           ],
-    value: deployFee,
+    overrides: {
+      value: deployFee,
+    },
     cacheTime: 0,
   })
 
@@ -240,16 +255,6 @@ export default function Factory(): JSX.Element {
       toast.error("Configuration error: Missing Vyper factory address.")
       return
     }
-
-    console.log("Deploying with args:", {
-      masterCopy: masterVyperTokenCopy[chainId],
-      owner: ownerAddress,
-      name: dName,
-      symbol: dSymbol,
-      totalSupply: BigInt(dSupply),
-      antiWhalePercentage: Number(dAntiWhalePercentage),
-      value: deployFee,
-    })
 
     setModalMessage(
       "Depending on which blockchain you created a token on, it could take anywhere from 2 seconds to 20 seconds."
@@ -363,6 +368,23 @@ export default function Factory(): JSX.Element {
                   type="number"
                   value={supply}
                 />
+              </div>
+              <div className="inputGroup">
+                <label className="inputTitle">Decimals</label>
+                <input
+                  onKeyDown={(evt) =>
+                    ["e", "E", "+", "-"].includes(evt.key) &&
+                    evt.preventDefault()
+                  }
+                  onChange={setTokenDecimals}
+                  className="tokenInput"
+                  placeholder="18"
+                  type="number"
+                  value={decimals}
+                />
+                {!(Number(decimals) >= 0 && Number(decimals) <= 18) && (
+                  <p className="error">Decimals must be from 0 to 18</p>
+                )}
               </div>
               <div className="inputGroup">
                 <label className="inputTitle">Anti-Whale Percentage*</label>

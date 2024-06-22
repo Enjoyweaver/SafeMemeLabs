@@ -3,7 +3,7 @@ export const tokenFactoryABI = [
     inputs: [
       {
         internalType: "uint256",
-        name: "creation_fee",
+        name: "creationFee",
         type: "uint256",
       },
     ],
@@ -11,43 +11,7 @@ export const tokenFactoryABI = [
     type: "constructor",
   },
   {
-    anonymous: false,
     inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "addr",
-        type: "address",
-      },
-    ],
-    name: "Log",
-    type: "event",
-  },
-  {
-    inputs: [],
-    name: "creation_fee",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_masterCopy",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
       {
         internalType: "string",
         name: "name",
@@ -65,35 +29,7 @@ export const tokenFactoryABI = [
       },
       {
         internalType: "uint256",
-        name: "antiWhalePercentage",
-        type: "uint256",
-      },
-    ],
-    name: "deploy",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_masterCopy",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "name",
-        type: "string",
-      },
-      {
-        internalType: "string",
-        name: "symbol",
-        type: "string",
-      },
-      {
-        internalType: "uint256",
-        name: "totalSupply",
+        name: "decimals",
         type: "uint256",
       },
       {
@@ -102,74 +38,9 @@ export const tokenFactoryABI = [
         type: "uint256",
       },
     ],
-    name: "deployTest",
+    name: "createToken",
     outputs: [],
     stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "owner",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "name",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "symbol",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "totalSupply",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "antiWhalePercentage",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
   {
@@ -186,86 +57,29 @@ export const tokenFactoryABI = [
     type: "function",
   },
   {
+    anonymous: false,
     inputs: [
       {
-        internalType: "string",
-        name: "name",
-        type: "string",
-      },
-      {
+        indexed: false,
         internalType: "address",
-        name: "_masterCopy",
+        name: "addr",
         type: "address",
-      },
-      {
-        internalType: "string",
-        name: "symbol",
-        type: "string",
-      },
-      {
-        internalType: "uint256",
-        name: "totalSupply",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "antiWhalePercentage",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "creationFee",
-        type: "uint256",
       },
     ],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_masterCopy",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "name",
-        type: "string",
-      },
-      {
-        internalType: "string",
-        name: "symbol",
-        type: "string",
-      },
-      {
-        internalType: "uint256",
-        name: "totalSupply",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "antiWhalePercentage",
-        type: "uint256",
-      },
-    ],
-    name: "setup",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
+    name: "Log",
+    type: "event",
   },
   {
     inputs: [],
-    name: "kill",
-    outputs: [],
-    stateMutability: "nonpayable",
+    name: "owner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
 ]
-
-export default tokenFactoryABI
