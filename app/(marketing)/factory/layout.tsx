@@ -1,6 +1,6 @@
 import { Metadata } from "next"
 
-import Factory from "./page"
+import Factory from "./realpage"
 
 export const metadata: Metadata = {
   title: "ERC-20 Token Creator | SafeMeme Labs",

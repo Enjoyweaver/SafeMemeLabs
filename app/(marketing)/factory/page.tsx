@@ -14,7 +14,6 @@ import "./factory.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
 import {
-  masterVyperTokenCopy,
   tokenBOptions,
   tokenDeployerDetails,
   tokenLauncherDetails,
@@ -40,7 +39,7 @@ export default function Factory(): JSX.Element {
   const [name, setName] = useState<string>("")
   const [symbol, setSymbol] = useState<string>("")
   const [supply, setSupply] = useState<string>("")
-  const [decimals, setDecimals] = useState<string>("18")
+  const [decimals, setDecimals] = useState<string>("")
   const [antiWhalePercentage, setAntiWhalePercentage] = useState<string>("")
   const [selectedTokenB, setSelectedTokenB] = useState<string>("")
   const [tokenLauncher, setTokenLauncher] = useState<string>("")
@@ -56,7 +55,6 @@ export default function Factory(): JSX.Element {
   const [errorMenu, setErrorMenu] = useState(false)
   const { isConnected } = useAccount()
   const { chain } = useNetwork()
-  const { address: ownerAddress } = useAccount()
 
   const [showModal, setShowModal] = useState(false)
   const [modalMessage, setModalMessage] = useState("")
@@ -70,6 +68,10 @@ export default function Factory(): JSX.Element {
       const launcherAddress = tokenLauncherDetails[chain.id] || ""
       const deployerAddress = tokenDeployerDetails[chain.id] || ""
       const vyperAddress = tokenVyperDetails[chain.id] || ""
+
+      console.log("Launcher Address:", launcherAddress)
+      console.log("Deployer Address:", deployerAddress)
+      console.log("Vyper Address:", vyperAddress)
 
       if (!launcherAddress && tokenType === "safeMemeTokenLaunched") {
         console.error(`Missing addresses for chain ID ${chain.id}`)
@@ -124,18 +126,15 @@ export default function Factory(): JSX.Element {
         : tokenType === "tokenVyper"
         ? tokenFactoryABI
         : tokenDeployerABI,
-    functionName: "creationFee",
+    functionName: tokenType === "tokenVyper" ? "creation_fee" : "creationFee",
     onError: (error) => {
       console.error("Error fetching creation fee:", error)
     },
     onSuccess: (data) => {
+      console.log("Creation fee fetched:", data)
       setCreationFee(data.toString())
     },
   })
-
-  function toBytes32(text: string) {
-    return ethers.utils.formatBytes32String(text)
-  }
 
   const {
     config,
@@ -155,50 +154,34 @@ export default function Factory(): JSX.Element {
         : tokenType === "tokenVyper"
         ? tokenFactoryABI
         : tokenDeployerABI,
-    functionName: tokenType === "tokenVyper" ? "createToken" : "deployToken",
+    functionName: tokenType === "tokenVyper" ? "deploy_token" : "deployToken",
     args:
       tokenType === "safeMemeTokenLaunched"
         ? [
             dSymbol,
             dName,
             dDecimals ? Number(dDecimals) : 18,
-            dSupply
-              ? ethers.utils.parseUnits(
-                  dSupply,
-                  dDecimals ? Number(dDecimals) : 18
-                )
-              : ethers.constants.Zero,
+            BigInt(dSupply),
             Number(dAntiWhalePercentage),
             dSelectedTokenB, // Include TokenB address
           ]
         : tokenType === "tokenVyper"
         ? [
-            dName,
             dSymbol,
-            dSupply
-              ? ethers.utils.parseUnits(
-                  dSupply,
-                  dDecimals ? Number(dDecimals) : 18
-                )
-              : ethers.constants.Zero,
+            dName,
             dDecimals ? Number(dDecimals) : 18,
+            BigInt(dSupply),
             Number(dAntiWhalePercentage),
+            dTokenLauncher, // Master copy address for Vyper tokens
           ]
         : [
             dSymbol,
             dName,
             dDecimals ? Number(dDecimals) : 18,
-            dSupply
-              ? ethers.utils.parseUnits(
-                  dSupply,
-                  dDecimals ? Number(dDecimals) : 18
-                )
-              : ethers.constants.Zero,
+            BigInt(dSupply),
             Number(dAntiWhalePercentage),
           ],
-    overrides: {
-      value: deployFee,
-    },
+    value: deployFee,
     cacheTime: 0,
   })
 
@@ -243,6 +226,8 @@ export default function Factory(): JSX.Element {
     },
   })
 
+  const factoryAddress = tokenVyperDetails[chainId]
+
   const handleDeployClick = () => {
     if (
       tokenType === "safeMemeTokenLaunched" &&
@@ -255,7 +240,6 @@ export default function Factory(): JSX.Element {
       toast.error("Configuration error: Missing Vyper factory address.")
       return
     }
-
     setModalMessage(
       "Depending on which blockchain you created a token on, it could take anywhere from 2 seconds to 20 seconds."
     )
@@ -431,6 +415,8 @@ export default function Factory(): JSX.Element {
                 className={`deployButton ${
                   isConnected &&
                   isFormFilled() &&
+                  Number(decimals) >= 0 &&
+                  Number(decimals) <= 18 &&
                   Number(supply) >= 0 &&
                   !(isLoadingTransaction || isLoadingWrite)
                     ? "enabled"
@@ -440,6 +426,8 @@ export default function Factory(): JSX.Element {
                   !(
                     isConnected &&
                     isFormFilled() &&
+                    Number(decimals) >= 0 &&
+                    Number(decimals) <= 18 &&
                     Number(supply) >= 0 &&
                     !(isLoadingTransaction || isLoadingWrite)
                   )
