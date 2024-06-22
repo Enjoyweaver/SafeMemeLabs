@@ -40,12 +40,14 @@ export default function Factory(): JSX.Element {
   const [name, setName] = useState<string>("")
   const [symbol, setSymbol] = useState<string>("")
   const [supply, setSupply] = useState<string>("")
+  const [decimals, setDecimals] = useState<string>("")
   const [antiWhalePercentage, setAntiWhalePercentage] = useState<string>("")
   const [selectedTokenB, setSelectedTokenB] = useState<string>("")
   const [tokenLauncher, setTokenLauncher] = useState<string>("")
   const dName = useDebounce(name, 500)
   const dSymbol = useDebounce(symbol, 500)
   const dSupply = useDebounce(supply, 500)
+  const dDecimals = useDebounce(decimals, 500)
   const dAntiWhalePercentage = useDebounce(antiWhalePercentage, 500)
   const dSelectedTokenB = useDebounce(selectedTokenB, 500)
   const dTokenLauncher = useDebounce(tokenLauncher, 500)
@@ -96,6 +98,8 @@ export default function Factory(): JSX.Element {
     setSymbol(e.target.value)
   const setTokenSupply = (e: ChangeEvent<HTMLInputElement>) =>
     setSupply(e.target.value)
+  const setTokenDecimals = (e: ChangeEvent<HTMLInputElement>) =>
+    setDecimals(e.target.value)
   const setAntiWhalePercentageInput = (e: ChangeEvent<HTMLInputElement>) =>
     setAntiWhalePercentage(e.target.value)
   const setTokenBAddress = (e: ChangeEvent<HTMLSelectElement>) =>
@@ -158,13 +162,27 @@ export default function Factory(): JSX.Element {
         ? [
             dSymbol,
             dName,
+            dDecimals ? Number(dDecimals) : 18,
             BigInt(dSupply),
             Number(dAntiWhalePercentage),
             dSelectedTokenB, // Include TokenB address
           ]
         : tokenType === "tokenVyper"
-        ? [dName, dSymbol, BigInt(dSupply), Number(dAntiWhalePercentage)]
-        : [dSymbol, dName, BigInt(dSupply), Number(dAntiWhalePercentage)],
+        ? [
+            masterVyperTokenCopy[chainId], // Master copy address for Vyper tokens
+            ownerAddress, // Ensure owner address is passed correctly
+            dSymbol,
+            dName,
+            BigInt(dSupply),
+            Number(dAntiWhalePercentage),
+          ]
+        : [
+            dSymbol,
+            dName,
+            dDecimals ? Number(dDecimals) : 18,
+            BigInt(dSupply),
+            Number(dAntiWhalePercentage),
+          ],
     value: deployFee,
     cacheTime: 0,
   })
@@ -224,6 +242,8 @@ export default function Factory(): JSX.Element {
     }
 
     console.log("Deploying with args:", {
+      masterCopy: masterVyperTokenCopy[chainId],
+      owner: ownerAddress,
       name: dName,
       symbol: dSymbol,
       totalSupply: BigInt(dSupply),

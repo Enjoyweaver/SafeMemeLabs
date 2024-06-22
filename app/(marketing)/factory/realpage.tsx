@@ -167,6 +167,8 @@ export default function Factory(): JSX.Element {
           ]
         : tokenType === "tokenVyper"
         ? [
+            masterVyperTokenCopy[chainId], // Master copy address for Vyper tokens
+            ownerAddress, // Ensure owner address is passed correctly
             dSymbol,
             dName,
             dDecimals ? Number(dDecimals) : 18,
