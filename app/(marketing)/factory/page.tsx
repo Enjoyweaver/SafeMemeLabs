@@ -127,7 +127,7 @@ export default function Factory(): JSX.Element {
         : tokenType === "tokenVyper"
         ? tokenFactoryABI
         : tokenDeployerABI,
-    functionName: tokenType === "tokenVyper" ? "creation_fee" : "creationFee",
+    functionName: tokenType === "tokenVyper" ? "creationFee" : "creationFee",
     onError: (error) => {
       console.error("Error fetching creation fee:", error)
     },
@@ -155,7 +155,7 @@ export default function Factory(): JSX.Element {
         : tokenType === "tokenVyper"
         ? tokenFactoryABI
         : tokenDeployerABI,
-    functionName: tokenType === "tokenVyper" ? "deploy" : "deployToken",
+    functionName: tokenType === "tokenVyper" ? "deployToken" : "deployToken",
     args:
       tokenType === "safeMemeTokenLaunched"
         ? [
@@ -165,22 +165,20 @@ export default function Factory(): JSX.Element {
             BigInt(dSupply) *
               BigInt(10 ** (dDecimals ? Number(dDecimals) : 18)),
             Number(dAntiWhalePercentage),
-            dSelectedTokenB, // Include TokenB address
           ]
         : tokenType === "tokenVyper"
         ? [
-            masterVyperTokenCopy[chainId], // Ensure master copy address is correctly accessed
             ethers.utils.formatBytes32String(dName),
             ethers.utils.formatBytes32String(dSymbol),
-            BigInt(dSupply) * BigInt(10 ** 18),
+            dDecimals ? Number(dDecimals) : 18,
+            BigInt(dSupply),
             Number(dAntiWhalePercentage),
           ]
         : [
-            ethers.utils.formatBytes32String(dSymbol),
-            ethers.utils.formatBytes32String(dName),
+            dSymbol,
+            dName,
             dDecimals ? Number(dDecimals) : 18,
-            BigInt(dSupply) *
-              BigInt(10 ** (dDecimals ? Number(dDecimals) : 18)),
+            BigInt(dSupply),
             Number(dAntiWhalePercentage),
           ],
     value: deployFee,
