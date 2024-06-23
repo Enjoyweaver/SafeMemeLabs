@@ -14,6 +14,7 @@ import "./factory.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
 import {
+  masterVyperTokenCopy,
   tokenBOptions,
   tokenDeployerDetails,
   tokenLauncherDetails,
@@ -154,31 +155,32 @@ export default function Factory(): JSX.Element {
         : tokenType === "tokenVyper"
         ? tokenFactoryABI
         : tokenDeployerABI,
-    functionName: tokenType === "tokenVyper" ? "deploy_token" : "deployToken",
+    functionName: tokenType === "tokenVyper" ? "deploy" : "deployToken",
     args:
       tokenType === "safeMemeTokenLaunched"
         ? [
-            dSymbol,
-            dName,
+            ethers.utils.formatBytes32String(dSymbol),
+            ethers.utils.formatBytes32String(dName),
             dDecimals ? Number(dDecimals) : 18,
-            BigInt(dSupply),
+            BigInt(dSupply) *
+              BigInt(10 ** (dDecimals ? Number(dDecimals) : 18)),
             Number(dAntiWhalePercentage),
             dSelectedTokenB, // Include TokenB address
           ]
         : tokenType === "tokenVyper"
         ? [
-            dSymbol,
-            dName,
-            dDecimals ? Number(dDecimals) : 18,
-            BigInt(dSupply),
+            masterVyperTokenCopy[chainId], // Ensure master copy address is correctly accessed
+            ethers.utils.formatBytes32String(dName),
+            ethers.utils.formatBytes32String(dSymbol),
+            BigInt(dSupply) * BigInt(10 ** 18),
             Number(dAntiWhalePercentage),
-            dTokenLauncher, // Master copy address for Vyper tokens
           ]
         : [
-            dSymbol,
-            dName,
+            ethers.utils.formatBytes32String(dSymbol),
+            ethers.utils.formatBytes32String(dName),
             dDecimals ? Number(dDecimals) : 18,
-            BigInt(dSupply),
+            BigInt(dSupply) *
+              BigInt(10 ** (dDecimals ? Number(dDecimals) : 18)),
             Number(dAntiWhalePercentage),
           ],
     value: deployFee,
@@ -225,8 +227,6 @@ export default function Factory(): JSX.Element {
       }
     },
   })
-
-  const factoryAddress = tokenVyperDetails[chainId]
 
   const handleDeployClick = () => {
     if (

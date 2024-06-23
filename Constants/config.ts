@@ -429,7 +429,7 @@ export const tokenVyperDetails: {
 } = {
   "137": "0xYourVyperTokenAddressForPolygon",
   "250": "0xYourVyperTokenAddressForFantom",
-  "4002": "0x2568811CFfb8286A8dBe481Ef85404202D9a4bD7",
+  "4002": "0xB6A278637a6aE5eb18F58B8d8AC1190113132b4A",
 }
 
 export const frameFactoryDetails: {
@@ -439,4 +439,10 @@ export const frameFactoryDetails: {
   "250": "0xYourVyperTokenAddressForFantom",
   "4002": "0x04Acaf5ECED5f0E6f82d8dD361185e38B41CF34E",
   "84532": "0x04Acaf5ECED5f0E6f82d8dD361185e38B41CF34E",
+}
+
+export const masterVyperTokenCopy: {
+  [key: string]: string
+} = {
+  "4002": "0x57D5e47a36203160a49477b9Bc822C174ba71530",
 }
