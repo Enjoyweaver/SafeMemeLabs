@@ -49,7 +49,7 @@ export const marketingConfig: MarketingConfig = {
     },
     {
       title: "Frames",
-      href: "/frame",
+      href: "/frames",
     },
     {
       title: "Rewards",
