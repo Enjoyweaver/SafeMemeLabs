@@ -171,7 +171,8 @@ export default function Factory(): JSX.Element {
             ethers.utils.formatBytes32String(dName),
             ethers.utils.formatBytes32String(dSymbol),
             dDecimals ? Number(dDecimals) : 18,
-            BigInt(dSupply),
+            BigInt(dSupply) *
+              BigInt(10 ** (dDecimals ? Number(dDecimals) : 18)),
             Number(dAntiWhalePercentage),
           ]
         : [
@@ -351,7 +352,7 @@ export default function Factory(): JSX.Element {
                   value={supply}
                 />
               </div>
-              <div className="inputGroup">
+              <div className="inputGroup hidethisButton">
                 <label className="inputTitle">Decimals</label>
                 <input
                   onKeyDown={(evt) =>

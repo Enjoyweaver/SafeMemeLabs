@@ -159,6 +159,18 @@ export const blockExplorerUrls: { [key: string]: string } = {
   "84532": "https://sepolia-explorer.base.org",
 }
 
+export const blockExplorerAddress: { [key: string]: string } = {
+  "31": "https://explorer.testnet.rootstock.io/address/",
+  "250": "https://ftmscan.com/address/",
+  "4002": "https://testnet.ftmscan.com/address/",
+  "137": "https://polygonscan.com/address/",
+  "43114": "https://snowtrace.io/address/",
+  "30": "https://explorer.rsk.co/address/",
+  "666666666": "https://degenscan.io/address/",
+  "501": "https://explorer.solana.com/address/",
+  "84532": "https://sepolia-explorer.base.org/address/",
+}
+
 export const blockExplorers: { [key: string]: string } = {
   "31": "https://explorer.testnet.rootstock.io/",
   "250": "https://ftmscan.com/",
@@ -429,7 +441,7 @@ export const tokenVyperDetails: {
 } = {
   "137": "0xYourVyperTokenAddressForPolygon",
   "250": "0xYourVyperTokenAddressForFantom",
-  "4002": "0xb9a5366AB8E12175963D95A24269Cd115979B96b",
+  "4002": "0xe36D4932C035845e3C856Bde62cB6e417D02797e",
 }
 
 export const frameFactoryDetails: {
@@ -444,5 +456,5 @@ export const frameFactoryDetails: {
 export const masterVyperTokenCopy: {
   [key: string]: string
 } = {
-  "4002": "0xeE32d096043F97E7339888d280123E198192e29b",
+  "4002": "0xaca06f614Fb25b3f0f9dCcEbe8c1BD1F5ffbaFa1",
 }

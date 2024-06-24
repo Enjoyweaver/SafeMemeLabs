@@ -454,3 +454,7 @@ body {
   display: none;
 }
 */
+
+.hidethisButton {
+  display: none;
+}

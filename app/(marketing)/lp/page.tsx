@@ -4,9 +4,11 @@ import { useEffect, useState } from "react"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { exchangeABI } from "@/ABIs/vyper/exchange"
 import { factoryABI } from "@/ABIs/vyper/factory"
+import { routerABI } from "@/ABIs/vyper/router"
 import {
-  poolAddressDetails,
-  tokenDeployerDetails,
+  VyperExchange,
+  VyperFactory,
+  VyperRouter,
   tokenFactoryDetails,
 } from "@/Constants/config"
 import { ethers } from "ethers"
@@ -36,7 +38,7 @@ const Liquidity = () => {
     if (chain && isConnected && address) {
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const factoryAddress = tokenDeployerDetails[chain.id]
+        const factoryAddress = tokenFactoryDetails[chain.id]
 
         if (!factoryAddress) {
           console.error("Factory address not found for chain ID:", chain.id)
@@ -80,7 +82,7 @@ const Liquidity = () => {
     ) {
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const factoryAddress = tokenFactoryDetails[chain.id]
+        const factoryAddress = VyperFactory[chain.id]
 
         if (!factoryAddress) {
           console.error("Factory address not found for chain ID:", chain.id)
@@ -94,7 +96,10 @@ const Liquidity = () => {
         )
 
         const exchangeAddress = await factoryContract.getExchange(newToken)
-        if (!exchangeAddress) {
+        if (
+          !exchangeAddress ||
+          exchangeAddress === ethers.constants.AddressZero
+        ) {
           console.error("Exchange address not found for token:", newToken)
           return
         }

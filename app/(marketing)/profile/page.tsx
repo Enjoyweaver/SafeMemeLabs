@@ -6,7 +6,9 @@ import Link from "next/link"
 import { erc20ABI } from "@/ABIs/erc20"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
+import { tokenFactoryABI } from "@/ABIs/vyper/tokenFactory"
 import {
+  readContract,
   useAccount,
   useContractRead,
   useContractReads,
@@ -17,9 +19,10 @@ import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import {
-  blockExplorerUrls,
+  blockExplorerAddress,
   tokenDeployerDetails,
   tokenLauncherDetails,
+  tokenVyperDetails, // Assuming you have this in your config
 } from "../../../Constants/config"
 import "@/styles/allTokens.css"
 import TokenHoldersList from "@/APIs/tokeninfo"
@@ -28,10 +31,15 @@ export default function MyTokens(): JSX.Element {
   const [isClient, setIsClient] = useState(false)
   const [tokenCount, setTokenCount] = useState<number>(0)
   const [launchedTokenCount, setLaunchedTokenCount] = useState<number>(0)
+  const [launchedVyperCount, setLaunchedVyperCount] = useState<number>(0)
   const [contracts, setContracts] = useState<string[]>([])
   const [launchedContracts, setLaunchedContracts] = useState<string[]>([])
+  const [launchedVyperContracts, setLaunchedVyperContracts] = useState<
+    string[]
+  >([])
   const [deployedTokenData, setDeployedTokenData] = useState<any[]>([])
   const [launchedTokenData, setLaunchedTokenData] = useState<any[]>([])
+  const [launchedVyperData, setLaunchedVyperData] = useState<any[]>([])
 
   useEffect(() => {
     setIsClient(true)
@@ -64,6 +72,16 @@ export default function MyTokens(): JSX.Element {
       enabled: !!address,
     })
 
+  // Fetch Vyper contract count
+  const { data: vyperTokenCount, error: vyperTokenCountError } =
+    useContractRead({
+      address: tokenVyperDetails[chainId] as `0x${string}`,
+      abi: tokenFactoryABI,
+      functionName: "getTokensDeployedByUser",
+      args: [address as `0x${string}`],
+      enabled: !!address,
+    })
+
   useEffect(() => {
     if (deployerContractsError) {
       console.error("Deployer Contracts Error: ", deployerContractsError)
@@ -71,17 +89,43 @@ export default function MyTokens(): JSX.Element {
     if (launcherContractsError) {
       console.error("Launcher Contracts Error: ", launcherContractsError)
     }
+    if (vyperTokenCountError) {
+      console.error("Vyper Token Count Error: ", vyperTokenCountError)
+    }
 
     setContracts(deployerContracts || [])
     setLaunchedContracts(launcherContracts || [])
     setTokenCount((deployerContracts || []).length)
     setLaunchedTokenCount((launcherContracts || []).length)
+    setLaunchedVyperCount((vyperTokenCount || 0) as number)
   }, [
     deployerContracts,
     launcherContracts,
+    vyperTokenCount,
     deployerContractsError,
     launcherContractsError,
+    vyperTokenCountError,
   ])
+
+  useEffect(() => {
+    const fetchVyperTokens = async () => {
+      if (vyperTokenCount && vyperTokenCount > 0) {
+        const vyperAddresses = []
+        for (let i = 0; i < vyperTokenCount; i++) {
+          const tokenAddress = await readContract({
+            address: tokenVyperDetails[chainId] as `0x${string}`,
+            abi: tokenFactoryABI,
+            functionName: "getTokenByUserAndIndex",
+            args: [address as `0x${string}`, i],
+          })
+          vyperAddresses.push(tokenAddress)
+        }
+        setLaunchedVyperContracts(vyperAddresses)
+      }
+    }
+
+    fetchVyperTokens()
+  }, [vyperTokenCount, address, chainId])
 
   const deployerContractRequests = contracts
     ?.map((contract) => [
@@ -143,6 +187,36 @@ export default function MyTokens(): JSX.Element {
     ])
     .flat()
 
+  const vyperContractRequests = launchedVyperContracts
+    ?.map((contract) => [
+      {
+        address: contract,
+        abi: erc20ABI,
+        functionName: "name",
+      },
+      {
+        address: contract,
+        abi: erc20ABI,
+        functionName: "symbol",
+      },
+      {
+        address: contract,
+        abi: erc20ABI,
+        functionName: "totalSupply",
+      },
+      {
+        address: contract,
+        abi: erc20ABI,
+        functionName: "decimals",
+      },
+      {
+        address: contract,
+        abi: erc20ABI,
+        functionName: "antiWhalePercentage",
+      },
+    ])
+    .flat()
+
   const { data: deployerTokenData, error: deployerTokenDataError } =
     useContractReads({
       contracts: deployerContractRequests,
@@ -155,12 +229,18 @@ export default function MyTokens(): JSX.Element {
       enabled: !!launcherContractRequests?.length,
     })
 
+  const { data: vyperTokenData, error: vyperTokenDataError } = useContractReads(
+    {
+      contracts: vyperContractRequests,
+      enabled: !!vyperContractRequests?.length,
+    }
+  )
+
   useEffect(() => {
     if (deployerTokenDataError) {
       console.error("Deployer Token Data Error: ", deployerTokenDataError)
     }
     if (deployerTokenData) {
-      console.log("Deployer Token Data: ", deployerTokenData)
       setDeployedTokenData(splitData(deployerTokenData))
     }
 
@@ -168,14 +248,22 @@ export default function MyTokens(): JSX.Element {
       console.error("Launcher Token Data Error: ", launcherTokenDataError)
     }
     if (launcherTokenData) {
-      console.log("Launcher Token Data: ", launcherTokenData)
       setLaunchedTokenData(splitData(launcherTokenData))
+    }
+
+    if (vyperTokenDataError) {
+      console.error("Vyper Token Data Error: ", vyperTokenDataError)
+    }
+    if (vyperTokenData) {
+      setLaunchedVyperData(splitData(vyperTokenData))
     }
   }, [
     deployerTokenData,
     deployerTokenDataError,
     launcherTokenData,
     launcherTokenDataError,
+    vyperTokenData,
+    vyperTokenDataError,
   ])
 
   function splitData(data: any) {
@@ -203,7 +291,7 @@ export default function MyTokens(): JSX.Element {
   }
 
   const getBlockExplorerLink = (address: string) => {
-    return `${blockExplorerUrls[chainId] || ""}${address}`
+    return `${blockExplorerAddress[chainId] || ""}${address}`
   }
 
   const shortenAddress = (address: string) => {
@@ -231,6 +319,10 @@ export default function MyTokens(): JSX.Element {
               </p>
               <p className="tokenCount">
                 Number of Tokens Launched: {launchedTokenCount}
+              </p>
+              <p className="tokenCount">
+                Number of Vyper Tokens Created: {launchedVyperCount}{" "}
+                {/* New token count display */}
               </p>
               <Link href={`/profile/${address}`}>View Public Profile</Link>
             </div>
@@ -290,7 +382,6 @@ export default function MyTokens(): JSX.Element {
                               <strong>Anti-Whale Percentage:</strong>{" "}
                               {token.antiWhalePercentage}%
                             </p>
-
                             <p>
                               <strong>Max Tokens per Holder:</strong>{" "}
                               {formatNumber(
@@ -311,7 +402,6 @@ export default function MyTokens(): JSX.Element {
                       ))}
                     </div>
                   )}
-
                 <h2 className="sectionTitle">SafeMemes Launched</h2>
                 {launchedContracts && launchedContracts.length === 0 && (
                   <p className="myTokensError">No launched tokens available.</p>
@@ -383,6 +473,86 @@ export default function MyTokens(): JSX.Element {
                             tokenAddress={
                               launchedContracts[
                                 launchedContracts.length - 1 - index
+                              ]
+                            }
+                            chainId={chain?.id}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                <h2 className="sectionTitle">Vyper Tokens Created</h2>{" "}
+                {launchedVyperContracts &&
+                  launchedVyperContracts.length === 0 && (
+                    <p className="myTokensError">No Vyper tokens available.</p>
+                  )}
+                {launchedVyperContracts &&
+                  launchedVyperContracts.length > 0 &&
+                  launchedVyperData &&
+                  launchedVyperData.length > 0 && (
+                    <div className="meme-container">
+                      {launchedVyperData.map((token, index: number) => (
+                        <div className="meme" key={index}>
+                          <div className="meme-header">
+                            <h3>
+                              {token.name} ({token.symbol})
+                            </h3>
+                            <Image
+                              src="/images/logo.png" // You can dynamically set the logo URL if available
+                              alt={`${token.name} logo`}
+                              width={50}
+                              height={50}
+                              className="token-logo"
+                            />
+                          </div>
+
+                          <div className="meme-details">
+                            <p>
+                              <strong>Contract Address:</strong>{" "}
+                              <a
+                                href={getBlockExplorerLink(
+                                  launchedVyperContracts[
+                                    launchedVyperContracts.length - 1 - index
+                                  ]
+                                )}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {shortenAddress(
+                                  launchedVyperContracts[
+                                    launchedVyperContracts.length - 1 - index
+                                  ]
+                                )}
+                              </a>
+                            </p>
+                            <p>
+                              <strong>Supply:</strong>{" "}
+                              {formatNumber(
+                                Number(token.supply),
+                                token.decimals
+                              )}
+                            </p>
+                            <p>
+                              <strong>Decimals:</strong> {token.decimals}
+                            </p>
+                            <p>
+                              <strong>Anti-Whale Percentage:</strong>{" "}
+                              {token.antiWhalePercentage}%
+                            </p>
+                            <p>
+                              <strong>Max Tokens per Holder:</strong>{" "}
+                              {formatNumber(
+                                (Number(token.supply) *
+                                  token.antiWhalePercentage) /
+                                  100,
+                                token.decimals
+                              )}
+                            </p>
+                          </div>
+                          <TokenHoldersList
+                            tokenAddress={
+                              launchedVyperContracts[
+                                launchedVyperContracts.length - 1 - index
                               ]
                             }
                             chainId={chain?.id}
