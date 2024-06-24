@@ -50,13 +50,12 @@ const frameMetadata = getFrameMetadata({
   ],
   image: {
     src: `${process.env.NEXT_PUBLIC_SITE_URL}/images/luckyducks/${images[currentIndex]}`,
-    aspect_ratio: "1:1",
+    aspectRatio: "1:1",
   },
   postUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint`,
   input: {
     text: "Your Wallet Address",
   },
-  frameVersion: "vNext",
 })
 
 // Page metadata
