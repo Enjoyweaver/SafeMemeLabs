@@ -180,7 +180,7 @@ export default function Factory(): JSX.Element {
             dSymbol,
             dName,
             dDecimals ? Number(dDecimals) : 18,
-            BigInt(dSupply),
+            BigInt(dSupply) * BigInt(10 ** 18),
             Number(dAntiWhalePercentage),
           ],
     value: deployFee,
