@@ -415,7 +415,7 @@ export default function Factory(): JSX.Element {
                   isFormFilled() &&
                   Number(decimals) >= 0 &&
                   Number(decimals) <= 18 &&
-                  Number(supply) >= 0 &&
+                  Number(supply) > 0 &&
                   Number(antiWhalePercentage) > 0 &&
                   Number(antiWhalePercentage) <= 3 &&
                   !(isLoadingTransaction || isLoadingWrite)
