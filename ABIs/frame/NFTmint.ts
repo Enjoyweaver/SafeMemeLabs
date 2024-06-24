@@ -241,4 +241,4 @@ export const MintABI = [
     stateMutability: "view",
     type: "function",
   },
-]
+] as const

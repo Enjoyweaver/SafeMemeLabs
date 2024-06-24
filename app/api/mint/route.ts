@@ -14,7 +14,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // Initialize Supabase client
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-const getRandomImage = async () => {
+const getRandomImage = async (): Promise<string> => {
   const { data, error } = await supabase
     .from("minted_images")
     .select("image_url")
@@ -32,7 +32,7 @@ const getRandomImage = async () => {
   return data[randomIndex].image_url
 }
 
-async function markImageAsMinted(imageUrl: string) {
+const markImageAsMinted = async (imageUrl: string) => {
   const { error } = await supabase
     .from("minted_images")
     .update({ minted: true })
@@ -43,7 +43,7 @@ async function markImageAsMinted(imageUrl: string) {
   }
 }
 
-async function mintNFT(imageUrl: string, userAddress: string) {
+const mintNFT = async (imageUrl: string, userAddress: string) => {
   const rpcUrl = process.env.RPC_URL
   const privateKey = process.env.PRIVATE_KEY
   const contractAddress = process.env.CONTRACT_ADDRESS
@@ -61,15 +61,7 @@ async function mintNFT(imageUrl: string, userAddress: string) {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  let userAddress
-
-  if (req.headers.get("content-type") === "application/json") {
-    const body = await req.json()
-    userAddress = body.userAddress
-  } else {
-    const formData = await req.formData()
-    userAddress = formData.get("userAddress")
-  }
+  let userAddress = req.headers.get("x-user-address")
 
   if (!userAddress) {
     return NextResponse.json(
@@ -87,6 +79,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json({ success: true, imageUrl })
   } catch (error) {
+    console.error("Minting error:", error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }

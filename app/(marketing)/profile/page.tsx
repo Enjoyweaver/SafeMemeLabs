@@ -8,7 +8,7 @@ import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
 import { tokenFactoryABI } from "@/ABIs/vyper/tokenFactory"
 import {
-  readContract,
+  readContracts,
   useAccount,
   useContractRead,
   useContractReads,
@@ -95,6 +95,7 @@ export default function MyTokens(): JSX.Element {
 
     setContracts(deployerContracts || [])
     setLaunchedContracts(launcherContracts || [])
+    setLaunchedVyperContracts(launchedVyperContracts || [])
     setTokenCount((deployerContracts || []).length)
     setLaunchedTokenCount((launcherContracts || []).length)
     setLaunchedVyperCount((vyperTokenCount || 0) as number)
@@ -112,7 +113,7 @@ export default function MyTokens(): JSX.Element {
       if (vyperTokenCount && vyperTokenCount > 0) {
         const vyperAddresses = []
         for (let i = 0; i < vyperTokenCount; i++) {
-          const tokenAddress = await readContract({
+          const tokenAddress = await readContracts({
             address: tokenVyperDetails[chainId] as `0x${string}`,
             abi: tokenFactoryABI,
             functionName: "getTokenByUserAndIndex",
