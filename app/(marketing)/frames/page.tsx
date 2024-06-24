@@ -30,17 +30,17 @@ const frameMetadata = getFrameMetadata({
     {
       label: "Previous",
       action: "post",
-      target: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint/prev`,
+      target: `${process.env.NEXT_PUBLIC_SITE_URL}/frames/api/mint/prev`,
     },
     {
       label: "Next",
       action: "post",
-      target: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint/next`,
+      target: `${process.env.NEXT_PUBLIC_SITE_URL}/frames/api/mint/next`,
     },
     {
       label: "Mint Selected NFT",
       action: "post",
-      target: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint`,
+      target: `${process.env.NEXT_PUBLIC_SITE_URL}/frames/api/mint`,
     },
     {
       label: "Back to SafeMeme",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   title: "SafeFrames",
   description: "Mint one of the 777 unique NFTs",
   openGraph: {
-    title: "Mint NFT",
+    title: "SafeFrames",
     description: "Mint one of the 777 unique NFTs",
     images: [
       `${process.env.NEXT_PUBLIC_SITE_URL}/images/luckyducks/Adam_G.jpg`,

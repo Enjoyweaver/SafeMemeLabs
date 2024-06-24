@@ -64,9 +64,5 @@ export const marketingConfig: MarketingConfig = {
     //  title: "Manager",
     //  href: "/deploy",
     // },
-    //{
-    //  title: "api",
-    //  href: "/api",
-    //},
   ],
 }
