@@ -24,8 +24,9 @@
 }
 
 .imageGallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
   width: 100%;
 }
@@ -43,4 +44,9 @@
 .dark .imageContainer {
   background-color: var(--input-dark);
   border: 1px solid var(--border-dark);
+}
+
+.counter {
+  margin-bottom: 20px;
+  font-size: 1.2em;
 }
