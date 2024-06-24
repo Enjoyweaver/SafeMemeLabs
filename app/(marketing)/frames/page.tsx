@@ -5,7 +5,7 @@ import { getFrameMetadata } from "@coinbase/onchainkit"
 import styles from "./page.module.css"
 
 const images = [
-  "Abigail.jpg",
+  "Hank.jpg",
   "Adele.jpg",
   "Clark Fable.jpg",
   "Cliff.jpg",
@@ -61,11 +61,11 @@ const frameMetadata = getFrameMetadata({
 
 // Page metadata
 export const metadata: Metadata = {
-  title: "Mint NFT",
-  description: "Mint one of the 777 unique images as an NFT",
+  title: "SafeFrames",
+  description: "Mint one of the 777 unique NFTs",
   openGraph: {
     title: "Mint NFT",
-    description: "Mint one of the 777 unique images as an NFT",
+    description: "Mint one of the 777 unique NFTs",
     images: [
       `${process.env.NEXT_PUBLIC_SITE_URL}/images/luckyducks/Adam_G.jpg`,
     ],
