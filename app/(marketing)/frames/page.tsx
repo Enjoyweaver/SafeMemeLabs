@@ -30,17 +30,17 @@ const frameMetadata = getFrameMetadata({
     {
       label: "Previous",
       action: "post",
-      postUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint/prev`,
+      target: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint/prev`,
     },
     {
       label: "Next",
       action: "post",
-      postUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint/next`,
+      target: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint/next`,
     },
     {
       label: "Mint Selected NFT",
       action: "post",
-      postUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint`,
+      target: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint`,
     },
     {
       label: "Back to SafeMeme",
