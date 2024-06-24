@@ -416,6 +416,8 @@ export default function Factory(): JSX.Element {
                   Number(decimals) >= 0 &&
                   Number(decimals) <= 18 &&
                   Number(supply) >= 0 &&
+                  Number(antiWhalePercentage) > 0 &&
+                  Number(antiWhalePercentage) <= 3 &&
                   !(isLoadingTransaction || isLoadingWrite)
                     ? "enabled"
                     : "disabled"
@@ -427,6 +429,8 @@ export default function Factory(): JSX.Element {
                     Number(decimals) >= 0 &&
                     Number(decimals) <= 18 &&
                     Number(supply) >= 0 &&
+                    Number(antiWhalePercentage) > 0 &&
+                    Number(antiWhalePercentage) <= 3 &&
                     !(isLoadingTransaction || isLoadingWrite)
                   )
                 }
