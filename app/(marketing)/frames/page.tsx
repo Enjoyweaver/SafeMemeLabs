@@ -30,22 +30,22 @@ const frameMetadata = getFrameMetadata({
     {
       label: "Previous",
       action: "post",
-      target: `${process.env.NEXT_PUBLIC_SITE_URL}/frames/api/mint/prev`,
+      target: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint/prev`,
     },
     {
       label: "Next",
       action: "post",
-      target: `${process.env.NEXT_PUBLIC_SITE_URL}/frames/api/mint/next`,
+      target: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint/next`,
     },
     {
       label: "Mint Selected NFT",
       action: "post",
-      target: `${process.env.NEXT_PUBLIC_SITE_URL}/frames/api/mint`,
+      target: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint`,
     },
     {
       label: "Back to SafeMeme",
       action: "link",
-      target: "https://SafeMeme.vercel.app/frames",
+      target: "https://safememe.vercel.app/frames",
     },
   ],
   image: {
@@ -80,6 +80,11 @@ export default function Page() {
     <>
       <div className="pageContainer">
         <h1 className="title">Mint Your NFT with our Safe Frames</h1>
+        <p className="description">
+          Our Safe Frames are unique NFTs stored on Arweave for permanent
+          decentralization, minted on the Base blockchain for Farcaster
+          interoperability, and created by SafeMeme Labs.
+        </p>
         <div className="imageGallery">
           {images.map((image, index) => (
             <div key={index} className="imageContainer">

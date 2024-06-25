@@ -1,0 +1,84 @@
+root
+│
+├── app
+│   ├── api
+│   │   ├── mint
+│   │   │   ├── route.ts
+│   │   │   ├── prev.ts
+│   │   │   ├── next.ts
+│   │   ├── check
+│   │   │   ├── route.ts
+│   │   ├── confirm
+│   │   │   ├── route.ts
+│   │   ├── relay
+│   │   │   ├── route.ts
+│   │   ├── start
+│   │   │   ├── route.ts
+│   │   ├── images
+│   │   │   ├── check
+|   │   │   │   ├── route.ts
+│   │   │   ├── claimed
+|   │   │   │   ├── route.ts
+│   │   │   ├── confirmed
+|   │   │   │   ├── route.ts
+│   │   │   ├── error
+|   │   │   │   ├── route.ts
+│   │   │   ├── inactive
+|   │   │   │   ├── route.ts
+│   │   │   ├── select
+|   │   │   │   ├── route.ts
+│   │   │   ├── start
+|   │   │   │   ├── route.ts
+│   │   │   ├── success
+|   │   │   │   ├── route.ts
+│   │
+│   ├── (marketing)
+│   │   ├── frames
+│   │   │   ├── page.tsx
+│
+├── public
+│   ├── images
+│   │   ├── luckyducks
+│   │   │   ├── image1.jpg
+│   │   │   ├── image2.jpg
+│   │   │   ├── ...
+│
+├── lib
+│   ├── addresses.ts
+│   ├── getFrameHtml.ts
+│   ├── origin.ts
+│   ├── responses.ts
+|   ├── collection.ts
+│   ├── signMint.ts
+│   ├── types.ts
+│
+├── contracts
+│   ├── BaseMinter.sol
+│
+└── config.ts
+
+
+Explanation of the Setup
+Frames (/marketing/frames/page.tsx):
+
+Handles the display of the NFTs and navigation between them using the Frame Metadata and Buttons.
+Uses the Arweave URLs to fetch images.
+API Endpoints (/app/api):
+
+Various endpoints to handle minting (mint, prev, next, check, confirm, relay, start).
+Each endpoint interacts with the Frame and handles different parts of the minting process.
+Images (/public/images/luckyducks):
+
+Stores the images locally, which will be uploaded to Arweave for permanent storage.
+Library Files (/lib):
+
+addresses.ts: Functions to get addresses and address buttons.
+getFrameHtml.ts: Generates the Frame HTML with additional meta tags.
+origin.ts: Validates the origin of the request.
+responses.ts: Generates responses for various states (error, mint).
+collection.ts: Fetches collection data from Arweave.
+signMint.ts: Signs the minting data.
+types.ts: Defines types used in the application.
+Smart Contract (/contracts/BaseMinter.sol):
+
+Manages the minting logic on the blockchain.

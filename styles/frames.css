@@ -52,6 +52,12 @@ body.feedbackBody {
   color: var(--primary-dark);
 }
 
+.description {
+  margin-bottom: 20px;
+  font-size: 1.2em;
+  text-align: center;
+}
+
 .imageGallery {
   display: flex;
   flex-wrap: wrap;
