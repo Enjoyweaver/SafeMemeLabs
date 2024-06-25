@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import MintABI from "@/ABIs/frame/NFTmint"
+import { MintABI } from "@/ABIs/frame/NFTmint"
 import { createClient } from "@supabase/supabase-js"
 import { ethers } from "ethers"
 
