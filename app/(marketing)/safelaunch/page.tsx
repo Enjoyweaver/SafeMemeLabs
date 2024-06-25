@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { erc20ABI, safeMemeABI } from "@/ABIs/erc20"
+import { safeMemeABI } from "@/ABIs/vyper/safeMeme"
 import { tokenFactoryABI } from "@/ABIs/vyper/tokenFactory"
 import { ethers } from "ethers"
 import { useAccount, useNetwork } from "wagmi"
@@ -18,6 +18,7 @@ import "@/styles/allTokens.css"
 export default function SafeLaunch(): JSX.Element {
   const [isClient, setIsClient] = useState(false)
   const [deployedTokenData, setDeployedTokenData] = useState<any[]>([])
+  const [fetchingError, setFetchingError] = useState<string | null>(null)
 
   useEffect(() => {
     setIsClient(true)
@@ -40,12 +41,13 @@ export default function SafeLaunch(): JSX.Element {
   const getAllTokens = async () => {
     try {
       const tokenCount = await tokenFactoryContract.getDeployedTokenCount({
-        gasLimit: ethers.utils.hexlify(1000000), // Ensuring the gas limit is set correctly
+        gasLimit: ethers.utils.hexlify(1000000),
       })
+      console.log(`Token count: ${tokenCount}`)
       const allTokens = []
       for (let i = 0; i < tokenCount; i++) {
         const tokenAddress = await tokenFactoryContract.tokensDeployed(i, {
-          gasLimit: ethers.utils.hexlify(1000000), // Ensuring the gas limit is set correctly
+          gasLimit: ethers.utils.hexlify(1000000),
         })
         allTokens.push(tokenAddress)
       }
@@ -61,9 +63,10 @@ export default function SafeLaunch(): JSX.Element {
       const userTokens = await tokenFactoryContract.getTokensDeployedByUser(
         userAddress,
         {
-          gasLimit: ethers.utils.hexlify(1000000), // Ensuring the gas limit is set correctly
+          gasLimit: ethers.utils.hexlify(1000000),
         }
       )
+      console.log("Fetched User Tokens:", userTokens)
       return userTokens
     } catch (error) {
       console.error("Error fetching user tokens: ", error)
@@ -78,13 +81,24 @@ export default function SafeLaunch(): JSX.Element {
         safeMemeABI,
         provider
       )
-      const [name, symbol, totalSupply, owner] = await Promise.all([
-        tokenContract.name(),
-        tokenContract.symbol(),
-        tokenContract.totalSupply(),
-        tokenContract.owner(),
-      ])
-      return { address: tokenAddress, name, symbol, totalSupply, owner }
+      const [name, symbol, totalSupply, owner, decimals, antiWhalePercentage] =
+        await Promise.all([
+          tokenContract.name(),
+          tokenContract.symbol(),
+          tokenContract.totalSupply(),
+          tokenContract.owner(),
+          tokenContract.decimals(),
+          tokenContract.antiWhalePercentage(),
+        ])
+      return {
+        address: tokenAddress,
+        name,
+        symbol,
+        totalSupply,
+        owner,
+        decimals,
+        antiWhalePercentage,
+      }
     } catch (error) {
       console.error(`Error fetching details for token ${tokenAddress}:`, error)
       return null
@@ -95,20 +109,37 @@ export default function SafeLaunch(): JSX.Element {
     const fetchAllTokenData = async () => {
       try {
         const allTokens = await getAllTokens()
-        const userTokens = await getUserTokens(address)
-        if (!allTokens || !userTokens) {
-          console.error("Tokens data is undefined or null.")
+        console.log("All Tokens:", allTokens)
+        if (!allTokens || allTokens.length === 0) {
+          console.error("allTokens is undefined, null, or empty.")
           return
         }
+
+        const userTokens = await getUserTokens(address)
+        console.log("User Tokens:", userTokens)
+        if (!userTokens) {
+          console.error("userTokens is undefined or null.")
+          return
+        }
+
         const tokenData = await Promise.all(allTokens.map(getTokenDetails))
-        const userTokenAddresses = new Set(userTokens)
+        console.log("Token Data:", tokenData)
+        if (!tokenData) {
+          console.error("tokenData is undefined or null.")
+          return
+        }
+
+        const userTokenAddresses = new Set(
+          userTokens.map((token) => token.toLowerCase())
+        )
         const deployedTokenData = tokenData
-          .filter((token) => token !== null)
+          .filter((token): token is NonNullable<typeof token> => token !== null)
           .map((token) => ({
             ...token,
-            isUserToken: userTokenAddresses.has(token.address),
+            isUserToken: userTokenAddresses.has(token.address.toLowerCase()),
           }))
         setDeployedTokenData(deployedTokenData)
+        console.log("Deployed Token Data:", deployedTokenData)
       } catch (error) {
         console.error("Error fetching token data: ", error)
       }
@@ -166,7 +197,9 @@ export default function SafeLaunch(): JSX.Element {
                       >
                         <div className="meme-header">
                           <h3>
-                            {token.name} ({token.symbol})
+                            {token.name
+                              ? `${token.name} (${token.symbol})`
+                              : "Token"}
                           </h3>
                           {token.isUserToken && (
                             <span className="user-token-badge">Your Token</span>
@@ -185,7 +218,15 @@ export default function SafeLaunch(): JSX.Element {
                           </p>
                           <p>
                             <strong>Supply:</strong>{" "}
-                            {formatNumber(token.totalSupply, 18)}
+                            {token.totalSupply
+                              ? formatNumber(token.totalSupply, token.decimals)
+                              : "N/A"}
+                          </p>
+                          <p>
+                            <strong>Anti-Whale Percentage:</strong>{" "}
+                            {token.antiWhalePercentage
+                              ? `${token.antiWhalePercentage}%`
+                              : "N/A"}
                           </p>
                         </div>
                       </div>
