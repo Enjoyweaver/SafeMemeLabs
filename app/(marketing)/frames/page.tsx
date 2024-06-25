@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import { getFrameMetadata } from "@coinbase/onchainkit"
 
-import "@/styles/frames.css"
+import styles from "./page.module.css"
 
 const images = [
   "Hank.jpg",
@@ -78,16 +78,16 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
-      <div className="pageContainer">
-        <h1 className="title">Mint Your NFT with our Safe Frames</h1>
-        <p className="description">
+      <div className={styles.pageContainer}>
+        <h1 className={styles.title}>Mint Your NFT with our Safe Frames</h1>
+        <p className={styles.description}>
           Our Safe Frames are unique NFTs stored on Arweave for permanent
           decentralization, minted on the Base blockchain for Farcaster
           interoperability, and created by SafeMeme Labs.
         </p>
-        <div className="imageGallery">
+        <div className={styles.imageGallery}>
           {images.map((image, index) => (
-            <div key={index} className="imageContainer">
+            <div key={index} className={styles.imageContainer}>
               <Image
                 src={`/images/luckyducks/${image}`}
                 alt={`Placeholder ${index + 1}`}

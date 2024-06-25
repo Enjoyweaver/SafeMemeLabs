@@ -241,3 +241,26 @@
     opacity: 0;
   }
 }
+
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: var(--input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.dark .image-container {
+  background-color: var(--input-dark);
+  border: 1px solid var(--border-dark);
+}
