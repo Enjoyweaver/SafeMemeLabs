@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import { getFrameMetadata } from "@coinbase/onchainkit"
 
-import styles from "./page.module.css"
+import "@/styles/frames.css"
 
 const images = [
   "Hank.jpg",
@@ -78,11 +78,11 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
-      <div className={styles.pageContainer}>
-        <h1 className={styles.title}>Mint Your NFT with our Safe Frames</h1>
-        <div className={styles.imageGallery}>
+      <div className="pageContainer">
+        <h1 className="title">Mint Your NFT with our Safe Frames</h1>
+        <div className="imageGallery">
           {images.map((image, index) => (
-            <div key={index} className={styles.imageContainer}>
+            <div key={index} className="imageContainer">
               <Image
                 src={`/images/luckyducks/${image}`}
                 alt={`Placeholder ${index + 1}`}
