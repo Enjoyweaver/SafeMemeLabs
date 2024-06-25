@@ -1,113 +1,190 @@
 export const tokenFactoryABI = [
   {
+    type: "event",
+    name: "NewToken",
     inputs: [
       {
-        internalType: "address",
+        name: "token",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "owner",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "constructor",
+    stateMutability: "nonpayable",
+    inputs: [
+      {
         name: "token_template",
         type: "address",
       },
       {
-        internalType: "uint256",
         name: "creation_fee",
         type: "uint256",
       },
       {
-        internalType: "address",
         name: "fee_recipient",
         type: "address",
       },
     ],
-    stateMutability: "nonpayable",
-    type: "constructor",
   },
   {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-    ],
-    name: "NewToken",
-    type: "event",
-  },
-  {
-    inputs: [],
-    name: "creationFee",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
-  },
-  {
+    name: "deployToken",
+    stateMutability: "payable",
     inputs: [
       {
-        internalType: "bytes32",
         name: "name",
         type: "bytes32",
       },
       {
-        internalType: "bytes32",
         name: "symbol",
         type: "bytes32",
       },
       {
-        internalType: "uint256",
         name: "decimals",
         type: "uint256",
       },
       {
-        internalType: "uint256",
         name: "totalSupply",
         type: "uint256",
       },
       {
-        internalType: "uint256",
         name: "antiWhalePercentage",
         type: "uint256",
       },
     ],
-    name: "deployToken",
     outputs: [
       {
-        internalType: "address",
         name: "",
         type: "address",
       },
     ],
-    stateMutability: "payable",
-    type: "function",
   },
   {
+    type: "function",
+    name: "getTokensDeployedByUser",
+    stateMutability: "view",
     inputs: [
       {
-        internalType: "uint256",
-        name: "token_id",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "address[]",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "getDeployedTokenCount",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
         type: "uint256",
       },
     ],
-    name: "getToken",
+  },
+  {
+    type: "function",
+    name: "tokenTemplate",
+    stateMutability: "view",
+    inputs: [],
     outputs: [
       {
-        internalType: "address",
         name: "",
         type: "address",
       },
     ],
-    stateMutability: "view",
-    type: "function",
   },
-]
+  {
+    type: "function",
+    name: "tokensDeployed",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "tokenOwners",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "arg0",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "userTokenList",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "arg0",
+        type: "address",
+      },
+      {
+        name: "arg1",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "creationFee",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "feeRecipient",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+] as const

@@ -436,14 +436,6 @@ export const tokenExchangeTemplateDetails: { [key: string]: string } = {
   "501": "YourTokenAddressForSolanaTestnetLaunched",
 }
 
-export const tokenVyperDetails: {
-  [key: string]: string
-} = {
-  "137": "0xYourVyperTokenAddressForPolygon",
-  "250": "0xYourVyperTokenAddressForFantom",
-  "4002": "0xe36D4932C035845e3C856Bde62cB6e417D02797e",
-}
-
 export const frameFactoryDetails: {
   [key: string]: string
 } = {
@@ -453,8 +445,26 @@ export const frameFactoryDetails: {
   "84532": "0x04Acaf5ECED5f0E6f82d8dD361185e38B41CF34E",
 }
 
+export const tokenVyperDetails: {
+  [key: string]: string
+} = {
+  "4002": "0x79744507b661c1440a74E2865F85af87cAD6e416",
+}
+
 export const masterVyperTokenCopy: {
   [key: string]: string
 } = {
-  "4002": "0xaca06f614Fb25b3f0f9dCcEbe8c1BD1F5ffbaFa1",
+  "4002": "0xA0dfa2Bd188CD95cBF94aB1a4E7fBCDAcC52ccAf",
+}
+
+export const SafeSaleAddress: {
+  [key: string]: string
+} = {
+  "4002": "0xdb293656d477d575fCf7784c10E55e95226362Da",
+}
+
+export const SafeLockAddress: {
+  [key: string]: string
+} = {
+  "4002": "0x535068d3da42E845358F379f8fB0E83ADB83e3cb",
 }

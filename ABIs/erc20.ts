@@ -81,4 +81,62 @@ export const erc20ABI = [
     name: "Transfer",
     type: "event",
   },
+  {
+    name: "getTokensDeployedByUser",
+    type: "function",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "_user",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "address[]",
+      },
+    ],
+  },
+  {
+    name: "tokensDeployed",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address[]",
+      },
+    ],
+  },
+  {
+    name: "tokenOwners",
+    type: "function",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    name: "getDeployedTokenCount",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
 ] as const
