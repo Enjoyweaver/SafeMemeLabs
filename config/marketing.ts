@@ -47,10 +47,10 @@ export const marketingConfig: MarketingConfig = {
       title: "Feedback",
       href: "/feedback",
     },
-    {
-      title: "Frames",
-      href: "/frames",
-    },
+    //{
+    //  title: "Frames",
+    //  href: "/frames",
+    //},
     {
       title: "Rewards",
       href: "/rewards",

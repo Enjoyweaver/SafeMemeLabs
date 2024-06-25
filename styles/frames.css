@@ -1,3 +1,32 @@
+:root {
+  --background-light-fb: #ffffff;
+  --foreground-light-fb: #000000;
+  --primary-light-fb: #04c44e;
+  --secondary-light-fb: #b80f5e;
+  --accent-light-fb: #04c44e;
+  --border-light-fb: #04c44e;
+  --text-light-fb: #000000;
+
+  --background-dark-fb: #000000;
+  --foreground-dark-fb: #ffffff;
+  --primary-dark-fb: #df1584;
+  --secondary-dark-fb: #41b80a;
+  --accent-dark-fb: #41b80a;
+  --border-dark-fb: #41b80a;
+  --text-dark-fb: #ffffff;
+}
+
+body.feedbackBody {
+  background-color: var(--background-light-fb);
+  color: var(--foreground-light-fb);
+  font-family: "Courier New", Courier, monospace;
+}
+
+.dark body.feedbackBody {
+  background-color: var(--background-dark-fb);
+  color: var(--foreground-dark-fb);
+}
+
 .pageContainer {
   display: flex;
   flex-direction: column;
