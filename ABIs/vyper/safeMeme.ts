@@ -54,11 +54,11 @@ export const safeMemeABI = [
       },
       {
         name: "name",
-        type: "bytes32",
+        type: "string",
       },
       {
         name: "symbol",
-        type: "bytes32",
+        type: "string",
       },
       {
         name: "decimals",
@@ -188,7 +188,7 @@ export const safeMemeABI = [
     outputs: [
       {
         name: "",
-        type: "bytes32",
+        type: "string",
       },
     ],
   },
@@ -200,7 +200,7 @@ export const safeMemeABI = [
     outputs: [
       {
         name: "",
-        type: "bytes32",
+        type: "string",
       },
     ],
   },

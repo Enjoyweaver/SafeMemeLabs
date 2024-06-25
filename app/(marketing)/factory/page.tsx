@@ -127,7 +127,7 @@ export default function Factory(): JSX.Element {
         : tokenType === "tokenVyper"
         ? tokenFactoryABI
         : tokenDeployerABI,
-    functionName: tokenType === "tokenVyper" ? "creationFee" : "creationFee",
+    functionName: "creationFee",
     onError: (error) => {
       console.error("Error fetching creation fee:", error)
     },
@@ -155,12 +155,12 @@ export default function Factory(): JSX.Element {
         : tokenType === "tokenVyper"
         ? tokenFactoryABI
         : tokenDeployerABI,
-    functionName: tokenType === "tokenVyper" ? "deployToken" : "deployToken",
+    functionName: "deployToken",
     args:
       tokenType === "safeMemeTokenLaunched"
         ? [
-            ethers.utils.formatBytes32String(dSymbol),
-            ethers.utils.formatBytes32String(dName),
+            dName,
+            dSymbol,
             dDecimals ? Number(dDecimals) : 18,
             BigInt(dSupply) *
               BigInt(10 ** (dDecimals ? Number(dDecimals) : 18)),
@@ -168,8 +168,8 @@ export default function Factory(): JSX.Element {
           ]
         : tokenType === "tokenVyper"
         ? [
-            ethers.utils.formatBytes32String(dName),
-            ethers.utils.formatBytes32String(dSymbol),
+            dName,
+            dSymbol,
             dDecimals ? Number(dDecimals) : 18,
             BigInt(dSupply) *
               BigInt(10 ** (dDecimals ? Number(dDecimals) : 18)),

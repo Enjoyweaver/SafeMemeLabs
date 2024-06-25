@@ -448,13 +448,13 @@ export const frameFactoryDetails: {
 export const tokenVyperDetails: {
   [key: string]: string
 } = {
-  "4002": "0xbca60b60C8442BF0f544669280FC6C55792194dB",
+  "4002": "0x66fCe966594e039a1030a2512D4A09C8A6cF44B3",
 }
 
 export const masterVyperTokenCopy: {
   [key: string]: string
 } = {
-  "4002": "0x3dD5654cA95516f9554883040844d66575b5Acc0",
+  "4002": "0xD8C59c18749EdE51d6a10b55D550cbAb5947E0af",
 }
 
 export const SafeSaleAddress: {

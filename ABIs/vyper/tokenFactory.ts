@@ -41,11 +41,11 @@ export const tokenFactoryABI = [
     inputs: [
       {
         name: "name",
-        type: "bytes32",
+        type: "string",
       },
       {
         name: "symbol",
-        type: "bytes32",
+        type: "string",
       },
       {
         name: "decimals",
