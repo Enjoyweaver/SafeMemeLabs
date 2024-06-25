@@ -4,12 +4,10 @@ import { useEffect, useState } from "react"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { exchangeABI } from "@/ABIs/vyper/exchange"
 import { factoryABI } from "@/ABIs/vyper/factory"
-import { routerABI } from "@/ABIs/vyper/router"
 import {
-  VyperExchange,
-  VyperFactory,
-  VyperRouter,
-  tokenFactoryDetails,
+  tokenVyperDetails,
+  vyperExchangeDetails,
+  vyperExchangeFactoryDetails,
 } from "@/Constants/config"
 import { ethers } from "ethers"
 import { useAccount, useNetwork } from "wagmi"
