@@ -163,13 +163,15 @@ export default function SafeLaunch(): JSX.Element {
         }
 
         const userTokenAddresses = new Set(
-          userTokens.map((token) => token.toLowerCase())
+          userTokens.map((token) => token?.toLowerCase())
         )
         const deployedTokenData = tokenData
           .filter((token): token is NonNullable<typeof token> => token !== null)
           .map((token) => ({
             ...token,
-            isUserToken: userTokenAddresses.has(token.address.toLowerCase()),
+            isUserToken: userTokenAddresses.has(
+              token.address?.toLowerCase() || ""
+            ),
           }))
         setDeployedTokenData(deployedTokenData)
         console.log("Deployed Token Data:", deployedTokenData)
@@ -284,7 +286,7 @@ export default function SafeLaunch(): JSX.Element {
                               <div className="stage" key={stageIndex}>
                                 <h4>Stage {stageIndex + 1}</h4>
                                 <p>
-                                  <strong>Price:</strong>{" "}
+                                  <strong className="stagetext">Price:</strong>{" "}
                                   {ethers.utils.formatUnits(
                                     stage[0],
                                     token.decimals

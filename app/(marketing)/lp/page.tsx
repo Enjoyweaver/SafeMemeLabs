@@ -161,7 +161,9 @@ const Liquidity = () => {
           .filter((token): token is NonNullable<typeof token> => token !== null)
           .map((token) => ({
             ...token,
-            isUserToken: userTokenAddresses.has(token.address.toLowerCase()),
+            isUserToken: userTokenAddresses.has(
+              token.address?.toLowerCase() || ""
+            ),
           }))
         setDeployedTokenData(deployedTokenData)
       } catch (error) {

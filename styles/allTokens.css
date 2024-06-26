@@ -299,8 +299,12 @@ body {
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 8px;
-  background-color: var(--primary-dark);
-  color: var(--primary-light);
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.stagetext p {
+  color: var(--primary-light) !important;
 }
 
 .progress-bar {

@@ -72,6 +72,14 @@ export const safeMemeABI = [
         name: "antiWhalePercentage",
         type: "uint256",
       },
+      {
+        name: "safeSaleAddress",
+        type: "address",
+      },
+      {
+        name: "safeLockAddress",
+        type: "address",
+      },
     ],
     outputs: [],
   },
@@ -182,6 +190,18 @@ export const safeMemeABI = [
   },
   {
     type: "function",
+    name: "addToWhitelist",
+    stateMutability: "nonpayable",
+    inputs: [
+      {
+        name: "_address",
+        type: "address",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
     name: "name",
     stateMutability: "view",
     inputs: [],
@@ -287,6 +307,23 @@ export const safeMemeABI = [
       {
         name: "",
         type: "address",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "whitelist",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "arg0",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
       },
     ],
   },

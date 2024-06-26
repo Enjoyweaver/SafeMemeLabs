@@ -107,6 +107,18 @@ export const safeSaleABI = [
   },
   {
     type: "function",
+    name: "setSafeLock",
+    stateMutability: "nonpayable",
+    inputs: [
+      {
+        name: "_safeLock",
+        type: "address",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
     name: "startSafeLaunch",
     stateMutability: "nonpayable",
     inputs: [
@@ -246,6 +258,22 @@ export const safeSaleABI = [
   },
   {
     type: "function",
+    name: "updateFactoryAndTemplate",
+    stateMutability: "nonpayable",
+    inputs: [
+      {
+        name: "factory",
+        type: "address",
+      },
+      {
+        name: "template",
+        type: "address",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
     name: "tokenFactory",
     stateMutability: "view",
     inputs: [],
@@ -283,6 +311,18 @@ export const safeSaleABI = [
   {
     type: "function",
     name: "safeLock",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "owner",
     stateMutability: "view",
     inputs: [],
     outputs: [

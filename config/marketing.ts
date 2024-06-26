@@ -27,14 +27,14 @@ export const marketingConfig: MarketingConfig = {
       href: "/factory",
     },
 
-    {
-      title: "Provide LP",
-      href: "/lp",
-    },
-    {
-      title: "Swap",
-      href: "/swap",
-    },
+    // {
+    //  title: "Provide LP",
+    //   href: "/lp",
+    // },
+    // {
+    //  title: "Swap",
+    //   href: "/swap",
+    // },
     // {
     //    title: "SafeMeme",
     //   href: "/safememe",
@@ -47,10 +47,10 @@ export const marketingConfig: MarketingConfig = {
       title: "Feedback",
       href: "/feedback",
     },
-    {
-      title: "Frames",
-      href: "/frames",
-    },
+    // {
+    //   title: "Frames",
+    //   href: "/frames",
+    // },
     {
       title: "Rewards",
       href: "/rewards",
@@ -64,9 +64,9 @@ export const marketingConfig: MarketingConfig = {
     //  title: "Manager",
     //  href: "/deploy",
     // },
-    {
-      title: "SafeLaunch",
-      href: "safelaunch",
-    },
+    //{
+    //  title: "SafeLaunch",
+    //  href: "safelaunch",
+    //},
   ],
 }
