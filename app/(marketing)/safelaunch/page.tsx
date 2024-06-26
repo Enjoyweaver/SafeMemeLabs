@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { safeMemeABI } from "@/ABIs/vyper/safeMeme"
+import { safeSaleABI } from "@/ABIs/vyper/safeSale"
 import { tokenFactoryABI } from "@/ABIs/vyper/tokenFactory"
 import { ethers } from "ethers"
 import { useAccount, useNetwork } from "wagmi"
@@ -10,6 +11,7 @@ import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import {
+  SafeSaleAddress,
   blockExplorerAddress,
   tokenVyperDetails,
 } from "../../../Constants/config"
@@ -105,6 +107,30 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
+  const getStageDetails = async (tokenAddress) => {
+    try {
+      const safeSaleContract = new ethers.Contract(
+        SafeSaleAddress[chainId] as `0x${string}`,
+        safeSaleABI,
+        provider
+      )
+
+      const stageDetails = await Promise.all(
+        Array.from({ length: 5 }, (_, i) =>
+          safeSaleContract.getStageDetails(tokenAddress, i)
+        )
+      )
+
+      return stageDetails
+    } catch (error) {
+      console.error(
+        `Error fetching stage details for token ${tokenAddress}:`,
+        error
+      )
+      return []
+    }
+  }
+
   useEffect(() => {
     const fetchAllTokenData = async () => {
       try {
@@ -122,7 +148,14 @@ export default function SafeLaunch(): JSX.Element {
           return
         }
 
-        const tokenData = await Promise.all(allTokens.map(getTokenDetails))
+        const tokenData = await Promise.all(
+          allTokens.map(async (tokenAddress) => {
+            const details = await getTokenDetails(tokenAddress)
+            const stages = await getStageDetails(tokenAddress)
+            return { ...details, stages }
+          })
+        )
+
         console.log("Token Data:", tokenData)
         if (!tokenData) {
           console.error("tokenData is undefined or null.")
@@ -162,10 +195,28 @@ export default function SafeLaunch(): JSX.Element {
     return `${address.slice(0, 6)}...${address.slice(-6)}`
   }
 
+  const calculateStageProgress = (stage) => {
+    const { tokenBAccepted, tokenBRequired } = stage
+    return (tokenBAccepted / tokenBRequired) * 100
+  }
+
+  const toggleDarkMode = () => {
+    document.body.classList.toggle("dark-mode")
+  }
+
+  useEffect(() => {
+    // Optionally, you can set dark mode based on a condition
+    const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches
+    if (isDarkMode) {
+      document.body.classList.add("dark-mode")
+    }
+  }, [])
+
   return (
     <div>
       <Navbar />
       <div className="flex min-h-screen flex-col">
+        <button onClick={toggleDarkMode}>Toggle Dark Mode</button>
         <main className="flex-1">
           <div className="dashboard">
             {isClient && chainId && !tokenVyperDetails[chainId] && (
@@ -228,6 +279,43 @@ export default function SafeLaunch(): JSX.Element {
                               ? `${token.antiWhalePercentage}%`
                               : "N/A"}
                           </p>
+                          <div className="stages-container">
+                            {token.stages.map((stage, stageIndex) => (
+                              <div className="stage" key={stageIndex}>
+                                <h4>Stage {stageIndex + 1}</h4>
+                                <p>
+                                  <strong>Price:</strong>{" "}
+                                  {ethers.utils.formatUnits(
+                                    stage[0],
+                                    token.decimals
+                                  )}{" "}
+                                  Token B
+                                </p>
+                                <p>
+                                  <strong>Token Amount:</strong>{" "}
+                                  {formatNumber(stage[1], token.decimals)}
+                                </p>
+                                <p>
+                                  <strong>Token B Required:</strong>{" "}
+                                  {formatNumber(stage[2], token.decimals)}
+                                </p>
+                                <p>
+                                  <strong>Token B Accepted:</strong>{" "}
+                                  {formatNumber(stage[3], token.decimals)}
+                                </p>
+                                <div className="progress-bar">
+                                  <div
+                                    className="progress"
+                                    style={{
+                                      width: `${calculateStageProgress(
+                                        stage
+                                      )}%`,
+                                    }}
+                                  ></div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     ))}

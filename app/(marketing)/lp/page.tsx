@@ -1,14 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
-import { exchangeABI } from "@/ABIs/vyper/exchange"
-import { factoryABI } from "@/ABIs/vyper/factory"
-import {
-  tokenVyperDetails,
-  vyperExchangeDetails,
-  vyperExchangeFactoryDetails,
-} from "@/Constants/config"
+import { safeMemeABI } from "@/ABIs/vyper/safeMeme"
+import { safeSaleABI } from "@/ABIs/vyper/safeSale"
+import { tokenFactoryABI } from "@/ABIs/vyper/tokenFactory"
+import { SafeSaleAddress, tokenVyperDetails } from "@/Constants/config"
 import { ethers } from "ethers"
 import { useAccount, useNetwork } from "wagmi"
 
@@ -18,12 +14,9 @@ import "@/styles/lp.css"
 
 const Liquidity = () => {
   const [isClient, setIsClient] = useState(false)
-  const [newToken, setNewToken] = useState("")
-  const [existingToken, setExistingToken] = useState("")
-  const [amountNewToken, setAmountNewToken] = useState("")
-  const [amountExistingToken, setAmountExistingToken] = useState("")
-  const [tokens, setTokens] = useState([]) // State to store fetched tokens
-  const [walletTokens, setWalletTokens] = useState([]) // State to store wallet tokens
+  const [deployedTokenData, setDeployedTokenData] = useState<any[]>([])
+  const [selectedToken, setSelectedToken] = useState<string>("")
+  const [totalSupply, setTotalSupply] = useState<string>("")
 
   useEffect(() => {
     setIsClient(true)
@@ -32,113 +25,191 @@ const Liquidity = () => {
   const { address, isConnected } = useAccount()
   const { chain } = useNetwork()
 
-  const fetchTokens = async () => {
-    if (chain && isConnected && address) {
-      try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const factoryAddress = tokenFactoryDetails[chain.id]
+  const chainId: string | number = chain
+    ? chain.id
+    : Object.keys(tokenVyperDetails)[0]
 
-        if (!factoryAddress) {
-          console.error("Factory address not found for chain ID:", chain.id)
-          return
-        }
+  const provider = new ethers.providers.Web3Provider(window.ethereum)
+  const tokenFactoryContract = new ethers.Contract(
+    tokenVyperDetails[chainId] as `0x${string}`,
+    tokenFactoryABI,
+    provider
+  )
 
-        const factoryContract = new ethers.Contract(
-          factoryAddress,
-          tokenDeployerABI,
-          provider.getSigner()
-        )
-
-        const tokensDeployedByUser =
-          await factoryContract.getTokensDeployedByUser(address)
-        setTokens(
-          tokensDeployedByUser.filter(
-            (token) => token !== ethers.constants.AddressZero
-          )
-        )
-
-        // Fetch wallet tokens
-        const walletTokenAddresses = await provider.listAccounts() // Mock fetching wallet tokens
-        setWalletTokens(walletTokenAddresses)
-      } catch (error) {
-        console.error("Error fetching tokens:", error)
+  const getAllTokens = async () => {
+    try {
+      const tokenCount = await tokenFactoryContract.getDeployedTokenCount({
+        gasLimit: ethers.utils.hexlify(1000000),
+      })
+      const allTokens = []
+      for (let i = 0; i < tokenCount; i++) {
+        const tokenAddress = await tokenFactoryContract.tokensDeployed(i, {
+          gasLimit: ethers.utils.hexlify(1000000),
+        })
+        allTokens.push(tokenAddress)
       }
+      return allTokens
+    } catch (error) {
+      console.error("Error fetching all tokens: ", error)
+      return []
+    }
+  }
+
+  const getUserTokens = async (userAddress) => {
+    try {
+      const userTokens = await tokenFactoryContract.getTokensDeployedByUser(
+        userAddress,
+        {
+          gasLimit: ethers.utils.hexlify(1000000),
+        }
+      )
+      return userTokens
+    } catch (error) {
+      console.error("Error fetching user tokens: ", error)
+      return []
+    }
+  }
+
+  const getTokenDetails = async (tokenAddress) => {
+    try {
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        safeMemeABI,
+        provider
+      )
+      const [name, symbol, totalSupply, owner, decimals, antiWhalePercentage] =
+        await Promise.all([
+          tokenContract.name(),
+          tokenContract.symbol(),
+          tokenContract.totalSupply(),
+          tokenContract.owner(),
+          tokenContract.decimals(),
+          tokenContract.antiWhalePercentage(),
+        ])
+      return {
+        address: tokenAddress,
+        name,
+        symbol,
+        totalSupply,
+        owner,
+        decimals,
+        antiWhalePercentage,
+      }
+    } catch (error) {
+      console.error(`Error fetching details for token ${tokenAddress}:`, error)
+      return null
+    }
+  }
+
+  const getStageDetails = async (tokenAddress) => {
+    try {
+      const safeSaleContract = new ethers.Contract(
+        SafeSaleAddress[chainId] as `0x${string}`,
+        safeSaleABI,
+        provider
+      )
+
+      const stageDetails = await Promise.all(
+        Array.from({ length: 5 }, (_, i) =>
+          safeSaleContract.getStageDetails(tokenAddress, i)
+        )
+      )
+
+      return stageDetails
+    } catch (error) {
+      console.error(
+        `Error fetching stage details for token ${tokenAddress}:`,
+        error
+      )
+      return []
     }
   }
 
   useEffect(() => {
-    fetchTokens()
-  }, [chain, isConnected, address])
-
-  const handleAddLiquidity = async () => {
-    if (
-      isConnected &&
-      amountNewToken > 0 &&
-      amountExistingToken > 0 &&
-      newToken &&
-      existingToken
-    ) {
+    const fetchAllTokenData = async () => {
       try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const factoryAddress = VyperFactory[chain.id]
-
-        if (!factoryAddress) {
-          console.error("Factory address not found for chain ID:", chain.id)
+        const allTokens = await getAllTokens()
+        if (!allTokens || allTokens.length === 0) {
+          console.error("allTokens is undefined, null, or empty.")
           return
         }
 
-        const factoryContract = new ethers.Contract(
-          factoryAddress,
-          factoryABI,
-          provider.getSigner()
-        )
-
-        const exchangeAddress = await factoryContract.getExchange(newToken)
-        if (
-          !exchangeAddress ||
-          exchangeAddress === ethers.constants.AddressZero
-        ) {
-          console.error("Exchange address not found for token:", newToken)
+        const userTokens = await getUserTokens(address)
+        if (!userTokens) {
+          console.error("userTokens is undefined or null.")
           return
         }
 
-        const exchangeContract = new ethers.Contract(
-          exchangeAddress,
-          exchangeABI,
-          provider.getSigner()
+        const tokenData = await Promise.all(
+          allTokens.map(async (tokenAddress) => {
+            const details = await getTokenDetails(tokenAddress)
+            const stages = await getStageDetails(tokenAddress)
+            return { ...details, stages }
+          })
         )
 
-        // Approve tokens
-        const newTokenContract = new ethers.Contract(
-          newToken,
-          tokenDeployerABI,
-          provider.getSigner()
-        )
-        const existingTokenContract = new ethers.Contract(
-          existingToken,
-          tokenDeployerABI,
-          provider.getSigner()
-        )
+        if (!tokenData) {
+          console.error("tokenData is undefined or null.")
+          return
+        }
 
-        await newTokenContract.approve(
-          exchangeAddress,
-          ethers.utils.parseUnits(amountNewToken)
+        const userTokenAddresses = new Set(
+          userTokens.map((token) => token.toLowerCase())
         )
-        await existingTokenContract.approve(
-          exchangeAddress,
-          ethers.utils.parseUnits(amountExistingToken)
-        )
-
-        // Add liquidity
-        await exchangeContract.addLiquidity(
-          ethers.utils.parseUnits(amountNewToken),
-          ethers.utils.parseUnits(amountExistingToken),
-          { gasLimit: 300000 }
-        )
-
-        console.log("Liquidity added successfully")
+        const deployedTokenData = tokenData
+          .filter((token): token is NonNullable<typeof token> => token !== null)
+          .map((token) => ({
+            ...token,
+            isUserToken: userTokenAddresses.has(token.address.toLowerCase()),
+          }))
+        setDeployedTokenData(deployedTokenData)
       } catch (error) {
-        console.error("Add liquidity failed:", error)
+        console.error("Error fetching token data: ", error)
+      }
+    }
+
+    if (isClient && isConnected) {
+      fetchAllTokenData()
+    }
+  }, [isClient, isConnected, chainId, address])
+
+  const handleTokenSelection = async (tokenAddress: string) => {
+    setSelectedToken(tokenAddress)
+    const tokenContract = new ethers.Contract(
+      tokenAddress,
+      safeMemeABI,
+      provider
+    )
+    const totalSupply = await tokenContract.totalSupply()
+    setTotalSupply(totalSupply.toString())
+  }
+
+  const handleDepositTokens = async () => {
+    if (isConnected && selectedToken && totalSupply) {
+      try {
+        const safeSaleContract = new ethers.Contract(
+          SafeSaleAddress[chainId] as `0x${string}`,
+          safeSaleABI,
+          provider.getSigner()
+        )
+
+        const tokenContract = new ethers.Contract(
+          selectedToken,
+          safeMemeABI,
+          provider.getSigner()
+        )
+        await tokenContract.approve(safeSaleContract.address, totalSupply)
+
+        await safeSaleContract.startSafeLaunch(
+          selectedToken,
+          totalSupply,
+          [1000, 2000, 3000, 4000, 5000],
+          [1, 2, 3, 4, 5]
+        )
+
+        console.log("Tokens deposited successfully")
+      } catch (error) {
+        console.error("Token deposit failed:", error)
       }
     }
   }
@@ -152,65 +223,34 @@ const Liquidity = () => {
             <h1 className="page-title">Provide Liquidity</h1>
             <div className="liquidity-card">
               <div className="token-section">
-                <label htmlFor="newToken">New Token</label>
+                <label htmlFor="selectedToken">Select Token to Deposit</label>
                 <select
-                  id="newToken"
-                  value={newToken}
-                  onChange={(e) => setNewToken(e.target.value)}
+                  id="selectedToken"
+                  value={selectedToken}
+                  onChange={(e) => handleTokenSelection(e.target.value)}
                   className="input-field"
                 >
-                  <option value="">Select New Token</option>
-                  {tokens.map((token, index) => (
-                    <option key={index} value={token}>
-                      {token}
+                  <option value="">Select Token</option>
+                  {deployedTokenData.map((token, index) => (
+                    <option key={index} value={token.address}>
+                      {token.name} ({token.symbol})
                     </option>
                   ))}
                 </select>
-                <input
-                  type="number"
-                  id="amountNewToken"
-                  value={amountNewToken}
-                  onChange={(e) => setAmountNewToken(e.target.value)}
-                  placeholder="Amount"
-                  className="input-field"
-                />
               </div>
-              <div className="token-section">
-                <label htmlFor="existingToken">Existing Token</label>
-                <select
-                  id="existingToken"
-                  value={existingToken}
-                  onChange={(e) => setExistingToken(e.target.value)}
-                  className="input-field"
-                >
-                  <option value="">Select Existing Token</option>
-                  {walletTokens.map((token, index) => (
-                    <option key={index} value={token}>
-                      {token}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="number"
-                  id="amountExistingToken"
-                  value={amountExistingToken}
-                  onChange={(e) => setAmountExistingToken(e.target.value)}
-                  placeholder="Amount"
-                  className="input-field"
-                />
-              </div>
+              {selectedToken && (
+                <div className="token-details">
+                  <p>
+                    <strong>Total Supply:</strong> {totalSupply}
+                  </p>
+                </div>
+              )}
               <button
                 className="liquidity-button"
-                onClick={handleAddLiquidity}
-                disabled={
-                  !isConnected ||
-                  !amountNewToken ||
-                  !amountExistingToken ||
-                  !newToken ||
-                  !existingToken
-                }
+                onClick={handleDepositTokens}
+                disabled={!isConnected || !selectedToken || !totalSupply}
               >
-                Add Liquidity
+                Deposit 100% Tokens to Start SafeLaunch
               </button>
             </div>
           </div>

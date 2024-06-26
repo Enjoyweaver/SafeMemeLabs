@@ -288,3 +288,47 @@ body {
   margin-bottom: 20px;
   margin-top: 2rem;
 }
+
+.stages-container {
+  margin-top: 20px;
+  color: var(--primary-light);
+}
+
+.stage {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  background-color: var(--primary-dark);
+  color: var(--primary-light);
+}
+
+.progress-bar {
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  height: 20px;
+}
+
+.progress {
+  height: 100%;
+  background-color: #4caf50;
+}
+
+/* Dark mode styles */
+body.dark-mode .stages-container {
+  color: var(--primary-dark);
+}
+
+body.dark-mode .stage {
+  background-color: var(--primary-dark);
+  color: var(--primary-dark);
+}
+
+body.dark-mode .progress-bar {
+  background-color: #4caf50;
+}
+
+body.dark-mode .progress {
+  background-color: #e0e0e0;
+}

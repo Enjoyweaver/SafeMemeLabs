@@ -1,113 +1,319 @@
 export const safeLockABI = [
   {
+    type: "event",
+    name: "TokensReleased",
     inputs: [
       {
-        internalType: "address",
-        name: "token_template",
+        name: "token",
         type: "address",
+        indexed: true,
       },
       {
-        internalType: "uint256",
-        name: "creation_fee",
+        name: "stage",
         type: "uint256",
+        indexed: false,
       },
       {
-        internalType: "address",
-        name: "fee_recipient",
+        name: "amountReleased",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "TokensWithdrawn",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "constructor",
+    stateMutability: "nonpayable",
+    inputs: [
+      {
+        name: "_safeSaleContract",
         type: "address",
       },
     ],
-    stateMutability: "nonpayable",
-    type: "constructor",
   },
   {
-    anonymous: false,
+    type: "function",
+    name: "initializeLock",
+    stateMutability: "nonpayable",
     inputs: [
       {
-        indexed: true,
-        internalType: "address",
         name: "token",
         type: "address",
       },
       {
-        indexed: true,
-        internalType: "address",
-        name: "owner",
+        name: "initialSupply",
+        type: "uint256",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "releaseTokens",
+    stateMutability: "nonpayable",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+      },
+      {
+        name: "stage",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "withdrawRemainingTokens",
+    stateMutability: "nonpayable",
+    inputs: [
+      {
+        name: "token",
         type: "address",
       },
     ],
-    name: "NewToken",
-    type: "event",
+    outputs: [],
   },
   {
+    type: "function",
+    name: "getLockedTokens",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "getReleasedTokens",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "getTokensDeployedByUser",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "user",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "address[]",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "getDeployedTokenCount",
+    stateMutability: "view",
     inputs: [],
-    name: "creationFee",
     outputs: [
       {
-        internalType: "uint256",
         name: "",
         type: "uint256",
       },
     ],
-    stateMutability: "view",
-    type: "function",
   },
   {
+    type: "function",
+    name: "getCurrentStage",
+    stateMutability: "view",
     inputs: [
       {
-        internalType: "bytes32",
-        name: "name",
-        type: "bytes32",
+        name: "token",
+        type: "address",
       },
+    ],
+    outputs: [
       {
-        internalType: "bytes32",
-        name: "symbol",
-        type: "bytes32",
-      },
-      {
-        internalType: "uint256",
-        name: "decimals",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "totalSupply",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "antiWhalePercentage",
+        name: "",
         type: "uint256",
       },
     ],
-    name: "deployToken",
+  },
+  {
+    type: "function",
+    name: "getLockEndTime",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+      },
+    ],
     outputs: [
       {
-        internalType: "address",
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "lockedTokens",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "arg0",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "releasedTokens",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "arg0",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "stageReleases",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "arg0",
+        type: "address",
+      },
+      {
+        name: "arg1",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "tokensDeployed",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
         name: "",
         type: "address",
       },
     ],
-    stateMutability: "payable",
-    type: "function",
   },
   {
+    type: "function",
+    name: "userTokens",
+    stateMutability: "view",
     inputs: [
       {
-        internalType: "uint256",
-        name: "token_id",
+        name: "arg0",
+        type: "address",
+      },
+      {
+        name: "arg1",
         type: "uint256",
       },
     ],
-    name: "getToken",
     outputs: [
       {
-        internalType: "address",
         name: "",
         type: "address",
       },
     ],
-    stateMutability: "view",
-    type: "function",
   },
-]
+  {
+    type: "function",
+    name: "lockEndTime",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "arg0",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "safeSaleContract",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+] as const

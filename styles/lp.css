@@ -119,3 +119,50 @@ body {
 .dark .liquidity-button:hover {
   background-color: var(--secondary-dark);
 }
+
+.liquidity-container {
+  padding: 20px;
+}
+
+.page-title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.liquidity-card {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.token-section {
+  margin-bottom: 20px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.liquidity-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.liquidity-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.token-details {
+  margin-top: 20px;
+}
