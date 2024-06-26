@@ -460,11 +460,17 @@ export const masterVyperTokenCopy: {
 export const SafeSaleAddress: {
   [key: string]: string
 } = {
-  "4002": "0x9252C1A9AA0Ba935b0496D893A236e6A401B3558",
+  "4002": "0xa681BBCf78b0dD04aE232631603b295c35DB92d5",
 }
 
 export const SafeLockAddress: {
   [key: string]: string
 } = {
-  "4002": "0x7Bd1a6266D2952534bF4248B233D6668B3C6340A",
+  "4002": "0x426e2659F329CaeDbb79c3FA5a5CF197A8e5e650",
+}
+
+export const SafeSaleFactory: {
+  [key: string]: string
+} = {
+  "4002": "0x465cbEE2C4b98b97fD1eBA5De40B2036e3257064",
 }

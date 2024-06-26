@@ -12,7 +12,7 @@ import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import "@/styles/lp.css"
 
-const Liquidity = () => {
+const SafeLaunch = () => {
   const [isClient, setIsClient] = useState(false)
   const [deployedTokenData, setDeployedTokenData] = useState<any[]>([])
   const [selectedToken, setSelectedToken] = useState<string>("")
@@ -244,7 +244,7 @@ const Liquidity = () => {
       <div className="flex min-h-screen flex-col">
         <main className="flex-1">
           <div className="liquidity-container">
-            <h1 className="page-title">Provide Liquidity</h1>
+            <h1 className="page-title">Start your SafeLaunch</h1>
             <div className="liquidity-card">
               <div className="token-section">
                 <label htmlFor="selectedToken">Select Token to Deposit</label>
@@ -288,4 +288,4 @@ const Liquidity = () => {
   )
 }
 
-export default Liquidity
+export default SafeLaunch

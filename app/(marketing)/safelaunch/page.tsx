@@ -202,23 +202,10 @@ export default function SafeLaunch(): JSX.Element {
     return (tokenBAccepted / tokenBRequired) * 100
   }
 
-  const toggleDarkMode = () => {
-    document.body.classList.toggle("dark-mode")
-  }
-
-  useEffect(() => {
-    // Optionally, you can set dark mode based on a condition
-    const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches
-    if (isDarkMode) {
-      document.body.classList.add("dark-mode")
-    }
-  }, [])
-
   return (
     <div>
       <Navbar />
       <div className="flex min-h-screen flex-col">
-        <button onClick={toggleDarkMode}>Toggle Dark Mode</button>
         <main className="flex-1">
           <div className="dashboard">
             {isClient && chainId && !tokenVyperDetails[chainId] && (
@@ -305,6 +292,11 @@ export default function SafeLaunch(): JSX.Element {
                                   <strong>Token B Accepted:</strong>{" "}
                                   {formatNumber(stage[3], token.decimals)}
                                 </p>
+                                <p>
+                                  <strong>Tokens Remaining:</strong>{" "}
+                                  {formatNumber(stage[1], token.decimals)}
+                                </p>
+
                                 <div className="progress-bar">
                                   <div
                                     className="progress"

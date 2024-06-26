@@ -28,9 +28,9 @@ export const marketingConfig: MarketingConfig = {
     },
 
     // {
-    //  title: "Provide LP",
+    //   title: "Provide LP",
     //   href: "/lp",
-    // },
+    //},
     // {
     //  title: "Swap",
     //   href: "/swap",
