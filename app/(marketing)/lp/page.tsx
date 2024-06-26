@@ -17,6 +17,7 @@ const Liquidity = () => {
   const [deployedTokenData, setDeployedTokenData] = useState<any[]>([])
   const [selectedToken, setSelectedToken] = useState<string>("")
   const [totalSupply, setTotalSupply] = useState<string>("")
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     setIsClient(true)
@@ -187,6 +188,7 @@ const Liquidity = () => {
   const handleDepositTokens = async () => {
     if (isConnected && selectedToken && totalSupply) {
       try {
+        setLoading(true)
         const safeSaleContract = new ethers.Contract(
           SafeSaleAddress[chainId] as `0x${string}`,
           safeSaleABI,
@@ -198,18 +200,33 @@ const Liquidity = () => {
           safeMemeABI,
           provider.getSigner()
         )
-        await tokenContract.approve(safeSaleContract.address, totalSupply)
 
-        await safeSaleContract.startSafeLaunch(
+        const userBalance = await tokenContract.balanceOf(address)
+        if (userBalance.lt(totalSupply)) {
+          alert("You don't have enough tokens to start the sale.")
+          return
+        }
+
+        const approvalTx = await tokenContract.approve(
+          safeSaleContract.address,
+          totalSupply
+        )
+        await approvalTx.wait()
+
+        const startSaleTx = await safeSaleContract.startSafeLaunch(
           selectedToken,
           totalSupply,
           [1000, 2000, 3000, 4000, 5000],
-          [1, 2, 3, 4, 5]
+          [1, 2, 3, 4, 5],
+          { gasLimit: ethers.utils.hexlify(1000000) }
         )
+        await startSaleTx.wait()
 
         console.log("Tokens deposited successfully")
       } catch (error) {
         console.error("Token deposit failed:", error)
+      } finally {
+        setLoading(false)
       }
     }
   }
@@ -248,9 +265,13 @@ const Liquidity = () => {
               <button
                 className="liquidity-button"
                 onClick={handleDepositTokens}
-                disabled={!isConnected || !selectedToken || !totalSupply}
+                disabled={
+                  !isConnected || !selectedToken || !totalSupply || loading
+                }
               >
-                Deposit 100% Tokens to Start SafeLaunch
+                {loading
+                  ? "Processing..."
+                  : "Deposit 100% Tokens to Start SafeLaunch"}
               </button>
             </div>
           </div>
