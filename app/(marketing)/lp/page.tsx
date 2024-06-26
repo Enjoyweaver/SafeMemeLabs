@@ -18,27 +18,32 @@ const SafeLaunch = () => {
   const [selectedToken, setSelectedToken] = useState<string>("")
   const [totalSupply, setTotalSupply] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
+  const [provider, setProvider] =
+    useState<ethers.providers.Web3Provider | null>(null)
+  const [tokenFactoryContract, setTokenFactoryContract] =
+    useState<ethers.Contract | null>(null)
 
   useEffect(() => {
     setIsClient(true)
+    if (typeof window !== "undefined" && window.ethereum) {
+      const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
+      setProvider(web3Provider)
+      const chainId = chain ? chain.id : Object.keys(tokenVyperDetails)[0]
+      const contract = new ethers.Contract(
+        tokenVyperDetails[chainId] as `0x${string}`,
+        tokenFactoryABI,
+        web3Provider
+      )
+      setTokenFactoryContract(contract)
+    }
   }, [])
 
   const { address, isConnected } = useAccount()
   const { chain } = useNetwork()
 
-  const chainId: string | number = chain
-    ? chain.id
-    : Object.keys(tokenVyperDetails)[0]
-
-  const provider = new ethers.providers.Web3Provider(window.ethereum)
-  const tokenFactoryContract = new ethers.Contract(
-    tokenVyperDetails[chainId] as `0x${string}`,
-    tokenFactoryABI,
-    provider
-  )
-
   const getAllTokens = async () => {
     try {
+      if (!tokenFactoryContract) return []
       const tokenCount = await tokenFactoryContract.getDeployedTokenCount({
         gasLimit: ethers.utils.hexlify(1000000),
       })
@@ -58,6 +63,7 @@ const SafeLaunch = () => {
 
   const getUserTokens = async (userAddress) => {
     try {
+      if (!tokenFactoryContract) return []
       const userTokens = await tokenFactoryContract.getTokensDeployedByUser(
         userAddress,
         {
@@ -73,6 +79,7 @@ const SafeLaunch = () => {
 
   const getTokenDetails = async (tokenAddress) => {
     try {
+      if (!provider) return null
       const tokenContract = new ethers.Contract(
         tokenAddress,
         safeMemeABI,
@@ -104,8 +111,11 @@ const SafeLaunch = () => {
 
   const getStageDetails = async (tokenAddress) => {
     try {
+      if (!provider) return []
       const safeSaleContract = new ethers.Contract(
-        SafeSaleAddress[chainId] as `0x${string}`,
+        SafeSaleAddress[
+          chain ? chain.id : Object.keys(tokenVyperDetails)[0]
+        ] as `0x${string}`,
         safeSaleABI,
         provider
       )
@@ -174,10 +184,11 @@ const SafeLaunch = () => {
     if (isClient && isConnected) {
       fetchAllTokenData()
     }
-  }, [isClient, isConnected, chainId, address])
+  }, [isClient, isConnected, chain, address, tokenFactoryContract])
 
   const handleTokenSelection = async (tokenAddress: string) => {
     setSelectedToken(tokenAddress)
+    if (!provider) return
     const tokenContract = new ethers.Contract(
       tokenAddress,
       safeMemeABI,
@@ -191,8 +202,11 @@ const SafeLaunch = () => {
     if (isConnected && selectedToken && totalSupply) {
       try {
         setLoading(true)
+        if (!provider) return
         const safeSaleContract = new ethers.Contract(
-          SafeSaleAddress[chainId] as `0x${string}`,
+          SafeSaleAddress[
+            chain ? chain.id : Object.keys(tokenVyperDetails)[0]
+          ] as `0x${string}`,
           safeSaleABI,
           provider.getSigner()
         )
