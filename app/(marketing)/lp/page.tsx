@@ -204,15 +204,19 @@ const Liquidity = () => {
         const userBalance = await tokenContract.balanceOf(address)
         if (userBalance.lt(totalSupply)) {
           alert("You don't have enough tokens to start the sale.")
+          setLoading(false)
           return
         }
 
+        console.log("Approving tokens...")
         const approvalTx = await tokenContract.approve(
           safeSaleContract.address,
           totalSupply
         )
         await approvalTx.wait()
+        console.log("Tokens approved successfully")
 
+        console.log("Starting SafeLaunch...")
         const startSaleTx = await safeSaleContract.startSafeLaunch(
           selectedToken,
           totalSupply,
@@ -221,6 +225,7 @@ const Liquidity = () => {
           { gasLimit: ethers.utils.hexlify(1000000) }
         )
         await startSaleTx.wait()
+        console.log("SafeLaunch started successfully")
 
         console.log("Tokens deposited successfully")
       } catch (error) {

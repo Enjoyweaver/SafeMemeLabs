@@ -448,23 +448,23 @@ export const frameFactoryDetails: {
 export const tokenVyperDetails: {
   [key: string]: string
 } = {
-  "4002": "0xa156a14151F971e02F3C0819EAd50177cc3be32F",
+  "4002": "0x94F3af1b4463C13C7B987deB3BCaeFC76f7eED76",
 }
 
 export const masterVyperTokenCopy: {
   [key: string]: string
 } = {
-  "4002": "0x867D82e4883f0865936f8C4FdE1BB87Fc8fB058c",
+  "4002": "0x169fda92AE5f0968a4fD9b150E9a49616e592726",
 }
 
 export const SafeSaleAddress: {
   [key: string]: string
 } = {
-  "4002": "0x89d269083085464ece29Cf9ECb375402fF643661",
+  "4002": "0x0346351705E095ECa99A82A9A56da112ca6CF85E",
 }
 
 export const SafeLockAddress: {
   [key: string]: string
 } = {
-  "4002": "0x6298bBFdab316515f628D334C919C748D101571f",
+  "4002": " 0x5748554b4916A0e7a96670A2D93D359cF5D0ADFB",
 }
