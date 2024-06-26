@@ -20,6 +20,16 @@ const FeedbackPage = () => {
   const [featureRequests, setFeatureRequests] = useState([])
   const [checklistItems, setChecklistItems] = useState([
     {
+      text: "Create SafeLaunch frontend to interact with SafeLaunch backend",
+      completed: false,
+      status: "open",
+    },
+    {
+      text: "Create SafeLaunch backend functionality",
+      completed: false,
+      status: "open",
+    },
+    {
       text: "Udpdate newly added link for each users profile page",
       completed: false,
       status: "open",
