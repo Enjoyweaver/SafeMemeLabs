@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { safeLaunchABI } from "@/ABIs/vyper/safeLaunch"
 import { safeMemeABI } from "@/ABIs/vyper/safeMeme"
-import { safeSaleABI } from "@/ABIs/vyper/safeSale"
 import { tokenFactoryABI } from "@/ABIs/vyper/tokenFactory"
 import { ethers } from "ethers"
 import { useAccount, useNetwork } from "wagmi"
@@ -11,7 +11,7 @@ import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import {
-  SafeSaleAddress,
+  SafeLaunchAddress,
   blockExplorerAddress,
   tokenVyperDetails,
 } from "../../../Constants/config"
@@ -25,6 +25,8 @@ export default function SafeLaunch(): JSX.Element {
     useState<ethers.providers.Web3Provider | null>(null)
   const [tokenFactoryContract, setTokenFactoryContract] =
     useState<ethers.Contract | null>(null)
+  const { address, isConnected } = useAccount()
+  const { chain } = useNetwork()
 
   useEffect(() => {
     setIsClient(true)
@@ -40,9 +42,6 @@ export default function SafeLaunch(): JSX.Element {
       setTokenFactoryContract(contract)
     }
   }, [chain])
-
-  const { address, isConnected } = useAccount()
-  const { chain } = useNetwork()
 
   const getAllTokens = async () => {
     try {
@@ -118,10 +117,10 @@ export default function SafeLaunch(): JSX.Element {
     try {
       if (!provider) return []
       const safeSaleContract = new ethers.Contract(
-        SafeSaleAddress[
+        SafeLaunchAddress[
           chain ? chain.id : Object.keys(tokenVyperDetails)[0]
         ] as `0x${string}`,
-        safeSaleABI,
+        safeLaunchABI,
         provider
       )
 

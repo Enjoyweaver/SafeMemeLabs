@@ -1,10 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { safeLaunchFactoryABI } from "@/ABIs/vyper/safeLaunchFactory"
 import { safeMemeABI } from "@/ABIs/vyper/safeMeme"
 import { safeSaleABI } from "@/ABIs/vyper/safeSale"
 import { tokenFactoryABI } from "@/ABIs/vyper/tokenFactory"
-import { SafeSaleAddress, tokenVyperDetails } from "@/Constants/config"
+import { SafeLaunchFactory, tokenVyperDetails } from "@/Constants/config"
 import { ethers } from "ethers"
 import { useAccount, useNetwork } from "wagmi"
 
@@ -22,6 +23,8 @@ const SafeLaunch = () => {
     useState<ethers.providers.Web3Provider | null>(null)
   const [tokenFactoryContract, setTokenFactoryContract] =
     useState<ethers.Contract | null>(null)
+  const [safeLaunchFactoryContract, setSafeLaunchFactoryContract] =
+    useState<ethers.Contract | null>(null)
 
   useEffect(() => {
     setIsClient(true)
@@ -35,6 +38,13 @@ const SafeLaunch = () => {
         web3Provider
       )
       setTokenFactoryContract(contract)
+
+      const safeLaunchFactory = new ethers.Contract(
+        SafeLaunchFactory[chainId] as `0x${string}`,
+        safeLaunchFactoryABI,
+        web3Provider.getSigner()
+      )
+      setSafeLaunchFactoryContract(safeLaunchFactory)
     }
   }, [])
 
@@ -112,8 +122,8 @@ const SafeLaunch = () => {
   const getStageDetails = async (tokenAddress) => {
     try {
       if (!provider) return []
-      const safeSaleContract = new ethers.Contract(
-        SafeSaleAddress[
+      const safeLaunchContract = new ethers.Contract(
+        SafeLaunchFactory[
           chain ? chain.id : Object.keys(tokenVyperDetails)[0]
         ] as `0x${string}`,
         safeSaleABI,
@@ -122,7 +132,7 @@ const SafeLaunch = () => {
 
       const stageDetails = await Promise.all(
         Array.from({ length: 5 }, (_, i) =>
-          safeSaleContract.getStageDetails(tokenAddress, i)
+          safeLaunchContract.getStageDetails(tokenAddress, i)
         )
       )
 
@@ -198,18 +208,11 @@ const SafeLaunch = () => {
     setTotalSupply(totalSupply.toString())
   }
 
-  const handleDepositTokens = async () => {
+  const handleStartSafeLaunch = async () => {
     if (isConnected && selectedToken && totalSupply) {
       try {
         setLoading(true)
-        if (!provider) return
-        const safeSaleContract = new ethers.Contract(
-          SafeSaleAddress[
-            chain ? chain.id : Object.keys(tokenVyperDetails)[0]
-          ] as `0x${string}`,
-          safeSaleABI,
-          provider.getSigner()
-        )
+        if (!provider || !safeLaunchFactoryContract) return
 
         const tokenContract = new ethers.Contract(
           selectedToken,
@@ -219,28 +222,32 @@ const SafeLaunch = () => {
 
         const userBalance = await tokenContract.balanceOf(address)
         if (userBalance.lt(totalSupply)) {
-          alert("You don't have enough tokens to start the sale.")
+          alert("You don't have enough tokens to start the SafeLaunch.")
           setLoading(false)
           return
         }
 
         console.log("Approving tokens...")
         const approvalTx = await tokenContract.approve(
-          safeSaleContract.address,
+          safeLaunchFactoryContract.address,
           totalSupply
         )
         await approvalTx.wait()
         console.log("Tokens approved successfully")
 
         console.log("Starting SafeLaunch...")
-        const startSaleTx = await safeSaleContract.startSafeLaunch(
-          selectedToken,
-          totalSupply,
-          [1000, 2000, 3000, 4000, 5000],
-          [1, 2, 3, 4, 5],
-          { gasLimit: ethers.utils.hexlify(1000000) }
-        )
-        await startSaleTx.wait()
+        const startSafeLaunchTx =
+          await safeLaunchFactoryContract.deploySafeLaunch(
+            selectedToken,
+            SafeLaunchFactory[
+              chain ? chain.id : Object.keys(SafeLaunchFactory)[0]
+            ] as `0x${string}`,
+            {
+              value: ethers.utils.parseEther("0.0"),
+              gasLimit: ethers.utils.hexlify(1000000),
+            } // Adjust value if there's a fee
+          )
+        await startSafeLaunchTx.wait()
         console.log("SafeLaunch started successfully")
 
         console.log("Tokens deposited successfully")
@@ -285,7 +292,7 @@ const SafeLaunch = () => {
               )}
               <button
                 className="liquidity-button"
-                onClick={handleDepositTokens}
+                onClick={handleStartSafeLaunch}
                 disabled={
                   !isConnected || !selectedToken || !totalSupply || loading
                 }
