@@ -5,15 +5,16 @@ import Image from "next/image"
 import { erc20ABI } from "@/ABIs/erc20"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
+import { tokenFactoryABI } from "@/ABIs/vyper/tokenFactory"
 import Modal from "react-modal"
 import { useContractRead, useContractReads, useNetwork } from "wagmi"
 
 import {
   blockExplorerUrls,
   chains,
-  // Import chains here
   tokenDeployerDetails,
   tokenLauncherDetails,
+  tokenVyperDetails,
 } from "../../../Constants/config"
 import TokenSwap from "../swap/page"
 import "@/styles/allTokens.css"
@@ -55,12 +56,19 @@ export default function AllTokens(): JSX.Element {
     functionName: "getDeployedTokenCount",
   })
 
+  const { data: vyperTokenCount } = useContractRead({
+    address: tokenVyperDetails[chainId] as `0x${string}`,
+    abi: tokenFactoryABI,
+    functionName: "getDeployedTokenCount",
+  })
+
   const deployerTokenCountNumber = deployerTokenCount
     ? Number(deployerTokenCount)
     : 0
   const launcherTokenCountNumber = launcherTokenCount
     ? Number(launcherTokenCount)
     : 0
+  const vyperTokenCountNumber = vyperTokenCount ? Number(vyperTokenCount) : 0
 
   const deployerContractAddresses = Array.from(
     { length: deployerTokenCountNumber },
@@ -74,6 +82,16 @@ export default function AllTokens(): JSX.Element {
 
   const launcherContractAddresses = Array.from(
     { length: launcherTokenCountNumber },
+    (_, i) => ({
+      address: tokenLauncherDetails[chainId] as `0x${string}`,
+      abi: tokenLauncherABI,
+      functionName: "tokensDeployed",
+      args: [i],
+    })
+  )
+
+  const vyperContractAddresses = Array.from(
+    { length: vyperTokenCountNumber },
     (_, i) => ({
       address: tokenLauncherDetails[chainId] as `0x${string}`,
       abi: tokenLauncherABI,
