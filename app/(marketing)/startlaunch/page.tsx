@@ -107,9 +107,9 @@ export default function Factory(): JSX.Element {
     args: [
       dName,
       dSymbol,
-      BigInt(dDecimals || "18"),
-      BigInt(dSupply) * BigInt(10 ** Number(dDecimals || "18")),
-      BigInt(dAntiWhalePercentage),
+      dDecimals ? Number(dDecimals) : 18,
+      BigInt(dSupply) * BigInt(10 ** (dDecimals ? Number(dDecimals) : 18)),
+      Number(dAntiWhalePercentage),
     ],
     value: BigInt(creationFee || "0"),
     enabled: Boolean(
