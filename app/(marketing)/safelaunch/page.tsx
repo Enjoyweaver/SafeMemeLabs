@@ -102,15 +102,25 @@ export default function SafeLaunch(): JSX.Element {
         SafeMemeABI,
         provider
       )
-      const [name, symbol, totalSupply, owner, decimals, antiWhalePercentage] =
-        await Promise.all([
-          tokenContract.name(),
-          tokenContract.symbol(),
-          tokenContract.totalSupply(),
-          tokenContract.owner(),
-          tokenContract.decimals(),
-          tokenContract.antiWhalePercentage(),
-        ])
+      const [
+        name,
+        symbol,
+        totalSupply,
+        owner,
+        decimals,
+        antiWhalePercentage,
+        saleActive,
+        currentStage,
+      ] = await Promise.all([
+        tokenContract.name(),
+        tokenContract.symbol(),
+        tokenContract.totalSupply(),
+        tokenContract.owner(),
+        tokenContract.decimals(),
+        tokenContract.antiWhalePercentage(),
+        tokenContract.getSaleStatus(),
+        tokenContract.getCurrentStage(),
+      ])
       return {
         address: tokenAddress,
         name,
@@ -119,6 +129,8 @@ export default function SafeLaunch(): JSX.Element {
         owner,
         decimals,
         antiWhalePercentage,
+        saleActive,
+        currentStage,
       }
     } catch (error) {
       console.error(`Error fetching details for token ${tokenAddress}:`, error)
@@ -323,33 +335,49 @@ export default function SafeLaunch(): JSX.Element {
                           </button>
 
                           <div className="stages-container">
-                            {token.stages.map((stage, stageIndex) => (
-                              <div className="stage" key={stageIndex}>
-                                <h4>Stage {stageIndex + 1}</h4>
-                                <p>
-                                  <strong className="stagetext">Price:</strong>{" "}
-                                  {ethers.utils.formatUnits(
-                                    stage[0],
-                                    token.decimals
-                                  )}{" "}
-                                  Token B
-                                </p>
-                                <p>
-                                  <strong>Token Amount:</strong>{" "}
-                                  {formatNumber(stage[1], token.decimals)}
-                                </p>
-                                <div className="progress-bar">
-                                  <div
-                                    className="progress"
-                                    style={{
-                                      width: `${calculateStageProgress(
-                                        stage
-                                      )}%`,
-                                    }}
-                                  ></div>
+                            {Array.isArray(token.stages) &&
+                            token.stages.length > 0 ? (
+                              token.stages.map((stage, stageIndex) => (
+                                <div className="stage" key={stageIndex}>
+                                  <h4>Stage {stageIndex + 1}</h4>
+                                  {token.saleActive &&
+                                  stageIndex >= token.currentStage ? (
+                                    <>
+                                      <p>
+                                        <strong className="stagetext">
+                                          Price:
+                                        </strong>{" "}
+                                        {ethers.utils.formatUnits(
+                                          stage[1],
+                                          token.decimals
+                                        )}{" "}
+                                        Token B
+                                      </p>
+                                      <p>
+                                        <strong>Tokens for Sale:</strong>{" "}
+                                        {formatNumber(
+                                          ethers.BigNumber.from(
+                                            token.totalSupply
+                                          )
+                                            .mul(5)
+                                            .div(100),
+                                          token.decimals
+                                        )}
+                                      </p>
+                                      <p>
+                                        <strong>Token B Required:</strong>{" "}
+                                        {formatNumber(stage[0], 18)}{" "}
+                                        {/* Assuming Token B has 18 decimals */}
+                                      </p>
+                                    </>
+                                  ) : (
+                                    <p>Stage not active yet</p>
+                                  )}
                                 </div>
-                              </div>
-                            ))}
+                              ))
+                            ) : (
+                              <p>No stage information available</p>
+                            )}
                           </div>
                         </div>
                       </div>
