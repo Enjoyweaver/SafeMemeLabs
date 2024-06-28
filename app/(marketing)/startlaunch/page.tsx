@@ -12,7 +12,7 @@ import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
 import { SafeLaunchABI } from "@/ABIs/SafeLaunch/SafeLaunch"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
-import { SafeLaunchAddress, tokenVyperDetails } from "@/Constants/config"
+import { safeLaunchFactory, safeLaunchTemplate } from "@/Constants/config"
 import { useDebounce } from "usehooks-ts"
 import {
   useAccount,
@@ -47,6 +47,7 @@ export default function Factory(): JSX.Element {
 
   const [showModal, setShowModal] = useState(false)
   const [modalMessage, setModalMessage] = useState("")
+  const [transactionHash, setTransactionHash] = useState<string>("")
 
   useEffect(() => {
     setIsClient(true)
@@ -54,10 +55,10 @@ export default function Factory(): JSX.Element {
 
   useEffect(() => {
     if (chain && chain.id) {
-      const vyperAddress = tokenVyperDetails[chain.id] || ""
-      console.log("Vyper Address:", vyperAddress)
+      const factoryAddress = safeLaunchFactory[chain.id] || ""
+      console.log("Factory Address:", factoryAddress)
 
-      if (!vyperAddress) {
+      if (!factoryAddress) {
         console.error(`Missing addresses for chain ID ${chain.id}`)
       }
     }
@@ -83,7 +84,7 @@ export default function Factory(): JSX.Element {
   const chainId: string | number = chain ? chain.id : 250
 
   const { data: deployFee, error: readError } = useContractRead({
-    address: tokenVyperDetails[chainId] as `0x${string}`,
+    address: safeLaunchFactory[chainId] as `0x${string}`,
     abi: TokenFactoryABI,
     functionName: "creationFee",
     onError: (error) => {
@@ -101,42 +102,19 @@ export default function Factory(): JSX.Element {
     isError: isPrepareError,
     isLoading: isLoadingPrepare,
   } = usePrepareContractWrite({
-    address: tokenVyperDetails[chainId] as `0x${string}`,
+    address: safeLaunchFactory[chainId] as `0x${string}`,
     abi: TokenFactoryABI,
-    functionName: "deployTokenAndLaunch",
+    functionName: "deployToken",
     args: [
       dName,
       dSymbol,
-      dDecimals ? Number(dDecimals) : 18,
+      dDecimals ? BigInt(Number(dDecimals)) : BigInt(18), // Convert decimals to bigint
       BigInt(dSupply) * BigInt(10 ** (dDecimals ? Number(dDecimals) : 18)),
-      Number(dAntiWhalePercentage),
+      BigInt(Number(dAntiWhalePercentage)), // Convert antiWhalePercentage to bigint
     ],
-    value: BigInt(creationFee || "0"),
-    enabled: Boolean(
-      dName && dSymbol && dSupply && dAntiWhalePercentage && creationFee
-    ),
+    value: deployFee,
+    cacheTime: 0,
   })
-
-  useEffect(() => {
-    if (prepareError) {
-      console.error("Prepare Error:", prepareError)
-      console.error("Error Message:", prepareError.message)
-      if (prepareError.cause) {
-        console.error("Error Cause:", prepareError.cause)
-      }
-    }
-  }, [prepareError])
-
-  useEffect(() => {
-    console.log("Preparing contract write with args:", {
-      name: dName,
-      symbol: dSymbol,
-      decimals: dDecimals,
-      supply: dSupply,
-      antiWhalePercentage: dAntiWhalePercentage,
-      creationFee,
-    })
-  }, [dName, dSymbol, dDecimals, dSupply, dAntiWhalePercentage, creationFee])
 
   const {
     data,
@@ -147,11 +125,23 @@ export default function Factory(): JSX.Element {
     isError,
   } = useContractWrite(config)
 
-  useEffect(() => {
-    if (error) {
-      console.error("Error writing contract:", error)
+  const handleDeployClick = async () => {
+    if (!safeLaunchFactory[chainId]) {
+      toast.error("Configuration error: Missing factory address.")
+      return
     }
-  }, [error])
+    setModalMessage(
+      "Depending on which blockchain you created a token on, it could take anywhere from 2 seconds to 20 seconds."
+    )
+    setShowModal(true)
+    if (write) {
+      write()
+    }
+  }
+
+  const toggleErrorMenuOpen = () => {
+    setErrorMenu(!errorMenu)
+  }
 
   const {
     data: useWaitData,
@@ -159,47 +149,12 @@ export default function Factory(): JSX.Element {
     isSuccess: isSuccessTransaction,
   } = useWaitForTransaction({
     hash: data?.hash,
-    async onSettled(data, error) {
+    onSettled(data, error) {
       if (data) {
-        try {
-          const provider = new ethers.providers.Web3Provider(
-            (window as any).ethereum
-          )
-          const receipt = await provider.getTransactionReceipt(data.hash)
-          const logs = receipt.logs
-
-          const iface = new ethers.utils.Interface(TokenFactoryABI)
-          const parsedLogs = logs
-            .map((log) => {
-              try {
-                return iface.parseLog(log)
-              } catch (e) {
-                return null
-              }
-            })
-            .filter((log) => log !== null)
-
-          const newTokenAndLaunchLog = parsedLogs.find(
-            (log) => log.name === "NewTokenAndLaunch"
-          )
-
-          if (newTokenAndLaunchLog) {
-            const { safeMeme, safeLaunch } = newTokenAndLaunchLog.args
-            await startSafeLaunch(safeMeme)
-            setModalMessage(
-              "Token successfully deployed! Exchange created! Go to the Dashboard to check it out! Then grab the contract address and import it into your wallet."
-            )
-          } else {
-            setModalMessage(
-              "Failed to retrieve token addresses. Please check the transaction logs."
-            )
-          }
-        } catch (err) {
-          console.error("Error parsing logs:", err)
-          setModalMessage(
-            "There was an error processing the transaction logs. Please try again."
-          )
-        }
+        const tokenAddress = data.contractAddress
+        setModalMessage(
+          "Token successfully deployed! Go to the Dashboard to check it out! Then grab the contract address and import it into your wallet."
+        )
       } else if (error) {
         setModalMessage(
           "There was an error deploying your token. Please try again."
@@ -207,43 +162,6 @@ export default function Factory(): JSX.Element {
       }
     },
   })
-
-  const startSafeLaunch = async (safeMemeToken: string) => {
-    if (!isConnected || !chain) return
-
-    const provider = new ethers.providers.Web3Provider((window as any).ethereum)
-    const signer = provider.getSigner()
-    const safeLaunchContract = new ethers.Contract(
-      SafeLaunchAddress[chain.id],
-      SafeLaunchABI,
-      signer
-    )
-
-    try {
-      const tx = await safeLaunchContract.startSafeLaunch(safeMemeToken)
-      await tx.wait()
-      toast.success("SafeLaunch successfully started!")
-    } catch (error) {
-      console.error("Error starting SafeLaunch:", error)
-      toast.error("Failed to start SafeLaunch.")
-    }
-  }
-
-  const handleDeployClick = () => {
-    if (!tokenVyperDetails[chainId]) {
-      toast.error("Configuration error: Missing Vyper factory address.")
-      return
-    }
-    setModalMessage(
-      "Depending on which blockchain you created a token on, it could take anywhere from 2 seconds to 20 seconds."
-    )
-    setShowModal(true)
-    write?.()
-  }
-
-  const toggleErrorMenuOpen = () => {
-    setErrorMenu(!errorMenu)
-  }
 
   return (
     <>
@@ -254,7 +172,7 @@ export default function Factory(): JSX.Element {
         onClose={() => setShowModal(false)}
       />
       <div className="flex min-h-screen flex-col">
-        {isClient && chainId && !tokenVyperDetails[chainId] && (
+        {isClient && chainId && !safeLaunchFactory[chainId] && (
           <ChangeNetwork
             changeNetworkToChainId={250}
             dappName={"SafeMeme Labs"}
@@ -388,16 +306,16 @@ export default function Factory(): JSX.Element {
                   : "Loading..."}
               </button>
               <p className="inputDescription">(*) is a required field</p>
-              {isSuccessTransaction &&
+              {transactionHash &&
                 toast.success(
                   "Token successfully deployed! Go to My Tokens right behind this to check it out! Then grab the contract address and import it into your wallet.",
                   {
-                    toastId: String(useWaitData),
+                    toastId: transactionHash,
                     position: "top-right",
                   }
                 ) &&
                 ""}
-              {isSuccessTransaction && (
+              {transactionHash && (
                 <Link href="/mytokens">
                   <button className="myTokensButton">My Tokens</button>
                 </Link>

@@ -352,15 +352,15 @@ export const SafeLaunchABI = [
         type: "address",
       },
       {
-        name: "_safeMemeToken",
-        type: "address",
-      },
-      {
         name: "_exchangeFactoryAddress",
         type: "address",
       },
       {
         name: "_exchangeToken",
+        type: "address",
+      },
+      {
+        name: "_safeLaunchFactory",
         type: "address",
       },
     ],
@@ -372,6 +372,14 @@ export const SafeLaunchABI = [
     inputs: [
       {
         name: "safeMemeToken",
+        type: "address",
+      },
+      {
+        name: "totalSupply",
+        type: "uint256",
+      },
+      {
+        name: "creator",
         type: "address",
       },
     ],
@@ -550,18 +558,6 @@ export const SafeLaunchABI = [
   {
     type: "function",
     name: "owner",
-    stateMutability: "view",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-      },
-    ],
-  },
-  {
-    type: "function",
-    name: "safeMemeToken",
     stateMutability: "view",
     inputs: [],
     outputs: [
@@ -762,23 +758,6 @@ export const SafeLaunchABI = [
   },
   {
     type: "function",
-    name: "safeMemeCreator",
-    stateMutability: "view",
-    inputs: [
-      {
-        name: "arg0",
-        type: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-      },
-    ],
-  },
-  {
-    type: "function",
     name: "whitelisted",
     stateMutability: "view",
     inputs: [
@@ -796,9 +775,26 @@ export const SafeLaunchABI = [
   },
   {
     type: "function",
-    name: "tokenFactoryAddress",
+    name: "safeLaunchFactory",
     stateMutability: "view",
     inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "safeMemeCreator",
+    stateMutability: "view",
+    inputs: [
+      {
+        name: "arg0",
+        type: "address",
+      },
+    ],
     outputs: [
       {
         name: "",

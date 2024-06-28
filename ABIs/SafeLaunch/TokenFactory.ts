@@ -1,15 +1,9 @@
 export const TokenFactoryABI = [
   {
-    type: "event",
-    name: "NewTokenAndLaunch",
+    name: "NewToken",
     inputs: [
       {
-        name: "safeMeme",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "safeLaunch",
+        name: "token",
         type: "address",
         indexed: true,
       },
@@ -20,25 +14,14 @@ export const TokenFactoryABI = [
       },
     ],
     anonymous: false,
+    type: "event",
   },
   {
-    type: "constructor",
     stateMutability: "nonpayable",
+    type: "constructor",
     inputs: [
       {
-        name: "safe_meme_template",
-        type: "address",
-      },
-      {
-        name: "safe_launch_template",
-        type: "address",
-      },
-      {
-        name: "exchange_factory",
-        type: "address",
-      },
-      {
-        name: "exchange_token",
+        name: "token_template",
         type: "address",
       },
       {
@@ -50,11 +33,12 @@ export const TokenFactoryABI = [
         type: "address",
       },
     ],
+    outputs: [],
   },
   {
-    type: "function",
-    name: "deployTokenAndLaunch",
     stateMutability: "payable",
+    type: "function",
+    name: "deployToken",
     inputs: [
       {
         name: "name",
@@ -82,16 +66,29 @@ export const TokenFactoryABI = [
         name: "",
         type: "address",
       },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getTokensDeployedByUser",
+    inputs: [
+      {
+        name: "_user",
+        type: "address",
+      },
+    ],
+    outputs: [
       {
         name: "",
-        type: "address",
+        type: "address[]",
       },
     ],
   },
   {
+    stateMutability: "view",
     type: "function",
     name: "getDeployedTokenCount",
-    stateMutability: "view",
     inputs: [],
     outputs: [
       {
@@ -101,21 +98,9 @@ export const TokenFactoryABI = [
     ],
   },
   {
-    type: "function",
-    name: "getDeployedLaunchCount",
     stateMutability: "view",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
     type: "function",
-    name: "safeMemeTemplate",
-    stateMutability: "view",
+    name: "tokenTemplate",
     inputs: [],
     outputs: [
       {
@@ -125,45 +110,9 @@ export const TokenFactoryABI = [
     ],
   },
   {
-    type: "function",
-    name: "safeLaunchTemplate",
     stateMutability: "view",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-      },
-    ],
-  },
-  {
-    type: "function",
-    name: "exchangeFactoryAddress",
-    stateMutability: "view",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-      },
-    ],
-  },
-  {
-    type: "function",
-    name: "exchangeToken",
-    stateMutability: "view",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-      },
-    ],
-  },
-  {
     type: "function",
     name: "tokensDeployed",
-    stateMutability: "view",
     inputs: [
       {
         name: "arg0",
@@ -178,12 +127,33 @@ export const TokenFactoryABI = [
     ],
   },
   {
+    stateMutability: "view",
     type: "function",
-    name: "launchesDeployed",
-    stateMutability: "view",
+    name: "tokenOwners",
     inputs: [
       {
         name: "arg0",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "userTokenList",
+    inputs: [
+      {
+        name: "arg0",
+        type: "address",
+      },
+      {
+        name: "arg1",
         type: "uint256",
       },
     ],
@@ -195,9 +165,9 @@ export const TokenFactoryABI = [
     ],
   },
   {
+    stateMutability: "view",
     type: "function",
     name: "creationFee",
-    stateMutability: "view",
     inputs: [],
     outputs: [
       {
@@ -207,9 +177,9 @@ export const TokenFactoryABI = [
     ],
   },
   {
+    stateMutability: "view",
     type: "function",
     name: "feeRecipient",
-    stateMutability: "view",
     inputs: [],
     outputs: [
       {
@@ -218,4 +188,4 @@ export const TokenFactoryABI = [
       },
     ],
   },
-]
+] as const

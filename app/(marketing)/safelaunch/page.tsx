@@ -1,19 +1,27 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { safeLaunchABI } from "@/ABIs/vyper/safeLaunch"
-import { safeMemeABI } from "@/ABIs/vyper/safeMeme"
-import { tokenFactoryABI } from "@/ABIs/vyper/tokenFactory"
+import { ChangeEvent, useEffect, useState } from "react"
+import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
+import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 import { ethers } from "ethers"
-import { useAccount, useNetwork } from "wagmi"
+import { toast } from "react-toastify"
+
+import "react-toastify/dist/ReactToastify.css"
+import {
+  useAccount,
+  useContractRead,
+  useContractWrite,
+  useNetwork,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+} from "wagmi"
 
 import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import {
-  SafeLaunchAddress,
   blockExplorerAddress,
-  tokenVyperDetails,
+  safeLaunchFactory,
 } from "../../../Constants/config"
 import "@/styles/allTokens.css"
 
@@ -28,15 +36,17 @@ export default function SafeLaunch(): JSX.Element {
   const { address, isConnected } = useAccount()
   const { chain } = useNetwork()
 
+  const chainId: string | number = chain ? chain.id : 250
+
   useEffect(() => {
     setIsClient(true)
     if (typeof window !== "undefined" && window.ethereum) {
       const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
       setProvider(web3Provider)
-      const chainId = chain ? chain.id : Object.keys(tokenVyperDetails)[0]
+      const chainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
       const contract = new ethers.Contract(
-        tokenVyperDetails[chainId] as `0x${string}`,
-        tokenFactoryABI,
+        safeLaunchFactory[chainId] as `0x${string}`,
+        TokenFactoryABI,
         web3Provider
       )
       setTokenFactoryContract(contract)
@@ -50,11 +60,14 @@ export default function SafeLaunch(): JSX.Element {
         gasLimit: ethers.utils.hexlify(1000000),
       })
       console.log(`Token count: ${tokenCount}`)
-      const allTokens = []
+      const allTokens: string[] = []
       for (let i = 0; i < tokenCount; i++) {
-        const tokenAddress = await tokenFactoryContract.tokensDeployed(i, {
-          gasLimit: ethers.utils.hexlify(1000000),
-        })
+        const tokenAddress: string = await tokenFactoryContract.tokensDeployed(
+          i,
+          {
+            gasLimit: ethers.utils.hexlify(1000000),
+          }
+        )
         allTokens.push(tokenAddress)
       }
       return allTokens
@@ -64,7 +77,7 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
-  const getUserTokens = async (userAddress) => {
+  const getUserTokens = async (userAddress: string) => {
     try {
       if (!tokenFactoryContract) return []
       const userTokens = await tokenFactoryContract.getTokensDeployedByUser(
@@ -81,12 +94,12 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
-  const getTokenDetails = async (tokenAddress) => {
+  const getTokenDetails = async (tokenAddress: string) => {
     try {
       if (!provider) return null
       const tokenContract = new ethers.Contract(
         tokenAddress,
-        safeMemeABI,
+        SafeMemeABI,
         provider
       )
       const [name, symbol, totalSupply, owner, decimals, antiWhalePercentage] =
@@ -113,21 +126,17 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
-  const getStageDetails = async (tokenAddress) => {
+  const getStageDetails = async (tokenAddress: string) => {
     try {
       if (!provider) return []
-      const safeSaleContract = new ethers.Contract(
-        SafeLaunchAddress[
-          chain ? chain.id : Object.keys(tokenVyperDetails)[0]
-        ] as `0x${string}`,
-        safeLaunchABI,
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
         provider
       )
 
       const stageDetails = await Promise.all(
-        Array.from({ length: 5 }, (_, i) =>
-          safeSaleContract.getStageDetails(tokenAddress, i)
-        )
+        Array.from({ length: 5 }, (_, i) => tokenContract.getStageInfo(i))
       )
 
       return stageDetails
@@ -137,6 +146,33 @@ export default function SafeLaunch(): JSX.Element {
         error
       )
       return []
+    }
+  }
+
+  const startSafeLaunch = async (tokenAddress: string) => {
+    try {
+      if (!provider) return
+      const signer = provider.getSigner()
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        signer
+      )
+      const gasLimit = await tokenContract.estimateGas.startSafeLaunch()
+      const tx = await tokenContract.startSafeLaunch({
+        gasLimit: gasLimit.add(100000),
+      })
+      await tx.wait()
+      console.log(`SafeLaunch started for token ${tokenAddress}`)
+      toast.success(`SafeLaunch started for token ${tokenAddress}`)
+    } catch (error) {
+      console.error(
+        `Error starting SafeLaunch for token ${tokenAddress}:`,
+        error
+      )
+      toast.error(
+        `Error starting SafeLaunch for token ${tokenAddress}: ${error.message}`
+      )
     }
   }
 
@@ -150,7 +186,7 @@ export default function SafeLaunch(): JSX.Element {
           return
         }
 
-        const userTokens = await getUserTokens(address)
+        const userTokens = await getUserTokens(address!)
         console.log("User Tokens:", userTokens)
         if (!userTokens) {
           console.error("userTokens is undefined or null.")
@@ -172,7 +208,7 @@ export default function SafeLaunch(): JSX.Element {
         }
 
         const userTokenAddresses = new Set(
-          userTokens.map((token) => token?.toLowerCase())
+          userTokens.map((token: string) => token?.toLowerCase())
         )
         const deployedTokenData = tokenData
           .filter((token): token is NonNullable<typeof token> => token !== null)
@@ -207,7 +243,8 @@ export default function SafeLaunch(): JSX.Element {
   }
 
   const calculateStageProgress = (stage) => {
-    const { tokenBAccepted, tokenBRequired } = stage
+    const [tokenBRequired, tokenPrice] = stage
+    const tokenBAccepted = tokenPrice.mul(tokenBRequired)
     return (tokenBAccepted / tokenBRequired) * 100
   }
 
@@ -217,7 +254,7 @@ export default function SafeLaunch(): JSX.Element {
       <div className="flex min-h-screen flex-col">
         <main className="flex-1">
           <div className="dashboard">
-            {isClient && chainId && !tokenVyperDetails[chainId] && (
+            {isClient && chainId && !safeLaunchFactory[chainId] && (
               <ChangeNetwork
                 changeNetworkToChainId={250}
                 dappName={"SafeLaunch"}
@@ -277,6 +314,14 @@ export default function SafeLaunch(): JSX.Element {
                               ? `${token.antiWhalePercentage}%`
                               : "N/A"}
                           </p>
+
+                          <button
+                            onClick={() => startSafeLaunch(token.address)}
+                            className="start-launch-button"
+                          >
+                            Start SafeLaunch
+                          </button>
+
                           <div className="stages-container">
                             {token.stages.map((stage, stageIndex) => (
                               <div className="stage" key={stageIndex}>
@@ -293,19 +338,6 @@ export default function SafeLaunch(): JSX.Element {
                                   <strong>Token Amount:</strong>{" "}
                                   {formatNumber(stage[1], token.decimals)}
                                 </p>
-                                <p>
-                                  <strong>Token B Required:</strong>{" "}
-                                  {formatNumber(stage[2], token.decimals)}
-                                </p>
-                                <p>
-                                  <strong>Token B Accepted:</strong>{" "}
-                                  {formatNumber(stage[3], token.decimals)}
-                                </p>
-                                <p>
-                                  <strong>Tokens Remaining:</strong>{" "}
-                                  {formatNumber(stage[1], token.decimals)}
-                                </p>
-
                                 <div className="progress-bar">
                                   <div
                                     className="progress"
