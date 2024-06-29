@@ -310,10 +310,6 @@ export const SafeMemeABI = [
         name: "tokenBAmount",
         type: "uint256",
       },
-      {
-        name: "tokenBAddress",
-        type: "address",
-      },
     ],
     outputs: [],
   },
@@ -397,6 +393,18 @@ export const SafeMemeABI = [
         type: "uint256",
       },
     ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setTokenBAddress",
+    inputs: [
+      {
+        name: "_tokenBAddress",
+        type: "address",
+      },
+    ],
+    outputs: [],
   },
   {
     stateMutability: "view",
@@ -623,6 +631,18 @@ export const SafeMemeABI = [
       {
         name: "",
         type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "tokenBAddress",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
       },
     ],
   },

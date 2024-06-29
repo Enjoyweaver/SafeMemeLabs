@@ -7,7 +7,6 @@ import { ethers } from "ethers"
 import Modal from "react-modal"
 import { toast } from "react-toastify"
 
-import TokenSwap from "./tokenswap"
 import "react-toastify/dist/ReactToastify.css"
 import {
   useAccount,
@@ -44,9 +43,20 @@ export default function SafeLaunch(): JSX.Element {
   const [deployedTokens, setDeployedTokens] = useState<any[]>([]) // Define deployedTokens state
   const { address, isConnected } = useAccount()
   const { chain } = useNetwork()
+  const [selectedToken, setSelectedToken] = useState<{
+    tokenAddress: string
+    tokenBAddress: string
+  } | null>(null)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedToken, setSelectedToken] = useState<string | null>(null)
+
+  const [amount, setAmount] = useState<string>("1")
+  const [estimatedOutput, setEstimatedOutput] = useState<string>("0")
+  const [tokenPrice, setTokenPrice] = useState<string>("0")
+  const [currentStage, setCurrentStage] = useState<number>(0)
+  const [stageInfo, setStageInfo] = useState<
+    [ethers.BigNumber, ethers.BigNumber] | null
+  >(null)
 
   const chainId: string | number = chain ? chain.id : 250
 
@@ -186,6 +196,12 @@ export default function SafeLaunch(): JSX.Element {
       })
       await tx.wait()
       toast.success(`SafeLaunch started for token ${tokenAddress}`)
+
+      const tokenBAddress = tokenBSelection[tokenAddress] // Retrieve from state
+      await tokenContract.setTokenBAddress(tokenBAddress) // Set Token B address in contract
+      toast.success(`Token B address set for token ${tokenAddress}`)
+
+      setSelectedToken({ tokenAddress, tokenBAddress }) // Update selected token with Token B address
       fetchAllTokenData() // Refresh token data to get updated sale status
     } catch (error) {
       console.error(
@@ -281,6 +297,8 @@ export default function SafeLaunch(): JSX.Element {
         }))
       setDeployedTokenData(deployedTokenData)
       setDeployedTokens(deployedTokenData) // Add this line to set deployedTokens
+
+      console.log("Deployed Tokens:", deployedTokenData)
     } catch (error) {
       console.error("Error fetching token data: ", error)
     }
@@ -317,6 +335,93 @@ export default function SafeLaunch(): JSX.Element {
     setWalletTokens(
       tokenBalances.filter((token) => parseFloat(token.balance) > 0)
     )
+
+    console.log(
+      "Wallet Tokens:",
+      tokenBalances.filter((token) => parseFloat(token.balance) > 0)
+    )
+  }
+
+  const fetchStageInfo = async (tokenAddress: string) => {
+    if (!provider || !tokenAddress) return
+
+    try {
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        provider
+      )
+      const currentStage = await tokenContract.getCurrentStage()
+      const stageInfo = await tokenContract.getStageInfo(currentStage)
+      const tokenBAddress = await tokenContract.tokenBAddress() // Fetch Token B address
+
+      setCurrentStage(currentStage.toNumber())
+      setStageInfo(stageInfo)
+      setTokenPrice(ethers.utils.formatUnits(stageInfo[1], 18))
+      setSelectedToken({ tokenAddress, tokenBAddress }) // Ensure both tokenAddress and tokenBAddress are set together
+    } catch (error) {
+      console.error("Error fetching stage info:", error)
+      toast.error("Failed to fetch stage information")
+    }
+  }
+
+  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAmount(event.target.value)
+  }
+
+  const handleSwap = async () => {
+    if (!amount || !selectedToken || !provider) {
+      toast.error("Please enter an amount and ensure wallet is connected")
+      console.error("Swap failed due to missing parameters", {
+        amount,
+        selectedToken,
+        provider,
+      })
+      return
+    }
+
+    const { tokenAddress, tokenBAddress } = selectedToken
+
+    if (!tokenAddress || !tokenBAddress) {
+      toast.error("Invalid token addresses")
+      console.error("Swap failed due to invalid token addresses", {
+        tokenAddress,
+        tokenBAddress,
+      })
+      return
+    }
+
+    try {
+      console.log(
+        `Attempting to swap with tokenAddress: ${tokenAddress} and tokenBAddress: ${tokenBAddress}`
+      )
+      const signer = provider.getSigner()
+      const tokenBContract = new ethers.Contract(
+        tokenBAddress,
+        SafeMemeABI,
+        signer
+      )
+      const safeMemeContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        signer
+      )
+
+      const amountInWei = ethers.utils.parseUnits(amount, 18)
+
+      const approveTx = await tokenBContract.approve(tokenAddress, amountInWei)
+      await approveTx.wait()
+      toast.info("Approval successful. Proceeding with swap...")
+
+      const buyTx = await safeMemeContract.buyTokens(amountInWei, tokenBAddress)
+      await buyTx.wait()
+
+      toast.success("Swap successful!")
+      fetchStageInfo(tokenAddress)
+    } catch (error) {
+      console.error("Error during swap:", error)
+      toast.error(`Swap failed: ${error.message}`)
+    }
   }
 
   useEffect(() => {
@@ -328,6 +433,24 @@ export default function SafeLaunch(): JSX.Element {
   useEffect(() => {
     fetchWalletTokens()
   }, [address, deployedTokens])
+
+  useEffect(() => {
+    if (selectedToken?.tokenAddress) {
+      fetchStageInfo(selectedToken.tokenAddress)
+    }
+  }, [selectedToken?.tokenAddress, provider])
+
+  useEffect(() => {
+    if (amount && tokenPrice) {
+      const amountNumber = parseFloat(amount)
+      const priceNumber = parseFloat(tokenPrice)
+      if (!isNaN(amountNumber) && !isNaN(priceNumber) && priceNumber !== 0) {
+        setEstimatedOutput((amountNumber / priceNumber).toFixed(6))
+      } else {
+        setEstimatedOutput("0")
+      }
+    }
+  }, [amount, tokenPrice])
 
   const formatNumber = (number: ethers.BigNumber, decimals: number) => {
     return ethers.utils.formatUnits(number, decimals)
@@ -369,7 +492,8 @@ export default function SafeLaunch(): JSX.Element {
       })),
   ]
 
-  const openModal = (tokenAddress: string, tokenBAddress: string) => {
+  const openModal = (tokenAddress: string) => {
+    const tokenBAddress = tokenBSelection[tokenAddress]
     setSelectedToken({ tokenAddress, tokenBAddress })
     setIsModalOpen(true)
   }
@@ -597,11 +721,53 @@ export default function SafeLaunch(): JSX.Element {
         >
           <div className="token-swap-container">
             <div className="token-swap-inner">
-              <TokenSwap
-                tokenAddress={selectedToken?.tokenAddress}
-                tokenBAddress={selectedToken?.tokenBAddress}
-                hideNavbar={true}
-              />
+              <h2>Token Swap</h2>
+              <div className="swap-card">
+                <div className="token-section">
+                  <label htmlFor="amount">Amount of Token B to swap</label>
+                  <input
+                    type="number"
+                    id="amount"
+                    value={amount}
+                    onChange={handleAmountChange}
+                    placeholder="Amount"
+                    className="input-field"
+                  />
+                </div>
+                <div className="swap-summary">
+                  <p>
+                    Exchange Rate: 1{" "}
+                    {
+                      deployedTokens.find(
+                        (token) => token.address === selectedToken?.tokenAddress
+                      )?.name
+                    }{" "}
+                    = {tokenPrice}{" "}
+                    {combinedTokens.find(
+                      (token) => token.address === selectedToken?.tokenBAddress
+                    )?.symbol || "Token B"}
+                  </p>
+                  <p>Estimated SafeMeme Output: {estimatedOutput}</p>
+                  <p>Current Stage: {currentStage}</p>
+                  <p>
+                    Token A:{" "}
+                    {
+                      deployedTokens.find(
+                        (token) => token.address === selectedToken?.tokenAddress
+                      )?.name
+                    }
+                  </p>
+                  <p>
+                    Token B:{" "}
+                    {combinedTokens.find(
+                      (token) => token.address === selectedToken?.tokenBAddress
+                    )?.symbol || "Token B"}
+                  </p>
+                </div>
+                <button className="swap-button" onClick={handleSwap}>
+                  Swap
+                </button>
+              </div>
             </div>
           </div>
         </Modal>
