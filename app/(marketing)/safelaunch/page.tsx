@@ -1,11 +1,13 @@
 "use client"
 
-import { ChangeEvent, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 import { ethers } from "ethers"
+import Modal from "react-modal"
 import { toast } from "react-toastify"
 
+import TokenSwap from "../swap/page"
 import "react-toastify/dist/ReactToastify.css"
 import {
   useAccount,
@@ -42,6 +44,9 @@ export default function SafeLaunch(): JSX.Element {
   const [deployedTokens, setDeployedTokens] = useState<any[]>([]) // Define deployedTokens state
   const { address, isConnected } = useAccount()
   const { chain } = useNetwork()
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedToken, setSelectedToken] = useState<string | null>(null)
 
   const chainId: string | number = chain ? chain.id : 250
 
@@ -364,6 +369,42 @@ export default function SafeLaunch(): JSX.Element {
       })),
   ]
 
+  const openModal = (tokenAddress: string) => {
+    setSelectedToken(tokenAddress)
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setSelectedToken(null)
+    setIsModalOpen(false)
+  }
+
+  const customStyles = {
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+      height: "85%",
+      width: "90%", // Set width to 90% for better mobile responsiveness
+      maxWidth: "600px",
+      padding: "0px",
+      borderRadius: "8px",
+      background: "#fff",
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      overflow: "hidden",
+      boxSizing: "border-box",
+    },
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.75)",
+    },
+  }
+
   return (
     <div>
       <Navbar />
@@ -521,6 +562,12 @@ export default function SafeLaunch(): JSX.Element {
                                           }}
                                         ></div>
                                       </div>
+                                      <button
+                                        className="buy-token-button"
+                                        onClick={() => openModal(token.address)}
+                                      >
+                                        Buy Tokens
+                                      </button>
                                     </>
                                   ) : (
                                     <p>Stage not active yet</p>
@@ -544,6 +591,20 @@ export default function SafeLaunch(): JSX.Element {
           </div>
         </main>
       </div>
+      {isClient && (
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={closeModal}
+          contentLabel="Token Swap Modal"
+          style={customStyles}
+        >
+          <div className="token-swap-container">
+            <div className="token-swap-inner">
+              <TokenSwap tokenAddress={selectedToken} hideNavbar={true} />
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }

@@ -9,6 +9,7 @@ import {
   tokenBOptions,
 } from "@/Constants/config"
 import { ethers } from "ethers"
+import { toast } from "react-toastify"
 import {
   useAccount,
   useContractRead,
@@ -16,12 +17,12 @@ import {
   useNetwork,
 } from "wagmi"
 
+import "react-toastify/dist/ReactToastify.css"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import "./swap.css"
 import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
-import { erc20ABI } from "@/ABIs/erc20"
-import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
+import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 
 const TokenSwap: React.FC<{
   tokenAddress: string | null
@@ -39,18 +40,38 @@ const TokenSwap: React.FC<{
   const [selectedTokenTo, setSelectedTokenTo] = useState<string | null>(null)
   const [amount, setAmount] = useState<number>(1)
   const [estimatedOutput, setEstimatedOutput] = useState<number>(0)
-  const [deployedTokens, setDeployedTokens] = useState([]) // State to store fetched tokens
-  const [walletTokens, setWalletTokens] = useState([]) // State to store wallet tokens
+  const [deployedTokens, setDeployedTokens] = useState<any[]>([]) // State to store fetched tokens
+  const [walletTokens, setWalletTokens] = useState<any[]>([]) // State to store wallet tokens
   const [isClient, setIsClient] = useState(false) // State to track if we are on the client
   const [stageInfo, setStageInfo] = useState(null)
   const [currentStage, setCurrentStage] = useState(0)
   const [tokenPrice, setTokenPrice] = useState(0)
 
+  const [provider, setProvider] =
+    useState<ethers.providers.Web3Provider | null>(null)
+  const [tokenFactoryContract, setTokenFactoryContract] =
+    useState<ethers.Contract | null>(null)
+
   const chainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
+
+  useEffect(() => {
+    setIsClient(true)
+    if (typeof window !== "undefined" && window.ethereum) {
+      const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
+      setProvider(web3Provider)
+      const chainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
+      const contract = new ethers.Contract(
+        safeLaunchFactory[chainId] as `0x${string}`,
+        TokenFactoryABI,
+        web3Provider
+      )
+      setTokenFactoryContract(contract)
+    }
+  }, [chain])
 
   const { data: contractsCount, error: contractsCountError } = useContractRead({
     address: safeLaunchFactory[chainId] as `0x${string}`,
-    abi: tokenDeployerABI,
+    abi: TokenFactoryABI,
     functionName: "getDeployedTokenCount",
   })
 
@@ -58,7 +79,7 @@ const TokenSwap: React.FC<{
     contracts: contractsCount
       ? Array.from({ length: Number(contractsCount) }, (_, i) => ({
           address: safeLaunchFactory[chainId] as `0x${string}`,
-          abi: tokenDeployerABI,
+          abi: TokenFactoryABI,
           functionName: "tokensDeployed",
           args: [i],
         }))
@@ -75,181 +96,160 @@ const TokenSwap: React.FC<{
     }
   }, [allContracts, allContractsError])
 
-  const contractRequests = allContracts?.map((contract) => [
-    {
-      address: contract.result,
-      abi: erc20ABI,
-      functionName: "name",
-    },
-    {
-      address: contract.result,
-      abi: erc20ABI,
-      functionName: "symbol",
-    },
-    {
-      address: contract.result,
-      abi: erc20ABI,
-      functionName: "totalSupply",
-    },
-    {
-      address: contract.result,
-      abi: erc20ABI,
-      functionName: "decimals",
-    },
-    {
-      address: contract.result,
-      abi: erc20ABI,
-      functionName: "balanceOf",
-      args: [address],
-    },
-  ])
-
-  const { data: tempTokenData, error: tempTokenDataError } = useContractReads({
-    contracts: contractRequests?.flat(),
-    enabled: !!contractRequests?.length,
-  })
-
-  useEffect(() => {
-    if (tempTokenDataError) {
-      console.error("Temp Token Data Error: ", tempTokenDataError)
-    }
-    if (tempTokenData) {
-      console.log("Temp Token Data: ", tempTokenData)
-      console.log("All Contracts Data: ", allContracts)
-      setDeployedTokens(splitData(tempTokenData, allContracts))
-    }
-  }, [tempTokenData, tempTokenDataError, allContracts])
-
-  function splitData(data, allContracts) {
-    const groupedData = []
-    const namedData = []
-
-    // Group the data into chunks of 5
-    for (let i = 0; i < data.length; i += 5) {
-      groupedData.push(data.slice(i, i + 5))
-    }
-
-    console.log("Grouped Data:", groupedData)
-    console.log("All Contracts:", allContracts)
-
-    // Process each group
-    for (let i = 0; i < groupedData.length; i++) {
-      const contract = allContracts[i]
-      const group = groupedData[i]
-
-      console.log(`Processing index ${i}:`, { contract, group })
-
-      // Check if the contract exists and has a 'result' property
-      if (contract && contract.result && group.length === 5) {
-        // Check if all elements in the group exist and have a 'result' property
-        if (
-          group[0]?.result &&
-          group[1]?.result &&
-          group[2]?.result &&
-          group[3]?.result
-        ) {
-          namedData.push({
-            address: contract.result,
-            name: group[0].result,
-            symbol: group[1].result,
-            supply: group[2].result,
-            decimals: group[3].result,
-          })
-        } else {
-          console.error(
-            `Error processing data at index ${i}: Some group elements are missing 'result' properties`,
-            {
-              contract,
-              group,
-            }
-          )
-        }
-      } else {
-        console.error(
-          `Error processing data at index ${i}: Contract is undefined or missing 'result' property`,
+  const getAllTokens = async () => {
+    try {
+      if (!tokenFactoryContract) return []
+      const tokenCount = await tokenFactoryContract.getDeployedTokenCount({
+        gasLimit: ethers.utils.hexlify(1000000),
+      })
+      const allTokens: string[] = []
+      for (let i = 0; i < tokenCount; i++) {
+        const tokenAddress: string = await tokenFactoryContract.tokensDeployed(
+          i,
           {
-            contract,
-            group,
+            gasLimit: ethers.utils.hexlify(1000000),
           }
         )
+        allTokens.push(tokenAddress)
       }
+      return allTokens
+    } catch (error) {
+      console.error("Error fetching all tokens: ", error)
+      return []
     }
-
-    return namedData
   }
 
-  useEffect(() => {
-    const fetchTokenPrices = async () => {
-      const allTokenPrices: {
-        [key: string]: { [symbol: string]: number | null }
-      } = {}
-
-      const aggregatorV3InterfaceABI = [
+  const getUserTokens = async (userAddress: string) => {
+    try {
+      if (!tokenFactoryContract) return []
+      const userTokens = await tokenFactoryContract.getTokensDeployedByUser(
+        userAddress,
         {
-          inputs: [],
-          name: "latestRoundData",
-          outputs: [
-            { internalType: "uint80", name: "roundId", type: "uint80" },
-            { internalType: "int256", name: "answer", type: "int256" },
-            { internalType: "uint256", name: "startedAt", type: "uint256" },
-            { internalType: "uint256", name: "updatedAt", type: "uint256" },
-            {
-              internalType: "uint80",
-              name: "answeredInRound",
-              type: "uint80",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-      ]
-
-      for (const [chainId, tokens] of Object.entries(tokenBOptions)) {
-        const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
-        const chainPrices: { [symbol: string]: number | null } = {}
-
-        for (const token of tokens) {
-          const priceFeedAddress =
-            priceFeedAddresses[chainId]?.[`${token.symbol}/USD`]
-          if (!priceFeedAddress) continue
-
-          try {
-            const priceFeed = new ethers.Contract(
-              priceFeedAddress,
-              aggregatorV3InterfaceABI,
-              provider
-            )
-            const roundData = await priceFeed.latestRoundData()
-            const price = parseFloat(
-              ethers.utils.formatUnits(roundData.answer, 8)
-            )
-            chainPrices[token.symbol] = price
-          } catch (error) {
-            console.error(`Error fetching price for ${token.symbol}:`, error)
-            chainPrices[token.symbol] = null
-          }
+          gasLimit: ethers.utils.hexlify(1000000),
         }
-
-        allTokenPrices[chainId] = chainPrices
-      }
-
-      setTokenPrices(allTokenPrices)
-      setLoading(false)
+      )
+      return userTokens
+    } catch (error) {
+      console.error("Error fetching user tokens: ", error)
+      return []
     }
+  }
 
-    fetchTokenPrices()
-  }, [])
+  const getTokenDetails = async (tokenAddress: string) => {
+    try {
+      if (!provider) return null
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        provider
+      )
+      const [
+        name,
+        symbol,
+        totalSupply,
+        owner,
+        decimals,
+        antiWhalePercentage,
+        saleActive,
+        currentStage,
+      ] = await Promise.all([
+        tokenContract.name(),
+        tokenContract.symbol(),
+        tokenContract.totalSupply(),
+        tokenContract.owner(),
+        tokenContract.decimals(),
+        tokenContract.antiWhalePercentage(),
+        tokenContract.getSaleStatus(),
+        tokenContract.getCurrentStage(),
+      ])
+      return {
+        address: tokenAddress,
+        name,
+        symbol,
+        totalSupply,
+        owner,
+        decimals,
+        antiWhalePercentage,
+        saleActive,
+        currentStage,
+      }
+    } catch (error) {
+      console.error(`Error fetching details for token ${tokenAddress}:`, error)
+      return null
+    }
+  }
+
+  const getStageDetails = async (tokenAddress: string) => {
+    try {
+      if (!provider) return []
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        provider
+      )
+
+      const stageDetails = await Promise.all(
+        Array.from({ length: 5 }, (_, i) => tokenContract.getStageInfo(i))
+      )
+
+      return stageDetails
+    } catch (error) {
+      console.error(
+        `Error fetching stage details for token ${tokenAddress}:`,
+        error
+      )
+      return []
+    }
+  }
+
+  const fetchAllTokenData = async () => {
+    try {
+      const allTokens = await getAllTokens()
+      console.log("All Tokens:", allTokens) // Debugging log
+      if (!allTokens || allTokens.length === 0) return
+      const userTokens = await getUserTokens(address!)
+      console.log("User Tokens:", userTokens) // Debugging log
+      if (!userTokens) return
+      const tokenData = await Promise.all(
+        allTokens.map(async (tokenAddress) => {
+          const details = await getTokenDetails(tokenAddress)
+          const stages = await getStageDetails(tokenAddress)
+          return { ...details, stages }
+        })
+      )
+      console.log("Token Data:", tokenData) // Debugging log
+
+      const userTokenAddresses = new Set(
+        userTokens.map((token: string) => token?.toLowerCase())
+      )
+      const deployedTokenData = tokenData
+        .filter((token): token is NonNullable<typeof token> => token !== null)
+        .map((token) => ({
+          ...token,
+          isUserToken: userTokenAddresses.has(
+            token.address?.toLowerCase() || ""
+          ),
+        }))
+      console.log("Deployed Token Data:", deployedTokenData) // Debugging log
+
+      setDeployedTokens(deployedTokenData)
+    } catch (error) {
+      console.error("Error fetching token data: ", error)
+    }
+  }
 
   const fetchWalletTokens = async () => {
     if (!isConnected || !address) return
 
     const provider = new ethers.providers.Web3Provider(window.ethereum)
 
-    console.log("Deployed Tokens: ", deployedTokens) // Debugging log
-
     const tokenBalances = await Promise.all(
       deployedTokens.map(async (token) => {
-        const contract = new ethers.Contract(token.address, erc20ABI, provider)
+        const contract = new ethers.Contract(
+          token.address,
+          SafeMemeABI,
+          provider
+        )
         try {
           const balance = await contract.balanceOf(address)
           return {
@@ -266,10 +266,80 @@ const TokenSwap: React.FC<{
       })
     )
 
+    console.log("Token Balances:", tokenBalances) // Debugging log
+
     setWalletTokens(
       tokenBalances.filter((token) => parseFloat(token.balance) > 0)
     )
   }
+
+  useEffect(() => {
+    if (isClient && isConnected) {
+      fetchAllTokenData()
+    }
+  }, [isClient, isConnected, chain, address, tokenFactoryContract])
+
+  const fetchTokenPrices = async () => {
+    const allTokenPrices: {
+      [key: string]: { [symbol: string]: number | null }
+    } = {}
+
+    const aggregatorV3InterfaceABI = [
+      {
+        inputs: [],
+        name: "latestRoundData",
+        outputs: [
+          { internalType: "uint80", name: "roundId", type: "uint80" },
+          { internalType: "int256", name: "answer", type: "int256" },
+          { internalType: "uint256", name: "startedAt", type: "uint256" },
+          { internalType: "uint256", name: "updatedAt", type: "uint256" },
+          {
+            internalType: "uint80",
+            name: "answeredInRound",
+            type: "uint80",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+    ]
+
+    for (const [chainId, tokens] of Object.entries(tokenBOptions)) {
+      const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
+      const chainPrices: { [symbol: string]: number | null } = {}
+
+      for (const token of tokens) {
+        const priceFeedAddress =
+          priceFeedAddresses[chainId]?.[`${token.symbol}/USD`]
+        if (!priceFeedAddress) continue
+
+        try {
+          const priceFeed = new ethers.Contract(
+            priceFeedAddress,
+            aggregatorV3InterfaceABI,
+            provider
+          )
+          const roundData = await priceFeed.latestRoundData()
+          const price = parseFloat(
+            ethers.utils.formatUnits(roundData.answer, 8)
+          )
+          chainPrices[token.symbol] = price
+        } catch (error) {
+          console.error(`Error fetching price for ${token.symbol}:`, error)
+          chainPrices[token.symbol] = null
+        }
+      }
+
+      allTokenPrices[chainId] = chainPrices
+    }
+
+    setTokenPrices(allTokenPrices)
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    fetchTokenPrices()
+  }, [])
 
   useEffect(() => {
     fetchWalletTokens()
@@ -314,19 +384,22 @@ const TokenSwap: React.FC<{
   }
 
   const fetchStageInfo = async (tokenAddress) => {
-    if (!provider || !tokenAddress) return
+    if (typeof window !== "undefined" && window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      if (!provider || !tokenAddress) return
 
-    const tokenContract = new ethers.Contract(
-      tokenAddress,
-      SafeMemeABI,
-      provider
-    )
-    const currentStage = await tokenContract.getCurrentStage()
-    const stageInfo = await tokenContract.getStageInfo(currentStage)
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        provider
+      )
+      const currentStage = await tokenContract.getCurrentStage()
+      const stageInfo = await tokenContract.getStageInfo(currentStage)
 
-    setCurrentStage(currentStage)
-    setStageInfo(stageInfo)
-    setTokenPrice(stageInfo[1])
+      setCurrentStage(currentStage)
+      setStageInfo(stageInfo)
+      setTokenPrice(stageInfo[1])
+    }
   }
 
   // Call fetchStageInfo whenever the selectedTokenFrom changes
@@ -389,7 +462,7 @@ const TokenSwap: React.FC<{
   const approveTokens = async (tokenAddress, amount) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
-    const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, signer)
+    const tokenContract = new ethers.Contract(tokenAddress, SafeMemeABI, signer)
     const amountInWei = ethers.utils.parseUnits(amount.toString(), 18)
     await tokenContract.approve(tokenAddress, amountInWei)
   }
@@ -443,6 +516,7 @@ const TokenSwap: React.FC<{
         chainId,
         ...token,
       })),
+    ...deployedTokens, // Add deployed tokens to the combinedTokens array
   ]
 
   return (
