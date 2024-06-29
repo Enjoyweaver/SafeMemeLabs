@@ -181,6 +181,7 @@ export default function SafeLaunch(): JSX.Element {
       })
       await tx.wait()
       toast.success(`SafeLaunch started for token ${tokenAddress}`)
+      fetchAllTokenData() // Refresh token data to get updated sale status
     } catch (error) {
       console.error(
         `Error starting SafeLaunch for token ${tokenAddress}:`,
@@ -192,11 +193,41 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
-  const handleTokenBSelection = (
+  const setStageTokenBAmount = async (
     tokenAddress: string,
-    tokenBAddress: string
+    stage: number,
+    amount: number
   ) => {
-    setTokenBSelection((prev) => ({ ...prev, [tokenAddress]: tokenBAddress }))
+    try {
+      if (!provider) return
+      const signer = provider.getSigner()
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        signer
+      )
+      const amountInWei = BigInt(amount) * BigInt(10 ** 18) // Convert to 18 decimals
+      const gasLimit = await tokenContract.estimateGas.setStageTokenBAmount(
+        stage,
+        amountInWei
+      )
+      const tx = await tokenContract.setStageTokenBAmount(stage, amountInWei, {
+        gasLimit: gasLimit.add(100000),
+      })
+      await tx.wait()
+      toast.success(
+        `Token B amount set for stage ${stage} of token ${tokenAddress}`
+      )
+      fetchAllTokenData() // Refresh token data to get updated stage info
+    } catch (error) {
+      console.error(
+        `Error setting Token B amount for token ${tokenAddress}:`,
+        error
+      )
+      toast.error(
+        `Error setting Token B amount for token ${tokenAddress}: ${error.message}`
+      )
+    }
   }
 
   const handleTokenBAmountChange = (
@@ -207,8 +238,16 @@ export default function SafeLaunch(): JSX.Element {
     setTokenBAmounts((prev) => {
       const currentAmounts = prev[tokenAddress] || []
       currentAmounts[stage] = amount
+      setStageTokenBAmount(tokenAddress, stage, amount)
       return { ...prev, [tokenAddress]: currentAmounts }
     })
+  }
+
+  const handleTokenBSelection = (
+    tokenAddress: string,
+    tokenBAddress: string
+  ) => {
+    setTokenBSelection((prev) => ({ ...prev, [tokenAddress]: tokenBAddress }))
   }
 
   const fetchAllTokenData = async () => {
@@ -246,8 +285,6 @@ export default function SafeLaunch(): JSX.Element {
     if (!isConnected || !address) return
 
     const provider = new ethers.providers.Web3Provider(window.ethereum)
-
-    console.log("Deployed Tokens: ", deployedTokens) // Debugging log
 
     const tokenBalances = await Promise.all(
       deployedTokens.map(async (token) => {
@@ -289,6 +326,10 @@ export default function SafeLaunch(): JSX.Element {
 
   const formatNumber = (number: ethers.BigNumber, decimals: number) => {
     return ethers.utils.formatUnits(number, decimals)
+  }
+
+  const displayTokenBRequired = (amount: ethers.BigNumber) => {
+    return formatNumber(amount, 18)
   }
 
   const getBlockExplorerLink = (address: string) => {
@@ -467,8 +508,7 @@ export default function SafeLaunch(): JSX.Element {
                                       </p>
                                       <p>
                                         <strong>Token B Required:</strong>{" "}
-                                        {formatNumber(stage[0], 18)}{" "}
-                                        {/* Assuming Token B has 18 decimals */}
+                                        {displayTokenBRequired(stage[0])}
                                       </p>
                                       <div className="progress-bar">
                                         <div
