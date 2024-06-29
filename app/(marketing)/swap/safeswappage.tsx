@@ -19,7 +19,6 @@ import {
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import "./swap.css"
-import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
 import { erc20ABI } from "@/ABIs/erc20"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 
@@ -42,9 +41,6 @@ const TokenSwap: React.FC<{
   const [deployedTokens, setDeployedTokens] = useState([]) // State to store fetched tokens
   const [walletTokens, setWalletTokens] = useState([]) // State to store wallet tokens
   const [isClient, setIsClient] = useState(false) // State to track if we are on the client
-  const [stageInfo, setStageInfo] = useState(null)
-  const [currentStage, setCurrentStage] = useState(0)
-  const [tokenPrice, setTokenPrice] = useState(0)
 
   const chainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
 
@@ -313,85 +309,37 @@ const TokenSwap: React.FC<{
     setSelectedTokenTo(tempToken)
   }
 
-  const fetchStageInfo = async (tokenAddress) => {
-    if (!provider || !tokenAddress) return
-
-    const tokenContract = new ethers.Contract(
-      tokenAddress,
-      SafeMemeABI,
-      provider
-    )
-    const currentStage = await tokenContract.getCurrentStage()
-    const stageInfo = await tokenContract.getStageInfo(currentStage)
-
-    setCurrentStage(currentStage)
-    setStageInfo(stageInfo)
-    setTokenPrice(stageInfo[1])
-  }
-
-  // Call fetchStageInfo whenever the selectedTokenFrom changes
-  useEffect(() => {
-    if (selectedTokenFrom) {
-      fetchStageInfo(selectedTokenFrom.split("-")[0])
-    }
-  }, [selectedTokenFrom])
-
-  useEffect(() => {
-    if (amount && tokenPrice) {
-      const amountInWei = ethers.utils.parseUnits(amount.toString(), 18)
-      const tokensToReceive = amountInWei.div(tokenPrice)
-      setEstimatedOutput(
-        parseFloat(ethers.utils.formatUnits(tokensToReceive, 18))
-      )
-    }
-  }, [amount, tokenPrice])
-
   const handleSwap = async () => {
     if (isConnected && amount > 0 && selectedTokenFrom && selectedTokenTo) {
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = provider.getSigner()
-        const tokenContract = new ethers.Contract(
-          selectedTokenFrom.split("-")[0],
-          SafeMemeABI,
+        const routerContract = new ethers.Contract(
+          routerAddress,
+          routerABI,
           signer
         )
 
-        // Calculate the amount in Wei
-        const amountInWei = ethers.utils.parseUnits(amount.toString(), 18)
-
-        // Approve the token transfer if necessary
-        await approveTokens(selectedTokenTo.split("-")[0], amountInWei)
+        // Approve the DEX to spend tokens
+        await approveTokens(selectedTokenFrom, amount)
 
         // Perform the swap
-        await tokenContract.buyTokens(
-          amountInWei,
-          selectedTokenTo.split("-")[0],
-          {
-            gasLimit: ethers.utils.hexlify(1000000),
-          }
+        const amountInWei = ethers.utils.parseUnits(amount.toString(), decimals)
+        await routerContract.swapExactETHForTokens(
+          min_tokens,
+          [selectedTokenFrom, selectedTokenTo],
+          deadline
         )
-
         console.log(
           "Tokens swapped:",
           selectedTokenFrom,
           selectedTokenTo,
           amount
         )
-        toast.success("Swap successful!")
       } catch (error) {
         console.error("Swap failed:", error)
-        toast.error("Swap failed: " + error.message)
       }
     }
-  }
-
-  const approveTokens = async (tokenAddress, amount) => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const signer = provider.getSigner()
-    const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, signer)
-    const amountInWei = ethers.utils.parseUnits(amount.toString(), 18)
-    await tokenContract.approve(tokenAddress, amountInWei)
   }
 
   useEffect(() => {
@@ -444,6 +392,15 @@ const TokenSwap: React.FC<{
         ...token,
       })),
   ]
+
+  const approveTokens = async (tokenAddress: string, amount: number) => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const signer = provider.getSigner()
+    const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, signer)
+    const decimals = await tokenContract.decimals()
+    const amountInWei = ethers.utils.parseUnits(amount.toString(), decimals)
+    await tokenContract.approve(dexAddress, amountInWei)
+  }
 
   return (
     <div>
