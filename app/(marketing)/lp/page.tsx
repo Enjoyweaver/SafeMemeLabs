@@ -5,7 +5,7 @@ import { safeLaunchFactoryABI } from "@/ABIs/vyper/safeLaunchFactory"
 import { safeMemeABI } from "@/ABIs/vyper/safeMeme"
 import { safeSaleABI } from "@/ABIs/vyper/safeSale"
 import { tokenFactoryABI } from "@/ABIs/vyper/tokenFactory"
-import { SafeLaunchFactory, tokenVyperDetails } from "@/Constants/config"
+import { safeLaunchFactory, tokenVyperDetails } from "@/Constants/config"
 import { ethers } from "ethers"
 import { useAccount, useNetwork } from "wagmi"
 
@@ -40,7 +40,7 @@ const SafeLaunch = () => {
       setTokenFactoryContract(contract)
 
       const safeLaunchFactory = new ethers.Contract(
-        SafeLaunchFactory[chainId] as `0x${string}`,
+        safeLaunchFactory[chainId] as `0x${string}`,
         safeLaunchFactoryABI,
         web3Provider.getSigner()
       )
@@ -123,7 +123,7 @@ const SafeLaunch = () => {
     try {
       if (!provider) return []
       const safeLaunchContract = new ethers.Contract(
-        SafeLaunchFactory[
+        safeLaunchFactory[
           chain ? chain.id : Object.keys(tokenVyperDetails)[0]
         ] as `0x${string}`,
         safeSaleABI,
