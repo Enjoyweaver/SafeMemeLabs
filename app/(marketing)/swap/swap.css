@@ -117,29 +117,18 @@ body {
   width: 100%;
 }
 
-.amount-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  position: relative;
-}
-
+.amount-container,
 .amount-containerTo {
   display: flex;
   flex-direction: column;
   align-items: center;
   flex: 1;
   position: relative;
-  height: 60px; /* Increase height */
-  width: 80%; /* Increase width */
+  width: 100%; /* Ensure both containers have the same width */
+  height: 60px; /* Ensure both containers have the same height */
 }
 
 .amount-container .amount-containerTo input {
-  margin-top: 5px;
-  width: 100px;
-}
-.amount-containerTo input {
   margin-top: 5px;
   width: 100px;
 }
@@ -364,7 +353,7 @@ body {
 
   .amount-containerTo {
     top: -32px;
-    height: 23px; /* Adjust height for mobile */
+    height: 25px; /* Adjust height for mobile */
     /*width: 85%;  Adjust width for mobile */
   }
 
