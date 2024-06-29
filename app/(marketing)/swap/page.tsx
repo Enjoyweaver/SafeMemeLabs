@@ -57,15 +57,27 @@ const TokenSwap: React.FC<{
   useEffect(() => {
     setIsClient(true)
     if (typeof window !== "undefined" && window.ethereum) {
-      const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
-      setProvider(web3Provider)
-      const chainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
-      const contract = new ethers.Contract(
-        safeLaunchFactory[chainId] as `0x${string}`,
-        TokenFactoryABI,
-        web3Provider
-      )
-      setTokenFactoryContract(contract)
+      try {
+        const chainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
+        const web3Provider = new ethers.providers.Web3Provider(
+          window.ethereum,
+          {
+            chainId: Number(chainId),
+            name: "unknown", // This effectively disables ENS without type errors
+          }
+        )
+        setProvider(web3Provider)
+
+        const contract = new ethers.Contract(
+          safeLaunchFactory[chainId] as `0x${string}`,
+          TokenFactoryABI,
+          web3Provider
+        )
+        setTokenFactoryContract(contract)
+      } catch (error) {
+        console.error("Error initializing provider or contract:", error)
+        // Handle the error appropriately, maybe set an error state
+      }
     }
   }, [chain])
 
@@ -410,14 +422,26 @@ const TokenSwap: React.FC<{
   }, [selectedTokenFrom])
 
   useEffect(() => {
-    if (amount && tokenPrice) {
-      const amountInWei = ethers.utils.parseUnits(amount.toString(), 18)
-      const tokensToReceive = amountInWei.div(tokenPrice)
-      setEstimatedOutput(
-        parseFloat(ethers.utils.formatUnits(tokensToReceive, 18))
-      )
+    if (
+      amount &&
+      selectedTokenFrom &&
+      selectedTokenTo &&
+      tokenPrices[selectedTokenFrom.split("-")[0]] &&
+      tokenPrices[selectedTokenTo.split("-")[0]]
+    ) {
+      const fromPrice =
+        tokenPrices[selectedTokenFrom.split("-")[0]][
+          selectedTokenFrom.split("-")[1]
+        ]
+      const toPrice =
+        tokenPrices[selectedTokenTo.split("-")[0]][
+          selectedTokenTo.split("-")[1]
+        ]
+      if (fromPrice && toPrice) {
+        setEstimatedOutput((amount * fromPrice) / toPrice)
+      }
     }
-  }, [amount, tokenPrice])
+  }, [amount, selectedTokenFrom, selectedTokenTo, tokenPrices])
 
   const handleSwap = async () => {
     if (isConnected && amount > 0 && selectedTokenFrom && selectedTokenTo) {
@@ -466,26 +490,6 @@ const TokenSwap: React.FC<{
     const amountInWei = ethers.utils.parseUnits(amount.toString(), 18)
     await tokenContract.approve(tokenAddress, amountInWei)
   }
-
-  useEffect(() => {
-    if (
-      amount &&
-      tokenPrices[selectedTokenFrom?.split("-")[0]] &&
-      tokenPrices[selectedTokenTo?.split("-")[0]]
-    ) {
-      const fromPrice =
-        tokenPrices[selectedTokenFrom?.split("-")[0]][
-          selectedTokenFrom?.split("-")[1]
-        ]
-      const toPrice =
-        tokenPrices[selectedTokenTo?.split("-")[0]][
-          selectedTokenTo?.split("-")[1]
-        ]
-      if (fromPrice && toPrice) {
-        setEstimatedOutput((amount * fromPrice) / toPrice)
-      }
-    }
-  }, [amount, selectedTokenFrom, selectedTokenTo, tokenPrices])
 
   useEffect(() => {
     // Ensure this code runs only on the client
