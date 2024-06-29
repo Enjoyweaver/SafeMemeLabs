@@ -64,6 +64,22 @@ body {
   box-sizing: border-box;
 }
 
+.mini-swap-container {
+  width: 90%; /* Adjusted to be responsive */
+  max-width: 600px; /* Ensure it doesn't exceed a certain width */
+  height: auto; /* Adjusted to be responsive */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--primary-dark);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  padding: 20px; /* Add padding to ensure content doesn't touch edges */
+  box-sizing: border-box;
+}
+
 .token-swap-inner {
   width: 100%;
   height: auto;

@@ -719,12 +719,14 @@ export default function SafeLaunch(): JSX.Element {
           contentLabel="Token Swap Modal"
           style={customStyles}
         >
-          <div className="token-swap-container">
+          <div className="mini-swap-container">
             <div className="token-swap-inner">
-              <h2>Token Swap</h2>
+              <h2 className="pagetitle">Token Swap</h2>
               <div className="swap-card">
                 <div className="token-section">
-                  <label htmlFor="amount">Amount of Token B to swap</label>
+                  <label htmlFor="amount" className="subheading">
+                    Amount of Token B to swap
+                  </label>
                   <input
                     type="number"
                     id="amount"
@@ -735,7 +737,7 @@ export default function SafeLaunch(): JSX.Element {
                   />
                 </div>
                 <div className="swap-summary">
-                  <p>
+                  <p className="swap-summary-item">
                     Exchange Rate: 1{" "}
                     {
                       deployedTokens.find(
@@ -747,9 +749,19 @@ export default function SafeLaunch(): JSX.Element {
                       (token) => token.address === selectedToken?.tokenBAddress
                     )?.symbol || "Token B"}
                   </p>
-                  <p>Estimated SafeMeme Output: {estimatedOutput}</p>
-                  <p>Current Stage: {currentStage}</p>
-                  <p>
+                  <p className="swap-summary-item">
+                    Estimated{" "}
+                    {
+                      deployedTokens.find(
+                        (token) => token.address === selectedToken?.tokenAddress
+                      )?.name
+                    }{" "}
+                    Output: {estimatedOutput}
+                  </p>
+                  <p className="swap-summary-item">
+                    Current Stage: {currentStage}
+                  </p>
+                  <p className="swap-summary-item">
                     Token A:{" "}
                     {
                       deployedTokens.find(
@@ -757,14 +769,14 @@ export default function SafeLaunch(): JSX.Element {
                       )?.name
                     }
                   </p>
-                  <p>
+                  <p className="swap-summary-item">
                     Token B:{" "}
                     {combinedTokens.find(
                       (token) => token.address === selectedToken?.tokenBAddress
                     )?.symbol || "Token B"}
                   </p>
                 </div>
-                <button className="swap-button" onClick={handleSwap}>
+                <button className="buy-token-button" onClick={handleSwap}>
                   Swap
                 </button>
               </div>
