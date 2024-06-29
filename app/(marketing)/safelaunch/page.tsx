@@ -7,7 +7,7 @@ import { ethers } from "ethers"
 import Modal from "react-modal"
 import { toast } from "react-toastify"
 
-import TokenSwap from "../swap/page"
+import TokenSwap from "./tokenswap"
 import "react-toastify/dist/ReactToastify.css"
 import {
   useAccount,
@@ -369,8 +369,8 @@ export default function SafeLaunch(): JSX.Element {
       })),
   ]
 
-  const openModal = (tokenAddress: string) => {
-    setSelectedToken(tokenAddress)
+  const openModal = (tokenAddress: string, tokenBAddress: string) => {
+    setSelectedToken({ tokenAddress, tokenBAddress })
     setIsModalOpen(true)
   }
 
@@ -526,15 +526,12 @@ export default function SafeLaunch(): JSX.Element {
                                   {token.saleActive &&
                                   stageIndex >= token.currentStage ? (
                                     <>
-                                      <p>
-                                        <strong className="stagetext">
-                                          Price:
-                                        </strong>{" "}
+                                      <p className="stagetext">
+                                        <strong>{token.name} Price:</strong>{" "}
                                         {ethers.utils.formatUnits(
                                           stage[1],
                                           token.decimals
                                         )}{" "}
-                                        Token B
                                       </p>
                                       <p>
                                         <strong>Tokens for Sale:</strong>{" "}
@@ -600,7 +597,11 @@ export default function SafeLaunch(): JSX.Element {
         >
           <div className="token-swap-container">
             <div className="token-swap-inner">
-              <TokenSwap tokenAddress={selectedToken} hideNavbar={true} />
+              <TokenSwap
+                tokenAddress={selectedToken?.tokenAddress}
+                tokenBAddress={selectedToken?.tokenBAddress}
+                hideNavbar={true}
+              />
             </div>
           </div>
         </Modal>

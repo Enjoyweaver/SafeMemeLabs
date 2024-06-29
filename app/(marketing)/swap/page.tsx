@@ -456,18 +456,15 @@ const TokenSwap: React.FC<{
 
         // Calculate the amount in Wei
         const amountInWei = ethers.utils.parseUnits(amount.toString(), 18)
+        const tokenBAddress = selectedTokenTo.split("-")[0]
 
         // Approve the token transfer if necessary
-        await approveTokens(selectedTokenTo.split("-")[0], amountInWei)
+        await approveTokens(tokenBAddress, amountInWei)
 
         // Perform the swap
-        await tokenContract.buyTokens(
-          amountInWei,
-          selectedTokenTo.split("-")[0],
-          {
-            gasLimit: ethers.utils.hexlify(1000000),
-          }
-        )
+        await tokenContract.buyTokens(amountInWei, tokenBAddress, {
+          gasLimit: ethers.utils.hexlify(1000000),
+        })
 
         console.log(
           "Tokens swapped:",
@@ -639,7 +636,7 @@ const TokenSwap: React.FC<{
                 </div>
               </div>
               <div className="swap-summary">
-                <p>Exchange Rate: {estimatedOutput / amount || 0}</p>
+                <p>Exchange Rate: {tokenPrice || 0}</p>
                 <p>Estimated Output: {estimatedOutput}</p>
                 <p>Slippage: 0.5%</p>
                 <p>Price Impact: 0.3%</p>
