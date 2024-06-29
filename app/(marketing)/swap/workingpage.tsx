@@ -236,12 +236,16 @@ const TokenSwap: React.FC<{
     fetchTokenPrices()
   }, [])
 
-const fetchWalletTokens = async () => {
+  const fetchWalletTokens = async () => {
     if (!isConnected || !address) return
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+    console.log("Deployed Tokens: ", deployedTokens) // Debugging log
 
     const tokenBalances = await Promise.all(
       deployedTokens.map(async (token) => {
-        const contract = new ethers.Contract(token.address, SafeMemeABI)
+        const contract = new ethers.Contract(token.address, erc20ABI, provider)
         try {
           const balance = await contract.balanceOf(address)
           return {
@@ -250,15 +254,13 @@ const fetchWalletTokens = async () => {
           }
         } catch (error) {
           console.error(
-            Failed to fetch balance for token ${token.address}:,
+            `Failed to fetch balance for token ${token.address}:`,
             error
           )
           return { ...token, balance: "0" } // Handle the error case
         }
       })
     )
-
-    console.log("Token Balances:", tokenBalances) // Debugging log
 
     setWalletTokens(
       tokenBalances.filter((token) => parseFloat(token.balance) > 0)
