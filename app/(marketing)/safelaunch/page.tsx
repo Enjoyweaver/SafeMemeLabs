@@ -10,10 +10,8 @@ import "react-toastify/dist/ReactToastify.css"
 import {
   useAccount,
   useContractRead,
-  useContractWrite,
+  useContractReads,
   useNetwork,
-  usePrepareContractWrite,
-  useWaitForTransaction,
 } from "wagmi"
 
 import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
@@ -22,6 +20,7 @@ import { Navbar } from "@/components/walletconnect/walletconnect"
 import {
   blockExplorerAddress,
   safeLaunchFactory,
+  tokenBOptions,
 } from "../../../Constants/config"
 import "@/styles/allTokens.css"
 
@@ -33,6 +32,14 @@ export default function SafeLaunch(): JSX.Element {
     useState<ethers.providers.Web3Provider | null>(null)
   const [tokenFactoryContract, setTokenFactoryContract] =
     useState<ethers.Contract | null>(null)
+  const [tokenBSelection, setTokenBSelection] = useState<{
+    [key: string]: string
+  }>({})
+  const [tokenBAmounts, setTokenBAmounts] = useState<{
+    [key: string]: number[]
+  }>({})
+  const [walletTokens, setWalletTokens] = useState<any[]>([]) // State to store wallet tokens
+  const [deployedTokens, setDeployedTokens] = useState<any[]>([]) // Define deployedTokens state
   const { address, isConnected } = useAccount()
   const { chain } = useNetwork()
 
@@ -59,7 +66,6 @@ export default function SafeLaunch(): JSX.Element {
       const tokenCount = await tokenFactoryContract.getDeployedTokenCount({
         gasLimit: ethers.utils.hexlify(1000000),
       })
-      console.log(`Token count: ${tokenCount}`)
       const allTokens: string[] = []
       for (let i = 0; i < tokenCount; i++) {
         const tokenAddress: string = await tokenFactoryContract.tokensDeployed(
@@ -86,7 +92,6 @@ export default function SafeLaunch(): JSX.Element {
           gasLimit: ethers.utils.hexlify(1000000),
         }
       )
-      console.log("Fetched User Tokens:", userTokens)
       return userTokens
     } catch (error) {
       console.error("Error fetching user tokens: ", error)
@@ -175,7 +180,6 @@ export default function SafeLaunch(): JSX.Element {
         gasLimit: gasLimit.add(100000),
       })
       await tx.wait()
-      console.log(`SafeLaunch started for token ${tokenAddress}`)
       toast.success(`SafeLaunch started for token ${tokenAddress}`)
     } catch (error) {
       console.error(
@@ -188,59 +192,100 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
-  useEffect(() => {
-    const fetchAllTokenData = async () => {
-      try {
-        const allTokens = await getAllTokens()
-        console.log("All Tokens:", allTokens)
-        if (!allTokens || allTokens.length === 0) {
-          console.error("allTokens is undefined, null, or empty.")
-          return
-        }
+  const handleTokenBSelection = (
+    tokenAddress: string,
+    tokenBAddress: string
+  ) => {
+    setTokenBSelection((prev) => ({ ...prev, [tokenAddress]: tokenBAddress }))
+  }
 
-        const userTokens = await getUserTokens(address!)
-        console.log("User Tokens:", userTokens)
-        if (!userTokens) {
-          console.error("userTokens is undefined or null.")
-          return
-        }
+  const handleTokenBAmountChange = (
+    tokenAddress: string,
+    stage: number,
+    amount: number
+  ) => {
+    setTokenBAmounts((prev) => {
+      const currentAmounts = prev[tokenAddress] || []
+      currentAmounts[stage] = amount
+      return { ...prev, [tokenAddress]: currentAmounts }
+    })
+  }
 
-        const tokenData = await Promise.all(
-          allTokens.map(async (tokenAddress) => {
-            const details = await getTokenDetails(tokenAddress)
-            const stages = await getStageDetails(tokenAddress)
-            return { ...details, stages }
-          })
-        )
-
-        console.log("Token Data:", tokenData)
-        if (!tokenData) {
-          console.error("tokenData is undefined or null.")
-          return
-        }
-
-        const userTokenAddresses = new Set(
-          userTokens.map((token: string) => token?.toLowerCase())
-        )
-        const deployedTokenData = tokenData
-          .filter((token): token is NonNullable<typeof token> => token !== null)
-          .map((token) => ({
-            ...token,
-            isUserToken: userTokenAddresses.has(
-              token.address?.toLowerCase() || ""
-            ),
-          }))
-        setDeployedTokenData(deployedTokenData)
-        console.log("Deployed Token Data:", deployedTokenData)
-      } catch (error) {
-        console.error("Error fetching token data: ", error)
-      }
+  const fetchAllTokenData = async () => {
+    try {
+      const allTokens = await getAllTokens()
+      if (!allTokens || allTokens.length === 0) return
+      const userTokens = await getUserTokens(address!)
+      if (!userTokens) return
+      const tokenData = await Promise.all(
+        allTokens.map(async (tokenAddress) => {
+          const details = await getTokenDetails(tokenAddress)
+          const stages = await getStageDetails(tokenAddress)
+          return { ...details, stages }
+        })
+      )
+      const userTokenAddresses = new Set(
+        userTokens.map((token: string) => token?.toLowerCase())
+      )
+      const deployedTokenData = tokenData
+        .filter((token): token is NonNullable<typeof token> => token !== null)
+        .map((token) => ({
+          ...token,
+          isUserToken: userTokenAddresses.has(
+            token.address?.toLowerCase() || ""
+          ),
+        }))
+      setDeployedTokenData(deployedTokenData)
+      setDeployedTokens(deployedTokenData) // Add this line to set deployedTokens
+    } catch (error) {
+      console.error("Error fetching token data: ", error)
     }
+  }
 
+  const fetchWalletTokens = async () => {
+    if (!isConnected || !address) return
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+    console.log("Deployed Tokens: ", deployedTokens) // Debugging log
+
+    const tokenBalances = await Promise.all(
+      deployedTokens.map(async (token) => {
+        const contract = new ethers.Contract(
+          token.address,
+          SafeMemeABI,
+          provider
+        )
+        try {
+          const balance = await contract.balanceOf(address)
+          return {
+            ...token,
+            balance: ethers.utils.formatUnits(balance, token.decimals),
+          }
+        } catch (error) {
+          console.error(
+            `Failed to fetch balance for token ${token.address}:`,
+            error
+          )
+          return { ...token, balance: "0" } // Handle the error case
+        }
+      })
+    )
+
+    setWalletTokens(
+      tokenBalances.filter((token) => parseFloat(token.balance) > 0)
+    )
+  }
+
+  useEffect(() => {
     if (isClient && isConnected) {
       fetchAllTokenData()
     }
   }, [isClient, isConnected, chain, address, tokenFactoryContract])
+
+  useEffect(() => {
+    fetchWalletTokens()
+  }, [address, deployedTokens])
 
   const formatNumber = (number: ethers.BigNumber, decimals: number) => {
     return ethers.utils.formatUnits(number, decimals)
@@ -254,11 +299,29 @@ export default function SafeLaunch(): JSX.Element {
     return `${address.slice(0, 6)}...${address.slice(-6)}`
   }
 
-  const calculateStageProgress = (stage) => {
+  const calculateStageProgress = (stage, totalSupply) => {
     const [tokenBRequired, tokenPrice] = stage
-    const tokenBAccepted = tokenPrice.mul(tokenBRequired)
-    return (tokenBAccepted / tokenBRequired) * 100
+    const tokensForSale = totalSupply.mul(5).div(100)
+    const remainingTokens = tokensForSale.sub(
+      tokenBRequired.mul(tokenPrice).div(ethers.utils.parseUnits("1", 18))
+    )
+    return remainingTokens.mul(100).div(tokensForSale).toNumber()
   }
+
+  const getTokensForCurrentChain = () => {
+    const currentChainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
+    return tokenBOptions[currentChainId] || []
+  }
+
+  const combinedTokens = [
+    ...getTokensForCurrentChain(),
+    ...walletTokens
+      .filter((token) => parseFloat(token.balance) > 0)
+      .map((token) => ({
+        chainId,
+        ...token,
+      })),
+  ]
 
   return (
     <div>
@@ -327,6 +390,26 @@ export default function SafeLaunch(): JSX.Element {
                               : "N/A"}
                           </p>
 
+                          <label>
+                            <strong>Select Token B:</strong>
+                            <select
+                              value={tokenBSelection[token.address] || ""}
+                              onChange={(e) =>
+                                handleTokenBSelection(
+                                  token.address,
+                                  e.target.value
+                                )
+                              }
+                            >
+                              <option value="">Select Token B</option>
+                              {combinedTokens.map((option, idx) => (
+                                <option key={idx} value={option.address}>
+                                  {option.symbol}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+
                           <button
                             onClick={() => startSafeLaunch(token.address)}
                             className="start-launch-button"
@@ -340,6 +423,24 @@ export default function SafeLaunch(): JSX.Element {
                               token.stages.map((stage, stageIndex) => (
                                 <div className="stage" key={stageIndex}>
                                   <h4>Stage {stageIndex + 1}</h4>
+                                  <label>
+                                    <strong>Token B Amount:</strong>
+                                    <input
+                                      type="number"
+                                      value={
+                                        tokenBAmounts[token.address]?.[
+                                          stageIndex
+                                        ] || ""
+                                      }
+                                      onChange={(e) =>
+                                        handleTokenBAmountChange(
+                                          token.address,
+                                          stageIndex,
+                                          parseFloat(e.target.value)
+                                        )
+                                      }
+                                    />
+                                  </label>
                                   {token.saleActive &&
                                   stageIndex >= token.currentStage ? (
                                     <>
@@ -369,6 +470,17 @@ export default function SafeLaunch(): JSX.Element {
                                         {formatNumber(stage[0], 18)}{" "}
                                         {/* Assuming Token B has 18 decimals */}
                                       </p>
+                                      <div className="progress-bar">
+                                        <div
+                                          className="progress-bar-fill"
+                                          style={{
+                                            width: `${calculateStageProgress(
+                                              stage,
+                                              token.totalSupply
+                                            )}%`,
+                                          }}
+                                        ></div>
+                                      </div>
                                     </>
                                   ) : (
                                     <p>Stage not active yet</p>
