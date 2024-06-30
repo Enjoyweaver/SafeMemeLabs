@@ -256,25 +256,6 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
-  const setTokenBAddress = async (tokenAddress, tokenBAddress) => {
-    const { config } = usePrepareContractWrite({
-      address: tokenAddress,
-      abi: SafeMemeABI,
-      functionName: "setTokenBAddress",
-      args: [tokenBAddress],
-    })
-
-    const { write: setAddress } = useContractWrite(config)
-
-    setAddress?.()
-
-    // Store Token B address in state
-    setTokenBSelection((prev) => ({
-      ...prev,
-      [tokenAddress]: tokenBAddress,
-    }))
-  }
-
   const handleTokenBAmountChange = (
     tokenAddress: string,
     stage: number,

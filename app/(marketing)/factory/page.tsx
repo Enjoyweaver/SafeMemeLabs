@@ -14,8 +14,8 @@ import "./factory.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
 import {
+  NativeTokens,
   masterVyperTokenCopy,
-  tokenBOptions,
   tokenDeployerDetails,
   tokenLauncherDetails,
   tokenVyperDetails,
@@ -87,7 +87,7 @@ export default function Factory(): JSX.Element {
       setTokenLauncher(launcherAddress)
 
       // Ensure selectedTokenB is set based on current chain
-      setSelectedTokenB(tokenBOptions[chain.id]?.[0]?.address || "")
+      setSelectedTokenB(NativeTokens[chain.id]?.[0]?.address || "")
     }
   }, [chain, tokenType])
 
@@ -401,7 +401,7 @@ export default function Factory(): JSX.Element {
                     value={selectedTokenB}
                   >
                     <option value="">Select Token B</option>
-                    {tokenBOptions[chainId]?.map((token) => (
+                    {NativeTokens[chainId]?.map((token) => (
                       <option key={token.address} value={token.address}>
                         {token.symbol}
                       </option>

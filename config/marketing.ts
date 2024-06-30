@@ -64,13 +64,13 @@ export const marketingConfig: MarketingConfig = {
     //  title: "Manager",
     //  href: "/deploy",
     // },
-    {
-      title: "SafeLaunch",
-      href: "safelaunch",
-    },
-    {
-      title: "Start SafeLaunch",
-      href: "/startlaunch",
-    },
+    //{
+    //  title: "SafeLaunch",
+    //  href: "safelaunch",
+    //},
+    //{
+    //  title: "Start SafeLaunch",
+    //  href: "/startlaunch",
+    //},
   ],
 }
