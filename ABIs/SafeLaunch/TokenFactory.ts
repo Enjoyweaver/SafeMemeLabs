@@ -3,7 +3,7 @@ export const TokenFactoryABI = [
     name: "NewToken",
     inputs: [
       {
-        name: "token",
+        name: "safeMeme",
         type: "address",
         indexed: true,
       },
@@ -21,7 +21,7 @@ export const TokenFactoryABI = [
     type: "constructor",
     inputs: [
       {
-        name: "token_template",
+        name: "safe_meme_template",
         type: "address",
       },
       {
@@ -71,23 +71,6 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getTokensDeployedByUser",
-    inputs: [
-      {
-        name: "_user",
-        type: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "address[]",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
     name: "getDeployedTokenCount",
     inputs: [],
     outputs: [
@@ -100,7 +83,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "tokenTemplate",
+    name: "safeMemeTemplate",
     inputs: [],
     outputs: [
       {
@@ -116,44 +99,6 @@ export const TokenFactoryABI = [
     inputs: [
       {
         name: "arg0",
-        type: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "tokenOwners",
-    inputs: [
-      {
-        name: "arg0",
-        type: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "userTokenList",
-    inputs: [
-      {
-        name: "arg0",
-        type: "address",
-      },
-      {
-        name: "arg1",
         type: "uint256",
       },
     ],

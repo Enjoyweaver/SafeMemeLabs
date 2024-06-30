@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useEffect, useState } from "react"
 import Link from "next/link"
+import { ethers } from "ethers"
 import { toast } from "react-toastify"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"

@@ -448,19 +448,19 @@ export const frameFactoryDetails: {
 export const tokenVyperDetails: {
   [key: string]: string
 } = {
-  "4002": "0xe15129d39603A1f5b8123d12B951400aC5814f96",
+  "4002": "0x76E5BB0b2AE801EeA1220528c717BDb2FC44d628",
 }
 
 export const masterVyperTokenCopy: {
   [key: string]: string
 } = {
-  "4002": "0xBe1B4EC57cEA91237EA118DFA44222e3B7dF6d18",
+  "4002": "0x65c461399A745744e95C01FC07448EdCA798E1d4",
 }
 
 export const safeMemeTemplate: {
   [key: string]: string
 } = {
-  "4002": "0xBe1B4EC57cEA91237EA118DFA44222e3B7dF6d18",
+  "4002": "0x65c461399A745744e95C01FC07448EdCA798E1d4",
 }
 
 export const safeLaunchTemplate: {
@@ -472,5 +472,5 @@ export const safeLaunchTemplate: {
 export const safeLaunchFactory: {
   [key: string]: string
 } = {
-  "4002": "0xe15129d39603A1f5b8123d12B951400aC5814f96",
+  "4002": "0x76E5BB0b2AE801EeA1220528c717BDb2FC44d628",
 }

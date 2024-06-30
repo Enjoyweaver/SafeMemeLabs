@@ -304,6 +304,98 @@ export const SafeMemeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
+    name: "setStageTokenBAmount",
+    inputs: [
+      {
+        name: "stage",
+        type: "uint256",
+      },
+      {
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        name: "_tokenBAddress",
+        type: "address",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setStageTokenBAmount",
+    inputs: [
+      {
+        name: "stage",
+        type: "uint256",
+      },
+      {
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        name: "_tokenBAddress",
+        type: "address",
+      },
+      {
+        name: "_tokenBName",
+        type: "string",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setStageTokenBAmount",
+    inputs: [
+      {
+        name: "stage",
+        type: "uint256",
+      },
+      {
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        name: "_tokenBAddress",
+        type: "address",
+      },
+      {
+        name: "_tokenBName",
+        type: "string",
+      },
+      {
+        name: "_tokenBSymbol",
+        type: "string",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setTokenBDetails",
+    inputs: [
+      {
+        name: "_tokenBAddress",
+        type: "address",
+      },
+      {
+        name: "_tokenBName",
+        type: "string",
+      },
+      {
+        name: "_tokenBSymbol",
+        type: "string",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
     name: "buyTokens",
     inputs: [
       {
@@ -393,18 +485,6 @@ export const SafeMemeABI = [
         type: "uint256",
       },
     ],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "setTokenBAddress",
-    inputs: [
-      {
-        name: "_tokenBAddress",
-        type: "address",
-      },
-    ],
-    outputs: [],
   },
   {
     stateMutability: "view",
@@ -643,6 +723,30 @@ export const SafeMemeABI = [
       {
         name: "",
         type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "tokenBName",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "string",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "tokenBSymbol",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "string",
       },
     ],
   },

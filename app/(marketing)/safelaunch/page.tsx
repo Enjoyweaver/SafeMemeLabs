@@ -200,7 +200,20 @@ export default function SafeLaunch(): JSX.Element {
       toast.success(`SafeLaunch started for token ${tokenAddress}`)
 
       const tokenBAddress = tokenBSelection[tokenAddress]
-      await tokenContract.setTokenBAddress(tokenBAddress)
+      const tokenBName = tokenBDetails[tokenBAddress]?.name || ""
+      const tokenBSymbol = tokenBDetails[tokenBAddress]?.symbol || ""
+
+      // Ensure Token B details are set on the contract
+      const currentTokenBAddress = await tokenContract.tokenBAddress()
+      if (currentTokenBAddress === ethers.constants.AddressZero) {
+        const tx = await tokenContract.setTokenBDetails(
+          tokenBAddress,
+          tokenBName,
+          tokenBSymbol
+        )
+        await tx.wait()
+      }
+
       toast.success(`Token B address set for token ${tokenAddress}`)
 
       setSelectedToken({ tokenAddress, tokenBAddress })
@@ -219,11 +232,29 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
-  const setStageTokenBAmount = async (
-    tokenAddress: string,
-    stage: number,
-    amount: number
-  ) => {
+  const fetchTokenBDetails = async (tokenBAddress: string) => {
+    try {
+      if (!provider) return
+      const tokenBContract = new ethers.Contract(
+        tokenBAddress,
+        SafeMemeABI,
+        provider
+      )
+      const [name, symbol] = await Promise.all([
+        tokenBContract.name(),
+        tokenBContract.symbol(),
+      ])
+      setTokenBDetails((prev) => ({
+        ...prev,
+        [tokenBAddress]: { name, symbol },
+      }))
+    } catch (error) {
+      console.error("Error fetching Token B details:", error)
+      toast.error("Failed to fetch Token B details")
+    }
+  }
+
+  const setStageTokenBAmount = async (tokenAddress, stage, amount) => {
     try {
       if (!provider) return
       const signer = provider.getSigner()
@@ -232,41 +263,58 @@ export default function SafeLaunch(): JSX.Element {
         SafeMemeABI,
         signer
       )
-      const amountInWei = BigInt(amount) * BigInt(10 ** 18) // Convert to 18 decimals
-      const gasLimit = await tokenContract.estimateGas.setStageTokenBAmount(
+      const amountInWei = ethers.utils.parseUnits(amount.toString(), 18) // Convert to 18 decimals
+
+      // Ensure Token B details are set only if not already set
+      const tokenBAddress = tokenBSelection[tokenAddress]
+      if (!tokenBAddress) {
+        throw new Error("Token B address must be provided")
+      }
+
+      const tokenBName = tokenBDetails[tokenBAddress]?.name || ""
+      const tokenBSymbol = tokenBDetails[tokenBAddress]?.symbol || ""
+
+      // Check if Token B details are already set
+      const currentTokenBAddress = await tokenContract.tokenBAddress()
+      if (currentTokenBAddress === ethers.constants.AddressZero) {
+        const tx = await tokenContract.setTokenBDetails(
+          tokenBAddress,
+          tokenBName,
+          tokenBSymbol
+        )
+        await tx.wait()
+      }
+
+      // Call the correct overloaded function
+      const gasLimit = await tokenContract.estimateGas[
+        "setStageTokenBAmount(uint256,uint256)"
+      ](stage, amountInWei)
+      const tx = await tokenContract["setStageTokenBAmount(uint256,uint256)"](
         stage,
-        amountInWei
+        amountInWei,
+        {
+          gasLimit: gasLimit.add(100000),
+        }
       )
-      const tx = await tokenContract.setStageTokenBAmount(stage, amountInWei, {
-        gasLimit: gasLimit.add(100000),
-      })
       await tx.wait()
       toast.success(
         `Token B amount set for stage ${stage} of token ${tokenAddress}`
       )
       fetchAllTokenData() // Refresh token data to get updated stage info
     } catch (error) {
-      console.error(
-        `Error setting Token B amount for token ${tokenAddress}:`,
-        error
-      )
       toast.error(
         `Error setting Token B amount for token ${tokenAddress}: ${error.message}`
       )
     }
   }
 
-  const handleTokenBAmountChange = (
-    tokenAddress: string,
-    stage: number,
-    amount: number
-  ) => {
+  const handleTokenBAmountChange = (tokenAddress, stage, amount) => {
     setTokenBAmounts((prev) => {
       const currentAmounts = prev[tokenAddress] || []
       currentAmounts[stage] = amount
-      setStageTokenBAmount(tokenAddress, stage, amount)
       return { ...prev, [tokenAddress]: currentAmounts }
     })
+    setStageTokenBAmount(tokenAddress, stage, amount) // Call the function after setting state
   }
 
   const handleTokenBSelection = (
@@ -287,7 +335,17 @@ export default function SafeLaunch(): JSX.Element {
         allTokens.map(async (tokenAddress) => {
           const details = await getTokenDetails(tokenAddress)
           const stages = await getStageDetails(tokenAddress)
-          return { ...details, stages }
+
+          // Fetch tokenBAddress separately
+          const tokenContract = new ethers.Contract(tokenAddress, SafeMemeABI)
+          const tokenBAddress = await tokenContract.tokenBAddress()
+
+          // Fetch Token B details if set
+          if (tokenBAddress && tokenBAddress !== ethers.constants.AddressZero) {
+            await fetchTokenBDetails(tokenBAddress)
+          }
+
+          return { ...details, stages, tokenBAddress }
         })
       )
       const userTokenAddresses = new Set(
@@ -371,28 +429,6 @@ export default function SafeLaunch(): JSX.Element {
     } catch (error) {
       console.error("Error fetching stage info:", error)
       toast.error("Failed to fetch stage information")
-    }
-  }
-
-  const fetchTokenBDetails = async (tokenBAddress: string) => {
-    try {
-      if (!provider) return
-      const tokenBContract = new ethers.Contract(
-        tokenBAddress,
-        SafeMemeABI,
-        provider
-      )
-      const [name, symbol] = await Promise.all([
-        tokenBContract.name(),
-        tokenBContract.symbol(),
-      ])
-      setTokenBDetails((prev) => ({
-        ...prev,
-        [tokenBAddress]: { name, symbol },
-      }))
-    } catch (error) {
-      console.error("Error fetching Token B details:", error)
-      toast.error("Failed to fetch Token B details")
     }
   }
 
@@ -670,15 +706,19 @@ export default function SafeLaunch(): JSX.Element {
                                         stageIndex
                                       ] || ""
                                     }
-                                    onChange={(e) =>
-                                      handleTokenBAmountChange(
-                                        token.address,
-                                        stageIndex,
-                                        parseFloat(e.target.value)
-                                      )
-                                    }
+                                    onChange={(e) => {
+                                      const value = parseFloat(e.target.value)
+                                      if (!isNaN(value)) {
+                                        handleTokenBAmountChange(
+                                          token.address,
+                                          stageIndex,
+                                          value
+                                        )
+                                      }
+                                    }}
                                   />
                                 </label>
+
                                 {token.saleActive &&
                                 stageIndex >= token.currentStage ? (
                                   <>
@@ -705,15 +745,9 @@ export default function SafeLaunch(): JSX.Element {
                                     <p>
                                       <strong>Token B:</strong>{" "}
                                       {tokenBDetails[token.tokenBAddress]
-                                        ? `${
-                                            tokenBDetails[token.tokenBAddress]
-                                              .name
-                                          } (${
-                                            tokenBDetails[token.tokenBAddress]
-                                              .symbol
-                                          })`
-                                        : "Token B not set"}
+                                        ?.symbol || "Token B"}
                                     </p>
+
                                     <div className="progress-bar">
                                       <div
                                         className="progress-bar-fill"
