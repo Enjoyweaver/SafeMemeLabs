@@ -37,6 +37,9 @@ export default function SafeLaunch(): JSX.Element {
   const [tokenBSelection, setTokenBSelection] = useState<{
     [key: string]: string
   }>({})
+  const [tokenBDetails, setTokenBDetails] = useState<{
+    [key: string]: { name: string; symbol: string }
+  }>({})
   const [tokenBAmounts, setTokenBAmounts] = useState<{
     [key: string]: number[]
   }>({})
@@ -202,6 +205,9 @@ export default function SafeLaunch(): JSX.Element {
 
       setSelectedToken({ tokenAddress, tokenBAddress })
       fetchAllTokenData() // Refresh token data to get updated sale status
+
+      // Fetch Token B details and store in state
+      await fetchTokenBDetails(tokenBAddress)
     } catch (error) {
       console.error(
         `Error starting SafeLaunch for token ${tokenAddress}:`,
@@ -378,9 +384,34 @@ export default function SafeLaunch(): JSX.Element {
       setStageInfo(stageInfo)
       setTokenPrice(ethers.utils.formatUnits(stageInfo[1], 18))
       setSelectedToken({ tokenAddress, tokenBAddress })
+
+      // Fetch Token B details and store in state
+      await fetchTokenBDetails(tokenBAddress)
     } catch (error) {
       console.error("Error fetching stage info:", error)
       toast.error("Failed to fetch stage information")
+    }
+  }
+
+  const fetchTokenBDetails = async (tokenBAddress: string) => {
+    try {
+      if (!provider) return
+      const tokenBContract = new ethers.Contract(
+        tokenBAddress,
+        SafeMemeABI,
+        provider
+      )
+      const [name, symbol] = await Promise.all([
+        tokenBContract.name(),
+        tokenBContract.symbol(),
+      ])
+      setTokenBDetails((prev) => ({
+        ...prev,
+        [tokenBAddress]: { name, symbol },
+      }))
+    } catch (error) {
+      console.error("Error fetching Token B details:", error)
+      toast.error("Failed to fetch Token B details")
     }
   }
 
@@ -692,11 +723,15 @@ export default function SafeLaunch(): JSX.Element {
                                     </p>
                                     <p>
                                       <strong>Token B:</strong>{" "}
-                                      {combinedTokens.find(
-                                        (token) =>
-                                          token.address ===
-                                          selectedToken?.tokenBAddress
-                                      )?.symbol || "Token B not set"}
+                                      {tokenBDetails[token.tokenBAddress]
+                                        ? `${
+                                            tokenBDetails[token.tokenBAddress]
+                                              .name
+                                          } (${
+                                            tokenBDetails[token.tokenBAddress]
+                                              .symbol
+                                          })`
+                                        : "Token B not set"}
                                     </p>
                                     <div className="progress-bar">
                                       <div

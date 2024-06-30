@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from "react"
 import {
+  NativeTokens,
   oracleDetails,
   priceFeedAddresses,
   rpcUrls,
   safeLaunchFactory,
-  tokenBOptions,
 } from "@/Constants/config"
 import { ethers } from "ethers"
 import { toast } from "react-toastify"
@@ -316,7 +316,7 @@ const TokenSwap: React.FC<{
       },
     ]
 
-    for (const [chainId, tokens] of Object.entries(tokenBOptions)) {
+    for (const [chainId, tokens] of Object.entries(NativeTokens)) {
       const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
       const chainPrices: { [symbol: string]: number | null } = {}
 
@@ -500,7 +500,7 @@ const TokenSwap: React.FC<{
 
   const getTokensForCurrentChain = () => {
     const currentChainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
-    return tokenBOptions[currentChainId] || []
+    return NativeTokens[currentChainId] || []
   }
 
   const allTokens = getTokensForCurrentChain().map((token) => ({
