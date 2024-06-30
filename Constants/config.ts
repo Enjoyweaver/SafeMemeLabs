@@ -269,7 +269,7 @@ export const oracleDetails: { [key: string]: string } = {
   "501": "YourOracleAddressForSolanaTestnet",
 }
 
-export const tokenBOptions: {
+export const NativeTokens: {
   [key: string]: { address: string; symbol: string }[]
 } = {
   "4002": [
