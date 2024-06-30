@@ -226,9 +226,6 @@ export default function SafeLaunch(): JSX.Element {
         `Error starting SafeLaunch for token ${tokenAddress}:`,
         error
       )
-      toast.error(
-        `Error starting SafeLaunch for token ${tokenAddress}: ${error.message}`
-      )
     }
   }
 
@@ -250,7 +247,6 @@ export default function SafeLaunch(): JSX.Element {
       }))
     } catch (error) {
       console.error("Error fetching Token B details:", error)
-      toast.error("Failed to fetch Token B details")
     }
   }
 
@@ -298,14 +294,10 @@ export default function SafeLaunch(): JSX.Element {
       )
       await tx.wait()
       toast.success(
-        `Token B amount set for stage ${stage} of token ${tokenAddress}`
+        `Token B amount set for stage ${stage} of token ${tokenBAddress}`
       )
       fetchAllTokenData() // Refresh token data to get updated stage info
-    } catch (error) {
-      toast.error(
-        `Error setting Token B amount for token ${tokenAddress}: ${error.message}`
-      )
-    }
+    } catch (error) {}
   }
 
   const handleTokenBAmountChange = (tokenAddress, stage, amount) => {
@@ -337,7 +329,11 @@ export default function SafeLaunch(): JSX.Element {
           const stages = await getStageDetails(tokenAddress)
 
           // Fetch tokenBAddress separately
-          const tokenContract = new ethers.Contract(tokenAddress, SafeMemeABI)
+          const tokenContract = new ethers.Contract(
+            tokenAddress,
+            SafeMemeABI,
+            provider
+          )
           const tokenBAddress = await tokenContract.tokenBAddress()
 
           // Fetch Token B details if set
@@ -744,8 +740,11 @@ export default function SafeLaunch(): JSX.Element {
                                     </p>
                                     <p>
                                       <strong>Token B:</strong>{" "}
-                                      {tokenBDetails[token.tokenBAddress]
-                                        ?.symbol || "Token B"}
+                                      {combinedTokens.find(
+                                        (token) =>
+                                          token.address ===
+                                          selectedToken?.tokenBAddress
+                                      )?.symbol || "Token B"}
                                     </p>
 
                                     <div className="progress-bar">
