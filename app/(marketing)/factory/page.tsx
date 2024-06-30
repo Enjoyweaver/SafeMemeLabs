@@ -1,11 +1,12 @@
 "use client"
 
-import { ChangeEvent, useEffect, useState } from "react"
+import { ChangeEvent, useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
 import { tokenFactoryABI } from "@/ABIs/vyper/tokenFactory"
 import { ethers } from "ethers"
+import debounce from "lodash.debounce"
 import { toast } from "react-toastify"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"

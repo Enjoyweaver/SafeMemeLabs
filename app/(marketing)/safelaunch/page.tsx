@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 import { ethers } from "ethers"
+import debounce from "lodash.debounce"
 import Modal from "react-modal"
 import { toast } from "react-toastify"
 
@@ -59,6 +60,8 @@ export default function SafeLaunch(): JSX.Element {
   const [stageInfo, setStageInfo] = useState<
     [ethers.BigNumber, ethers.BigNumber] | null
   >(null)
+  const [isLoadingTokenBDetails, setIsLoadingTokenBDetails] =
+    useState<boolean>(false)
 
   const chainId: string | number = chain ? chain.id : 250
 
@@ -183,6 +186,30 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
+  const fetchTokenBDetails = async (tokenBAddress: string) => {
+    try {
+      setIsLoadingTokenBDetails(true)
+      if (!provider) return
+      const tokenBContract = new ethers.Contract(
+        tokenBAddress,
+        SafeMemeABI,
+        provider
+      )
+      const [name, symbol] = await Promise.all([
+        tokenBContract.name(),
+        tokenBContract.symbol(),
+      ])
+      setTokenBDetails((prev) => ({
+        ...prev,
+        [tokenBAddress]: { name, symbol },
+      }))
+    } catch (error) {
+      console.error("Error fetching Token B details:", error)
+    } finally {
+      setIsLoadingTokenBDetails(false)
+    }
+  }
+
   const startSafeLaunch = async (tokenAddress: string) => {
     try {
       if (!provider) return
@@ -226,27 +253,6 @@ export default function SafeLaunch(): JSX.Element {
         `Error starting SafeLaunch for token ${tokenAddress}:`,
         error
       )
-    }
-  }
-
-  const fetchTokenBDetails = async (tokenBAddress: string) => {
-    try {
-      if (!provider) return
-      const tokenBContract = new ethers.Contract(
-        tokenBAddress,
-        SafeMemeABI,
-        provider
-      )
-      const [name, symbol] = await Promise.all([
-        tokenBContract.name(),
-        tokenBContract.symbol(),
-      ])
-      setTokenBDetails((prev) => ({
-        ...prev,
-        [tokenBAddress]: { name, symbol },
-      }))
-    } catch (error) {
-      console.error("Error fetching Token B details:", error)
     }
   }
 
@@ -300,13 +306,20 @@ export default function SafeLaunch(): JSX.Element {
     } catch (error) {}
   }
 
+  const debouncedSetStageTokenBAmount = useCallback(
+    debounce((tokenAddress, stage, amount) => {
+      setStageTokenBAmount(tokenAddress, stage, amount)
+    }, 1000),
+    []
+  )
+
   const handleTokenBAmountChange = (tokenAddress, stage, amount) => {
     setTokenBAmounts((prev) => {
       const currentAmounts = prev[tokenAddress] || []
       currentAmounts[stage] = amount
       return { ...prev, [tokenAddress]: currentAmounts }
     })
-    setStageTokenBAmount(tokenAddress, stage, amount) // Call the function after setting state
+    debouncedSetStageTokenBAmount(tokenAddress, stage, amount)
   }
 
   const handleTokenBSelection = (
@@ -315,6 +328,16 @@ export default function SafeLaunch(): JSX.Element {
   ) => {
     console.log("Setting Token B for:", tokenAddress, "to:", tokenBAddress)
     setTokenBSelection((prev) => ({ ...prev, [tokenAddress]: tokenBAddress }))
+  }
+
+  const handleSubmitTokenBAmounts = (tokenAddress) => {
+    if (tokenBAmounts[tokenAddress]) {
+      tokenBAmounts[tokenAddress].forEach((amount, stage) => {
+        if (amount) {
+          setStageTokenBAmount(tokenAddress, stage, amount)
+        }
+      })
+    }
   }
 
   const fetchAllTokenData = async () => {
@@ -740,11 +763,10 @@ export default function SafeLaunch(): JSX.Element {
                                     </p>
                                     <p>
                                       <strong>Token B:</strong>{" "}
-                                      {combinedTokens.find(
-                                        (token) =>
-                                          token.address ===
-                                          selectedToken?.tokenBAddress
-                                      )?.symbol || "Token B"}
+                                      {isLoadingTokenBDetails
+                                        ? "Loading..."
+                                        : tokenBDetails[token.tokenBAddress]
+                                            ?.symbol || "Token B"}
                                     </p>
 
                                     <div className="progress-bar">
@@ -768,6 +790,14 @@ export default function SafeLaunch(): JSX.Element {
                                 ) : (
                                   <p>Stage not active yet</p>
                                 )}
+                                <button
+                                  className="submit-token-b-amounts-button"
+                                  onClick={() =>
+                                    handleSubmitTokenBAmounts(token.address)
+                                  }
+                                >
+                                  Submit Token B Info
+                                </button>
                               </div>
                             ))}
                           </div>
