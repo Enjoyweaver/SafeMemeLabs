@@ -737,7 +737,12 @@ export const SafeMemeABI = [
     stateMutability: "view",
     type: "function",
     name: "soldTokens",
-    inputs: [],
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
     outputs: [
       {
         name: "",

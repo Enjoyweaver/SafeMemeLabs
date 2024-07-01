@@ -721,16 +721,8 @@ export default function SafeLaunch(): JSX.Element {
       <div className="flex min-h-screen flex-col">
         <main className="flex-1">
           <div className="dashboard">
-            {isClient && chainId && !safeLaunchFactory[chainId] && (
-              <ChangeNetwork
-                changeNetworkToChainId={250}
-                dappName={"SafeLaunch"}
-                networks={"Fantom and Degen"}
-              />
-            )}
             <div className="myTokensHeading">
               <h1 className="pagetitle">SafeLaunch</h1>
-              <p className="subheading">See all the tokens created!</p>
             </div>
             {!isClient && <p className="myTokensError">Loading...</p>}
             {isClient && isConnected && (
