@@ -298,7 +298,7 @@ body {
 .sectionTitle {
   text-align: center;
   font-size: 2rem;
-  color: var(--primary-light);
+  color: var(--primary-dark);
   margin-bottom: 20px;
   margin-top: 2rem;
 }
@@ -310,11 +310,11 @@ body {
 
 .stage {
   border: 1px solid #ccc;
-  padding: 10px;
+  padding: 1px;
   margin-bottom: 10px;
   border-radius: 8px;
   background-color: var(--primary-light);
-  color: var(--primary-dark);
+  color: var(--secondary-light);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -330,16 +330,11 @@ body {
   flex-direction: column;
 }
 
-.stage p {
-  margin: 5px 0;
-}
-
 .stage .progress-bar {
   background-color: #e0e0e0;
   border-radius: 4px;
   overflow: hidden;
   height: 10px;
-  margin-top: 10px;
 }
 
 .stage .progress {
@@ -349,39 +344,41 @@ body {
 
 .stage-actions {
   display: flex;
-  flex-direction: column;
-  margin-top: 10px;
+  flex-direction: inline;
+  margin: 0 auto;
 }
 
 .stage-actions label {
   display: block;
   margin-bottom: 10px;
 }
-
-.stage-actions input {
-  padding: 5px;
+a .stage-actions input {
   border: 1px solid var(--border-light);
   border-radius: 3px;
   margin-bottom: 10px;
+  max-width: 50%;
 }
 
 .stage-actions button {
-  background-color: var(--primary-light);
+  background-color: var(--primary-dark);
   color: var(--text-light);
   border: none;
-  padding: 10px;
+  padding: 1px;
   border-radius: 4px;
+  font-size: small;
   cursor: pointer;
   transition: background-color 0.2s;
-  margin-bottom: 5px;
+  margin: 0 10px 5px auto;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .stage-actions button:hover {
-  background-color: var(--secondary-light);
+  background-color: var(--secondary-dark);
 }
 
 .dark .stage {
-  background-color: var(--primary-dark);
+  background-color: var(--primary-light);
   color: var(--primary-dark);
 }
 

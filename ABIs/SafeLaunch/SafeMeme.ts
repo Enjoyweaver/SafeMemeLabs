@@ -364,182 +364,6 @@ export const SafeMemeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "setStageTokenBAmount",
-    inputs: [
-      {
-        name: "stage",
-        type: "uint256",
-      },
-      {
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    outputs: [],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "setStageTokenBAmount",
-    inputs: [
-      {
-        name: "stage",
-        type: "uint256",
-      },
-      {
-        name: "amount",
-        type: "uint256",
-      },
-      {
-        name: "_tokenBAddress",
-        type: "address",
-      },
-    ],
-    outputs: [],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "setStageTokenBAmount",
-    inputs: [
-      {
-        name: "stage",
-        type: "uint256",
-      },
-      {
-        name: "amount",
-        type: "uint256",
-      },
-      {
-        name: "_tokenBAddress",
-        type: "address",
-      },
-      {
-        name: "_tokenBName",
-        type: "string",
-      },
-    ],
-    outputs: [],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "setStageTokenBAmount",
-    inputs: [
-      {
-        name: "stage",
-        type: "uint256",
-      },
-      {
-        name: "amount",
-        type: "uint256",
-      },
-      {
-        name: "_tokenBAddress",
-        type: "address",
-      },
-      {
-        name: "_tokenBName",
-        type: "string",
-      },
-      {
-        name: "_tokenBSymbol",
-        type: "string",
-      },
-    ],
-    outputs: [],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "setMultipleStageAmounts",
-    inputs: [
-      {
-        name: "stages",
-        type: "uint256[]",
-      },
-      {
-        name: "amounts",
-        type: "uint256[]",
-      },
-    ],
-    outputs: [],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "setMultipleStageAmounts",
-    inputs: [
-      {
-        name: "stages",
-        type: "uint256[]",
-      },
-      {
-        name: "amounts",
-        type: "uint256[]",
-      },
-      {
-        name: "_tokenBAddress",
-        type: "address",
-      },
-    ],
-    outputs: [],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "setMultipleStageAmounts",
-    inputs: [
-      {
-        name: "stages",
-        type: "uint256[]",
-      },
-      {
-        name: "amounts",
-        type: "uint256[]",
-      },
-      {
-        name: "_tokenBAddress",
-        type: "address",
-      },
-      {
-        name: "_tokenBName",
-        type: "string",
-      },
-    ],
-    outputs: [],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "setMultipleStageAmounts",
-    inputs: [
-      {
-        name: "stages",
-        type: "uint256[]",
-      },
-      {
-        name: "amounts",
-        type: "uint256[]",
-      },
-      {
-        name: "_tokenBAddress",
-        type: "address",
-      },
-      {
-        name: "_tokenBName",
-        type: "string",
-      },
-      {
-        name: "_tokenBSymbol",
-        type: "string",
-      },
-    ],
-    outputs: [],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
     name: "setTokenBDetails",
     inputs: [
       {
@@ -553,6 +377,22 @@ export const SafeMemeABI = [
       {
         name: "_tokenBSymbol",
         type: "string",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setStageTokenBAmount",
+    inputs: [
+      {
+        name: "stage",
+        type: "uint256",
+      },
+      {
+        name: "amount",
+        type: "uint256",
       },
     ],
     outputs: [],

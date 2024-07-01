@@ -1,0 +1,30 @@
+# Creating a schematic of ABI inputs and their usage based on the provided code.
+
+schematic = """
+### Schematic of ABI Inputs and Usage
+
+| **ABI Method**                | **Contract**       | **Frontend Usage**                                                                 | **Purpose**                                                                |
+|-------------------------------|--------------------|-----------------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| `getDeployedTokenCount`       | TokenFactory       | `getAllTokens` function                                                           | Retrieves total number of deployed tokens                                 |
+| `tokensDeployed`              | TokenFactory       | `getAllTokens` function                                                           | Retrieves address of deployed tokens by index                             |
+| `getTokensDeployedByUser`     | TokenFactory       | `getUserTokens` function                                                          | Retrieves addresses of tokens deployed by a specific user                 |
+| `lockedTokens`                | SafeMeme           | `getLockedTokens` and `getTokenDetails` functions                                 | Retrieves number of locked tokens                                         |
+| `name`, `symbol`              | SafeMeme           | `getTokenDetails` function                                                        | Retrieves token name and symbol                                           |
+| `totalSupply`                 | SafeMeme           | `getTokenDetails` function                                                        | Retrieves total token supply                                              |
+| `owner`                       | SafeMeme           | `getTokenDetails` function                                                        | Retrieves token owner                                                     |
+| `decimals`                    | SafeMeme           | `getTokenDetails` function                                                        | Retrieves token decimals                                                  |
+| `antiWhalePercentage`         | SafeMeme           | `getTokenDetails` function                                                        | Retrieves anti-whale percentage                                           |
+| `getSaleStatus`               | SafeMeme           | `getTokenDetails` and `startSafeLaunch` functions                                 | Retrieves sale status and checks if sale can be started                   |
+| `getCurrentStage`             | SafeMeme           | `getTokenDetails`, `getStageDetails`, and `fetchStageInfo` functions              | Retrieves current sale stage                                              |
+| `getReceivedTokenB`           | SafeMeme           | `getTokenDetails` function                                                        | Retrieves amount of Token B received                                      |
+| `getStageInfo`                | SafeMeme           | `getStageDetails` and `fetchStageInfo` functions                                  | Retrieves information for specific sale stages                            |
+| `tokenBAddress`               | SafeMeme           | `fetchAllTokenData`, `setTokenBDetailsAndAmount`, and `fetchStageInfo` functions  | Retrieves Token B address                                                 |
+| `setTokenBDetails`            | SafeMeme           | `setTokenBDetailsOnly` function                                                   | Sets Token B details (address, name, symbol)                              |
+| `setStageTokenBAmount`        | SafeMeme           | `setStageTokenBAmount` function                                                   | Sets amount of Token B required for a specific stage                      |
+| `startSafeLaunch`             | SafeMeme           | `startSafeLaunch` function                                                        | Initiates the SafeLaunch process                                          |
+| `balanceOf`                   | SafeMeme           | `fetchWalletTokens` function                                                      | Retrieves balance of tokens for a specific address                        |
+| `approve`                     | SafeMeme           | `handleSwap` function                                                             | Approves SafeMeme contract to spend Token B                               |
+| `buyTokens`                   | SafeMeme           | `handleSwap` function                                                             | Buys tokens using Token B                                                 |
+
+"""
+
