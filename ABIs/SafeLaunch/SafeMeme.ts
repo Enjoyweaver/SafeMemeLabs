@@ -196,6 +196,28 @@ export const SafeMemeABI = [
     type: "event",
   },
   {
+    name: "InternalTransfer",
+    inputs: [
+      {
+        name: "_from",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "_to",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "_value",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
     stateMutability: "nonpayable",
     type: "function",
     name: "setup",
@@ -411,6 +433,94 @@ export const SafeMemeABI = [
       {
         name: "amount",
         type: "uint256",
+      },
+      {
+        name: "_tokenBAddress",
+        type: "address",
+      },
+      {
+        name: "_tokenBName",
+        type: "string",
+      },
+      {
+        name: "_tokenBSymbol",
+        type: "string",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setMultipleStageAmounts",
+    inputs: [
+      {
+        name: "stages",
+        type: "uint256[]",
+      },
+      {
+        name: "amounts",
+        type: "uint256[]",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setMultipleStageAmounts",
+    inputs: [
+      {
+        name: "stages",
+        type: "uint256[]",
+      },
+      {
+        name: "amounts",
+        type: "uint256[]",
+      },
+      {
+        name: "_tokenBAddress",
+        type: "address",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setMultipleStageAmounts",
+    inputs: [
+      {
+        name: "stages",
+        type: "uint256[]",
+      },
+      {
+        name: "amounts",
+        type: "uint256[]",
+      },
+      {
+        name: "_tokenBAddress",
+        type: "address",
+      },
+      {
+        name: "_tokenBName",
+        type: "string",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setMultipleStageAmounts",
+    inputs: [
+      {
+        name: "stages",
+        type: "uint256[]",
+      },
+      {
+        name: "amounts",
+        type: "uint256[]",
       },
       {
         name: "_tokenBAddress",

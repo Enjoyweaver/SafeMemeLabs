@@ -1,0 +1,394 @@
+:root {
+  --background-light: #ffffff;
+  --foreground-light: #000000;
+  --primary-light: #04c44e;
+  --secondary-light: #b80f5e;
+  --accent-light: #04c44e;
+  --border-light: #04c44e;
+  --text-light: #000000;
+
+  --input-light: #e3e4e6;
+  --input-dark: #1a1a2e;
+
+  --background-dark: #000000;
+  --foreground-dark: #ffffff;
+  --primary-dark: #df1584;
+  --secondary-dark: #41b80a;
+  --accent-dark: #41b80a;
+  --border-dark: #41b80a;
+  --text-dark: #ffffff;
+}
+
+body {
+  background-color: var(--background-light) !important;
+  color: var(--foreground-light) !important;
+  font-family: Arial, sans-serif !important;
+}
+
+.dark body {
+  background-color: var(--background-dark) !important;
+  color: var(--foreground-dark) !important;
+}
+
+.dashboard {
+  padding: 20px !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  text-align: center !important;
+  background-color: var(--background-light) !important;
+}
+
+.dark .dashboard {
+  background-color: var(--background-dark) !important;
+}
+
+.myTokensHeading {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.token-swap-container {
+  width: 90%;
+  max-width: 600px;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.mini-swap-container {
+  width: 90%;
+  max-width: 600px;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--primary-dark);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.token-swap-inner {
+  width: 100%;
+  height: auto;
+  transform: scale(0.75);
+  transform-origin: center;
+}
+
+.pagetitle {
+  text-align: center;
+  font-size: 2.5rem;
+  color: var(--primary-light);
+  margin-bottom: 20px;
+  margin-top: 1rem;
+}
+
+.subheading {
+  color: var(--foreground-light) !important;
+}
+
+.dark .subheading {
+  color: var(--foreground-dark) !important;
+}
+
+.token-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 30px;
+  background-color: var(--background-light) !important;
+}
+
+.dark .token-container {
+  background-color: var(--background-dark) !important;
+}
+
+.meme-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  max-width: 100%;
+}
+
+.meme {
+  width: calc(33% - 20px);
+  margin-bottom: 20px !important;
+  padding: 15px !important;
+  border: 1px solid var(--primary-light) !important;
+  border-radius: 8px !important;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  box-sizing: border-box;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.meme:hover {
+  transform: scale(1.05);
+}
+
+.dark .meme {
+  border: 1px solid var(--primary-dark) !important;
+  background-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.meme-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+}
+
+.meme-header h3 {
+  margin: 0;
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.meme-header .token-logo {
+  width: 40px;
+  height: 40px;
+}
+
+.meme-details {
+  text-align: left;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.meme-details p {
+  color: var(--foreground-light) !important;
+  margin: 1px 0px;
+}
+
+.meme-details p strong {
+  display: inline-block;
+  width: 180px;
+  color: var(--secondary-dark);
+}
+
+.dark .meme-details p {
+  color: var(--foreground-dark) !important;
+}
+
+.token-logo {
+  margin-left: 10px;
+}
+
+.buy-token-button {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 10px 0 10px 0;
+  background-color: #000;
+  color: #00ff00;
+  border: 2px solid #00ff00;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.buy-token-button:hover {
+  background-color: #00ff00;
+  color: #000;
+}
+
+.buy-token-button:disabled {
+  background-color: #555;
+  color: #ccc;
+  border-color: #ccc;
+  cursor: not-allowed;
+}
+
+.token-swap {
+  max-height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    max-width: 100% !important;
+  }
+
+  .pagetitle {
+    font-size: 1.5rem !important;
+  }
+
+  .meme {
+    width: 100% !important;
+    margin-bottom: 10px !important;
+    padding: 10px 5px !important;
+  }
+
+  .meme-header h3 {
+    font-size: 1rem !important;
+  }
+
+  .meme-details {
+    font-size: 0.8rem !important;
+  }
+
+  .buy-token-button,
+  .close-modal-button {
+    padding: 5px 10px !important;
+    font-size: 0.8rem !important;
+  }
+
+  .modal-content {
+    padding: 10px !important;
+    max-height: 90% !important;
+    width: 90% !important;
+  }
+
+  .token-swap-container {
+    width: 100% !important;
+    padding: 10px;
+  }
+
+  .token-swap-inner {
+    transform: scale(1);
+  }
+  .sectionTitle {
+    text-align: center;
+    font-size: 1.3rem;
+    color: var(--primary-light);
+    margin-bottom: 10px;
+    margin-top: 1rem;
+  }
+}
+
+.filter-dropdown {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 10px 0;
+  background-color: #000;
+  color: #00ff00;
+  border: 2px solid #00ff00;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.2s, color 0.2s;
+  appearance: none;
+}
+
+.filter-dropdown:hover {
+  background-color: #00ff00;
+  color: #000;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2rem;
+  color: var(--primary-light);
+  margin-bottom: 20px;
+  margin-top: 2rem;
+}
+
+.stages-container {
+  margin-top: 20px;
+  color: var(--primary-light);
+}
+
+.stage {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.stage-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.stage-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stage p {
+  margin: 5px 0;
+}
+
+.stage .progress-bar {
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  height: 10px;
+  margin-top: 10px;
+}
+
+.stage .progress {
+  height: 100%;
+  background-color: #4caf50;
+}
+
+.stage-actions {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.stage-actions label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.stage-actions input {
+  padding: 5px;
+  border: 1px solid var(--border-light);
+  border-radius: 3px;
+  margin-bottom: 10px;
+}
+
+.stage-actions button {
+  background-color: var(--primary-light);
+  color: var(--text-light);
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-bottom: 5px;
+}
+
+.stage-actions button:hover {
+  background-color: var(--secondary-light);
+}
+
+.dark .stage {
+  background-color: var(--primary-dark);
+  color: var(--primary-dark);
+}
+
+.dark .progress-bar {
+  background-color: #4caf50;
+}
+
+.dark .progress {
+  background-color: #e0e0e0;
+}
