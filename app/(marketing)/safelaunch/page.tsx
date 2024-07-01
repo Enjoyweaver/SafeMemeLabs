@@ -233,47 +233,58 @@ export default function SafeLaunch(): JSX.Element {
 
   const startSafeLaunch = async (tokenAddress: string) => {
     try {
-      if (!provider) return
+      if (!provider) {
+        toast.error("Provider not available. Please connect your wallet.")
+        return
+      }
+
       const signer = provider.getSigner()
       const tokenContract = new ethers.Contract(
         tokenAddress,
         SafeMemeABI,
         signer
       )
+
+      // Debug: Log the token address and signer address
+      console.log("Token Address:", tokenAddress)
+      console.log("Signer Address:", await signer.getAddress())
+
+      // Check if the contract is in a valid state to start SafeLaunch
+      const saleActive = await tokenContract.getSaleStatus()
+      if (saleActive) {
+        toast.error("SafeLaunch has already been started.")
+        return
+      }
+
+      // Estimate gas limit
       const gasLimit = await tokenContract.estimateGas.startSafeLaunch()
+      console.log("Estimated Gas Limit:", gasLimit.toString())
+
+      // Start SafeLaunch with estimated gas limit
       const tx = await tokenContract.startSafeLaunch({
         gasLimit: gasLimit.add(100000),
       })
       await tx.wait()
       toast.success(`SafeLaunch started for token ${tokenAddress}`)
 
-      const tokenBAddress = tokenBSelection[tokenAddress]
-      const tokenBName = tokenBDetails[tokenBAddress]?.name || ""
-      const tokenBSymbol = tokenBDetails[tokenBAddress]?.symbol || ""
-
-      // Ensure Token B details are set on the contract
-      const currentTokenBAddress = await tokenContract.tokenBAddress()
-      if (currentTokenBAddress === ethers.constants.AddressZero) {
-        const tx = await tokenContract.setTokenBDetails(
-          tokenBAddress,
-          tokenBName,
-          tokenBSymbol
-        )
-        await tx.wait()
-      }
-
-      toast.success(`Token B address set for token ${tokenAddress}`)
-
-      setSelectedToken({ tokenAddress, tokenBAddress })
-      fetchAllTokenData() // Refresh token data to get updated sale status
-
-      // Fetch Token B details and store in state
-      await fetchTokenBDetails(tokenBAddress)
+      // Refresh token data to get updated sale status
+      fetchAllTokenData()
     } catch (error) {
       console.error(
         `Error starting SafeLaunch for token ${tokenAddress}:`,
         error
       )
+
+      // Detailed error handling and logging
+      if (error.code === ethers.errors.UNPREDICTABLE_GAS_LIMIT) {
+        toast.error(
+          "Cannot estimate gas. Transaction may fail or require manual gas limit."
+        )
+      } else if (error.code === ethers.errors.INVALID_ARGUMENT) {
+        toast.error("Invalid address or ENS name.")
+      } else {
+        toast.error(`Error starting SafeLaunch: ${error.message}`)
+      }
     }
   }
 
@@ -627,7 +638,7 @@ export default function SafeLaunch(): JSX.Element {
   }
 
   const renderAdditionalTokenDetails = (token) => {
-    return (
+    return token.saleActive ? (
       <>
         <p>
           <strong>Locked Tokens:</strong>{" "}
@@ -638,7 +649,7 @@ export default function SafeLaunch(): JSX.Element {
           {formatNumber(token.receivedTokenB, 18)}
         </p>
       </>
-    )
+    ) : null
   }
 
   // Render stage details
@@ -773,6 +784,15 @@ export default function SafeLaunch(): JSX.Element {
                               ? `${token.antiWhalePercentage}%`
                               : "N/A"}
                           </p>
+                          <p>
+                            <strong>Max Token Allowance:</strong>{" "}
+                            {formatNumber(
+                              token.totalSupply
+                                .mul(token.antiWhalePercentage)
+                                .div(100),
+                              token.decimals
+                            )}
+                          </p>
                           <label>
                             <strong>Select Token B:</strong>
                             <select
@@ -807,11 +827,13 @@ export default function SafeLaunch(): JSX.Element {
                             Submit Token B Info
                           </button>
                           {renderAdditionalTokenDetails(token)}
-                          <div className="stages-container">
-                            {token.stages.map((stage, stageIndex) =>
-                              renderStageDetails(stage, token, stageIndex)
-                            )}
-                          </div>
+                          {token.saleActive && (
+                            <div className="stages-container">
+                              {token.stages.map((stage, stageIndex) =>
+                                renderStageDetails(stage, token, stageIndex)
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
