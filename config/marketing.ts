@@ -22,10 +22,10 @@ export const marketingConfig: MarketingConfig = {
     //  title: "Our Memes",
     //  href: "/ourmemes",
     // },
-    {
-      title: "Create Token",
-      href: "/factory",
-    },
+    // {
+    //   title: "Create Token",
+    //   href: "/factory",
+    // },
 
     // {
     //   title: "Provide LP",
@@ -39,10 +39,10 @@ export const marketingConfig: MarketingConfig = {
     //    title: "SafeMeme",
     //   href: "/safememe",
     // },
-    {
-      title: "Profile",
-      href: "/profile",
-    },
+    // {
+    //   title: "Profile",
+    //   href: "/profile",
+    // },
     {
       title: "Feedback",
       href: "/feedback",
@@ -72,5 +72,13 @@ export const marketingConfig: MarketingConfig = {
       title: "Start SafeLaunch",
       href: "/startlaunch",
     },
+    //{
+    //  title: "fiveLaunch",
+    //  href: "/fivelaunch",
+    // },
+    // {
+    //   title: "startfive",
+    //   href: "/startfive",
+    // },
   ],
 }

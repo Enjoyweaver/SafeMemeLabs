@@ -142,6 +142,60 @@ export const SafeMemeABI = [
     type: "event",
   },
   {
+    name: "StageAmountSet",
+    inputs: [
+      {
+        name: "stage",
+        type: "uint256",
+        indexed: true,
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "tokenBAddress",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "tokenBName",
+        type: "string",
+        indexed: false,
+      },
+      {
+        name: "tokenBSymbol",
+        type: "string",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "StageLiquidityUpdated",
+    inputs: [
+      {
+        name: "stage",
+        type: "uint256",
+        indexed: true,
+      },
+      {
+        name: "tokenBReceived",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "safeMemesSold",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
     stateMutability: "nonpayable",
     type: "function",
     name: "setup",
@@ -408,6 +462,43 @@ export const SafeMemeABI = [
   {
     stateMutability: "view",
     type: "function",
+    name: "getStageLiquidity",
+    inputs: [
+      {
+        name: "stage",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getAllStagesLiquidity",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256[5]",
+      },
+      {
+        name: "",
+        type: "uint256[5]",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
     name: "getStageInfo",
     inputs: [
       {
@@ -645,18 +736,6 @@ export const SafeMemeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "receivedTokenB",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
     name: "soldTokens",
     inputs: [],
     outputs: [
@@ -747,6 +826,40 @@ export const SafeMemeABI = [
       {
         name: "",
         type: "string",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "stageSet",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "stageTokenBReceived",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
       },
     ],
   },

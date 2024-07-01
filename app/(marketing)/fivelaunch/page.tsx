@@ -1,8 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
-import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
+import { fiveFactoryABI } from "@/ABIs/SafeLaunch/fiveFactory"
+import { fiveTemplateABI } from "@/ABIs/SafeLaunch/fiveTemplate"
 import { ethers } from "ethers"
 import debounce from "lodash.debounce"
 import Modal from "react-modal"
@@ -23,7 +23,7 @@ import { Navbar } from "@/components/walletconnect/walletconnect"
 import {
   NativeTokens,
   blockExplorerAddress,
-  safeLaunchFactory,
+  fiveLaunchFactory,
 } from "../../../Constants/config"
 import "@/styles/allTokens.css"
 
@@ -35,14 +35,14 @@ export default function SafeLaunch(): JSX.Element {
     useState<ethers.providers.Web3Provider | null>(null)
   const [tokenFactoryContract, setTokenFactoryContract] =
     useState<ethers.Contract | null>(null)
-  const [tokenBSelection, setTokenBSelection] = useState<{
-    [key: string]: string
+  const [tokenSelections, setTokenSelections] = useState<{
+    [key: string]: { [stage: string]: string }
   }>({})
-  const [tokenBDetails, setTokenBDetails] = useState<{
-    [key: string]: { name: string; symbol: string }
+  const [tokenDetails, setTokenDetails] = useState<{
+    [key: string]: { [stage: string]: { name: string; symbol: string } }
   }>({})
-  const [tokenBAmounts, setTokenBAmounts] = useState<{
-    [key: string]: number[]
+  const [tokenAmounts, setTokenAmounts] = useState<{
+    [key: string]: { [stage: string]: number }
   }>({})
   const [walletTokens, setWalletTokens] = useState<any[]>([])
   const [deployedTokens, setDeployedTokens] = useState<any[]>([])
@@ -50,7 +50,8 @@ export default function SafeLaunch(): JSX.Element {
   const { chain } = useNetwork()
   const [selectedToken, setSelectedToken] = useState<{
     tokenAddress: string
-    tokenBAddress: string
+    tokenStageAddress: string
+    stage: string
   } | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [amount, setAmount] = useState<string>("1")
@@ -60,7 +61,7 @@ export default function SafeLaunch(): JSX.Element {
   const [stageInfo, setStageInfo] = useState<
     [ethers.BigNumber, ethers.BigNumber] | null
   >(null)
-  const [isLoadingTokenBDetails, setIsLoadingTokenBDetails] =
+  const [isLoadingTokenDetails, setIsLoadingTokenDetails] =
     useState<boolean>(false)
 
   const chainId: string | number = chain ? chain.id : 250
@@ -70,10 +71,10 @@ export default function SafeLaunch(): JSX.Element {
     if (typeof window !== "undefined" && window.ethereum) {
       const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
       setProvider(web3Provider)
-      const chainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
+      const chainId = chain ? chain.id : Object.keys(fiveLaunchFactory)[0]
       const contract = new ethers.Contract(
-        safeLaunchFactory[chainId] as `0x${string}`,
-        TokenFactoryABI,
+        fiveLaunchFactory[chainId] as `0x${string}`,
+        fiveFactoryABI,
         web3Provider
       )
       setTokenFactoryContract(contract)
@@ -119,28 +120,12 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
-  const getLockedTokens = async (tokenAddress) => {
-    try {
-      if (!provider) return ethers.BigNumber.from(0)
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        provider
-      )
-      const lockedTokens = await tokenContract.lockedTokens()
-      return lockedTokens
-    } catch (error) {
-      console.error(`Error fetching locked tokens for ${tokenAddress}:`, error)
-      return ethers.BigNumber.from(0)
-    }
-  }
-
-  const getTokenDetails = async (tokenAddress) => {
+  const getTokenDetails = async (tokenAddress: string) => {
     try {
       if (!provider) return null
       const tokenContract = new ethers.Contract(
         tokenAddress,
-        SafeMemeABI,
+        fiveTemplateABI,
         provider
       )
       const [
@@ -152,8 +137,6 @@ export default function SafeLaunch(): JSX.Element {
         antiWhalePercentage,
         saleActive,
         currentStage,
-        receivedTokenB,
-        lockedTokens,
       ] = await Promise.all([
         tokenContract.name(),
         tokenContract.symbol(),
@@ -163,8 +146,6 @@ export default function SafeLaunch(): JSX.Element {
         tokenContract.antiWhalePercentage(),
         tokenContract.getSaleStatus(),
         tokenContract.getCurrentStage(),
-        tokenContract.getReceivedTokenB(),
-        getLockedTokens(tokenAddress), // Fetch locked tokens
       ])
       return {
         address: tokenAddress,
@@ -176,8 +157,6 @@ export default function SafeLaunch(): JSX.Element {
         antiWhalePercentage,
         saleActive,
         currentStage,
-        lockedTokens,
-        receivedTokenB,
       }
     } catch (error) {
       console.error(`Error fetching details for token ${tokenAddress}:`, error)
@@ -185,18 +164,19 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
-  // Fetch stage details
-  const getStageDetails = async (tokenAddress) => {
+  const getStageDetails = async (tokenAddress: string) => {
     try {
       if (!provider) return []
       const tokenContract = new ethers.Contract(
         tokenAddress,
-        SafeMemeABI,
+        fiveTemplateABI,
         provider
       )
+
       const stageDetails = await Promise.all(
         Array.from({ length: 5 }, (_, i) => tokenContract.getStageInfo(i))
       )
+
       return stageDetails
     } catch (error) {
       console.error(
@@ -207,27 +187,30 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
-  const fetchTokenBDetails = async (tokenBAddress: string) => {
+  const fetchTokenDetails = async (tokenAddress: string, stage: string) => {
     try {
-      setIsLoadingTokenBDetails(true)
+      setIsLoadingTokenDetails(true)
       if (!provider) return
-      const tokenBContract = new ethers.Contract(
-        tokenBAddress,
-        SafeMemeABI,
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        fiveTemplateABI,
         provider
       )
       const [name, symbol] = await Promise.all([
-        tokenBContract.name(),
-        tokenBContract.symbol(),
+        tokenContract.name(),
+        tokenContract.symbol(),
       ])
-      setTokenBDetails((prev) => ({
+      setTokenDetails((prev) => ({
         ...prev,
-        [tokenBAddress]: { name, symbol },
+        [tokenAddress]: {
+          ...prev[tokenAddress],
+          [stage]: { name, symbol },
+        },
       }))
     } catch (error) {
-      console.error("Error fetching Token B details:", error)
+      console.error(`Error fetching details for Token ${stage}:`, error)
     } finally {
-      setIsLoadingTokenBDetails(false)
+      setIsLoadingTokenDetails(false)
     }
   }
 
@@ -237,7 +220,7 @@ export default function SafeLaunch(): JSX.Element {
       const signer = provider.getSigner()
       const tokenContract = new ethers.Contract(
         tokenAddress,
-        SafeMemeABI,
+        fiveTemplateABI,
         signer
       )
       const gasLimit = await tokenContract.estimateGas.startSafeLaunch()
@@ -247,115 +230,105 @@ export default function SafeLaunch(): JSX.Element {
       await tx.wait()
       toast.success(`SafeLaunch started for token ${tokenAddress}`)
 
-      const tokenBAddress = tokenBSelection[tokenAddress]
-      const tokenBName = tokenBDetails[tokenBAddress]?.name || ""
-      const tokenBSymbol = tokenBDetails[tokenBAddress]?.symbol || ""
-
-      // Ensure Token B details are set on the contract
-      const currentTokenBAddress = await tokenContract.tokenBAddress()
-      if (currentTokenBAddress === ethers.constants.AddressZero) {
-        const tx = await tokenContract.setTokenBDetails(
-          tokenBAddress,
-          tokenBName,
-          tokenBSymbol
-        )
-        await tx.wait()
-      }
-
-      toast.success(`Token B address set for token ${tokenAddress}`)
-
-      setSelectedToken({ tokenAddress, tokenBAddress })
       fetchAllTokenData() // Refresh token data to get updated sale status
-
-      // Fetch Token B details and store in state
-      await fetchTokenBDetails(tokenBAddress)
     } catch (error) {
       console.error(
         `Error starting SafeLaunch for token ${tokenAddress}:`,
         error
       )
+      toast.error(`Failed to start SafeLaunch for token ${tokenAddress}`)
     }
   }
 
-  const setStageTokenBAmount = async (tokenAddress, stage, amount) => {
+  const setStageTokenAmount = async (tokenAddress, stage, amount) => {
     try {
       if (!provider) return
       const signer = provider.getSigner()
       const tokenContract = new ethers.Contract(
         tokenAddress,
-        SafeMemeABI,
+        fiveTemplateABI,
         signer
       )
       const amountInWei = ethers.utils.parseUnits(amount.toString(), 18) // Convert to 18 decimals
 
-      // Ensure Token B details are set only if not already set
-      const tokenBAddress = tokenBSelection[tokenAddress]
-      if (!tokenBAddress) {
-        throw new Error("Token B address must be provided")
+      // Ensure Token details are set only if not already set
+      const tokenStageAddress = tokenSelections[tokenAddress]?.[stage]
+      if (!tokenStageAddress) {
+        throw new Error(`Token ${stage} address must be provided`)
       }
 
-      const tokenBName = tokenBDetails[tokenBAddress]?.name || ""
-      const tokenBSymbol = tokenBDetails[tokenBAddress]?.symbol || ""
+      const tokenStageName =
+        tokenDetails[tokenStageAddress]?.[stage]?.name || ""
+      const tokenStageSymbol =
+        tokenDetails[tokenStageAddress]?.[stage]?.symbol || ""
 
-      // Check if Token B details are already set
-      const currentTokenBAddress = await tokenContract.tokenBAddress()
-      if (currentTokenBAddress === ethers.constants.AddressZero) {
-        const tx = await tokenContract.setTokenBDetails(
-          tokenBAddress,
-          tokenBName,
-          tokenBSymbol
+      // Check if Token details are already set
+      const currentTokenStageAddress = await tokenContract[
+        `token${stage}Address`
+      ]()
+      if (currentTokenStageAddress === ethers.constants.AddressZero) {
+        const tx = await tokenContract[`setToken${stage}Details`](
+          tokenStageAddress,
+          tokenStageName,
+          tokenStageSymbol
         )
         await tx.wait()
       }
 
       // Call the correct overloaded function
       const gasLimit = await tokenContract.estimateGas[
-        "setStageTokenBAmount(uint256,uint256)"
-      ](stage, amountInWei)
-      const tx = await tokenContract["setStageTokenBAmount(uint256,uint256)"](
-        stage,
-        amountInWei,
-        {
-          gasLimit: gasLimit.add(100000),
-        }
-      )
+        `setStageToken${stage}Amount(uint256,uint256)`
+      ](0, amountInWei)
+      const tx = await tokenContract[
+        `setStageToken${stage}Amount(uint256,uint256)`
+      ](0, amountInWei, {
+        gasLimit: gasLimit.add(100000),
+      })
       await tx.wait()
-      toast.success(
-        `Token B amount set for stage ${stage} of token ${tokenBAddress}`
-      )
+      toast.success(`Token ${stage} amount set for token ${tokenStageAddress}`)
       fetchAllTokenData() // Refresh token data to get updated stage info
-    } catch (error) {}
+    } catch (error) {
+      console.error(`Error setting Token ${stage} amount:`, error)
+    }
   }
 
-  const debouncedSetStageTokenBAmount = useCallback(
+  const debouncedSetStageTokenAmount = useCallback(
     debounce((tokenAddress, stage, amount) => {
-      setStageTokenBAmount(tokenAddress, stage, amount)
+      setStageTokenAmount(tokenAddress, stage, amount)
     }, 1000),
     []
   )
 
-  const handleTokenBAmountChange = (tokenAddress, stage, amount) => {
-    setTokenBAmounts((prev) => {
-      const currentAmounts = prev[tokenAddress] || []
-      currentAmounts[stage] = amount
-      return { ...prev, [tokenAddress]: currentAmounts }
-    })
-    debouncedSetStageTokenBAmount(tokenAddress, stage, amount)
+  const handleTokenAmountChange = (tokenAddress, stage, amount) => {
+    setTokenAmounts((prev) => ({
+      ...prev,
+      [tokenAddress]: {
+        ...prev[tokenAddress],
+        [stage]: amount,
+      },
+    }))
+    debouncedSetStageTokenAmount(tokenAddress, stage, amount)
   }
 
-  const handleTokenBSelection = (
+  const handleTokenSelection = (
     tokenAddress: string,
-    tokenBAddress: string
+    stage: string,
+    tokenStageAddress: string
   ) => {
-    console.log("Setting Token B for:", tokenAddress, "to:", tokenBAddress)
-    setTokenBSelection((prev) => ({ ...prev, [tokenAddress]: tokenBAddress }))
+    setTokenSelections((prev) => ({
+      ...prev,
+      [tokenAddress]: {
+        ...prev[tokenAddress],
+        [stage]: tokenStageAddress,
+      },
+    }))
   }
 
-  const handleSubmitTokenBAmounts = (tokenAddress) => {
-    if (tokenBAmounts[tokenAddress]) {
-      tokenBAmounts[tokenAddress].forEach((amount, stage) => {
+  const handleSubmitTokenAmounts = (tokenAddress) => {
+    if (tokenAmounts[tokenAddress]) {
+      Object.entries(tokenAmounts[tokenAddress]).forEach(([stage, amount]) => {
         if (amount) {
-          setStageTokenBAmount(tokenAddress, stage, amount)
+          setStageTokenAmount(tokenAddress, stage, amount)
         }
       })
     }
@@ -371,16 +344,45 @@ export default function SafeLaunch(): JSX.Element {
         allTokens.map(async (tokenAddress) => {
           const details = await getTokenDetails(tokenAddress)
           const stages = await getStageDetails(tokenAddress)
+
+          // Fetch token addresses separately for each stage
           const tokenContract = new ethers.Contract(
             tokenAddress,
-            SafeMemeABI,
+            fiveTemplateABI,
             provider
           )
           const tokenBAddress = await tokenContract.tokenBAddress()
+          const tokenCAddress = await tokenContract.tokenCAddress()
+          const tokenDAddress = await tokenContract.tokenDAddress()
+          const tokenEAddress = await tokenContract.tokenEAddress()
+          const tokenFAddress = await tokenContract.tokenFAddress()
+
+          // Fetch Token details if set
           if (tokenBAddress && tokenBAddress !== ethers.constants.AddressZero) {
-            await fetchTokenBDetails(tokenBAddress)
+            await fetchTokenDetails(tokenBAddress, "B")
           }
-          return { ...details, stages, tokenBAddress }
+          if (tokenCAddress && tokenCAddress !== ethers.constants.AddressZero) {
+            await fetchTokenDetails(tokenCAddress, "C")
+          }
+          if (tokenDAddress && tokenDAddress !== ethers.constants.AddressZero) {
+            await fetchTokenDetails(tokenDAddress, "D")
+          }
+          if (tokenEAddress && tokenEAddress !== ethers.constants.AddressZero) {
+            await fetchTokenDetails(tokenEAddress, "E")
+          }
+          if (tokenFAddress && tokenFAddress !== ethers.constants.AddressZero) {
+            await fetchTokenDetails(tokenFAddress, "F")
+          }
+
+          return {
+            ...details,
+            stages,
+            tokenBAddress,
+            tokenCAddress,
+            tokenDAddress,
+            tokenEAddress,
+            tokenFAddress,
+          }
         })
       )
       const userTokenAddresses = new Set(
@@ -395,22 +397,24 @@ export default function SafeLaunch(): JSX.Element {
           ),
         }))
       setDeployedTokenData(deployedTokenData)
-      setDeployedTokens(deployedTokenData)
+      setDeployedTokens(deployedTokenData) // Add this line to set deployedTokens
+
       console.log("Deployed Tokens:", deployedTokenData)
     } catch (error) {
       console.error("Error fetching token data: ", error)
     }
   }
 
-  // Fetch wallet tokens
   const fetchWalletTokens = async () => {
     if (!isConnected || !address) return
+
     const provider = new ethers.providers.Web3Provider(window.ethereum)
+
     const tokenBalances = await Promise.all(
       deployedTokens.map(async (token) => {
         const contract = new ethers.Contract(
           token.address,
-          SafeMemeABI,
+          fiveTemplateABI,
           provider
         )
         try {
@@ -424,35 +428,50 @@ export default function SafeLaunch(): JSX.Element {
             `Failed to fetch balance for token ${token.address}:`,
             error
           )
-          return { ...token, balance: "0" }
+          return { ...token, balance: "0" } // Handle the error case
         }
       })
     )
+
     setWalletTokens(
       tokenBalances.filter((token) => parseFloat(token.balance) > 0)
     )
+
     console.log(
       "Wallet Tokens:",
       tokenBalances.filter((token) => parseFloat(token.balance) > 0)
     )
   }
 
-  const fetchStageInfo = async (tokenAddress) => {
+  const fetchStageInfo = async (tokenAddress: string) => {
     if (!provider || !tokenAddress) return
+
     try {
       const tokenContract = new ethers.Contract(
         tokenAddress,
-        SafeMemeABI,
+        fiveTemplateABI,
         provider
       )
       const currentStage = await tokenContract.getCurrentStage()
       const stageInfo = await tokenContract.getStageInfo(currentStage)
-      const tokenBAddress = await tokenContract.tokenBAddress()
+      const tokenStageAddress = await tokenContract[
+        `token${String.fromCharCode(66 + currentStage.toNumber())}Address`
+      ]()
+
       setCurrentStage(currentStage.toNumber())
       setStageInfo(stageInfo)
       setTokenPrice(ethers.utils.formatUnits(stageInfo[1], 18))
-      setSelectedToken({ tokenAddress, tokenBAddress })
-      await fetchTokenBDetails(tokenBAddress)
+      setSelectedToken({
+        tokenAddress,
+        tokenStageAddress,
+        stage: String.fromCharCode(66 + currentStage.toNumber()),
+      })
+
+      // Fetch Token details and store in state
+      await fetchTokenDetails(
+        tokenStageAddress,
+        String.fromCharCode(66 + currentStage.toNumber())
+      )
     } catch (error) {
       console.error("Error fetching stage info:", error)
       toast.error("Failed to fetch stage information")
@@ -474,38 +493,41 @@ export default function SafeLaunch(): JSX.Element {
       return
     }
 
-    const { tokenAddress, tokenBAddress } = selectedToken
+    const { tokenAddress, tokenStageAddress, stage } = selectedToken
 
-    if (!tokenAddress || !tokenBAddress) {
+    if (!tokenAddress || !tokenStageAddress) {
       toast.error("Invalid token addresses")
       console.error("Swap failed due to invalid token addresses", {
         tokenAddress,
-        tokenBAddress,
+        tokenStageAddress,
       })
       return
     }
 
     try {
       console.log(
-        `Attempting to swap with tokenAddress: ${tokenAddress} and tokenBAddress: ${tokenBAddress}`
+        `Attempting to swap with tokenAddress: ${tokenAddress} and tokenStageAddress: ${tokenStageAddress}`
       )
       const signer = provider.getSigner()
-      const tokenBContract = new ethers.Contract(
-        tokenBAddress,
-        SafeMemeABI,
+      const tokenStageContract = new ethers.Contract(
+        tokenStageAddress,
+        fiveTemplateABI,
         signer
       )
       const safeMemeContract = new ethers.Contract(
         tokenAddress,
-        SafeMemeABI,
+        fiveTemplateABI,
         signer
       )
 
       // Convert the amount to the correct units
       const amountInWei = ethers.utils.parseUnits(amount, 18)
 
-      // Approve the SafeMeme contract to spend Token B
-      const approveTx = await tokenBContract.approve(tokenAddress, amountInWei)
+      // Approve the SafeMeme contract to spend Token Stage
+      const approveTx = await tokenStageContract.approve(
+        tokenAddress,
+        amountInWei
+      )
       await approveTx.wait()
       toast.info("Approval successful. Proceeding with swap...")
 
@@ -553,7 +575,7 @@ export default function SafeLaunch(): JSX.Element {
     return ethers.utils.formatUnits(number, decimals)
   }
 
-  const displayTokenBRequired = (amount: ethers.BigNumber) => {
+  const displayTokenRequired = (amount: ethers.BigNumber) => {
     return formatNumber(amount, 18)
   }
 
@@ -566,16 +588,16 @@ export default function SafeLaunch(): JSX.Element {
   }
 
   const calculateStageProgress = (stage, totalSupply) => {
-    const [tokenBRequired, tokenPrice] = stage
+    const [tokenRequired, tokenPrice] = stage
     const tokensForSale = totalSupply.mul(5).div(100)
     const remainingTokens = tokensForSale.sub(
-      tokenBRequired.mul(tokenPrice).div(ethers.utils.parseUnits("1", 18))
+      tokenRequired.mul(tokenPrice).div(ethers.utils.parseUnits("1", 18))
     )
     return remainingTokens.mul(100).div(tokensForSale).toNumber()
   }
 
   const getTokensForCurrentChain = () => {
-    const currentChainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
+    const currentChainId = chain ? chain.id : Object.keys(fiveLaunchFactory)[0]
     return NativeTokens[currentChainId] || []
   }
 
@@ -590,8 +612,12 @@ export default function SafeLaunch(): JSX.Element {
   ]
 
   const openModal = (tokenAddress: string) => {
-    const tokenBAddress = tokenBSelection[tokenAddress]
-    setSelectedToken({ tokenAddress, tokenBAddress })
+    const currentStage = deployedTokenData.find(
+      (token) => token.address === tokenAddress
+    )?.currentStage
+    const stageChar = String.fromCharCode(66 + currentStage)
+    const tokenStageAddress = tokenSelections[tokenAddress]?.[stageChar] || ""
+    setSelectedToken({ tokenAddress, tokenStageAddress, stage: stageChar })
     setIsModalOpen(true)
   }
 
@@ -626,102 +652,13 @@ export default function SafeLaunch(): JSX.Element {
     },
   }
 
-  const renderAdditionalTokenDetails = (token) => {
-    return (
-      <>
-        <p>
-          <strong>Locked Tokens:</strong>{" "}
-          {formatNumber(token.lockedTokens, token.decimals)}
-        </p>
-        <p>
-          <strong>Total Token B Received:</strong>{" "}
-          {formatNumber(token.receivedTokenB, 18)}
-        </p>
-      </>
-    )
-  }
-
-  // Render stage details
-  const renderStageDetails = (stage, token, index) => {
-    const [tokenBRequired, tokenPrice] = stage
-    const tokensForSale = ethers.BigNumber.from(token.totalSupply)
-      .mul(5)
-      .div(100)
-    const soldTokens = token.soldTokens
-      ? ethers.BigNumber.from(token.soldTokens)
-      : ethers.BigNumber.from(0)
-    const remainingTokensInStage = tokensForSale.sub(soldTokens)
-    return (
-      <div className="stage" key={index}>
-        <h4>Stage {index + 1}</h4>
-        <label>
-          <strong>Token B Amount:</strong>
-          <input
-            type="number"
-            value={tokenBAmounts[token.address]?.[index] || ""}
-            onChange={(e) => {
-              const value = parseFloat(e.target.value)
-              if (!isNaN(value)) {
-                handleTokenBAmountChange(token.address, index, value)
-              }
-            }}
-          />
-        </label>
-        {token.saleActive && index >= token.currentStage ? (
-          <>
-            <p className="stagetext">
-              <strong>{token.name} Price:</strong>{" "}
-              {ethers.utils.formatUnits(tokenPrice, token.decimals)}{" "}
-            </p>
-            <p>
-              <strong>Tokens for Sale:</strong>{" "}
-              {formatNumber(tokensForSale, token.decimals)}
-            </p>
-            <p>
-              <strong>Token B Required:</strong>{" "}
-              {displayTokenBRequired(tokenBRequired)}
-            </p>
-            <p>
-              <strong>Token B:</strong>{" "}
-              {isLoadingTokenBDetails
-                ? "Loading..."
-                : tokenBDetails[token.tokenBAddress]?.symbol || "Token B"}
-            </p>
-            <p>
-              <strong>Tokens Remaining in Stage:</strong>{" "}
-              {formatNumber(remainingTokensInStage, token.decimals)}
-            </p>
-            <div className="progress-bar">
-              <div
-                className="progress-bar-fill"
-                style={{
-                  width: `${
-                    100 - calculateStageProgress(stage, token.totalSupply)
-                  }%`,
-                }}
-              ></div>
-            </div>
-            <button
-              className="buy-token-button"
-              onClick={() => openModal(token.address)}
-            >
-              Buy {token.name}
-            </button>
-          </>
-        ) : (
-          <p>Stage not active yet</p>
-        )}
-      </div>
-    )
-  }
-
   return (
     <div>
       <Navbar />
       <div className="flex min-h-screen flex-col">
         <main className="flex-1">
           <div className="dashboard">
-            {isClient && chainId && !safeLaunchFactory[chainId] && (
+            {isClient && chainId && !fiveLaunchFactory[chainId] && (
               <ChangeNetwork
                 changeNetworkToChainId={250}
                 dappName={"SafeLaunch"}
@@ -741,7 +678,7 @@ export default function SafeLaunch(): JSX.Element {
                 )}
                 {deployedTokenData.length > 0 && (
                   <div className="meme-container">
-                    {deployedTokenData.map((token, index) => (
+                    {deployedTokenData.map((token, index: number) => (
                       <div
                         className={`meme ${
                           token.isUserToken ? "user-token" : ""
@@ -760,7 +697,7 @@ export default function SafeLaunch(): JSX.Element {
                         </div>
                         <div className="meme-details">
                           <p>
-                            <strong>Contract Address:</strong>
+                            <strong>Contract Address:</strong>{" "}
                             <a
                               href={getBlockExplorerLink(token.address)}
                               target="_blank"
@@ -781,44 +718,138 @@ export default function SafeLaunch(): JSX.Element {
                               ? `${token.antiWhalePercentage}%`
                               : "N/A"}
                           </p>
-                          <label>
-                            <strong>Select Token B:</strong>
-                            <select
-                              value={tokenBSelection[token.address] || ""}
-                              onChange={(e) =>
-                                handleTokenBSelection(
-                                  token.address,
-                                  e.target.value
-                                )
-                              }
-                            >
-                              <option value="">Select Token B</option>
-                              {combinedTokens.map((option, idx) => (
-                                <option key={idx} value={option.address}>
-                                  {option.symbol}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
                           <button
                             onClick={() => startSafeLaunch(token.address)}
                             className="start-launch-button"
                           >
                             Start SafeLaunch
                           </button>
-                          <button
-                            className="submit-token-b-amounts-button"
-                            onClick={() =>
-                              handleSubmitTokenBAmounts(token.address)
-                            }
-                          >
-                            Submit Token B Info
-                          </button>
-                          {renderAdditionalTokenDetails(token)}
+
                           <div className="stages-container">
-                            {token.stages.map((stage, stageIndex) =>
-                              renderStageDetails(stage, token, stageIndex)
-                            )}
+                            {token.stages.map((stage, stageIndex) => (
+                              <div className="stage" key={stageIndex}>
+                                <h4>Stage {stageIndex + 1}</h4>
+
+                                <label>
+                                  <strong>
+                                    Select Token{" "}
+                                    {String.fromCharCode(66 + stageIndex)}:
+                                  </strong>
+                                  <select
+                                    value={
+                                      tokenSelections[token.address]?.[
+                                        String.fromCharCode(66 + stageIndex)
+                                      ] || ""
+                                    }
+                                    onChange={(e) =>
+                                      handleTokenSelection(
+                                        token.address,
+                                        String.fromCharCode(66 + stageIndex),
+                                        e.target.value
+                                      )
+                                    }
+                                  >
+                                    <option value="">Select Token</option>
+                                    {combinedTokens.map((option, idx) => (
+                                      <option key={idx} value={option.address}>
+                                        {option.symbol}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </label>
+
+                                <label>
+                                  <strong>
+                                    Token {String.fromCharCode(66 + stageIndex)}{" "}
+                                    Amount:
+                                  </strong>
+                                  <input
+                                    type="number"
+                                    value={
+                                      tokenAmounts[token.address]?.[
+                                        String.fromCharCode(66 + stageIndex)
+                                      ] || ""
+                                    }
+                                    onChange={(e) => {
+                                      const value = parseFloat(e.target.value)
+                                      if (!isNaN(value)) {
+                                        handleTokenAmountChange(
+                                          token.address,
+                                          String.fromCharCode(66 + stageIndex),
+                                          value
+                                        )
+                                      }
+                                    }}
+                                  />
+                                </label>
+
+                                {token.saleActive &&
+                                stageIndex >= token.currentStage ? (
+                                  <>
+                                    <p className="stagetext">
+                                      <strong>{token.name} Price:</strong>{" "}
+                                      {ethers.utils.formatUnits(
+                                        stage[1],
+                                        token.decimals
+                                      )}{" "}
+                                    </p>
+                                    <p>
+                                      <strong>Tokens for Sale:</strong>{" "}
+                                      {formatNumber(
+                                        ethers.BigNumber.from(token.totalSupply)
+                                          .mul(5)
+                                          .div(100),
+                                        token.decimals
+                                      )}
+                                    </p>
+                                    <p>
+                                      <strong>Token Required:</strong>{" "}
+                                      {displayTokenRequired(stage[0])}
+                                    </p>
+                                    <p>
+                                      <strong>Token:</strong>{" "}
+                                      {isLoadingTokenDetails
+                                        ? "Loading..."
+                                        : tokenDetails[token.address]?.[
+                                            String.fromCharCode(66 + stageIndex)
+                                          ]?.symbol || "Token"}
+                                    </p>
+
+                                    <div className="progress-bar">
+                                      <div
+                                        className="progress-bar-fill"
+                                        style={{
+                                          width: `${
+                                            100 -
+                                            calculateStageProgress(
+                                              stage,
+                                              token.totalSupply
+                                            )
+                                          }%`,
+                                        }}
+                                      ></div>
+                                    </div>
+
+                                    <button
+                                      className="buy-token-button"
+                                      onClick={() => openModal(token.address)}
+                                    >
+                                      Buy Tokens
+                                    </button>
+                                  </>
+                                ) : (
+                                  <p>Stage not active yet</p>
+                                )}
+                                <button
+                                  className="submit-token-amounts-button"
+                                  onClick={() =>
+                                    handleSubmitTokenAmounts(token.address)
+                                  }
+                                >
+                                  Submit Token Info
+                                </button>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -846,7 +877,7 @@ export default function SafeLaunch(): JSX.Element {
               <div className="swap-card">
                 <div className="token-section">
                   <label htmlFor="amount" className="subheading">
-                    Amount of Token B to swap
+                    Amount to swap
                   </label>
                   <input
                     type="number"
@@ -867,8 +898,9 @@ export default function SafeLaunch(): JSX.Element {
                     }{" "}
                     = {tokenPrice}{" "}
                     {combinedTokens.find(
-                      (token) => token.address === selectedToken?.tokenBAddress
-                    )?.symbol || "Token B"}
+                      (token) =>
+                        token.address === selectedToken?.tokenStageAddress
+                    )?.symbol || "Token"}
                   </p>
                   <p className="swap-summary-item">
                     Estimated{" "}
@@ -891,10 +923,11 @@ export default function SafeLaunch(): JSX.Element {
                     }
                   </p>
                   <p className="swap-summary-item">
-                    Token B:{" "}
+                    Token:{" "}
                     {combinedTokens.find(
-                      (token) => token.address === selectedToken?.tokenBAddress
-                    )?.symbol || "Token B"}
+                      (token) =>
+                        token.address === selectedToken?.tokenStageAddress
+                    )?.symbol || "Token"}
                   </p>
                 </div>
                 <button className="buy-token-button" onClick={handleSwap}>
