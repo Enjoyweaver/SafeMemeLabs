@@ -305,7 +305,7 @@ body {
 
 .stages-container {
   margin-top: 20px;
-  color: var(--primary-light);
+  color: var(--primary-dark);
 }
 
 .stage {
@@ -314,7 +314,7 @@ body {
   margin-bottom: 10px;
   border-radius: 8px;
   background-color: var(--primary-light);
-  color: var(--secondary-light);
+  color: var(--secondary-dark);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -375,6 +375,10 @@ a .stage-actions input {
 
 .stage-actions button:hover {
   background-color: var(--secondary-dark);
+}
+
+.stagetext p {
+  color: var(--primary-dark) !important;
 }
 
 .dark .stage {

@@ -883,41 +883,45 @@ export default function SafeLaunch(): JSX.Element {
                                 {token.saleActive &&
                                 stageIndex >= token.currentStage ? (
                                   <>
-                                    <p className="stagetext">
-                                      <strong>{token.name} Price:</strong>{" "}
-                                      {ethers.utils.formatUnits(
-                                        stage[1],
-                                        token.decimals
-                                      )}{" "}
-                                    </p>
-                                    <p>
-                                      <strong>Tokens for Sale:</strong>{" "}
-                                      {formatNumber(
-                                        ethers.BigNumber.from(token.totalSupply)
-                                          .mul(5)
-                                          .div(100),
-                                        token.decimals
-                                      )}
-                                    </p>
-                                    <p>
-                                      <strong>
-                                        Tokens Sold in Current Stage:
-                                      </strong>{" "}
-                                      {stageSoldTokens[
-                                        `${token.address}-${stageIndex}`
-                                      ] || "Loading..."}
-                                    </p>
-                                    <p>
-                                      <strong>Token B Required:</strong>{" "}
-                                      {displayTokenBRequired(stage[0])}
-                                    </p>
-                                    <p>
-                                      <strong>Token B:</strong>{" "}
-                                      {isLoadingTokenBDetails
-                                        ? "Loading..."
-                                        : tokenBDetails[token.tokenBAddress]
-                                            ?.symbol || "Token B"}
-                                    </p>
+                                    <div className="stagetext">
+                                      <p>
+                                        <strong>{token.name} Price:</strong>{" "}
+                                        {ethers.utils.formatUnits(
+                                          stage[1],
+                                          token.decimals
+                                        )}{" "}
+                                      </p>
+                                      <p>
+                                        <strong>Tokens for Sale:</strong>{" "}
+                                        {formatNumber(
+                                          ethers.BigNumber.from(
+                                            token.totalSupply
+                                          )
+                                            .mul(5)
+                                            .div(100),
+                                          token.decimals
+                                        )}
+                                      </p>
+                                      <p>
+                                        <strong>
+                                          Tokens Sold in Current Stage:
+                                        </strong>{" "}
+                                        {stageSoldTokens[
+                                          `${token.address}-${stageIndex}`
+                                        ] || "Loading..."}
+                                      </p>
+                                      <p>
+                                        <strong>Token B Required:</strong>{" "}
+                                        {displayTokenBRequired(stage[0])}
+                                      </p>
+                                      <p>
+                                        <strong>Token B:</strong>{" "}
+                                        {isLoadingTokenBDetails
+                                          ? "Loading..."
+                                          : tokenBDetails[token.tokenBAddress]
+                                              ?.symbol || "Token B"}
+                                      </p>
+                                    </div>
 
                                     <div className="progress-bar">
                                       <div
