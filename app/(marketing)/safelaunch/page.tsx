@@ -65,7 +65,9 @@ export default function SafeLaunch(): JSX.Element {
   const [tokensAvailable, setTokensAvailable] =
     useState<ethers.BigNumber | null>(null)
   const [tokensSold, setTokensSold] = useState<ethers.BigNumber | null>(null)
-
+  const [stageSoldTokens, setStageSoldTokens] = useState<{
+    [key: string]: string
+  }>({})
   const chainId: string | number = chain ? chain.id : 250
 
   useEffect(() => {
@@ -192,6 +194,40 @@ export default function SafeLaunch(): JSX.Element {
         error
       )
     }
+  }
+
+  const fetchStageLiquidity = async (tokenAddress, stage) => {
+    if (!provider) return
+
+    try {
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        provider
+      )
+      const [tokenBReceived, tokensSold] =
+        await tokenContract.getStageLiquidity(stage)
+      return {
+        tokensSold,
+        tokenBReceived,
+      }
+    } catch (error) {
+      console.error(
+        `Error fetching stage liquidity for token ${tokenAddress}:`,
+        error
+      )
+      return null
+    }
+  }
+
+  const displayTokensSold = async (tokenAddress, stage) => {
+    const liquidityData = await fetchStageLiquidity(tokenAddress, stage)
+    if (liquidityData) {
+      const { tokensSold } = liquidityData
+      // Format and display the tokens sold
+      return ethers.utils.formatUnits(tokensSold, 18)
+    }
+    return "N/A"
   }
 
   const getStageDetails = async (tokenAddress: string) => {
@@ -334,7 +370,9 @@ export default function SafeLaunch(): JSX.Element {
         `Token B amount set for stage ${stage} of token ${tokenBAddress}`
       )
       fetchAllTokenData() // Refresh token data to get updated stage info
-    } catch (error) {}
+    } catch (error) {
+      console.error(`Error setting Token B amount: ${error.message}`)
+    }
   }
 
   const getLockedTokens = async (tokenAddress) => {
@@ -559,6 +597,31 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
+  const fetchAllStagesLiquidity = async (tokenAddress) => {
+    if (!provider) return
+
+    try {
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        provider
+      )
+      const [tokensSoldArray, tokenBReceivedArray] =
+        await tokenContract.getAllStagesLiquidity()
+      return tokensSoldArray.map((tokensSold, index) => ({
+        stage: index,
+        tokensSold,
+        tokenBReceived: tokenBReceivedArray[index],
+      }))
+    } catch (error) {
+      console.error(
+        `Error fetching all stages liquidity for token ${tokenAddress}:`,
+        error
+      )
+      return null
+    }
+  }
+
   useEffect(() => {
     if (isClient && isConnected) {
       fetchAllTokenData()
@@ -574,6 +637,25 @@ export default function SafeLaunch(): JSX.Element {
       fetchStageInfo(selectedToken.tokenAddress)
     }
   }, [selectedToken?.tokenAddress, provider])
+  useEffect(() => {
+    const fetchSoldTokens = async () => {
+      const soldTokensData: { [key: string]: string } = {}
+      for (const token of deployedTokenData) {
+        if (token.saleActive) {
+          const sold = await displayTokensSold(
+            token.address,
+            token.currentStage
+          )
+          soldTokensData[`${token.address}-${token.currentStage}`] = sold
+        }
+      }
+      setStageSoldTokens(soldTokensData)
+    }
+
+    if (deployedTokenData.length > 0) {
+      fetchSoldTokens()
+    }
+  }, [deployedTokenData])
 
   useEffect(() => {
     if (amount && tokenPrice) {
@@ -816,6 +898,14 @@ export default function SafeLaunch(): JSX.Element {
                                           .div(100),
                                         token.decimals
                                       )}
+                                    </p>
+                                    <p>
+                                      <strong>
+                                        Tokens Sold in Current Stage:
+                                      </strong>{" "}
+                                      {stageSoldTokens[
+                                        `${token.address}-${stageIndex}`
+                                      ] || "Loading..."}
                                     </p>
                                     <p>
                                       <strong>Token B Required:</strong>{" "}
