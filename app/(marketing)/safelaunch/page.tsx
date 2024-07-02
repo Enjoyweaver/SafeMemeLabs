@@ -824,6 +824,15 @@ export default function SafeLaunch(): JSX.Element {
                               : "N/A"}
                           </p>
                           <p>
+                            <strong>Max Wallet Amount:</strong>{" "}
+                            {formatNumber(
+                              token.totalSupply
+                                .mul(token.antiWhalePercentage)
+                                .div(100),
+                              token.decimals
+                            )}
+                          </p>
+                          <p>
                             <strong>Locked Tokens:</strong>{" "}
                             {formatNumber(token.lockedTokens, token.decimals)}
                           </p>
@@ -853,7 +862,13 @@ export default function SafeLaunch(): JSX.Element {
                           >
                             Start SafeLaunch
                           </button>
-
+                          <button
+                            onClick={() =>
+                              handleSubmitTokenBAmounts(token.address)
+                            }
+                          >
+                            Submit Token B Info
+                          </button>
                           <div className="stages-container">
                             {token.stages.map((stage, stageIndex) => (
                               <div className="stage" key={stageIndex}>
@@ -902,6 +917,30 @@ export default function SafeLaunch(): JSX.Element {
                                           token.decimals
                                         )}
                                       </p>
+                                      <p>
+                                        <strong>
+                                          Tokens remaining for sale:
+                                        </strong>{" "}
+                                        {formatNumber(
+                                          ethers.BigNumber.from(
+                                            token.totalSupply
+                                          )
+                                            .mul(5)
+                                            .div(100)
+                                            .sub(
+                                              ethers.BigNumber.from(
+                                                ethers.utils.parseUnits(
+                                                  stageSoldTokens[
+                                                    `${token.address}-${stageIndex}`
+                                                  ] || "0",
+                                                  token.decimals
+                                                )
+                                              )
+                                            ),
+                                          token.decimals
+                                        )}
+                                      </p>
+
                                       <p>
                                         <strong>
                                           Tokens Sold in Current Stage:
