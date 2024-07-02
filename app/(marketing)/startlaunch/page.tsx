@@ -10,9 +10,8 @@ import { Navbar } from "@/components/walletconnect/walletconnect"
 import "./factory.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
-import { SafeLaunchABI } from "@/ABIs/SafeLaunch/SafeLaunch"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
-import { safeLaunchFactory, safeLaunchTemplate } from "@/Constants/config"
+import { safeLaunchFactory } from "@/Constants/config"
 import { useDebounce } from "usehooks-ts"
 import {
   useAccount,
@@ -28,7 +27,7 @@ import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { capitalizeFirstLetter } from "../../../utils/capitilizeFirstLetter"
 import Modal from "./Modal"
 
-export default function Factory(): JSX.Element {
+export default function SwapPage(): JSX.Element {
   const [name, setName] = useState<string>("")
   const [symbol, setSymbol] = useState<string>("")
   const [supply, setSupply] = useState<string>("")
@@ -48,10 +47,23 @@ export default function Factory(): JSX.Element {
   const [showModal, setShowModal] = useState(false)
   const [modalMessage, setModalMessage] = useState("")
   const [transactionHash, setTransactionHash] = useState<string>("")
+  const validatedDecimals = dDecimals ? BigInt(Number(dDecimals)) : BigInt(18)
+  const validatedSupply = dSupply
+    ? BigInt(dSupply) * BigInt(10 ** (dDecimals ? Number(dDecimals) : 18))
+    : BigInt(0)
+  const validatedAntiWhalePercentage = dAntiWhalePercentage
+    ? BigInt(Number(dAntiWhalePercentage))
+    : BigInt(0)
 
   useEffect(() => {
     setIsClient(true)
   }, [])
+
+  useEffect(() => {
+    if (!dName || !dSymbol || !dSupply || !dDecimals || !dAntiWhalePercentage) {
+      console.error("Debounced values are not set correctly.")
+    }
+  }, [dName, dSymbol, dSupply, dDecimals, dAntiWhalePercentage])
 
   useEffect(() => {
     if (chain && chain.id) {
@@ -108,12 +120,17 @@ export default function Factory(): JSX.Element {
     args: [
       dName,
       dSymbol,
-      dDecimals ? BigInt(Number(dDecimals)) : BigInt(18), // Convert decimals to bigint
-      BigInt(dSupply) * BigInt(10 ** (dDecimals ? Number(dDecimals) : 18)),
-      BigInt(Number(dAntiWhalePercentage)), // Convert antiWhalePercentage to bigint
+      validatedDecimals,
+      validatedSupply,
+      validatedAntiWhalePercentage,
     ],
     value: deployFee,
     cacheTime: 0,
+    onError: (error) => {
+      console.error("Error preparing contract write:", error)
+      setModalMessage("Error preparing contract write: " + error.message)
+      setShowModal(true)
+    },
   })
 
   const {
@@ -135,6 +152,7 @@ export default function Factory(): JSX.Element {
     )
     setShowModal(true)
     if (write) {
+      console.log("Writing to contract with args:", config.args)
       write()
     }
   }

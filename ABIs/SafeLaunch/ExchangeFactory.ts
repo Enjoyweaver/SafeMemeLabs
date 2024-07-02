@@ -1,6 +1,6 @@
-export const fiveFactoryABI = [
+export const ExchangeFactoryABI = [
   {
-    name: "NewToken",
+    name: "NewExchange",
     inputs: [
       {
         name: "token",
@@ -8,7 +8,7 @@ export const fiveFactoryABI = [
         indexed: true,
       },
       {
-        name: "owner",
+        name: "exchange",
         type: "address",
         indexed: true,
       },
@@ -18,47 +18,36 @@ export const fiveFactoryABI = [
   },
   {
     stateMutability: "nonpayable",
-    type: "constructor",
+    type: "function",
+    name: "initializeFactory",
     inputs: [
       {
-        name: "token_template",
-        type: "address",
-      },
-      {
-        name: "creation_fee",
-        type: "uint256",
-      },
-      {
-        name: "fee_recipient",
+        name: "template",
         type: "address",
       },
     ],
     outputs: [],
   },
   {
-    stateMutability: "payable",
+    stateMutability: "nonpayable",
     type: "function",
-    name: "deployToken",
+    name: "setTokenFactory",
     inputs: [
       {
-        name: "name",
-        type: "string",
+        name: "tokenFactory",
+        type: "address",
       },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "createExchange",
+    inputs: [
       {
-        name: "symbol",
-        type: "string",
-      },
-      {
-        name: "decimals",
-        type: "uint256",
-      },
-      {
-        name: "totalSupply",
-        type: "uint256",
-      },
-      {
-        name: "antiWhalePercentage",
-        type: "uint256",
+        name: "token",
+        type: "address",
       },
     ],
     outputs: [
@@ -71,24 +60,82 @@ export const fiveFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getTokensDeployedByUser",
+    name: "getExchange",
     inputs: [
       {
-        name: "_user",
+        name: "token",
         type: "address",
       },
     ],
     outputs: [
       {
         name: "",
-        type: "address[]",
+        type: "address",
       },
     ],
   },
   {
     stateMutability: "view",
     type: "function",
-    name: "getDeployedTokenCount",
+    name: "getToken",
+    inputs: [
+      {
+        name: "exchange",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getTokenWithId",
+    inputs: [
+      {
+        name: "token_id",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setup",
+    inputs: [
+      {
+        name: "token_addr",
+        type: "address",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "exchangeTemplate",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "tokenCount",
     inputs: [],
     outputs: [
       {
@@ -100,8 +147,13 @@ export const fiveFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "tokenTemplate",
-    inputs: [],
+    name: "token_to_exchange",
+    inputs: [
+      {
+        name: "arg0",
+        type: "address",
+      },
+    ],
     outputs: [
       {
         name: "",
@@ -112,7 +164,24 @@ export const fiveFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "tokensDeployed",
+    name: "exchange_to_token",
+    inputs: [
+      {
+        name: "arg0",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "id_to_token",
     inputs: [
       {
         name: "arg0",
@@ -129,57 +198,7 @@ export const fiveFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "tokenOwners",
-    inputs: [
-      {
-        name: "arg0",
-        type: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "userTokenList",
-    inputs: [
-      {
-        name: "arg0",
-        type: "address",
-      },
-      {
-        name: "arg1",
-        type: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "creationFee",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "feeRecipient",
+    name: "tokenFactory",
     inputs: [],
     outputs: [
       {
@@ -188,4 +207,4 @@ export const fiveFactoryABI = [
       },
     ],
   },
-]
+] as const

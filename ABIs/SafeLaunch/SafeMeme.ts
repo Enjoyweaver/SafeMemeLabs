@@ -528,6 +528,13 @@ export const SafeMemeABI = [
     ],
   },
   {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "finalizeSaleAndCreateExchange",
+    inputs: [],
+    outputs: [],
+  },
+  {
     stateMutability: "view",
     type: "function",
     name: "name",
@@ -815,6 +822,18 @@ export const SafeMemeABI = [
       {
         name: "",
         type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "factory",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
       },
     ],
   },

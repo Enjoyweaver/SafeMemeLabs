@@ -80,5 +80,9 @@ export const marketingConfig: MarketingConfig = {
     //   title: "startfive",
     //   href: "/startfive",
     // },
+    {
+      title: "SafeSwap",
+      href: "/safeswap",
+    },
   ],
 }
