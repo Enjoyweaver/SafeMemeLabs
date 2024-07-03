@@ -229,6 +229,16 @@ body {
   border: 1px solid var(--border-dark);
 }
 
+.table-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.narrow-column {
+  width: 100px;
+}
+
 @media (max-width: 600px) {
   .tokenDeployer,
   .tokenFactory {

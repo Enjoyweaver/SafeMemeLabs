@@ -30,15 +30,11 @@ import {
   useWaitForTransaction,
 } from "wagmi"
 
-import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
-
-import Modal from "./Modal"
-
 type TokenInfo = {
   tokenAddress: string
   tokenSymbol: string
   tokenName: string
-  totalSupply: bigint
+  totalSupply: string // Change from bigint to string
   tokenBPairing: string
   stage: number
   isSafeLaunchActive: boolean
@@ -100,6 +96,7 @@ export default function Dashboard(): JSX.Element {
         const tokenSymbol = await tokenContract.symbol()
         const tokenName = await tokenContract.name()
         const totalSupply = await tokenContract.totalSupply()
+        const formattedTotalSupply = ethers.utils.formatUnits(totalSupply, 18) // Convert to readable format
         const tokenBPairing = await tokenContract.tokenBAddress()
         const stage = await tokenContract.currentStage()
         const isSafeLaunchActive = await tokenContract.saleActive()
@@ -109,10 +106,10 @@ export default function Dashboard(): JSX.Element {
           tokenAddress,
           tokenSymbol,
           tokenName,
-          totalSupply,
+          totalSupply: formattedTotalSupply,
           tokenBPairing,
-          stage: stage.toNumber(),
-          isSafeLaunchActive,
+          stage: stage.toNumber() + 1, // Convert stage 0-4 to 1-5
+          isSafeLaunchActive: isSafeLaunchActive && !isFinalized,
           isFinalized,
         })
       }
@@ -180,7 +177,7 @@ export default function Dashboard(): JSX.Element {
     <>
       <Navbar />
       <div className="flex min-h-screen flex-col">
-        {isClient && chain?.id && !exchangeFactory[chain.id] && (
+        {isClient && chain?.id && !exchangeFactory?.[chain.id] && (
           <ChangeNetwork
             changeNetworkToChainId={250}
             dappName={"SafeMeme Labs"}
@@ -207,92 +204,108 @@ export default function Dashboard(): JSX.Element {
             </div>
 
             <h2 className="subtitle">TokenFactory</h2>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th className="table-header">Token Address</th>
-                  <th className="table-header">Token Symbol</th>
-                  <th className="table-header">Token Name</th>
-                  <th className="table-header">Total Supply</th>
-                  <th className="table-header">Token B Pairing</th>
-                  <th className="table-header">Stage</th>
-                  <th className="table-header">SafeLaunch Active</th>
-                  <th className="table-header">Sale Finalized</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tokens.map((token, index) => (
-                  <tr key={index}>
-                    <td>
-                      <Link
-                        href={getExplorerLink(token.tokenAddress)}
-                        target="_blank"
-                      >
-                        {token.tokenAddress.slice(0, 6)}...
-                        {token.tokenAddress.slice(-4)}
-                      </Link>
-                    </td>
-                    <td>{token.tokenSymbol}</td>
-                    <td>{token.tokenName}</td>
-                    <td>{token.totalSupply.toString()}</td>
-                    <td>
-                      <Link
-                        href={getExplorerLink(token.tokenBPairing)}
-                        target="_blank"
-                      >
-                        {token.tokenBPairing.slice(0, 6)}...
-                        {token.tokenBPairing.slice(-4)}
-                      </Link>
-                    </td>
-                    <td>{token.stage}</td>
-                    <td>{token.isSafeLaunchActive ? "Yes" : "No"}</td>
-                    <td>{token.isFinalized ? "Yes" : "No"}</td>
+            <div className="table-container">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th className="table-header">Token Address</th>
+                    <th className="table-header">Token Symbol</th>
+                    <th className="table-header">Token Name</th>
+                    <th className="table-header">Total Supply</th>
+                    <th className="table-header">Token B Pairing</th>
+                    <th className="table-header narrow-column">Stage</th>
+                    <th className="table-header narrow-column">
+                      SafeLaunch Active
+                    </th>
+                    <th className="table-header narrow-column">
+                      Sale Finalized
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {tokens.map((token, index) => (
+                    <tr key={index}>
+                      <td>
+                        <Link
+                          href={getExplorerLink(token.tokenAddress)}
+                          target="_blank"
+                        >
+                          {token.tokenAddress.slice(0, 6)}...
+                          {token.tokenAddress.slice(-4)}
+                        </Link>
+                      </td>
+                      <td>{token.tokenSymbol}</td>
+                      <td>{token.tokenName}</td>
+                      <td>{token.totalSupply.toString()}</td>
+                      <td>
+                        <Link
+                          href={getExplorerLink(token.tokenBPairing)}
+                          target="_blank"
+                        >
+                          {token.tokenBPairing.slice(0, 6)}...
+                          {token.tokenBPairing.slice(-4)}
+                        </Link>
+                      </td>
+                      <td className="narrow-column">{token.stage}</td>
+                      <td className="narrow-column">
+                        {token.isSafeLaunchActive
+                          ? "Active"
+                          : token.isFinalized
+                          ? "Completed"
+                          : "Inactive"}
+                      </td>
+                      <td className="narrow-column">
+                        {token.isFinalized ? "Yes" : "No"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
             <h2 className="subtitle">ExchangeFactory</h2>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th className="table-header">Token Address</th>
-                  <th className="table-header">Exchange Address</th>
-                  <th className="table-header">Token Symbol</th>
-                  <th className="table-header">Token Name</th>
-                  <th className="table-header">ETH Balance</th>
-                  <th className="table-header">Token Balance</th>
-                </tr>
-              </thead>
-              <tbody>
-                {exchanges.map((exchange, index) => (
-                  <tr key={index}>
-                    <td>
-                      <Link
-                        href={getExplorerLink(exchange.tokenAddress)}
-                        target="_blank"
-                      >
-                        {exchange.tokenAddress.slice(0, 6)}...
-                        {exchange.tokenAddress.slice(-4)}
-                      </Link>
-                    </td>
-                    <td>
-                      <Link
-                        href={getExplorerLink(exchange.exchangeAddress)}
-                        target="_blank"
-                      >
-                        {exchange.exchangeAddress.slice(0, 6)}...
-                        {exchange.exchangeAddress.slice(-4)}
-                      </Link>
-                    </td>
-                    <td>{exchange.tokenSymbol}</td>
-                    <td>{exchange.tokenName}</td>
-                    <td>{exchange.ethBalance.toString()}</td>
-                    <td>{exchange.tokenBalance.toString()}</td>
+            <div className="table-container">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th className="table-header">Token Address</th>
+                    <th className="table-header">Exchange Address</th>
+                    <th className="table-header">Token Symbol</th>
+                    <th className="table-header">Token Name</th>
+                    <th className="table-header">ETH Balance</th>
+                    <th className="table-header">Token Balance</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {exchanges.map((exchange, index) => (
+                    <tr key={index}>
+                      <td>
+                        <Link
+                          href={getExplorerLink(exchange.tokenAddress)}
+                          target="_blank"
+                        >
+                          {exchange.tokenAddress.slice(0, 6)}...
+                          {exchange.tokenAddress.slice(-4)}
+                        </Link>
+                      </td>
+                      <td>
+                        <Link
+                          href={getExplorerLink(exchange.exchangeAddress)}
+                          target="_blank"
+                        >
+                          {exchange.exchangeAddress.slice(0, 6)}...
+                          {exchange.exchangeAddress.slice(-4)}
+                        </Link>
+                      </td>
+                      <td>{exchange.tokenSymbol}</td>
+                      <td>{exchange.tokenName}</td>
+                      <td>{exchange.ethBalance.toString()}</td>
+                      <td>{exchange.tokenBalance.toString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
