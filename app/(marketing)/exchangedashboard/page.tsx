@@ -15,8 +15,6 @@ import {
 import { ethers } from "ethers"
 import { toast } from "react-toastify"
 
-import { Navbar } from "@/components/walletconnect/walletconnect"
-
 import "./dashboard.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
@@ -34,9 +32,9 @@ type TokenInfo = {
   tokenAddress: string
   tokenSymbol: string
   tokenName: string
-  totalSupply: string // Change from bigint to string
+  totalSupply: string
   tokenBPairing: string
-  stage: number
+  stage: string // Change type to string to handle "Not started"
   isSafeLaunchActive: boolean
   isFinalized: boolean
 }
@@ -98,9 +96,13 @@ export default function Dashboard(): JSX.Element {
         const totalSupply = await tokenContract.totalSupply()
         const formattedTotalSupply = ethers.utils.formatUnits(totalSupply, 18) // Convert to readable format
         const tokenBPairing = await tokenContract.tokenBAddress()
-        const stage = await tokenContract.currentStage()
+        const stageNumber = (await tokenContract.currentStage()).toNumber()
+        const stage =
+          stageNumber === 0 && !(await tokenContract.saleActive())
+            ? "Not started"
+            : (stageNumber + 1).toString() // Convert stage 0-4 to 1-5 or "Not started"
         const isSafeLaunchActive = await tokenContract.saleActive()
-        const isFinalized = await tokenContract.getSaleStatus()
+        const isFinalized = !isSafeLaunchActive && stageNumber === 5 // Sale is finalized if saleActive is false and all stages are completed
 
         tokenList.push({
           tokenAddress,
@@ -108,7 +110,7 @@ export default function Dashboard(): JSX.Element {
           tokenName,
           totalSupply: formattedTotalSupply,
           tokenBPairing,
-          stage: stage.toNumber() + 1, // Convert stage 0-4 to 1-5
+          stage,
           isSafeLaunchActive: isSafeLaunchActive && !isFinalized,
           isFinalized,
         })
@@ -175,15 +177,7 @@ export default function Dashboard(): JSX.Element {
 
   return (
     <>
-      <Navbar />
       <div className="flex min-h-screen flex-col">
-        {isClient && chain?.id && !exchangeFactory?.[chain.id] && (
-          <ChangeNetwork
-            changeNetworkToChainId={250}
-            dappName={"SafeMeme Labs"}
-            networks={"Avalanche, Base, Degen, Fantom, Rootstock"}
-          />
-        )}
         <div>
           <h1 className="title">Dashboard</h1>
           <div className="form">
