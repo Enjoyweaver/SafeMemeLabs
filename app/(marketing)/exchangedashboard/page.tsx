@@ -15,6 +15,9 @@ import {
 import { ethers } from "ethers"
 import { toast } from "react-toastify"
 
+import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
+import { Navbar } from "@/components/walletconnect/walletconnect"
+
 import "./dashboard.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
@@ -56,6 +59,9 @@ export default function Dashboard(): JSX.Element {
   const { chain } = useNetwork()
   const [isClient, setIsClient] = useState(false)
   const [errorMenu, setErrorMenu] = useState(false)
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum)
+  const signer = provider.getSigner()
 
   useEffect(() => {
     setIsClient(true)
@@ -175,10 +181,38 @@ export default function Dashboard(): JSX.Element {
     return `${blockExplorerAddress[selectedChainId]}${address}`
   }
 
+  const finalizeSale = async (tokenAddress: string) => {
+    try {
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        signer
+      )
+      const tx = await tokenContract.finalizeSaleAndCreateExchange()
+      await tx.wait()
+      toast.success("Sale finalized and exchange created successfully")
+    } catch (error) {
+      console.error("Error finalizing sale and creating exchange:", error)
+      toast.error("Failed to finalize sale and create exchange")
+    }
+  }
+
+  // Calculate totals
+  const totalTokens = tokens.length
+  const totalTransactions = exchanges.length
+  const stageCounts = {
+    1: tokens.filter((token) => token.stage === "1").length,
+    2: tokens.filter((token) => token.stage === "2").length,
+    3: tokens.filter((token) => token.stage === "3").length,
+    4: tokens.filter((token) => token.stage === "4").length,
+    5: tokens.filter((token) => token.stage === "5").length,
+  }
+
   return (
     <>
       <div className="flex min-h-screen flex-col">
         <div>
+          <Navbar />
           <h1 className="title">Dashboard</h1>
           <div className="form">
             <div className="inputGroup">
@@ -202,6 +236,30 @@ export default function Dashboard(): JSX.Element {
               <table className="data-table">
                 <thead>
                   <tr>
+                    <th className="table-header">Total Tokens Created</th>
+                    <th className="table-header">Stage 1 Contracts</th>
+                    <th className="table-header">Stage 2 Contracts</th>
+                    <th className="table-header">Stage 3 Contracts</th>
+                    <th className="table-header">Stage 4 Contracts</th>
+                    <th className="table-header">Stage 5 Contracts</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{totalTokens}</td>
+                    <td>{stageCounts[1]}</td>
+                    <td>{stageCounts[2]}</td>
+                    <td>{stageCounts[3]}</td>
+                    <td>{stageCounts[4]}</td>
+                    <td>{stageCounts[5]}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="table-container">
+              <table className="data-table">
+                <thead>
+                  <tr>
                     <th className="table-header">Token Address</th>
                     <th className="table-header">Token Symbol</th>
                     <th className="table-header">Token Name</th>
@@ -214,6 +272,7 @@ export default function Dashboard(): JSX.Element {
                     <th className="table-header narrow-column">
                       Sale Finalized
                     </th>
+                    <th className="table-header narrow-column">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -251,6 +310,14 @@ export default function Dashboard(): JSX.Element {
                       <td className="narrow-column">
                         {token.isFinalized ? "Yes" : "No"}
                       </td>
+                      <td className="narrow-column">
+                        <button
+                          onClick={() => finalizeSale(token.tokenAddress)}
+                          disabled={!token.isFinalized && token.stage !== "5"}
+                        >
+                          Finalize
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -258,6 +325,20 @@ export default function Dashboard(): JSX.Element {
             </div>
 
             <h2 className="subtitle">ExchangeFactory</h2>
+            <div className="table-container">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th className="table-header">Total Transactions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{totalTransactions}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
             <div className="table-container">
               <table className="data-table">
                 <thead>
