@@ -49,49 +49,14 @@ const SwapPage: React.FC = () => {
   const [tokenPrice, setTokenPrice] = useState(0)
   const [tokenPairs, setTokenPairs] = useState<any[]>([])
 
-  const [provider, setProvider] =
-    useState<ethers.providers.Web3Provider | null>(null)
-  const [tokenFactoryContract, setTokenFactoryContract] =
-    useState<ethers.Contract | null>(null)
-  const [exchangeFactoryContract, setExchangeFactoryContract] =
-    useState<ethers.Contract | null>(null)
-
-  const chainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
+  const chainId: string | number = chain ? chain.id : 250
 
   useEffect(() => {
     setIsClient(true)
-    if (typeof window !== "undefined" && window.ethereum) {
-      try {
-        const web3Provider = new ethers.providers.Web3Provider(
-          window.ethereum,
-          {
-            chainId: Number(chainId),
-            name: "unknown",
-          }
-        )
-        setProvider(web3Provider)
-
-        const tokenContract = new ethers.Contract(
-          safeLaunchFactory[chainId] as `0x${string}`,
-          TokenFactoryABI,
-          web3Provider
-        )
-        setTokenFactoryContract(tokenContract)
-
-        const exchangeContract = new ethers.Contract(
-          exchangeFactory[chainId] as `0x${string}`,
-          ExchangeFactoryABI,
-          web3Provider
-        )
-        setExchangeFactoryContract(exchangeContract)
-      } catch (error) {
-        console.error("Error initializing provider or contract:", error)
-      }
-    }
-  }, [chain, chainId])
+  }, [])
 
   const { data: contractsCount, error: contractsCountError } = useContractRead({
-    address: safeLaunchFactory[chainId] as `0x${string}`,
+    address: safeLaunchFactory[chainId],
     abi: TokenFactoryABI,
     functionName: "getDeployedTokenCount",
   })
@@ -99,7 +64,7 @@ const SwapPage: React.FC = () => {
   const { data: allContracts, error: allContractsError } = useContractReads({
     contracts: contractsCount
       ? Array.from({ length: Number(contractsCount) }, (_, i) => ({
-          address: safeLaunchFactory[chainId] as `0x${string}`,
+          address: safeLaunchFactory[chainId],
           abi: TokenFactoryABI,
           functionName: "tokensDeployed",
           args: [i],
@@ -119,7 +84,12 @@ const SwapPage: React.FC = () => {
 
   const getAllTokens = async () => {
     try {
-      if (!tokenFactoryContract) return []
+      const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
+      const tokenFactoryContract = new ethers.Contract(
+        safeLaunchFactory[chainId],
+        TokenFactoryABI,
+        provider
+      )
       const tokenCount = await tokenFactoryContract.getDeployedTokenCount({
         gasLimit: ethers.utils.hexlify(1000000),
       })
@@ -142,6 +112,12 @@ const SwapPage: React.FC = () => {
 
   const fetchAllTokens = async () => {
     try {
+      const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
+      const exchangeFactoryContract = new ethers.Contract(
+        exchangeFactory[chainId],
+        ExchangeFactoryABI,
+        provider
+      )
       const tokenCount = await exchangeFactoryContract.tokenCount()
       const tokens = []
       for (let i = 0; i < tokenCount; i++) {
@@ -156,13 +132,24 @@ const SwapPage: React.FC = () => {
   }
 
   const fetchTokenPairs = async (tokens) => {
-    const tokenPairs = []
-    for (const token of tokens) {
-      const exchange = await exchangeFactoryContract.getExchange(token)
-      const pairedToken = await exchangeFactoryContract.getToken(exchange)
-      tokenPairs.push({ token, exchange, pairedToken })
+    try {
+      const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
+      const exchangeFactoryContract = new ethers.Contract(
+        exchangeFactory[chainId],
+        ExchangeFactoryABI,
+        provider
+      )
+      const tokenPairs = []
+      for (const token of tokens) {
+        const exchange = await exchangeFactoryContract.getExchange(token)
+        const pairedToken = await exchangeFactoryContract.getToken(exchange)
+        tokenPairs.push({ token, exchange, pairedToken })
+      }
+      return tokenPairs
+    } catch (error) {
+      console.error("Error fetching token pairs: ", error)
+      return []
     }
-    return tokenPairs
   }
 
   useEffect(() => {
@@ -176,7 +163,12 @@ const SwapPage: React.FC = () => {
 
   const getUserTokens = async (userAddress: string) => {
     try {
-      if (!tokenFactoryContract) return []
+      const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
+      const tokenFactoryContract = new ethers.Contract(
+        safeLaunchFactory[chainId],
+        TokenFactoryABI,
+        provider
+      )
       const userTokens = await tokenFactoryContract.getTokensDeployedByUser(
         userAddress,
         {
@@ -192,7 +184,7 @@ const SwapPage: React.FC = () => {
 
   const getTokenDetails = async (tokenAddress: string) => {
     try {
-      if (!provider) return null
+      const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
       const tokenContract = new ethers.Contract(
         tokenAddress,
         SafeMemeABI,
@@ -236,7 +228,7 @@ const SwapPage: React.FC = () => {
 
   const getStageDetails = async (tokenAddress: string) => {
     try {
-      if (!provider) return []
+      const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
       const tokenContract = new ethers.Contract(
         tokenAddress,
         SafeMemeABI,
@@ -294,7 +286,7 @@ const SwapPage: React.FC = () => {
   const fetchWalletTokens = async () => {
     if (!isConnected || !address) return
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
 
     const tokenBalances = await Promise.all(
       deployedTokens.map(async (token) => {
@@ -330,7 +322,7 @@ const SwapPage: React.FC = () => {
     if (isClient && isConnected) {
       fetchAllTokenData()
     }
-  }, [isClient, isConnected, chain, address, tokenFactoryContract])
+  }, [isClient, isConnected, chain, address])
 
   const fetchTokenPrices = async () => {
     const allTokenPrices: {
@@ -436,8 +428,8 @@ const SwapPage: React.FC = () => {
   }
 
   const fetchStageInfo = async (tokenAddress) => {
-    if (typeof window !== "undefined" && window.ethereum) {
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
+    try {
+      const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
       if (!provider || !tokenAddress) return
 
       const tokenContract = new ethers.Contract(
@@ -451,6 +443,11 @@ const SwapPage: React.FC = () => {
       setCurrentStage(currentStage)
       setStageInfo(stageInfo)
       setTokenPrice(stageInfo[1])
+    } catch (error) {
+      console.error(
+        `Error fetching stage info for token ${tokenAddress}:`,
+        error
+      )
     }
   }
 
@@ -485,7 +482,7 @@ const SwapPage: React.FC = () => {
   const handleSwap = async () => {
     if (isConnected && amount > 0 && selectedTokenFrom && selectedTokenTo) {
       try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
         const signer = provider.getSigner()
         const tokenContract = new ethers.Contract(
           selectedTokenFrom.split("-")[0],
@@ -517,7 +514,7 @@ const SwapPage: React.FC = () => {
   }
 
   const approveTokens = async (tokenAddress, amount) => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
     const signer = provider.getSigner()
     const tokenContract = new ethers.Contract(tokenAddress, SafeMemeABI, signer)
     const amountInWei = ethers.utils.parseUnits(amount.toString(), 18)
