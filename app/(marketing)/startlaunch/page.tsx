@@ -10,6 +10,7 @@ import { Navbar } from "@/components/walletconnect/walletconnect"
 import "./factory.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
+import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 import { safeLaunchFactory } from "@/Constants/config"
 import { useDebounce } from "usehooks-ts"
@@ -156,6 +157,46 @@ export default function SwapPage(): JSX.Element {
       write()
     }
   }
+
+  const {
+    data: deployTxData,
+    isLoading: isLoadingDeployTx,
+    isSuccess: isSuccessDeployTx,
+    error: deployError,
+  } = useWaitForTransaction({
+    hash: data?.hash,
+    onSettled: async (deployTxData, error) => {
+      if (deployTxData) {
+        const tokenAddress = deployTxData.logs[0].address // Assuming the first log contains the token address
+
+        // Set the ExchangeFactory address for the newly deployed token
+        const signer = new ethers.providers.Web3Provider(
+          window.ethereum
+        ).getSigner()
+        const tokenContract = new ethers.Contract(
+          tokenAddress,
+          SafeMemeABI,
+          signer
+        )
+        const tx2 = await tokenContract.setFactoryAddress(
+          safeLaunchFactory[chainId]
+        )
+        await tx2.wait()
+
+        toast.success(
+          "Token successfully deployed and ExchangeFactory address set!"
+        )
+        setModalMessage(
+          "Token successfully deployed! Go to the Dashboard to check it out! Then grab the contract address and import it into your wallet."
+        )
+      } else if (error) {
+        console.error("Error deploying token:", error)
+        setModalMessage(
+          "There was an error deploying your token. Please try again."
+        )
+      }
+    },
+  })
 
   const toggleErrorMenuOpen = () => {
     setErrorMenu(!errorMenu)

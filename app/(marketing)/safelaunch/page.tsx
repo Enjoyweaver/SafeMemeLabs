@@ -17,7 +17,6 @@ import {
   usePrepareContractWrite,
 } from "wagmi"
 
-import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import {
@@ -121,6 +120,48 @@ export default function SafeLaunch(): JSX.Element {
     } catch (error) {
       console.error("Error fetching user tokens: ", error)
       return []
+    }
+  }
+
+  const submitTokenBInfo = async (tokenAddress: string) => {
+    try {
+      if (!provider) return
+      const signer = provider.getSigner()
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        signer
+      )
+
+      const tokenBAddress = tokenBSelection[tokenAddress]
+      if (!tokenBAddress) {
+        throw new Error("Token B address must be provided")
+      }
+
+      const tokenBName = tokenBDetails[tokenBAddress]?.name || ""
+      const tokenBSymbol = tokenBDetails[tokenBAddress]?.symbol || ""
+
+      // Check if Token B details are already set
+      const currentTokenBAddress = await tokenContract.tokenBAddress()
+      if (currentTokenBAddress === ethers.constants.AddressZero) {
+        const tx = await tokenContract.setTokenBDetails(
+          tokenBAddress,
+          tokenBName,
+          tokenBSymbol
+        )
+        await tx.wait()
+        toast.success(`Token B details set for token ${tokenAddress}`)
+      } else {
+        toast.info("Token B details are already set")
+      }
+    } catch (error) {
+      console.error(
+        `Error setting Token B details for token ${tokenAddress}:`,
+        error
+      )
+      toast.error(
+        `Error setting Token B details for token ${tokenAddress}: ${error.message}`
+      )
     }
   }
 
@@ -293,32 +334,15 @@ export default function SafeLaunch(): JSX.Element {
       await tx.wait()
       toast.success(`SafeLaunch started for token ${tokenAddress}`)
 
-      const tokenBAddress = tokenBSelection[tokenAddress]
-      const tokenBName = tokenBDetails[tokenBAddress]?.name || ""
-      const tokenBSymbol = tokenBDetails[tokenBAddress]?.symbol || ""
-
-      // Ensure Token B details are set on the contract
-      const currentTokenBAddress = await tokenContract.tokenBAddress()
-      if (currentTokenBAddress === ethers.constants.AddressZero) {
-        const tx = await tokenContract.setTokenBDetails(
-          tokenBAddress,
-          tokenBName,
-          tokenBSymbol
-        )
-        await tx.wait()
-      }
-
-      toast.success(`Token B address set for token ${tokenAddress}`)
-
-      setSelectedToken({ tokenAddress, tokenBAddress })
-      fetchAllTokenData() // Refresh token data to get updated sale status
-
-      // Fetch Token B details and store in state
-      await fetchTokenBDetails(tokenBAddress)
+      // Fetch updated token data to reflect the new sale status
+      fetchAllTokenData()
     } catch (error) {
       console.error(
         `Error starting SafeLaunch for token ${tokenAddress}:`,
         error
+      )
+      toast.error(
+        `Error starting SafeLaunch for token ${tokenAddress}: ${error.message}`
       )
     }
   }
@@ -334,26 +358,6 @@ export default function SafeLaunch(): JSX.Element {
       )
       const amountInWei = ethers.utils.parseUnits(amount.toString(), 18) // Convert to 18 decimals
 
-      // Ensure Token B details are set only if not already set
-      const tokenBAddress = tokenBSelection[tokenAddress]
-      if (!tokenBAddress) {
-        throw new Error("Token B address must be provided")
-      }
-
-      const tokenBName = tokenBDetails[tokenBAddress]?.name || ""
-      const tokenBSymbol = tokenBDetails[tokenBAddress]?.symbol || ""
-
-      // Check if Token B details are already set
-      const currentTokenBAddress = await tokenContract.tokenBAddress()
-      if (currentTokenBAddress === ethers.constants.AddressZero) {
-        const tx = await tokenContract.setTokenBDetails(
-          tokenBAddress,
-          tokenBName,
-          tokenBSymbol
-        )
-        await tx.wait()
-      }
-
       // Call the correct overloaded function
       const gasLimit = await tokenContract.estimateGas[
         "setStageTokenBAmount(uint256,uint256)"
@@ -367,11 +371,12 @@ export default function SafeLaunch(): JSX.Element {
       )
       await tx.wait()
       toast.success(
-        `Token B amount set for stage ${stage} of token ${tokenBAddress}`
+        `Token B amount set for stage ${stage} of token ${tokenAddress}`
       )
       fetchAllTokenData() // Refresh token data to get updated stage info
     } catch (error) {
       console.error(`Error setting Token B amount: ${error.message}`)
+      toast.error(`Error setting Token B amount: ${error.message}`)
     }
   }
 
@@ -763,13 +768,6 @@ export default function SafeLaunch(): JSX.Element {
       <div className="flex min-h-screen flex-col">
         <main className="flex-1">
           <div className="dashboard">
-            {isClient && chainId && !safeLaunchFactory[chainId] && (
-              <ChangeNetwork
-                changeNetworkToChainId={250}
-                dappName={"SafeLaunch"}
-                networks={"Fantom and Degen"}
-              />
-            )}
             <div className="myTokensHeading">
               <h1 className="pagetitle">SafeLaunch</h1>
               <p className="subheading">See all the tokens created!</p>
@@ -863,12 +861,11 @@ export default function SafeLaunch(): JSX.Element {
                             Start SafeLaunch
                           </button>
                           <button
-                            onClick={() =>
-                              handleSubmitTokenBAmounts(token.address)
-                            }
+                            onClick={() => submitTokenBInfo(token.address)}
                           >
                             Submit Token B Info
                           </button>
+
                           <div className="stages-container">
                             {token.stages.map((stage, stageIndex) => (
                               <div className="stage" key={stageIndex}>
