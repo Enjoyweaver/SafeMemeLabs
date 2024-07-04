@@ -104,7 +104,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "setExchangeFactoryForToken",
+    name: "setFactoryAddressesForToken",
     inputs: [
       {
         name: "token",
@@ -145,13 +145,8 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "tokenOwners",
-    inputs: [
-      {
-        name: "arg0",
-        type: "address",
-      },
-    ],
+    name: "tokenDeployedCount",
+    inputs: [],
     outputs: [
       {
         name: "",
@@ -162,7 +157,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "userTokenList",
+    name: "userTokens",
     inputs: [
       {
         name: "arg0",

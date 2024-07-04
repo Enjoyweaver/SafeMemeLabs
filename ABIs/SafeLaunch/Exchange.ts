@@ -8,12 +8,12 @@ export const ExchangeABI = [
         indexed: true,
       },
       {
-        name: "eth_sold",
+        name: "tokenB_sold",
         type: "uint256",
         indexed: true,
       },
       {
-        name: "tokens_bought",
+        name: "safememe_bought",
         type: "uint256",
         indexed: true,
       },
@@ -22,7 +22,7 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "EthPurchase",
+    name: "TokenBPurchase",
     inputs: [
       {
         name: "buyer",
@@ -30,12 +30,12 @@ export const ExchangeABI = [
         indexed: true,
       },
       {
-        name: "tokens_sold",
+        name: "safememe_sold",
         type: "uint256",
         indexed: true,
       },
       {
-        name: "eth_bought",
+        name: "tokenB_bought",
         type: "uint256",
         indexed: true,
       },
@@ -52,7 +52,7 @@ export const ExchangeABI = [
         indexed: true,
       },
       {
-        name: "eth_amount",
+        name: "tokenB_amount",
         type: "uint256",
         indexed: true,
       },
@@ -66,22 +66,152 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "RemoveLiquidity",
+    name: "StageStarted",
     inputs: [
       {
-        name: "provider",
+        name: "token",
         type: "address",
         indexed: true,
       },
       {
-        name: "eth_amount",
+        name: "stage",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "StageCompleted",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "stage",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "tokensSold",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "tokenBReceived",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "SaleFinalized",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "totalTokensSold",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "totalTokenBReceived",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "TokensPurchased",
+    inputs: [
+      {
+        name: "buyer",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "token",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "tokenAmount",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "tokenBAmount",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "stage",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "StageAmountSet",
+    inputs: [
+      {
+        name: "stage",
         type: "uint256",
         indexed: true,
       },
       {
-        name: "token_amount",
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "tokenBAddress",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "tokenBName",
+        type: "string",
+        indexed: false,
+      },
+      {
+        name: "tokenBSymbol",
+        type: "string",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "StageLiquidityUpdated",
+    inputs: [
+      {
+        name: "stage",
         type: "uint256",
         indexed: true,
+      },
+      {
+        name: "tokenBReceived",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "safeMemesSold",
+        type: "uint256",
+        indexed: false,
       },
     ],
     anonymous: false,
@@ -132,6 +262,18 @@ export const ExchangeABI = [
     type: "event",
   },
   {
+    name: "SafeLaunched",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
     stateMutability: "nonpayable",
     type: "function",
     name: "setup",
@@ -144,49 +286,60 @@ export const ExchangeABI = [
     outputs: [],
   },
   {
-    stateMutability: "payable",
+    stateMutability: "nonpayable",
     type: "function",
-    name: "addLiquidity",
+    name: "setTokenBDetails",
     inputs: [
       {
-        name: "min_liquidity",
-        type: "uint256",
+        name: "_tokenBAddress",
+        type: "address",
       },
       {
-        name: "max_tokens",
-        type: "uint256",
+        name: "_tokenBName",
+        type: "string",
       },
       {
-        name: "deadline",
-        type: "uint256",
+        name: "_tokenBSymbol",
+        type: "string",
       },
     ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
+    outputs: [],
   },
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "removeLiquidity",
+    name: "setStageTokenBAmount",
     inputs: [
+      {
+        name: "stage",
+        type: "uint256",
+      },
       {
         name: "amount",
         type: "uint256",
       },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "buyTokens",
+    inputs: [
       {
-        name: "min_eth",
+        name: "tokenBAmount",
         type: "uint256",
       },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getStageLiquidity",
+    inputs: [
       {
-        name: "min_tokens",
-        type: "uint256",
-      },
-      {
-        name: "deadline",
+        name: "stage",
         type: "uint256",
       },
     ],
@@ -208,10 +361,10 @@ export const ExchangeABI = [
   {
     stateMutability: "payable",
     type: "function",
-    name: "ethToTokenSwapInput",
+    name: "tokenBToTokenSwapInput",
     inputs: [
       {
-        name: "min_tokens",
+        name: "min_safememe",
         type: "uint256",
       },
       {
@@ -229,10 +382,10 @@ export const ExchangeABI = [
   {
     stateMutability: "payable",
     type: "function",
-    name: "ethToTokenTransferInput",
+    name: "tokenBToTokenTransferInput",
     inputs: [
       {
-        name: "min_tokens",
+        name: "min_safememe",
         type: "uint256",
       },
       {
@@ -254,10 +407,10 @@ export const ExchangeABI = [
   {
     stateMutability: "payable",
     type: "function",
-    name: "ethToTokenSwapOutput",
+    name: "tokenBToTokenSwapOutput",
     inputs: [
       {
-        name: "tokens_bought",
+        name: "safememe_bought",
         type: "uint256",
       },
       {
@@ -275,10 +428,10 @@ export const ExchangeABI = [
   {
     stateMutability: "payable",
     type: "function",
-    name: "ethToTokenTransferOutput",
+    name: "tokenBToTokenTransferOutput",
     inputs: [
       {
-        name: "tokens_bought",
+        name: "safememe_bought",
         type: "uint256",
       },
       {
@@ -300,14 +453,14 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "tokenToEthSwapInput",
+    name: "tokenToTokenBSwapInput",
     inputs: [
       {
-        name: "tokens_sold",
+        name: "safememe_sold",
         type: "uint256",
       },
       {
-        name: "min_eth",
+        name: "min_tokenB",
         type: "uint256",
       },
       {
@@ -325,14 +478,14 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "tokenToEthTransferInput",
+    name: "tokenToTokenBTransferInput",
     inputs: [
       {
-        name: "tokens_sold",
+        name: "safememe_sold",
         type: "uint256",
       },
       {
-        name: "min_eth",
+        name: "min_tokenB",
         type: "uint256",
       },
       {
@@ -354,14 +507,14 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "tokenToEthSwapOutput",
+    name: "tokenToTokenBSwapOutput",
     inputs: [
       {
-        name: "eth_bought",
+        name: "tokenB_bought",
         type: "uint256",
       },
       {
-        name: "max_tokens",
+        name: "max_safememe",
         type: "uint256",
       },
       {
@@ -379,14 +532,14 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "tokenToEthTransferOutput",
+    name: "tokenToTokenBTransferOutput",
     inputs: [
       {
-        name: "eth_bought",
+        name: "tokenB_bought",
         type: "uint256",
       },
       {
-        name: "max_tokens",
+        name: "max_safememe",
         type: "uint256",
       },
       {
@@ -411,15 +564,15 @@ export const ExchangeABI = [
     name: "tokenToTokenSwapInput",
     inputs: [
       {
-        name: "tokens_sold",
+        name: "safememe_sold",
         type: "uint256",
       },
       {
-        name: "min_tokens_bought",
+        name: "min_safememe_bought",
         type: "uint256",
       },
       {
-        name: "min_eth_bought",
+        name: "min_tokenB_bought",
         type: "uint256",
       },
       {
@@ -444,15 +597,15 @@ export const ExchangeABI = [
     name: "tokenToTokenTransferInput",
     inputs: [
       {
-        name: "tokens_sold",
+        name: "safememe_sold",
         type: "uint256",
       },
       {
-        name: "min_tokens_bought",
+        name: "min_safememe_bought",
         type: "uint256",
       },
       {
-        name: "min_eth_bought",
+        name: "min_tokenB_bought",
         type: "uint256",
       },
       {
@@ -481,15 +634,15 @@ export const ExchangeABI = [
     name: "tokenToTokenSwapOutput",
     inputs: [
       {
-        name: "tokens_bought",
+        name: "safememe_bought",
         type: "uint256",
       },
       {
-        name: "max_tokens_sold",
+        name: "max_safememe_sold",
         type: "uint256",
       },
       {
-        name: "max_eth_sold",
+        name: "max_tokenB_sold",
         type: "uint256",
       },
       {
@@ -514,15 +667,15 @@ export const ExchangeABI = [
     name: "tokenToTokenTransferOutput",
     inputs: [
       {
-        name: "tokens_bought",
+        name: "safememe_bought",
         type: "uint256",
       },
       {
-        name: "max_tokens_sold",
+        name: "max_safememe_sold",
         type: "uint256",
       },
       {
-        name: "max_eth_sold",
+        name: "max_tokenB_sold",
         type: "uint256",
       },
       {
@@ -551,15 +704,15 @@ export const ExchangeABI = [
     name: "tokenToExchangeSwapInput",
     inputs: [
       {
-        name: "tokens_sold",
+        name: "safememe_sold",
         type: "uint256",
       },
       {
-        name: "min_tokens_bought",
+        name: "min_safememe_bought",
         type: "uint256",
       },
       {
-        name: "min_eth_bought",
+        name: "min_tokenB_bought",
         type: "uint256",
       },
       {
@@ -584,15 +737,15 @@ export const ExchangeABI = [
     name: "tokenToExchangeTransferInput",
     inputs: [
       {
-        name: "tokens_sold",
+        name: "safememe_sold",
         type: "uint256",
       },
       {
-        name: "min_tokens_bought",
+        name: "min_safememe_bought",
         type: "uint256",
       },
       {
-        name: "min_eth_bought",
+        name: "min_tokenB_bought",
         type: "uint256",
       },
       {
@@ -621,15 +774,15 @@ export const ExchangeABI = [
     name: "tokenToExchangeSwapOutput",
     inputs: [
       {
-        name: "tokens_bought",
+        name: "safememe_bought",
         type: "uint256",
       },
       {
-        name: "max_tokens_sold",
+        name: "max_safememe_sold",
         type: "uint256",
       },
       {
-        name: "max_eth_sold",
+        name: "max_tokenB_sold",
         type: "uint256",
       },
       {
@@ -654,15 +807,15 @@ export const ExchangeABI = [
     name: "tokenToExchangeTransferOutput",
     inputs: [
       {
-        name: "tokens_bought",
+        name: "safememe_bought",
         type: "uint256",
       },
       {
-        name: "max_tokens_sold",
+        name: "max_safememe_sold",
         type: "uint256",
       },
       {
-        name: "max_eth_sold",
+        name: "max_tokenB_sold",
         type: "uint256",
       },
       {
@@ -688,10 +841,10 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getEthToTokenInputPrice",
+    name: "getTokenBToTokenInputPrice",
     inputs: [
       {
-        name: "eth_sold",
+        name: "tokenB_sold",
         type: "uint256",
       },
     ],
@@ -705,10 +858,10 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getEthToTokenOutputPrice",
+    name: "getTokenBToTokenOutputPrice",
     inputs: [
       {
-        name: "tokens_bought",
+        name: "safememe_bought",
         type: "uint256",
       },
     ],
@@ -722,10 +875,10 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getTokenToEthInputPrice",
+    name: "getTokenToTokenBInputPrice",
     inputs: [
       {
-        name: "tokens_sold",
+        name: "safememe_sold",
         type: "uint256",
       },
     ],
@@ -739,10 +892,10 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getTokenToEthOutputPrice",
+    name: "getTokenToTokenBOutputPrice",
     inputs: [
       {
-        name: "eth_bought",
+        name: "tokenB_bought",
         type: "uint256",
       },
     ],
@@ -885,6 +1038,115 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
+    name: "getAllStagesLiquidity",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256[5]",
+      },
+      {
+        name: "",
+        type: "uint256[5]",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getStageInfo",
+    inputs: [
+      {
+        name: "stage",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getCurrentStage",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getSaleStatus",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getTokensAvailable",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getTokensSold",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getReceivedTokenB",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "isSafeLaunched",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
     name: "name",
     inputs: [],
     outputs: [
@@ -989,6 +1251,216 @@ export const ExchangeABI = [
       {
         name: "",
         type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "stageTokenBAmounts",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "tokenPrices",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "soldTokens",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "currentStage",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "stageSet",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "stageTokenBReceived",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "lockedTokens",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "safeLaunched",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "tokenBAddress",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "tokenBName",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "string",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "tokenBSymbol",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "string",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "saleActive",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "owner",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "antiWhalePercentage",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "whitelist",
+    inputs: [
+      {
+        name: "arg0",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
       },
     ],
   },

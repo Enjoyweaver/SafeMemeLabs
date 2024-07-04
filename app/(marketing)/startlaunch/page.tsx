@@ -12,7 +12,7 @@ import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
 import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
-import { safeLaunchFactory } from "@/Constants/config"
+import { exchangeFactory, safeLaunchFactory } from "@/Constants/config"
 import { useDebounce } from "usehooks-ts"
 import {
   useAccount,
@@ -68,7 +68,7 @@ export default function SwapPage(): JSX.Element {
 
   useEffect(() => {
     if (chain && chain.id) {
-      const factoryAddress = safeLaunchFactory[chain.id] || ""
+      const factoryAddress = exchangeFactory[chain.id] || ""
       console.log("Factory Address:", factoryAddress)
 
       if (!factoryAddress) {
@@ -144,8 +144,8 @@ export default function SwapPage(): JSX.Element {
   } = useContractWrite(config)
 
   const handleDeployClick = async () => {
-    if (!safeLaunchFactory[chainId]) {
-      toast.error("Configuration error: Missing factory address.")
+    if (!exchangeFactory[chainId]) {
+      toast.error("Configuration error: Missing exchange factory address.")
       return
     }
     setModalMessage(
@@ -179,7 +179,7 @@ export default function SwapPage(): JSX.Element {
           signer
         )
         const tx2 = await tokenContract.setFactoryAddress(
-          safeLaunchFactory[chainId]
+          exchangeFactory[chainId]
         )
         await tx2.wait()
 

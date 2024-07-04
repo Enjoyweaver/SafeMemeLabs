@@ -1,6 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import { ExchangeABI } from "@/ABIs/SafeLaunch/Exchange"
+import { ExchangeFactoryABI } from "@/ABIs/SafeLaunch/ExchangeFactory"
 import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 import { ethers } from "ethers"
@@ -22,6 +24,7 @@ import { Navbar } from "@/components/walletconnect/walletconnect"
 import {
   NativeTokens,
   blockExplorerAddress,
+  exchangeTemplate,
   safeLaunchFactory,
 } from "../../../Constants/config"
 import "@/styles/safeLaunch.css"
@@ -33,6 +36,8 @@ export default function SafeLaunch(): JSX.Element {
   const [provider, setProvider] =
     useState<ethers.providers.Web3Provider | null>(null)
   const [tokenFactoryContract, setTokenFactoryContract] =
+    useState<ethers.Contract | null>(null)
+  const [exchangeContract, setExchangeContract] =
     useState<ethers.Contract | null>(null)
   const [tokenBSelection, setTokenBSelection] = useState<{
     [key: string]: string
@@ -75,12 +80,18 @@ export default function SafeLaunch(): JSX.Element {
       const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
       setProvider(web3Provider)
       const chainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
-      const contract = new ethers.Contract(
+      const tokenFactory = new ethers.Contract(
         safeLaunchFactory[chainId] as `0x${string}`,
         TokenFactoryABI,
         web3Provider
       )
-      setTokenFactoryContract(contract)
+      const exchange = new ethers.Contract(
+        exchangeTemplate[chainId] as `0x${string}`,
+        ExchangeABI,
+        web3Provider
+      )
+      setTokenFactoryContract(tokenFactory)
+      setExchangeContract(exchange)
     }
   }, [chain])
 
@@ -111,10 +122,7 @@ export default function SafeLaunch(): JSX.Element {
     try {
       if (!tokenFactoryContract) return []
       const userTokens = await tokenFactoryContract.getTokensDeployedByUser(
-        userAddress,
-        {
-          gasLimit: ethers.utils.hexlify(1000000),
-        }
+        userAddress
       )
       return userTokens
     } catch (error) {
@@ -125,14 +133,8 @@ export default function SafeLaunch(): JSX.Element {
 
   const submitTokenBInfo = async (tokenAddress: string) => {
     try {
-      if (!provider) return
+      if (!provider || !exchangeContract) return
       const signer = provider.getSigner()
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        signer
-      )
-
       const tokenBAddress = tokenBSelection[tokenAddress]
       if (!tokenBAddress) {
         throw new Error("Token B address must be provided")
@@ -142,9 +144,9 @@ export default function SafeLaunch(): JSX.Element {
       const tokenBSymbol = tokenBDetails[tokenBAddress]?.symbol || ""
 
       // Check if Token B details are already set
-      const currentTokenBAddress = await tokenContract.tokenBAddress()
+      const currentTokenBAddress = await exchangeContract.tokenBAddress()
       if (currentTokenBAddress === ethers.constants.AddressZero) {
-        const tx = await tokenContract.setTokenBDetails(
+        const tx = await exchangeContract.setTokenBDetails(
           tokenBAddress,
           tokenBName,
           tokenBSymbol
@@ -167,7 +169,7 @@ export default function SafeLaunch(): JSX.Element {
 
   const getTokenDetails = async (tokenAddress: string) => {
     try {
-      if (!provider) return null
+      if (!provider || !exchangeContract) return null
       const tokenContract = new ethers.Contract(
         tokenAddress,
         SafeMemeABI,
@@ -191,9 +193,9 @@ export default function SafeLaunch(): JSX.Element {
         tokenContract.owner(),
         tokenContract.decimals(),
         tokenContract.antiWhalePercentage(),
-        tokenContract.getSaleStatus(),
-        tokenContract.getCurrentStage(),
-        tokenContract.getReceivedTokenB(),
+        exchangeContract.getSaleStatus(),
+        exchangeContract.getCurrentStage(),
+        exchangeContract.getReceivedTokenB(),
         getLockedTokens(tokenAddress), // Fetch locked tokens
       ])
       return {
@@ -216,16 +218,11 @@ export default function SafeLaunch(): JSX.Element {
   }
 
   const fetchTokenSaleData = async (tokenAddress: string) => {
-    if (!provider) return
+    if (!provider || !exchangeContract) return
 
     try {
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        provider
-      )
-      const available = await tokenContract.getTokensAvailable()
-      const sold = await tokenContract.getTokensSold()
+      const available = await exchangeContract.getTokensAvailable()
+      const sold = await exchangeContract.getTokensSold()
 
       setTokensAvailable(available)
       setTokensSold(sold)
@@ -238,16 +235,11 @@ export default function SafeLaunch(): JSX.Element {
   }
 
   const fetchStageLiquidity = async (tokenAddress, stage) => {
-    if (!provider) return
+    if (!provider || !exchangeContract) return
 
     try {
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        provider
-      )
       const [tokenBReceived, tokensSold] =
-        await tokenContract.getStageLiquidity(stage)
+        await exchangeContract.getStageLiquidity(stage)
       return {
         tokensSold,
         tokenBReceived,
@@ -273,15 +265,9 @@ export default function SafeLaunch(): JSX.Element {
 
   const getStageDetails = async (tokenAddress: string) => {
     try {
-      if (!provider) return []
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        provider
-      )
-
+      if (!provider || !exchangeContract) return []
       const stageDetails = await Promise.all(
-        Array.from({ length: 5 }, (_, i) => tokenContract.getStageInfo(i))
+        Array.from({ length: 5 }, (_, i) => exchangeContract.getStageInfo(i))
       )
 
       return stageDetails
@@ -318,28 +304,41 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
-  const startSafeLaunch = async (tokenAddress: string) => {
+  const startSafeLaunch = async (tokenAddress) => {
     try {
-      if (!provider) return
+      if (!provider) {
+        throw new Error("Provider is not available")
+      }
+
       const signer = provider.getSigner()
       const tokenContract = new ethers.Contract(
         tokenAddress,
         SafeMemeABI,
         signer
       )
-      const gasLimit = await tokenContract.estimateGas.startSafeLaunch()
+
+      // Start SafeLaunch and transfer tokens to the newly created exchange
+      let gasLimit
+      try {
+        gasLimit = await tokenContract.estimateGas.startSafeLaunch()
+      } catch (estimateError) {
+        console.warn(
+          "Gas estimation failed, using default gas limit",
+          estimateError
+        )
+        gasLimit = ethers.BigNumber.from("1000000") // Default gas limit
+      }
+
       const tx = await tokenContract.startSafeLaunch({
         gasLimit: gasLimit.add(100000),
       })
       await tx.wait()
-      toast.success(`SafeLaunch started for token ${tokenAddress}`)
 
-      // Fetch updated token data to reflect the new sale status
-      fetchAllTokenData()
+      toast.success(`SafeLaunch started for token ${tokenAddress}`)
     } catch (error) {
       console.error(
         `Error starting SafeLaunch for token ${tokenAddress}:`,
-        error
+        error.message
       )
       toast.error(
         `Error starting SafeLaunch for token ${tokenAddress}: ${error.message}`
@@ -349,26 +348,19 @@ export default function SafeLaunch(): JSX.Element {
 
   const setStageTokenBAmount = async (tokenAddress, stage, amount) => {
     try {
-      if (!provider) return
+      if (!provider || !exchangeContract) return
       const signer = provider.getSigner()
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        signer
-      )
       const amountInWei = ethers.utils.parseUnits(amount.toString(), 18) // Convert to 18 decimals
 
       // Call the correct overloaded function
-      const gasLimit = await tokenContract.estimateGas[
+      const gasLimit = await exchangeContract.estimateGas[
         "setStageTokenBAmount(uint256,uint256)"
       ](stage, amountInWei)
-      const tx = await tokenContract["setStageTokenBAmount(uint256,uint256)"](
-        stage,
-        amountInWei,
-        {
-          gasLimit: gasLimit.add(100000),
-        }
-      )
+      const tx = await exchangeContract[
+        "setStageTokenBAmount(uint256,uint256)"
+      ](stage, amountInWei, {
+        gasLimit: gasLimit.add(100000),
+      })
       await tx.wait()
       toast.success(
         `Token B amount set for stage ${stage} of token ${tokenAddress}`
@@ -383,18 +375,28 @@ export default function SafeLaunch(): JSX.Element {
   const getLockedTokens = async (tokenAddress) => {
     try {
       if (!provider) return ethers.BigNumber.from(0)
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
+      if (!tokenFactoryContract) {
+        throw new Error("Token factory contract is not initialized.")
+      }
+      const exchangeAddress = await tokenFactoryContract.getExchange(
+        tokenAddress
+      )
+      if (exchangeAddress === ethers.constants.AddressZero) {
+        return ethers.BigNumber.from(0)
+      }
+      const exchangeContract = new ethers.Contract(
+        exchangeAddress,
+        ExchangeABI,
         provider
       )
-      const lockedTokens = await tokenContract.lockedTokens()
+      const lockedTokens = await exchangeContract.lockedTokens()
       return lockedTokens
     } catch (error) {
       console.error(`Error fetching locked tokens for ${tokenAddress}:`, error)
       return ethers.BigNumber.from(0)
     }
   }
+
   const debouncedSetStageTokenBAmount = useCallback(
     debounce((tokenAddress, stage, amount) => {
       setStageTokenBAmount(tokenAddress, stage, amount)
@@ -440,13 +442,14 @@ export default function SafeLaunch(): JSX.Element {
           const details = await getTokenDetails(tokenAddress)
           const stages = await getStageDetails(tokenAddress)
 
-          // Fetch tokenBAddress separately
-          const tokenContract = new ethers.Contract(
-            tokenAddress,
-            SafeMemeABI,
+          // Fetch tokenBAddress separately from the Exchange contract
+          const exchangeAddress = exchangeTemplate[chainId] as string
+          const exchangeContract = new ethers.Contract(
+            exchangeAddress,
+            ExchangeABI,
             provider
           )
-          const tokenBAddress = await tokenContract.tokenBAddress()
+          const tokenBAddress = await exchangeContract.tokenBAddress()
 
           // Fetch Token B details if set
           if (tokenBAddress && tokenBAddress !== ethers.constants.AddressZero) {
@@ -515,17 +518,12 @@ export default function SafeLaunch(): JSX.Element {
   }
 
   const fetchStageInfo = async (tokenAddress: string) => {
-    if (!provider || !tokenAddress) return
+    if (!provider || !tokenAddress || !exchangeContract) return
 
     try {
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        provider
-      )
-      const currentStage = await tokenContract.getCurrentStage()
-      const stageInfo = await tokenContract.getStageInfo(currentStage)
-      const tokenBAddress = await tokenContract.tokenBAddress()
+      const currentStage = await exchangeContract.getCurrentStage()
+      const stageInfo = await exchangeContract.getStageInfo(currentStage)
+      const tokenBAddress = await exchangeContract.tokenBAddress()
 
       setCurrentStage(currentStage.toNumber())
       setStageInfo(stageInfo)
@@ -545,7 +543,7 @@ export default function SafeLaunch(): JSX.Element {
   }
 
   const handleSwap = async () => {
-    if (!amount || !selectedToken || !provider) {
+    if (!amount || !selectedToken || !provider || !exchangeContract) {
       toast.error("Please enter an amount and ensure wallet is connected")
       console.error("Swap failed due to missing parameters", {
         amount,
@@ -576,20 +574,25 @@ export default function SafeLaunch(): JSX.Element {
         SafeMemeABI,
         signer
       )
-      const safeMemeContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        signer
-      )
+      const exchangeSigner = exchangeContract.connect(signer)
 
       // Convert the amount to the correct units
       const amountInWei = ethers.utils.parseUnits(amount, 18)
 
-      // Approve the SafeMeme contract to spend Token B
-      const approveTx = await tokenBContract.approve(tokenAddress, amountInWei)
+      // Approve the Exchange contract to spend Token B
+      const approveTx = await tokenBContract.approve(
+        exchangeSigner.address,
+        amountInWei
+      )
       await approveTx.wait()
       toast.info("Approval successful. Proceeding with swap...")
 
+      // Perform the token swap
+      const swapTx = await exchangeSigner.tokenBToTokenSwapInput(
+        amountInWei,
+        Date.now() + 1000 * 60 * 10
+      )
+      await swapTx.wait()
       toast.success("Swap successful!")
       fetchStageInfo(tokenAddress)
     } catch (error) {
@@ -599,16 +602,11 @@ export default function SafeLaunch(): JSX.Element {
   }
 
   const fetchAllStagesLiquidity = async (tokenAddress) => {
-    if (!provider) return
+    if (!provider || !exchangeContract) return
 
     try {
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        provider
-      )
       const [tokensSoldArray, tokenBReceivedArray] =
-        await tokenContract.getAllStagesLiquidity()
+        await exchangeContract.getAllStagesLiquidity()
       return tokensSoldArray.map((tokensSold, index) => ({
         stage: index,
         tokensSold,
@@ -669,6 +667,28 @@ export default function SafeLaunch(): JSX.Element {
       }
     }
   }, [amount, tokenPrice])
+
+  useEffect(() => {
+    if (!provider || !selectedToken?.tokenAddress) return
+
+    const tokenAddress = selectedToken.tokenAddress
+
+    const signer = provider.getSigner()
+    const tokenContract = new ethers.Contract(tokenAddress, SafeMemeABI, signer)
+
+    const handleSafeLaunched = (token) => {
+      console.log(`SafeLaunch started for token ${token}`)
+      toast.success(`SafeLaunch started for token ${token}`)
+      // Fetch updated token data to reflect the new sale status
+      fetchAllTokenData()
+    }
+
+    tokenContract.on("SafeLaunched", handleSafeLaunched)
+
+    return () => {
+      tokenContract.off("SafeLaunched", handleSafeLaunched)
+    }
+  }, [provider, selectedToken?.tokenAddress])
 
   const formatNumber = (
     number: ethers.BigNumber | undefined,
