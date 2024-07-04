@@ -302,10 +302,10 @@ export const SafeMemeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "transfer",
+    name: "approve",
     inputs: [
       {
-        name: "_to",
+        name: "_spender",
         type: "address",
       },
       {
@@ -323,10 +323,10 @@ export const SafeMemeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "approve",
+    name: "transfer",
     inputs: [
       {
-        name: "_spender",
+        name: "_to",
         type: "address",
       },
       {
@@ -558,6 +558,42 @@ export const SafeMemeABI = [
     inputs: [
       {
         name: "factoryAddress",
+        type: "address",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setTokenFactoryAddress",
+    inputs: [
+      {
+        name: "_tokenFactory",
+        type: "address",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "addToWhitelist",
+    inputs: [
+      {
+        name: "_address",
+        type: "address",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "removeFromWhitelist",
+    inputs: [
+      {
+        name: "_address",
         type: "address",
       },
     ],
@@ -875,6 +911,35 @@ export const SafeMemeABI = [
       {
         name: "",
         type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "whitelist",
+    inputs: [
+      {
+        name: "arg0",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "tokenFactory",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
       },
     ],
   },

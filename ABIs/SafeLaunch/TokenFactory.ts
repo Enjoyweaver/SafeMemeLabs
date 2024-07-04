@@ -32,6 +32,10 @@ export const TokenFactoryABI = [
         name: "fee_recipient",
         type: "address",
       },
+      {
+        name: "_exchangeFactory",
+        type: "address",
+      },
     ],
     outputs: [],
   },
@@ -96,6 +100,18 @@ export const TokenFactoryABI = [
         type: "uint256",
       },
     ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setExchangeFactoryForToken",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+      },
+    ],
+    outputs: [],
   },
   {
     stateMutability: "view",
@@ -180,6 +196,18 @@ export const TokenFactoryABI = [
     stateMutability: "view",
     type: "function",
     name: "feeRecipient",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "exchangeFactory",
     inputs: [],
     outputs: [
       {

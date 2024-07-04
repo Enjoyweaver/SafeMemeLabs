@@ -590,10 +590,6 @@ export default function SafeLaunch(): JSX.Element {
       await approveTx.wait()
       toast.info("Approval successful. Proceeding with swap...")
 
-      // Call buyTokens on the SafeMeme contract
-      const buyTx = await safeMemeContract.buyTokens(amountInWei)
-      await buyTx.wait()
-
       toast.success("Swap successful!")
       fetchStageInfo(tokenAddress)
     } catch (error) {
