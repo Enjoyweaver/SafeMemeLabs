@@ -84,6 +84,14 @@ export const SafeMemeABI = [
         name: "antiWhalePercentage",
         type: "uint256",
       },
+      {
+        name: "_exchangeFactory",
+        type: "address",
+      },
+      {
+        name: "_tokenFactory",
+        type: "address",
+      },
     ],
     outputs: [],
   },
@@ -199,30 +207,6 @@ export const SafeMemeABI = [
     inputs: [
       {
         name: "exchangeFactoryAddress",
-        type: "address",
-      },
-    ],
-    outputs: [],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "setFactoryAddress",
-    inputs: [
-      {
-        name: "_exchangeFactory",
-        type: "address",
-      },
-    ],
-    outputs: [],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "setTokenFactoryAddress",
-    inputs: [
-      {
-        name: "_tokenFactory",
         type: "address",
       },
     ],

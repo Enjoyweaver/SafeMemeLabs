@@ -11,7 +11,7 @@ import "./factory.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
-import { safeLaunchFactory } from "@/Constants/config"
+import { exchangeFactory, safeLaunchFactory } from "@/Constants/config"
 import { useDebounce } from "usehooks-ts"
 import {
   useAccount,
@@ -140,8 +140,15 @@ export default function Factory(): JSX.Element {
       "Depending on which blockchain you created a token on, it could take anywhere from 2 seconds to 20 seconds."
     )
     setShowModal(true)
-    if (write) {
-      write()
+
+    try {
+      if (write) {
+        await write()
+      }
+    } catch (error) {
+      setModalMessage("Error during deployment: " + error.message)
+      setShowModal(true)
+      console.error("Error during deployment:", error)
     }
   }
 

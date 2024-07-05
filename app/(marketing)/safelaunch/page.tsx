@@ -73,6 +73,9 @@ export default function SafeLaunch(): JSX.Element {
     [key: string]: string
   }>({})
   const chainId: string | number = chain ? chain.id : 250
+  // State variables for contract addresses and other data
+  const [tokenFactoryAddress, setTokenFactoryAddress] = useState(null)
+  const [exchangeFactoryAddress, setExchangeFactoryAddress] = useState(null)
 
   useEffect(() => {
     setIsClient(true)
@@ -167,14 +170,16 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
-  const getTokenDetails = async (tokenAddress: string) => {
+  const getTokenDetails = async (tokenAddress) => {
     try {
-      if (!provider || !exchangeContract) return null
+      if (!provider) return null
+
       const tokenContract = new ethers.Contract(
         tokenAddress,
         SafeMemeABI,
         provider
       )
+
       const [
         name,
         symbol,
@@ -182,10 +187,8 @@ export default function SafeLaunch(): JSX.Element {
         owner,
         decimals,
         antiWhalePercentage,
-        saleActive,
-        currentStage,
-        receivedTokenB,
-        lockedTokens,
+        isSafeLaunched,
+        exchangeAddress,
       ] = await Promise.all([
         tokenContract.name(),
         tokenContract.symbol(),
@@ -193,11 +196,10 @@ export default function SafeLaunch(): JSX.Element {
         tokenContract.owner(),
         tokenContract.decimals(),
         tokenContract.antiWhalePercentage(),
-        exchangeContract.getSaleStatus(),
-        exchangeContract.getCurrentStage(),
-        exchangeContract.getReceivedTokenB(),
-        getLockedTokens(tokenAddress), // Fetch locked tokens
+        tokenContract.isSafeLaunched(),
+        tokenContract.exchangeFactory(),
       ])
+
       return {
         address: tokenAddress,
         name,
@@ -206,10 +208,8 @@ export default function SafeLaunch(): JSX.Element {
         owner,
         decimals,
         antiWhalePercentage,
-        saleActive,
-        currentStage,
-        lockedTokens,
-        receivedTokenB,
+        isSafeLaunched,
+        exchangeAddress,
       }
     } catch (error) {
       console.error(`Error fetching details for token ${tokenAddress}:`, error)
@@ -263,13 +263,28 @@ export default function SafeLaunch(): JSX.Element {
     return "N/A"
   }
 
-  const getStageDetails = async (tokenAddress: string) => {
+  const getStageDetails = async (tokenAddress) => {
     try {
-      if (!provider || !exchangeContract) return []
+      if (!provider) return []
+
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        provider
+      )
+      const exchangeAddress = await tokenContract.exchangeFactory()
+
+      if (!exchangeAddress) return []
+
+      const exchangeContract = new ethers.Contract(
+        exchangeAddress,
+        ExchangeABI,
+        provider
+      )
+
       const stageDetails = await Promise.all(
         Array.from({ length: 5 }, (_, i) => exchangeContract.getStageInfo(i))
       )
-
       return stageDetails
     } catch (error) {
       console.error(
@@ -317,14 +332,23 @@ export default function SafeLaunch(): JSX.Element {
         signer
       )
 
-      // Log the exchange factory address
+      // Fetch exchange factory address
       const exchangeFactoryAddress = await tokenContract.exchangeFactory()
-      console.log(
-        "Starting SafeLaunch with exchange factory address:",
-        exchangeFactoryAddress
-      )
+      if (exchangeFactoryAddress === ethers.constants.AddressZero) {
+        throw new Error(
+          "ExchangeFactory address not set in the token contract."
+        )
+      }
+      console.log("Exchange Factory Address:", exchangeFactoryAddress)
 
-      // Start SafeLaunch and transfer tokens to the newly created exchange
+      // Ensure that the factory address is correctly set in the contract
+      const currentFactory = await tokenContract.factory()
+      if (currentFactory === ethers.constants.AddressZero) {
+        throw new Error("Factory address is not set in the token contract.")
+      }
+      console.log("Current Factory Address:", currentFactory)
+
+      // Estimate gas for the startSafeLaunch transaction
       let gasLimit
       try {
         gasLimit = await tokenContract.estimateGas.startSafeLaunch(
@@ -335,12 +359,13 @@ export default function SafeLaunch(): JSX.Element {
           "Gas estimation failed, using default gas limit",
           estimateError
         )
-        gasLimit = ethers.BigNumber.from("1000000") // Default gas limit
+        gasLimit = ethers.BigNumber.from("3000000") // Default gas limit
       }
       console.log("Estimated Gas Limit:", gasLimit.toString())
 
+      // Start the SafeLaunch process
       const tx = await tokenContract.startSafeLaunch(exchangeFactoryAddress, {
-        gasLimit: gasLimit.add(100000),
+        gasLimit: gasLimit.add(300000),
       })
       await tx.wait()
 
@@ -450,23 +475,11 @@ export default function SafeLaunch(): JSX.Element {
       const tokenData = await Promise.all(
         allTokens.map(async (tokenAddress) => {
           const details = await getTokenDetails(tokenAddress)
-          const stages = await getStageDetails(tokenAddress)
-
-          // Fetch tokenBAddress separately from the Exchange contract
-          const exchangeAddress = exchangeTemplate[chainId] as string
-          const exchangeContract = new ethers.Contract(
-            exchangeAddress,
-            ExchangeABI,
-            provider
-          )
-          const tokenBAddress = await exchangeContract.tokenBAddress()
-
-          // Fetch Token B details if set
-          if (tokenBAddress && tokenBAddress !== ethers.constants.AddressZero) {
-            await fetchTokenBDetails(tokenBAddress)
+          if (details && details.exchangeAddress) {
+            const stages = await getStageDetails(details.exchangeAddress)
+            return { ...details, stages }
           }
-
-          return { ...details, stages, tokenBAddress }
+          return details
         })
       )
       const userTokenAddresses = new Set(
@@ -481,7 +494,7 @@ export default function SafeLaunch(): JSX.Element {
           ),
         }))
       setDeployedTokenData(deployedTokenData)
-      setDeployedTokens(deployedTokenData) // Add this line to set deployedTokens
+      setDeployedTokens(deployedTokenData)
 
       console.log("Deployed Tokens:", deployedTokenData)
     } catch (error) {
@@ -496,22 +509,27 @@ export default function SafeLaunch(): JSX.Element {
 
     const tokenBalances = await Promise.all(
       deployedTokens.map(async (token) => {
-        const contract = new ethers.Contract(
-          token.address,
-          SafeMemeABI,
-          provider
-        )
-        try {
-          const balance = await contract.balanceOf(address)
-          return {
-            ...token,
-            balance: ethers.utils.formatUnits(balance, token.decimals),
-          }
-        } catch (error) {
-          console.error(
-            `Failed to fetch balance for token ${token.address}:`,
-            error
+        if (token.address) {
+          const contract = new ethers.Contract(
+            token.address,
+            SafeMemeABI,
+            provider
           )
+          try {
+            const balance = await contract.balanceOf(address)
+            return {
+              ...token,
+              balance: ethers.utils.formatUnits(balance, token.decimals),
+            }
+          } catch (error) {
+            console.error(
+              `Failed to fetch balance for token ${token.address}:`,
+              error
+            )
+            return { ...token, balance: "0" } // Handle the error case
+          }
+        } else {
+          console.error(`Token address is undefined for token:`, token)
           return { ...token, balance: "0" } // Handle the error case
         }
       })
@@ -701,14 +719,18 @@ export default function SafeLaunch(): JSX.Element {
   }, [provider, selectedToken?.tokenAddress])
 
   const formatNumber = (
-    number: ethers.BigNumber | undefined,
+    number: ethers.BigNumber | null | undefined,
     decimals: number
   ) => {
-    if (!number) {
-      console.error("Invalid number value:", number)
+    if (!number || number.isZero()) {
+      return "0"
+    }
+    try {
+      return ethers.utils.commify(ethers.utils.formatUnits(number, decimals))
+    } catch (error) {
+      console.error("Error formatting number:", error)
       return "0" // or any appropriate default value
     }
-    return ethers.utils.formatUnits(number, decimals)
   }
 
   const displayTokenBRequired = (amount: ethers.BigNumber | undefined) => {
@@ -723,7 +745,8 @@ export default function SafeLaunch(): JSX.Element {
     return `${blockExplorerAddress[chainId] || ""}${address}`
   }
 
-  const shortenAddress = (address: string) => {
+  const shortenAddress = (address: string | undefined) => {
+    if (!address) return ""
     return `${address.slice(0, 6)}...${address.slice(-6)}`
   }
 
@@ -850,9 +873,11 @@ export default function SafeLaunch(): JSX.Element {
                           <p>
                             <strong>Max Wallet Amount:</strong>{" "}
                             {formatNumber(
-                              token.totalSupply
-                                .mul(token.antiWhalePercentage)
-                                .div(100),
+                              token.totalSupply && token.antiWhalePercentage
+                                ? token.totalSupply
+                                    .mul(token.antiWhalePercentage)
+                                    .div(100)
+                                : ethers.BigNumber.from(0),
                               token.decimals
                             )}
                           </p>
