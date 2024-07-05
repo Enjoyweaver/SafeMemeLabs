@@ -10,9 +10,8 @@ import { Navbar } from "@/components/walletconnect/walletconnect"
 import "./factory.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
-import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
-import { exchangeFactory, safeLaunchFactory } from "@/Constants/config"
+import { safeLaunchFactory } from "@/Constants/config"
 import { useDebounce } from "usehooks-ts"
 import {
   useAccount,
@@ -28,7 +27,7 @@ import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { capitalizeFirstLetter } from "../../../utils/capitilizeFirstLetter"
 import Modal from "./Modal"
 
-export default function SwapPage(): JSX.Element {
+export default function Factory(): JSX.Element {
   const [name, setName] = useState<string>("")
   const [symbol, setSymbol] = useState<string>("")
   const [supply, setSupply] = useState<string>("")
@@ -48,27 +47,14 @@ export default function SwapPage(): JSX.Element {
   const [showModal, setShowModal] = useState(false)
   const [modalMessage, setModalMessage] = useState("")
   const [transactionHash, setTransactionHash] = useState<string>("")
-  const validatedDecimals = dDecimals ? BigInt(Number(dDecimals)) : BigInt(18)
-  const validatedSupply = dSupply
-    ? BigInt(dSupply) * BigInt(10 ** (dDecimals ? Number(dDecimals) : 18))
-    : BigInt(0)
-  const validatedAntiWhalePercentage = dAntiWhalePercentage
-    ? BigInt(Number(dAntiWhalePercentage))
-    : BigInt(0)
 
   useEffect(() => {
     setIsClient(true)
   }, [])
 
   useEffect(() => {
-    if (!dName || !dSymbol || !dSupply || !dDecimals || !dAntiWhalePercentage) {
-      console.error("Debounced values are not set correctly.")
-    }
-  }, [dName, dSymbol, dSupply, dDecimals, dAntiWhalePercentage])
-
-  useEffect(() => {
     if (chain && chain.id) {
-      const factoryAddress = exchangeFactory[chain.id] || ""
+      const factoryAddress = safeLaunchFactory[chain.id] || ""
       console.log("Factory Address:", factoryAddress)
 
       if (!factoryAddress) {
@@ -100,6 +86,7 @@ export default function SwapPage(): JSX.Element {
     address: safeLaunchFactory[chainId] as `0x${string}`,
     abi: TokenFactoryABI,
     functionName: "creationFee",
+    enabled: isConnected, // Only fetch if connected
     onError: (error) => {
       console.error("Error fetching creation fee:", error)
     },
@@ -121,11 +108,12 @@ export default function SwapPage(): JSX.Element {
     args: [
       dName,
       dSymbol,
-      validatedDecimals,
-      validatedSupply,
-      validatedAntiWhalePercentage,
+      dDecimals ? BigInt(Number(dDecimals)) : BigInt(18), // Convert decimals to bigint
+      BigInt(dSupply) * BigInt(10 ** (dDecimals ? Number(dDecimals) : 18)),
+      BigInt(Number(dAntiWhalePercentage)), // Convert antiWhalePercentage to bigint
     ],
     value: deployFee,
+    enabled: isConnected && isFormFilled() && Boolean(deployFee), // Only prepare if connected, form filled, and fee fetched
     cacheTime: 0,
     onError: (error) => {
       console.error("Error preparing contract write:", error)
@@ -144,8 +132,8 @@ export default function SwapPage(): JSX.Element {
   } = useContractWrite(config)
 
   const handleDeployClick = async () => {
-    if (!exchangeFactory[chainId]) {
-      toast.error("Configuration error: Missing exchange factory address.")
+    if (!safeLaunchFactory[chainId]) {
+      toast.error("Configuration error: Missing factory address.")
       return
     }
     setModalMessage(
@@ -153,50 +141,9 @@ export default function SwapPage(): JSX.Element {
     )
     setShowModal(true)
     if (write) {
-      console.log("Writing to contract with args:", config.args)
       write()
     }
   }
-
-  const {
-    data: deployTxData,
-    isLoading: isLoadingDeployTx,
-    isSuccess: isSuccessDeployTx,
-    error: deployError,
-  } = useWaitForTransaction({
-    hash: data?.hash,
-    onSettled: async (deployTxData, error) => {
-      if (deployTxData) {
-        const tokenAddress = deployTxData.logs[0].address // Assuming the first log contains the token address
-
-        // Set the ExchangeFactory address for the newly deployed token
-        const signer = new ethers.providers.Web3Provider(
-          window.ethereum
-        ).getSigner()
-        const tokenContract = new ethers.Contract(
-          tokenAddress,
-          SafeMemeABI,
-          signer
-        )
-        const tx2 = await tokenContract.setFactoryAddress(
-          exchangeFactory[chainId]
-        )
-        await tx2.wait()
-
-        toast.success(
-          "Token successfully deployed and ExchangeFactory address set!"
-        )
-        setModalMessage(
-          "Token successfully deployed! Go to the Dashboard to check it out! Then grab the contract address and import it into your wallet."
-        )
-      } else if (error) {
-        console.error("Error deploying token:", error)
-        setModalMessage(
-          "There was an error deploying your token. Please try again."
-        )
-      }
-    },
-  })
 
   const toggleErrorMenuOpen = () => {
     setErrorMenu(!errorMenu)

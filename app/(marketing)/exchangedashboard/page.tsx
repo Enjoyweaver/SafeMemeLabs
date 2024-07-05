@@ -15,7 +15,6 @@ import {
 import { ethers } from "ethers"
 import { toast } from "react-toastify"
 
-import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import "./dashboard.css"
@@ -40,6 +39,8 @@ type TokenInfo = {
   stage: string // Change type to string to handle "Not started"
   isSafeLaunchActive: boolean
   isFinalized: boolean
+  factoryAddress: string // Add this line
+  tokenFactoryAddress: string // Add this line
 }
 
 type ExchangeInfo = {
@@ -59,7 +60,10 @@ export default function Dashboard(): JSX.Element {
   const { chain } = useNetwork()
   const [isClient, setIsClient] = useState(false)
   const [errorMenu, setErrorMenu] = useState(false)
-
+  const [factoryDetails, setFactoryDetails] = useState({
+    exchangeFactoryAddress: "",
+    tokenFactoryAddress: "",
+  })
   const provider = new ethers.providers.Web3Provider(window.ethereum)
   const signer = provider.getSigner()
 
@@ -71,6 +75,9 @@ export default function Dashboard(): JSX.Element {
     if (selectedChainId) {
       fetchTokens()
       fetchExchanges()
+      fetchTokenFactoryDetails().then((factoryDetails) => {
+        setFactoryDetails(factoryDetails)
+      })
     }
   }, [selectedChainId])
 
@@ -110,6 +117,9 @@ export default function Dashboard(): JSX.Element {
         const isSafeLaunchActive = await tokenContract.saleActive()
         const isFinalized = !isSafeLaunchActive && stageNumber === 5 // Sale is finalized if saleActive is false and all stages are completed
 
+        const factoryAddress = await tokenContract.factory()
+        const tokenFactoryAddress = await tokenContract.tokenFactory()
+
         tokenList.push({
           tokenAddress,
           tokenSymbol,
@@ -119,6 +129,8 @@ export default function Dashboard(): JSX.Element {
           stage,
           isSafeLaunchActive: isSafeLaunchActive && !isFinalized,
           isFinalized,
+          factoryAddress, // Add this line
+          tokenFactoryAddress, // Add this line
         })
       }
 
@@ -208,6 +220,28 @@ export default function Dashboard(): JSX.Element {
     5: tokens.filter((token) => token.stage === "5").length,
   }
 
+  const fetchTokenFactoryDetails = async () => {
+    try {
+      const provider = new ethers.providers.JsonRpcProvider(
+        rpcUrls[selectedChainId]
+      )
+      const factoryAddress = safeLaunchFactory[selectedChainId] as `0x${string}`
+      const factoryContract = new ethers.Contract(
+        factoryAddress,
+        TokenFactoryABI,
+        provider
+      )
+
+      const exchangeFactoryAddress = await factoryContract.exchangeFactory()
+      const tokenFactoryAddress = factoryAddress // TokenFactory contract's own address
+
+      return { exchangeFactoryAddress, tokenFactoryAddress }
+    } catch (error) {
+      console.error("Error fetching factory details:", error)
+      return { exchangeFactoryAddress: "", tokenFactoryAddress: "" }
+    }
+  }
+
   return (
     <>
       <div className="flex min-h-screen flex-col">
@@ -253,6 +287,34 @@ export default function Dashboard(): JSX.Element {
                     <td>{stageCounts[4]}</td>
                     <td>{stageCounts[5]}</td>
                   </tr>
+                  <tr>
+                    <td colSpan={6}>
+                      <strong>TokenFactory Address:</strong>{" "}
+                      <Link
+                        href={getExplorerLink(
+                          factoryDetails.tokenFactoryAddress
+                        )}
+                        target="_blank"
+                      >
+                        {factoryDetails.tokenFactoryAddress.slice(0, 6)}...
+                        {factoryDetails.tokenFactoryAddress.slice(-4)}
+                      </Link>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colSpan={6}>
+                      <strong>ExchangeFactory Address:</strong>{" "}
+                      <Link
+                        href={getExplorerLink(
+                          factoryDetails.exchangeFactoryAddress
+                        )}
+                        target="_blank"
+                      >
+                        {factoryDetails.exchangeFactoryAddress.slice(0, 6)}...
+                        {factoryDetails.exchangeFactoryAddress.slice(-4)}
+                      </Link>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -272,6 +334,14 @@ export default function Dashboard(): JSX.Element {
                     <th className="table-header narrow-column">
                       Sale Finalized
                     </th>
+                    <th className="table-header narrow-column">
+                      Factory Address
+                    </th>{" "}
+                    {/* Add this line */}
+                    <th className="table-header narrow-column">
+                      Token Factory Address
+                    </th>{" "}
+                    {/* Add this line */}
                     <th className="table-header narrow-column">Actions</th>
                   </tr>
                 </thead>
@@ -309,6 +379,24 @@ export default function Dashboard(): JSX.Element {
                       </td>
                       <td className="narrow-column">
                         {token.isFinalized ? "Yes" : "No"}
+                      </td>
+                      <td className="narrow-column">
+                        <Link
+                          href={getExplorerLink(token.factoryAddress)} // Add this line
+                          target="_blank"
+                        >
+                          {token.factoryAddress.slice(0, 6)}...
+                          {token.factoryAddress.slice(-4)}
+                        </Link>
+                      </td>
+                      <td className="narrow-column">
+                        <Link
+                          href={getExplorerLink(token.tokenFactoryAddress)} // Add this line
+                          target="_blank"
+                        >
+                          {token.tokenFactoryAddress.slice(0, 6)}...
+                          {token.tokenFactoryAddress.slice(-4)}
+                        </Link>
                       </td>
                       <td className="narrow-column">
                         <button

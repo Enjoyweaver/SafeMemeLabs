@@ -196,7 +196,12 @@ export const SafeMemeABI = [
     stateMutability: "nonpayable",
     type: "function",
     name: "startSafeLaunch",
-    inputs: [],
+    inputs: [
+      {
+        name: "exchangeFactoryAddress",
+        type: "address",
+      },
+    ],
     outputs: [],
   },
   {
@@ -205,7 +210,7 @@ export const SafeMemeABI = [
     name: "setFactoryAddress",
     inputs: [
       {
-        name: "factoryAddress",
+        name: "_exchangeFactory",
         type: "address",
       },
     ],
@@ -407,6 +412,18 @@ export const SafeMemeABI = [
       {
         name: "",
         type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "exchangeFactory",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
       },
     ],
   },
