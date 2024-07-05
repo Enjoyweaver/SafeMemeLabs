@@ -108,14 +108,29 @@ export default function Dashboard(): JSX.Element {
         const tokenName = await tokenContract.name()
         const totalSupply = await tokenContract.totalSupply()
         const formattedTotalSupply = ethers.utils.formatUnits(totalSupply, 18) // Convert to readable format
-        const tokenBPairing = await tokenContract.tokenBAddress()
-        const stageNumber = (await tokenContract.currentStage()).toNumber()
-        const stage =
-          stageNumber === 0 && !(await tokenContract.saleActive())
-            ? "Not started"
-            : (stageNumber + 1).toString() // Convert stage 0-4 to 1-5 or "Not started"
-        const isSafeLaunchActive = await tokenContract.saleActive()
-        const isFinalized = !isSafeLaunchActive && stageNumber === 5 // Sale is finalized if saleActive is false and all stages are completed
+
+        // Fetch Exchange details
+        let tokenBPairing = ""
+        let stage = "Not started"
+        let isSafeLaunchActive = false
+        let isFinalized = false
+        try {
+          const exchangeAddress = await factoryContract.getExchange(
+            tokenAddress
+          )
+          const exchangeContract = new ethers.Contract(
+            exchangeAddress,
+            ExchangeABI,
+            provider
+          )
+          tokenBPairing = await exchangeContract.tokenBAddress()
+          const stageNumber = await exchangeContract.getCurrentStage()
+          stage = (stageNumber.toNumber() + 1).toString()
+          isSafeLaunchActive = await exchangeContract.getSaleStatus()
+          isFinalized = !isSafeLaunchActive && stageNumber.toNumber() === 5
+        } catch (exchangeError) {
+          console.warn(`Exchange not yet created for token ${tokenAddress}`)
+        }
 
         const factoryAddress = await tokenContract.factory()
         const tokenFactoryAddress = await tokenContract.tokenFactory()
@@ -361,13 +376,17 @@ export default function Dashboard(): JSX.Element {
                       <td>{token.tokenName}</td>
                       <td>{token.totalSupply.toString()}</td>
                       <td>
-                        <Link
-                          href={getExplorerLink(token.tokenBPairing)}
-                          target="_blank"
-                        >
-                          {token.tokenBPairing.slice(0, 6)}...
-                          {token.tokenBPairing.slice(-4)}
-                        </Link>
+                        {token.tokenBPairing ? (
+                          <Link
+                            href={getExplorerLink(token.tokenBPairing)}
+                            target="_blank"
+                          >
+                            {token.tokenBPairing.slice(0, 6)}...
+                            {token.tokenBPairing.slice(-4)}
+                          </Link>
+                        ) : (
+                          "N/A"
+                        )}
                       </td>
                       <td className="narrow-column">{token.stage}</td>
                       <td className="narrow-column">

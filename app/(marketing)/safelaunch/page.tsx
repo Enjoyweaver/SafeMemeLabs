@@ -317,10 +317,19 @@ export default function SafeLaunch(): JSX.Element {
         signer
       )
 
+      // Log the exchange factory address
+      const exchangeFactoryAddress = await tokenContract.exchangeFactory()
+      console.log(
+        "Starting SafeLaunch with exchange factory address:",
+        exchangeFactoryAddress
+      )
+
       // Start SafeLaunch and transfer tokens to the newly created exchange
       let gasLimit
       try {
-        gasLimit = await tokenContract.estimateGas.startSafeLaunch()
+        gasLimit = await tokenContract.estimateGas.startSafeLaunch(
+          exchangeFactoryAddress
+        )
       } catch (estimateError) {
         console.warn(
           "Gas estimation failed, using default gas limit",
@@ -328,8 +337,9 @@ export default function SafeLaunch(): JSX.Element {
         )
         gasLimit = ethers.BigNumber.from("1000000") // Default gas limit
       }
+      console.log("Estimated Gas Limit:", gasLimit.toString())
 
-      const tx = await tokenContract.startSafeLaunch({
+      const tx = await tokenContract.startSafeLaunch(exchangeFactoryAddress, {
         gasLimit: gasLimit.add(100000),
       })
       await tx.wait()

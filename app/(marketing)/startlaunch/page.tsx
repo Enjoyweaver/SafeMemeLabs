@@ -112,7 +112,7 @@ export default function Factory(): JSX.Element {
       BigInt(dSupply) * BigInt(10 ** (dDecimals ? Number(dDecimals) : 18)),
       BigInt(Number(dAntiWhalePercentage)), // Convert antiWhalePercentage to bigint
     ],
-    value: deployFee,
+    value: deployFee, // Ensure this is a correct BigNumber
     enabled: isConnected && isFormFilled() && Boolean(deployFee), // Only prepare if connected, form filled, and fee fetched
     cacheTime: 0,
     onError: (error) => {
