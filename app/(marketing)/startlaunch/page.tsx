@@ -10,6 +10,7 @@ import { Navbar } from "@/components/walletconnect/walletconnect"
 import "./factory.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
+import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 import { exchangeFactory, safeLaunchFactory } from "@/Constants/config"
 import { useDebounce } from "usehooks-ts"
@@ -132,7 +133,7 @@ export default function Factory(): JSX.Element {
   } = useContractWrite(config)
 
   const handleDeployClick = async () => {
-    if (!safeLaunchFactory[chainId]) {
+    if (!safeLaunchFactory[chainId] || !exchangeFactory[chainId]) {
       toast.error("Configuration error: Missing factory address.")
       return
     }
@@ -143,10 +144,43 @@ export default function Factory(): JSX.Element {
 
     try {
       if (write) {
-        await write()
+        const tx = await write()
+        const receipt = await tx.wait()
+        const tokenAddress = receipt?.events?.[0]?.args?.token
+        console.log("Token deployed at address:", tokenAddress)
+
+        if (tokenAddress) {
+          // Verify the state of the exchangeFactory and tokenFactory addresses
+          const provider = new ethers.providers.Web3Provider(window.ethereum)
+          const signer = provider.getSigner()
+          const tokenContract = new ethers.Contract(
+            tokenAddress,
+            SafeMemeABI,
+            signer
+          )
+
+          // Fetch and log the exchangeFactory and tokenFactory addresses
+          const fetchedExchangeFactory = await tokenContract.exchangeFactory()
+          const fetchedTokenFactory = await tokenContract.tokenFactory()
+          console.log(
+            "ExchangeFactory address in token:",
+            fetchedExchangeFactory
+          )
+          console.log("TokenFactory address in token:", fetchedTokenFactory)
+
+          if (
+            fetchedExchangeFactory === exchangeFactory[chainId] &&
+            fetchedTokenFactory === safeLaunchFactory[chainId]
+          ) {
+            toast.success("Token setup completed successfully!")
+          } else {
+            toast.error(
+              "Token setup error: Incorrect exchangeFactory or tokenFactory address."
+            )
+          }
+        }
       }
     } catch (error) {
-      setModalMessage("Error during deployment: " + error.message)
       setShowModal(true)
       console.error("Error during deployment:", error)
     }

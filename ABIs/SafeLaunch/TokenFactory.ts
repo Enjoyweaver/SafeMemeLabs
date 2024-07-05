@@ -199,4 +199,16 @@ export const TokenFactoryABI = [
       },
     ],
   },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "tokenFactory",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
 ] as const

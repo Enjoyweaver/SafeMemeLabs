@@ -41,6 +41,7 @@ type TokenInfo = {
   isFinalized: boolean
   factoryAddress: string // Add this line
   tokenFactoryAddress: string // Add this line
+  exchangeFactoryAddress: string // Add this line
 }
 
 type ExchangeInfo = {
@@ -107,7 +108,7 @@ export default function Dashboard(): JSX.Element {
         const tokenSymbol = await tokenContract.symbol()
         const tokenName = await tokenContract.name()
         const totalSupply = await tokenContract.totalSupply()
-        const formattedTotalSupply = ethers.utils.formatUnits(totalSupply, 18) // Convert to readable format
+        const formattedTotalSupply = ethers.utils.formatUnits(totalSupply, 18)
 
         // Fetch Exchange details
         let tokenBPairing = ""
@@ -132,8 +133,16 @@ export default function Dashboard(): JSX.Element {
           console.warn(`Exchange not yet created for token ${tokenAddress}`)
         }
 
+        // Fetch the factory and tokenFactory addresses directly from the contract state variables
         const factoryAddress = await tokenContract.factory()
+        const exchangeFactoryAddress = await tokenContract.exchangeFactory() // Correctly fetch the exchangeFactory address
         const tokenFactoryAddress = await tokenContract.tokenFactory()
+
+        // Log the fetched addresses for debugging
+        console.log(`Token Address: ${tokenAddress}`)
+        console.log(`Factory Address: ${factoryAddress}`)
+        console.log(`ExchangeFactory Address: ${exchangeFactoryAddress}`) // Log for verification
+        console.log(`TokenFactory Address: ${tokenFactoryAddress}`)
 
         tokenList.push({
           tokenAddress,
@@ -144,8 +153,9 @@ export default function Dashboard(): JSX.Element {
           stage,
           isSafeLaunchActive: isSafeLaunchActive && !isFinalized,
           isFinalized,
-          factoryAddress, // Add this line
-          tokenFactoryAddress, // Add this line
+          factoryAddress,
+          tokenFactoryAddress,
+          exchangeFactoryAddress, // Add this to the TokenInfo type and the list
         })
       }
 
@@ -401,11 +411,11 @@ export default function Dashboard(): JSX.Element {
                       </td>
                       <td className="narrow-column">
                         <Link
-                          href={getExplorerLink(token.factoryAddress)} // Add this line
+                          href={getExplorerLink(token.exchangeFactoryAddress)} // Add this line
                           target="_blank"
                         >
-                          {token.factoryAddress.slice(0, 6)}...
-                          {token.factoryAddress.slice(-4)}
+                          {token.exchangeFactoryAddress.slice(0, 6)}...
+                          {token.exchangeFactoryAddress.slice(-4)}
                         </Link>
                       </td>
                       <td className="narrow-column">

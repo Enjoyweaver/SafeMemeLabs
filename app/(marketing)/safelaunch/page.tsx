@@ -24,6 +24,7 @@ import { Navbar } from "@/components/walletconnect/walletconnect"
 import {
   NativeTokens,
   blockExplorerAddress,
+  exchangeFactory,
   exchangeTemplate,
   safeLaunchFactory,
 } from "../../../Constants/config"
@@ -134,10 +135,14 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
-  const submitTokenBInfo = async (tokenAddress: string) => {
+  const submitTokenBInfo = async (
+    tokenAddress,
+    provider,
+    tokenFactoryContract,
+    tokenBSelection,
+    tokenBDetails
+  ) => {
     try {
-      if (!provider || !exchangeContract) return
-      const signer = provider.getSigner()
       const tokenBAddress = tokenBSelection[tokenAddress]
       if (!tokenBAddress) {
         throw new Error("Token B address must be provided")
@@ -146,23 +151,27 @@ export default function SafeLaunch(): JSX.Element {
       const tokenBName = tokenBDetails[tokenBAddress]?.name || ""
       const tokenBSymbol = tokenBDetails[tokenBAddress]?.symbol || ""
 
-      // Check if Token B details are already set
-      const currentTokenBAddress = await exchangeContract.tokenBAddress()
-      if (currentTokenBAddress === ethers.constants.AddressZero) {
-        const tx = await exchangeContract.setTokenBDetails(
-          tokenBAddress,
-          tokenBName,
-          tokenBSymbol
-        )
-        await tx.wait()
-        toast.success(`Token B details set for token ${tokenAddress}`)
-      } else {
-        toast.info("Token B details are already set")
-      }
+      const exchangeAddress = await tokenFactoryContract.getExchange(
+        tokenAddress
+      )
+      const signer = provider.getSigner()
+      const exchangeContract = new ethers.Contract(
+        exchangeAddress,
+        ExchangeABI,
+        signer
+      )
+
+      const tx = await exchangeContract.setTokenBDetails(
+        tokenBAddress,
+        tokenBName,
+        tokenBSymbol
+      )
+      await tx.wait()
+      toast.success(`Token B details set for token ${tokenAddress}`)
     } catch (error) {
       console.error(
         `Error setting Token B details for token ${tokenAddress}:`,
-        error
+        error.message
       )
       toast.error(
         `Error setting Token B details for token ${tokenAddress}: ${error.message}`
@@ -322,7 +331,9 @@ export default function SafeLaunch(): JSX.Element {
   const startSafeLaunch = async (tokenAddress) => {
     try {
       if (!provider) {
-        throw new Error("Provider is not available")
+        console.error("Provider is not available")
+        toast.error("Provider is not available")
+        return
       }
 
       const signer = provider.getSigner()
@@ -332,44 +343,23 @@ export default function SafeLaunch(): JSX.Element {
         signer
       )
 
-      // Fetch exchange factory address
-      const exchangeFactoryAddress = await tokenContract.exchangeFactory()
-      if (exchangeFactoryAddress === ethers.constants.AddressZero) {
-        throw new Error(
-          "ExchangeFactory address not set in the token contract."
-        )
+      const exchangeFactoryAddress = tokenContract.exchangeFactory()
+      if (
+        !exchangeFactoryAddress ||
+        exchangeFactoryAddress === ethers.constants.AddressZero
+      ) {
+        console.error("Exchange Factory Address is not set or is invalid")
+        toast.error("Exchange Factory Address is not set or is invalid")
+        return
       }
-      console.log("Exchange Factory Address:", exchangeFactoryAddress)
 
-      // Ensure that the factory address is correctly set in the contract
-      const currentFactory = await tokenContract.factory()
-      if (currentFactory === ethers.constants.AddressZero) {
-        throw new Error("Factory address is not set in the token contract.")
-      }
-      console.log("Current Factory Address:", currentFactory)
-
-      // Estimate gas for the startSafeLaunch transaction
-      let gasLimit
-      try {
-        gasLimit = await tokenContract.estimateGas.startSafeLaunch(
-          exchangeFactoryAddress
-        )
-      } catch (estimateError) {
-        console.warn(
-          "Gas estimation failed, using default gas limit",
-          estimateError
-        )
-        gasLimit = ethers.BigNumber.from("3000000") // Default gas limit
-      }
-      console.log("Estimated Gas Limit:", gasLimit.toString())
-
-      // Start the SafeLaunch process
       const tx = await tokenContract.startSafeLaunch(exchangeFactoryAddress, {
-        gasLimit: gasLimit.add(300000),
+        gasLimit: ethers.utils.hexlify(3000000),
       })
       await tx.wait()
 
       toast.success(`SafeLaunch started for token ${tokenAddress}`)
+      fetchAllTokenData() // Refresh token data to get updated sale status
     } catch (error) {
       console.error(
         `Error starting SafeLaunch for token ${tokenAddress}:`,
@@ -378,6 +368,26 @@ export default function SafeLaunch(): JSX.Element {
       toast.error(
         `Error starting SafeLaunch for token ${tokenAddress}: ${error.message}`
       )
+    }
+  }
+
+  const getTokenFactoryAddress = async (tokenAddress) => {
+    try {
+      if (!provider) return null
+
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        provider
+      )
+      const factoryAddress = await tokenContract.factory()
+      return factoryAddress
+    } catch (error) {
+      console.error(
+        `Error fetching factory address for token ${tokenAddress}:`,
+        error
+      )
+      return null
     }
   }
 
@@ -881,6 +891,17 @@ export default function SafeLaunch(): JSX.Element {
                               token.decimals
                             )}
                           </p>
+                          <p>
+                            <strong>Factory Address:</strong>{" "}
+                            <a
+                              href={getBlockExplorerLink(token.factoryAddress)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {shortenAddress(token.factoryAddress)}
+                            </a>
+                          </p>
+
                           <p>
                             <strong>Locked Tokens:</strong>{" "}
                             {formatNumber(token.lockedTokens, token.decimals)}
