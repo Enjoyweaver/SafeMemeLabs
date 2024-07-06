@@ -42,6 +42,9 @@ type TokenInfo = {
   factoryAddress: string // Add this line
   tokenFactoryAddress: string // Add this line
   exchangeFactoryAddress: string // Add this line
+  isInitialized: boolean // Add this line
+  exchangeAddress: string // Add this line
+  exchangeBalance: string // Add this line
 }
 
 type ExchangeInfo = {
@@ -115,10 +118,12 @@ export default function Dashboard(): JSX.Element {
         let stage = "Not started"
         let isSafeLaunchActive = false
         let isFinalized = false
+        let isInitialized = false
+        let exchangeAddress = ""
+        let exchangeBalance = "0"
         try {
-          const exchangeAddress = await factoryContract.getExchange(
-            tokenAddress
-          )
+          isInitialized = await tokenContract.isSafeLaunched()
+          exchangeAddress = await tokenContract.exchangeAddress()
           const exchangeContract = new ethers.Contract(
             exchangeAddress,
             ExchangeABI,
@@ -129,20 +134,16 @@ export default function Dashboard(): JSX.Element {
           stage = (stageNumber.toNumber() + 1).toString()
           isSafeLaunchActive = await exchangeContract.getSaleStatus()
           isFinalized = !isSafeLaunchActive && stageNumber.toNumber() === 5
+          const balance = await tokenContract.balanceOf(exchangeAddress)
+          exchangeBalance = ethers.utils.formatUnits(balance, 18)
         } catch (exchangeError) {
           console.warn(`Exchange not yet created for token ${tokenAddress}`)
         }
 
         // Fetch the factory and tokenFactory addresses directly from the contract state variables
-        const factoryAddress = await tokenContract.factory()
-        const exchangeFactoryAddress = await tokenContract.exchangeFactory() // Correctly fetch the exchangeFactory address
+        const factoryAddress = await tokenContract.exchangeFactory()
+        const exchangeFactoryAddress = factoryAddress
         const tokenFactoryAddress = await tokenContract.tokenFactory()
-
-        // Log the fetched addresses for debugging
-        console.log(`Token Address: ${tokenAddress}`)
-        console.log(`Factory Address: ${factoryAddress}`)
-        console.log(`ExchangeFactory Address: ${exchangeFactoryAddress}`) // Log for verification
-        console.log(`TokenFactory Address: ${tokenFactoryAddress}`)
 
         tokenList.push({
           tokenAddress,
@@ -153,9 +154,12 @@ export default function Dashboard(): JSX.Element {
           stage,
           isSafeLaunchActive: isSafeLaunchActive && !isFinalized,
           isFinalized,
-          factoryAddress,
+          factoryAddress: exchangeFactoryAddress,
           tokenFactoryAddress,
-          exchangeFactoryAddress, // Add this to the TokenInfo type and the list
+          exchangeFactoryAddress,
+          isInitialized,
+          exchangeAddress,
+          exchangeBalance,
         })
       }
 
@@ -351,11 +355,14 @@ export default function Dashboard(): JSX.Element {
                     <th className="table-header">Token Symbol</th>
                     <th className="table-header">Token Name</th>
                     <th className="table-header">Total Supply</th>
-                    <th className="table-header">Token B Pairing</th>
-                    <th className="table-header narrow-column">Stage</th>
+                    <th className="table-header narrow-column">
+                      SafeLaunch Initialized
+                    </th>{" "}
                     <th className="table-header narrow-column">
                       SafeLaunch Active
                     </th>
+                    <th className="table-header">Token B Pairing</th>
+                    <th className="table-header narrow-column">Stage</th>
                     <th className="table-header narrow-column">
                       Sale Finalized
                     </th>
@@ -367,7 +374,15 @@ export default function Dashboard(): JSX.Element {
                       Token Factory Address
                     </th>{" "}
                     {/* Add this line */}
-                    <th className="table-header narrow-column">Actions</th>
+                    {/* Add this line */}
+                    <th className="table-header narrow-column">
+                      Exchange Address
+                    </th>{" "}
+                    {/* Add this line */}
+                    <th className="table-header narrow-column">
+                      Exchange Balance
+                    </th>{" "}
+                    {/* Add this line */}
                   </tr>
                 </thead>
                 <tbody>
@@ -385,6 +400,16 @@ export default function Dashboard(): JSX.Element {
                       <td>{token.tokenSymbol}</td>
                       <td>{token.tokenName}</td>
                       <td>{token.totalSupply.toString()}</td>
+                      <td className="narrow-column">
+                        {token.isInitialized ? "Yes" : "No"}
+                      </td>
+                      <td className="narrow-column">
+                        {token.isSafeLaunchActive
+                          ? "Active"
+                          : token.isFinalized
+                          ? "Completed"
+                          : "Inactive"}
+                      </td>
                       <td>
                         {token.tokenBPairing ? (
                           <Link
@@ -398,14 +423,9 @@ export default function Dashboard(): JSX.Element {
                           "N/A"
                         )}
                       </td>
+
                       <td className="narrow-column">{token.stage}</td>
-                      <td className="narrow-column">
-                        {token.isSafeLaunchActive
-                          ? "Active"
-                          : token.isFinalized
-                          ? "Completed"
-                          : "Inactive"}
-                      </td>
+
                       <td className="narrow-column">
                         {token.isFinalized ? "Yes" : "No"}
                       </td>
@@ -427,14 +447,17 @@ export default function Dashboard(): JSX.Element {
                           {token.tokenFactoryAddress.slice(-4)}
                         </Link>
                       </td>
+
                       <td className="narrow-column">
-                        <button
-                          onClick={() => finalizeSale(token.tokenAddress)}
-                          disabled={!token.isFinalized && token.stage !== "5"}
+                        <Link
+                          href={getExplorerLink(token.exchangeAddress)} // Add this line
+                          target="_blank"
                         >
-                          Finalize
-                        </button>
+                          {token.exchangeAddress.slice(0, 6)}...
+                          {token.exchangeAddress.slice(-4)}
+                        </Link>
                       </td>
+                      <td className="narrow-column">{token.exchangeBalance}</td>
                     </tr>
                   ))}
                 </tbody>

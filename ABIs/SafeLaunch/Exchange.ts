@@ -274,6 +274,28 @@ export const ExchangeABI = [
     type: "event",
   },
   {
+    name: "TokenBSet",
+    inputs: [
+      {
+        name: "tokenBAddress",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "tokenBName",
+        type: "string",
+        indexed: false,
+      },
+      {
+        name: "tokenBSymbol",
+        type: "string",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
     stateMutability: "nonpayable",
     type: "function",
     name: "setup",
@@ -281,6 +303,26 @@ export const ExchangeABI = [
       {
         name: "token_addr",
         type: "address",
+      },
+      {
+        name: "_name",
+        type: "string",
+      },
+      {
+        name: "_symbol",
+        type: "string",
+      },
+      {
+        name: "_decimals",
+        type: "uint256",
+      },
+      {
+        name: "_totalSupply",
+        type: "uint256",
+      },
+      {
+        name: "_antiWhalePercentage",
+        type: "uint256",
       },
     ],
     outputs: [],
@@ -1245,7 +1287,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "factory",
+    name: "exchangeFactory",
     inputs: [],
     outputs: [
       {
@@ -1464,4 +1506,40 @@ export const ExchangeABI = [
       },
     ],
   },
-] as const
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "safeMeme",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "safeLaunchActive",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "saleTokens",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+]

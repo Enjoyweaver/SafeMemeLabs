@@ -49,6 +49,26 @@ export const ExchangeFactoryABI = [
         name: "token",
         type: "address",
       },
+      {
+        name: "name",
+        type: "string",
+      },
+      {
+        name: "symbol",
+        type: "string",
+      },
+      {
+        name: "decimals",
+        type: "uint256",
+      },
+      {
+        name: "totalSupply",
+        type: "uint256",
+      },
+      {
+        name: "antiWhalePercentage",
+        type: "uint256",
+      },
     ],
     outputs: [
       {
@@ -56,6 +76,30 @@ export const ExchangeFactoryABI = [
         type: "address",
       },
     ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "initializeExchangeTemplate",
+    inputs: [
+      {
+        name: "template",
+        type: "address",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "updateTokenFactory",
+    inputs: [
+      {
+        name: "tokenFactory",
+        type: "address",
+      },
+    ],
+    outputs: [],
   },
   {
     stateMutability: "view",
@@ -107,18 +151,6 @@ export const ExchangeFactoryABI = [
         type: "address",
       },
     ],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "setup",
-    inputs: [
-      {
-        name: "token_addr",
-        type: "address",
-      },
-    ],
-    outputs: [],
   },
   {
     stateMutability: "view",
@@ -199,6 +231,18 @@ export const ExchangeFactoryABI = [
     stateMutability: "view",
     type: "function",
     name: "tokenFactory",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "owner",
     inputs: [],
     outputs: [
       {

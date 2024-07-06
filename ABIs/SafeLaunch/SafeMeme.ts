@@ -203,14 +203,38 @@ export const SafeMemeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "startSafeLaunch",
-    inputs: [
+    name: "initializeSafeLaunch",
+    inputs: [],
+    outputs: [
       {
-        name: "exchangeFactoryAddress",
-        type: "address",
+        name: "",
+        type: "bool",
       },
     ],
-    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "startSafeLaunch",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "transferTokensForSafeLaunch",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
   },
   {
     stateMutability: "nonpayable",
@@ -373,7 +397,7 @@ export const SafeMemeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "factory",
+    name: "tokenFactory",
     inputs: [],
     outputs: [
       {
@@ -426,7 +450,7 @@ export const SafeMemeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "tokenFactory",
+    name: "exchangeAddress",
     inputs: [],
     outputs: [
       {
