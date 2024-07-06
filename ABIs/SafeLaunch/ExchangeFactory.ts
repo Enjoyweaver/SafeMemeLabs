@@ -50,6 +50,10 @@ export const ExchangeFactoryABI = [
         type: "address",
       },
       {
+        name: "owner",
+        type: "address",
+      },
+      {
         name: "name",
         type: "string",
       },
@@ -76,6 +80,12 @@ export const ExchangeFactoryABI = [
         type: "address",
       },
     ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "constructor",
+    inputs: [],
+    outputs: [],
   },
   {
     stateMutability: "nonpayable",

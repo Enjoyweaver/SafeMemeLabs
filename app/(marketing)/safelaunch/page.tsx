@@ -176,26 +176,29 @@ export default function SafeLaunch(): JSX.Element {
         signer
       )
 
-      console.log(
-        `Submitting Token B details: ${tokenBAddress}, ${tokenBName}, ${tokenBSymbol}`
-      )
-      console.log(`Token Address: ${tokenAddress}`)
-      console.log(`Exchange Contract Address: ${exchangeContract.address}`)
+      console.log("Token Address:", tokenAddress)
+      console.log("Exchange Contract Address:", exchangeContract.address)
+      console.log("Token B Address:", tokenBAddress)
+      console.log("Token B Name:", tokenBName)
+      console.log("Token B Symbol:", tokenBSymbol)
 
       // Check current state of the contract
       const currentTokenBAddress = await exchangeContract.tokenBAddress()
-      console.log(`Current Token B Address: ${currentTokenBAddress}`)
-      console.log(`Retrieved Exchange Address: ${exchangeAddress}`)
+      console.log("Current Token B Address:", currentTokenBAddress)
 
       const gasLimit = 2000000 // Set a manual gas limit
 
+      console.log("Sending transaction to set Token B details...")
       const tx = await exchangeContract.setTokenBDetails(
         tokenBAddress,
         tokenBName,
         tokenBSymbol,
         { gasLimit }
       )
+      console.log("Transaction sent:", tx.hash)
+
       await tx.wait()
+      console.log("Transaction confirmed")
 
       toast.success(`Token B details set for token ${tokenAddress}`)
 
@@ -229,7 +232,7 @@ export default function SafeLaunch(): JSX.Element {
 
       const gasLimit = await tokenContract.estimateGas.initializeSafeLaunch()
       const tx = await tokenContract.initializeSafeLaunch({
-        gasLimit: gasLimit.add(1200000), // Adding extra gas limit
+        gasLimit: gasLimit.add(6200000), // Adding extra gas limit
       })
       await tx.wait()
       toast.success(`SafeLaunch initialized for token ${tokenAddress}`)

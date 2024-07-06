@@ -459,4 +459,28 @@ export const SafeMemeABI = [
       },
     ],
   },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "isInitialized",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "isSafeLaunchActive",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
 ] as const

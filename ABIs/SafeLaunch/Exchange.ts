@@ -305,6 +305,10 @@ export const ExchangeABI = [
         type: "address",
       },
       {
+        name: "_owner",
+        type: "address",
+      },
+      {
         name: "_name",
         type: "string",
       },
@@ -325,6 +329,13 @@ export const ExchangeABI = [
         type: "uint256",
       },
     ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "activateSafeLaunch",
+    inputs: [],
     outputs: [],
   },
   {
@@ -1542,4 +1553,28 @@ export const ExchangeABI = [
       },
     ],
   },
-]
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "isInitialized",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "isSafeLaunchActive",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+] as const

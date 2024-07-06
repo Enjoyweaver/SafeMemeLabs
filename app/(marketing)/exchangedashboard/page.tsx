@@ -152,7 +152,7 @@ export default function Dashboard(): JSX.Element {
           totalSupply: formattedTotalSupply,
           tokenBPairing,
           stage,
-          isSafeLaunchActive: isSafeLaunchActive && !isFinalized,
+          isSafeLaunchActive: isInitialized && isSafeLaunchActive, // Ensure this reflects the correct logic
           isFinalized,
           factoryAddress: exchangeFactoryAddress,
           tokenFactoryAddress,
