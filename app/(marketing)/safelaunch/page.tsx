@@ -586,27 +586,63 @@ export default function SafeLaunch(): JSX.Element {
     )
   }
 
+  const isSafeLaunchActive = async (tokenAddress) => {
+    try {
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        provider
+      )
+      return await tokenContract.isSafeLaunched()
+    } catch (error) {
+      console.error("Error checking SafeLaunch status:", error)
+      return false
+    }
+  }
+
   const fetchStageInfo = async (tokenAddress) => {
-    if (!provider || !tokenAddress || !exchangeContract) return
+    if (!provider || !tokenAddress) return
 
     try {
-      const exchangeAddress = await exchangeContract.tokenAddress()
-      const exchange = new ethers.Contract(
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        provider
+      )
+      const safeLaunchActive = await isSafeLaunchActive(tokenAddress)
+
+      if (!safeLaunchActive) {
+        console.error("SafeLaunch is not active")
+        toast.error("SafeLaunch is not active")
+        return
+      }
+
+      const exchangeAddress = await tokenContract.exchangeAddress()
+
+      if (
+        !exchangeAddress ||
+        exchangeAddress === ethers.constants.AddressZero
+      ) {
+        console.error("Invalid exchange address")
+        return
+      }
+
+      const exchangeContract = new ethers.Contract(
         exchangeAddress,
         ExchangeABI,
         provider
       )
 
-      const currentStage = await exchange.getCurrentStage()
-      const stageInfo = await exchange.getStageInfo(currentStage)
-      const tokenBAddress = await exchange.tokenBAddress()
+      const currentStage = await exchangeContract.getCurrentStage()
+      const stageInfo = await exchangeContract.getStageInfo(currentStage)
+      const tokenBAddress = await exchangeContract.tokenBAddress()
 
       console.log("Current Stage:", currentStage.toString())
       console.log("Stage Info:", stageInfo)
       console.log("Token B Address:", tokenBAddress)
 
       setCurrentStage(currentStage.toNumber())
-      setStageInfo(stageInfo) // Ensure this state update is successful
+      setStageInfo(stageInfo)
       setTokenPrice(ethers.utils.formatUnits(stageInfo[1], 18))
       setSelectedToken({ tokenAddress, tokenBAddress })
 
@@ -727,10 +763,21 @@ export default function SafeLaunch(): JSX.Element {
       await approveTx.wait()
       toast.info("Approval successful. Proceeding with swap...")
 
-      // Perform the token swap
+      // Estimate gas for the swap
+      const gasEstimate =
+        await exchangeSigner.estimateGas.tokenBToTokenSwapInput(
+          amountInWei,
+          Date.now() + 1000 * 60 * 10
+        )
+
+      // Add 20% to the gas estimate
+      const gasLimit = gasEstimate.mul(120).div(100)
+
+      // Perform the token swap with increased gas limit
       const swapTx = await exchangeSigner.tokenBToTokenSwapInput(
         amountInWei,
-        Date.now() + 1000 * 60 * 10
+        Date.now() + 1000 * 60 * 10,
+        { gasLimit }
       )
       await swapTx.wait()
       toast.success("Swap successful!")
@@ -842,15 +889,6 @@ export default function SafeLaunch(): JSX.Element {
     return `${address.slice(0, 6)}...${address.slice(-6)}`
   }
 
-  const calculateStageProgress = (stage, totalSupply) => {
-    const [tokenBRequired, tokenPrice] = stage
-    const tokensForSale = totalSupply.mul(5).div(100)
-    const remainingTokens = tokensForSale.sub(
-      tokenBRequired.mul(tokenPrice).div(ethers.utils.parseUnits("1", 18))
-    )
-    return remainingTokens.mul(100).div(tokensForSale).toNumber()
-  }
-
   const getTokensForCurrentChain = () => {
     const currentChainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
     return NativeTokens[currentChainId] || []
@@ -923,7 +961,7 @@ export default function SafeLaunch(): JSX.Element {
                 }}
               />
             </label>
-            {token.saleActive && stageIndex <= currentStage ? (
+            {token.isSafeLaunched && stageIndex <= currentStage ? (
               <>
                 <div className="stagetext">
                   <p>
@@ -971,17 +1009,6 @@ export default function SafeLaunch(): JSX.Element {
                       ? "Loading..."
                       : tokenBDetails[token.tokenBAddress]?.symbol || "Token B"}
                   </p>
-                </div>
-                <div className="progress-bar">
-                  <div
-                    className="progress-bar-fill"
-                    style={{
-                      width: `${calculateStageProgress(
-                        stage,
-                        token.totalSupply
-                      )}%`,
-                    }}
-                  ></div>
                 </div>
                 <button
                   className="buy-token-button"
