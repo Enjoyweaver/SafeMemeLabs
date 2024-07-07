@@ -719,7 +719,7 @@ export default function SafeLaunch(): JSX.Element {
   }
 
   const handleSwap = async () => {
-    if (!amount || !selectedToken || !provider || !exchangeContract) {
+    if (!amount || !selectedToken || !provider) {
       toast.error("Please enter an amount and ensure wallet is connected")
       console.error("Swap failed due to missing parameters", {
         amount,
@@ -750,36 +750,28 @@ export default function SafeLaunch(): JSX.Element {
         SafeMemeABI,
         signer
       )
-      const exchangeSigner = exchangeContract.connect(signer)
+      const exchangeContract = new ethers.Contract(
+        tokenAddress,
+        ExchangeABI,
+        signer
+      )
 
       // Convert the amount to the correct units
       const amountInWei = ethers.utils.parseUnits(amount, 18)
 
       // Approve the Exchange contract to spend Token B
       const approveTx = await tokenBContract.approve(
-        exchangeSigner.address,
+        exchangeContract.address,
         amountInWei
       )
       await approveTx.wait()
       toast.info("Approval successful. Proceeding with swap...")
 
-      // Estimate gas for the swap
-      const gasEstimate =
-        await exchangeSigner.estimateGas.tokenBToTokenSwapInput(
-          amountInWei,
-          Date.now() + 1000 * 60 * 10
-        )
+      // Perform the token swap with an extremely high gas limit
+      const gasLimit = ethers.BigNumber.from("100000000") // Set a very high gas limit manually
+      const buyTx = await exchangeContract.buyTokens(amountInWei, { gasLimit })
+      await buyTx.wait()
 
-      // Add 20% to the gas estimate
-      const gasLimit = gasEstimate.mul(120).div(100)
-
-      // Perform the token swap with increased gas limit
-      const swapTx = await exchangeSigner.tokenBToTokenSwapInput(
-        amountInWei,
-        Date.now() + 1000 * 60 * 10,
-        { gasLimit }
-      )
-      await swapTx.wait()
       toast.success("Swap successful!")
       fetchStageInfo(tokenAddress)
     } catch (error) {
