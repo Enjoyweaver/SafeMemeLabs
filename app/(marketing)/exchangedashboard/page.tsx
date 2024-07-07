@@ -43,13 +43,13 @@ type TokenInfo = {
   tokenFactoryAddress: string // Add this line
   exchangeFactoryAddress: string // Add this line
   isInitialized: boolean // Add this line
-  exchangeAddress: string // Add this line
+  dexAddress: string // Add this line
   exchangeBalance: string // Add this line
 }
 
 type ExchangeInfo = {
   tokenAddress: string
-  exchangeAddress: string
+  dexAddress: string
   tokenSymbol: string
   tokenName: string
   ethBalance: bigint
@@ -97,11 +97,11 @@ export default function Dashboard(): JSX.Element {
         provider
       )
 
-      const count = await factoryContract.getDeployedTokenCount()
+      const count = await factoryContract.getDeployedSafeMemeCount()
       const tokenList: TokenInfo[] = []
 
       for (let i = 0; i < count.toNumber(); i++) {
-        const tokenAddress = await factoryContract.tokensDeployed(i)
+        const tokenAddress = await factoryContract.safeMemesDeployed(i)
         const tokenContract = new ethers.Contract(
           tokenAddress,
           SafeMemeABI,
@@ -119,13 +119,13 @@ export default function Dashboard(): JSX.Element {
         let isSafeLaunchActive = false
         let isFinalized = false
         let isInitialized = false
-        let exchangeAddress = ""
+        let dexAddress = ""
         let exchangeBalance = "0"
         try {
           isInitialized = await tokenContract.isSafeLaunched()
-          exchangeAddress = await tokenContract.exchangeAddress()
+          dexAddress = await tokenContract.dexAddress()
           const exchangeContract = new ethers.Contract(
-            exchangeAddress,
+            dexAddress,
             ExchangeABI,
             provider
           )
@@ -134,7 +134,7 @@ export default function Dashboard(): JSX.Element {
           stage = (stageNumber.toNumber() + 1).toString()
           isSafeLaunchActive = await exchangeContract.getSaleStatus()
           isFinalized = !isSafeLaunchActive && stageNumber.toNumber() === 5
-          const balance = await tokenContract.balanceOf(exchangeAddress)
+          const balance = await tokenContract.balanceOf(dexAddress)
           exchangeBalance = ethers.utils.formatUnits(balance, 18)
         } catch (exchangeError) {
           console.warn(`Exchange not yet created for token ${tokenAddress}`)
@@ -158,7 +158,7 @@ export default function Dashboard(): JSX.Element {
           tokenFactoryAddress,
           exchangeFactoryAddress,
           isInitialized,
-          exchangeAddress,
+          dexAddress,
           exchangeBalance,
         })
       }
@@ -186,7 +186,7 @@ export default function Dashboard(): JSX.Element {
 
       for (let i = 0; i < count.toNumber(); i++) {
         const tokenAddress = await factoryContract.id_to_token(i)
-        const exchangeAddress = await factoryContract.getExchange(tokenAddress)
+        const dexAddress = await factoryContract.getExchange(tokenAddress)
         const tokenContract = new ethers.Contract(
           tokenAddress,
           ExchangeABI,
@@ -195,12 +195,12 @@ export default function Dashboard(): JSX.Element {
 
         const tokenSymbol = await tokenContract.symbol()
         const tokenName = await tokenContract.name()
-        const ethBalance = await provider.getBalance(exchangeAddress) // get ETH balance
-        const tokenBalance = await tokenContract.balanceOf(exchangeAddress) // get Token balance
+        const ethBalance = await provider.getBalance(dexAddress) // get ETH balance
+        const tokenBalance = await tokenContract.balanceOf(dexAddress) // get Token balance
 
         exchangeList.push({
           tokenAddress,
-          exchangeAddress,
+          dexAddress,
           tokenSymbol,
           tokenName,
           ethBalance,
@@ -450,11 +450,11 @@ export default function Dashboard(): JSX.Element {
 
                       <td className="narrow-column">
                         <Link
-                          href={getExplorerLink(token.exchangeAddress)} // Add this line
+                          href={getExplorerLink(token.dexAddress)} // Add this line
                           target="_blank"
                         >
-                          {token.exchangeAddress.slice(0, 6)}...
-                          {token.exchangeAddress.slice(-4)}
+                          {token.dexAddress.slice(0, 6)}...
+                          {token.dexAddress.slice(-4)}
                         </Link>
                       </td>
                       <td className="narrow-column">{token.exchangeBalance}</td>
@@ -505,11 +505,11 @@ export default function Dashboard(): JSX.Element {
                       </td>
                       <td>
                         <Link
-                          href={getExplorerLink(exchange.exchangeAddress)}
+                          href={getExplorerLink(exchange.dexAddress)}
                           target="_blank"
                         >
-                          {exchange.exchangeAddress.slice(0, 6)}...
-                          {exchange.exchangeAddress.slice(-4)}
+                          {exchange.dexAddress.slice(0, 6)}...
+                          {exchange.dexAddress.slice(-4)}
                         </Link>
                       </td>
                       <td>{exchange.tokenSymbol}</td>

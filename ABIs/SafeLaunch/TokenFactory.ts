@@ -1,9 +1,9 @@
 export const TokenFactoryABI = [
   {
-    name: "NewToken",
+    name: "NewSafeMeme",
     inputs: [
       {
-        name: "token",
+        name: "safeMeme",
         type: "address",
         indexed: true,
       },
@@ -21,7 +21,7 @@ export const TokenFactoryABI = [
     type: "constructor",
     inputs: [
       {
-        name: "token_template",
+        name: "safeMeme_template",
         type: "address",
       },
       {
@@ -42,7 +42,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "payable",
     type: "function",
-    name: "deployToken",
+    name: "deploySafeMeme",
     inputs: [
       {
         name: "name",
@@ -75,7 +75,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getTokensDeployedByUser",
+    name: "getSafeMemesDeployedByUser",
     inputs: [
       {
         name: "_user",
@@ -92,7 +92,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getDeployedTokenCount",
+    name: "getDeployedSafeMemeCount",
     inputs: [],
     outputs: [
       {
@@ -104,7 +104,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "tokenTemplate",
+    name: "safeMemeTemplate",
     inputs: [],
     outputs: [
       {
@@ -116,7 +116,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "tokensDeployed",
+    name: "safeMemesDeployed",
     inputs: [
       {
         name: "arg0",
@@ -133,7 +133,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "tokenDeployedCount",
+    name: "safeMemeDeployedCount",
     inputs: [],
     outputs: [
       {
@@ -145,7 +145,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "userTokens",
+    name: "userSafeMemes",
     inputs: [
       {
         name: "arg0",

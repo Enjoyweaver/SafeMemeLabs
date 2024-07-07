@@ -105,7 +105,7 @@ export default function Factory(): JSX.Element {
   } = usePrepareContractWrite({
     address: safeLaunchFactory[chainId] as `0x${string}`,
     abi: TokenFactoryABI,
-    functionName: "deployToken",
+    functionName: "deploySafeMeme",
     args: [
       dName,
       dSymbol,

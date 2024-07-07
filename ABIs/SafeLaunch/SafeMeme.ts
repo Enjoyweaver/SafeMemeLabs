@@ -47,7 +47,7 @@ export const SafeMemeABI = [
     name: "SafeLaunched",
     inputs: [
       {
-        name: "token",
+        name: "safeMeme",
         type: "address",
         indexed: true,
       },
@@ -450,7 +450,7 @@ export const SafeMemeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "exchangeAddress",
+    name: "dexAddress",
     inputs: [],
     outputs: [
       {

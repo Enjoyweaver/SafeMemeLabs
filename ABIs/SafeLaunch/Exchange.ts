@@ -1,6 +1,6 @@
 export const ExchangeABI = [
   {
-    name: "TokenPurchase",
+    name: "SafeMemePurchase",
     inputs: [
       {
         name: "buyer",
@@ -13,7 +13,7 @@ export const ExchangeABI = [
         indexed: true,
       },
       {
-        name: "safememe_bought",
+        name: "safeMeme_bought",
         type: "uint256",
         indexed: true,
       },
@@ -22,7 +22,7 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "TokenBPurchase",
+    name: "tokenBPurchase",
     inputs: [
       {
         name: "buyer",
@@ -30,7 +30,7 @@ export const ExchangeABI = [
         indexed: true,
       },
       {
-        name: "safememe_sold",
+        name: "safeMeme_sold",
         type: "uint256",
         indexed: true,
       },
@@ -57,7 +57,7 @@ export const ExchangeABI = [
         indexed: true,
       },
       {
-        name: "token_amount",
+        name: "safeMeme_amount",
         type: "uint256",
         indexed: true,
       },
@@ -69,7 +69,7 @@ export const ExchangeABI = [
     name: "StageStarted",
     inputs: [
       {
-        name: "token",
+        name: "safeMeme",
         type: "address",
         indexed: true,
       },
@@ -86,7 +86,7 @@ export const ExchangeABI = [
     name: "StageCompleted",
     inputs: [
       {
-        name: "token",
+        name: "safeMeme",
         type: "address",
         indexed: true,
       },
@@ -96,7 +96,7 @@ export const ExchangeABI = [
         indexed: false,
       },
       {
-        name: "tokensSold",
+        name: "safeMemessSold",
         type: "uint256",
         indexed: false,
       },
@@ -113,17 +113,17 @@ export const ExchangeABI = [
     name: "SaleFinalized",
     inputs: [
       {
-        name: "token",
+        name: "safeMeme",
         type: "address",
         indexed: true,
       },
       {
-        name: "totalTokensSold",
+        name: "totalsafeMemeSold",
         type: "uint256",
         indexed: false,
       },
       {
-        name: "totalTokenBReceived",
+        name: "totaltokenBReceived",
         type: "uint256",
         indexed: false,
       },
@@ -132,7 +132,7 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "TokensPurchased",
+    name: "SafeMemePurchased",
     inputs: [
       {
         name: "buyer",
@@ -140,12 +140,12 @@ export const ExchangeABI = [
         indexed: true,
       },
       {
-        name: "token",
+        name: "safeMeme",
         type: "address",
         indexed: true,
       },
       {
-        name: "tokenAmount",
+        name: "safeMemeAmount",
         type: "uint256",
         indexed: false,
       },
@@ -265,7 +265,7 @@ export const ExchangeABI = [
     name: "SafeLaunched",
     inputs: [
       {
-        name: "token",
+        name: "safeMeme",
         type: "address",
         indexed: true,
       },
@@ -274,7 +274,7 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "TokenBSet",
+    name: "tokenBSet",
     inputs: [
       {
         name: "tokenBAddress",
@@ -301,7 +301,7 @@ export const ExchangeABI = [
     name: "setup",
     inputs: [
       {
-        name: "token_addr",
+        name: "safeMeme",
         type: "address",
       },
       {
@@ -341,7 +341,7 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "setTokenBDetails",
+    name: "settokenBDetails",
     inputs: [
       {
         name: "_tokenBAddress",
@@ -361,7 +361,7 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "setStageTokenBAmount",
+    name: "setStagetokenBAmount",
     inputs: [
       {
         name: "stage",
@@ -414,10 +414,10 @@ export const ExchangeABI = [
   {
     stateMutability: "payable",
     type: "function",
-    name: "tokenBToTokenSwapInput",
+    name: "tokenBTosafeMemeSwapInput",
     inputs: [
       {
-        name: "min_safememe",
+        name: "min_safeMeme",
         type: "uint256",
       },
       {
@@ -435,10 +435,10 @@ export const ExchangeABI = [
   {
     stateMutability: "payable",
     type: "function",
-    name: "tokenBToTokenTransferInput",
+    name: "tokenBTosafeMemeTransferInput",
     inputs: [
       {
-        name: "min_safememe",
+        name: "min_safeMeme",
         type: "uint256",
       },
       {
@@ -460,10 +460,10 @@ export const ExchangeABI = [
   {
     stateMutability: "payable",
     type: "function",
-    name: "tokenBToTokenSwapOutput",
+    name: "tokenBTosafeMemeSwapOutput",
     inputs: [
       {
-        name: "safememe_bought",
+        name: "safeMemes_bought",
         type: "uint256",
       },
       {
@@ -481,10 +481,10 @@ export const ExchangeABI = [
   {
     stateMutability: "payable",
     type: "function",
-    name: "tokenBToTokenTransferOutput",
+    name: "tokenBTosafeMemeTransferOutput",
     inputs: [
       {
-        name: "safememe_bought",
+        name: "safeMemes_bought",
         type: "uint256",
       },
       {
@@ -506,10 +506,10 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "tokenToTokenBSwapInput",
+    name: "safeMemeTotokenBSwapInput",
     inputs: [
       {
-        name: "safememe_sold",
+        name: "safeMemes_sold",
         type: "uint256",
       },
       {
@@ -531,10 +531,10 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "tokenToTokenBTransferInput",
+    name: "safeMemeTotokenBTransferInput",
     inputs: [
       {
-        name: "safememe_sold",
+        name: "safeMemes_sold",
         type: "uint256",
       },
       {
@@ -560,14 +560,14 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "tokenToTokenBSwapOutput",
+    name: "safeMemeTotokenBSwapOutput",
     inputs: [
       {
         name: "tokenB_bought",
         type: "uint256",
       },
       {
-        name: "max_safememe",
+        name: "max_safeMemes",
         type: "uint256",
       },
       {
@@ -585,14 +585,14 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "tokenToTokenBTransferOutput",
+    name: "safeMemeTotokenBTransferOutput",
     inputs: [
       {
         name: "tokenB_bought",
         type: "uint256",
       },
       {
-        name: "max_safememe",
+        name: "max_safeMemes",
         type: "uint256",
       },
       {
@@ -614,14 +614,14 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "tokenToTokenSwapInput",
+    name: "safeMeneToSafeMemeSwapInput",
     inputs: [
       {
-        name: "safememe_sold",
+        name: "safeMemes_sold",
         type: "uint256",
       },
       {
-        name: "min_safememe_bought",
+        name: "min_safeMemes_bought",
         type: "uint256",
       },
       {
@@ -633,7 +633,7 @@ export const ExchangeABI = [
         type: "uint256",
       },
       {
-        name: "token_addr",
+        name: "safeMeme",
         type: "address",
       },
     ],
@@ -647,154 +647,14 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "tokenToTokenTransferInput",
+    name: "safeMemeToSafeMemeTransferInput",
     inputs: [
       {
-        name: "safememe_sold",
+        name: "safeMemes_sold",
         type: "uint256",
       },
       {
-        name: "min_safememe_bought",
-        type: "uint256",
-      },
-      {
-        name: "min_tokenB_bought",
-        type: "uint256",
-      },
-      {
-        name: "deadline",
-        type: "uint256",
-      },
-      {
-        name: "recipient",
-        type: "address",
-      },
-      {
-        name: "token_addr",
-        type: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "tokenToTokenSwapOutput",
-    inputs: [
-      {
-        name: "safememe_bought",
-        type: "uint256",
-      },
-      {
-        name: "max_safememe_sold",
-        type: "uint256",
-      },
-      {
-        name: "max_tokenB_sold",
-        type: "uint256",
-      },
-      {
-        name: "deadline",
-        type: "uint256",
-      },
-      {
-        name: "token_addr",
-        type: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "tokenToTokenTransferOutput",
-    inputs: [
-      {
-        name: "safememe_bought",
-        type: "uint256",
-      },
-      {
-        name: "max_safememe_sold",
-        type: "uint256",
-      },
-      {
-        name: "max_tokenB_sold",
-        type: "uint256",
-      },
-      {
-        name: "deadline",
-        type: "uint256",
-      },
-      {
-        name: "recipient",
-        type: "address",
-      },
-      {
-        name: "token_addr",
-        type: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "tokenToExchangeSwapInput",
-    inputs: [
-      {
-        name: "safememe_sold",
-        type: "uint256",
-      },
-      {
-        name: "min_safememe_bought",
-        type: "uint256",
-      },
-      {
-        name: "min_tokenB_bought",
-        type: "uint256",
-      },
-      {
-        name: "deadline",
-        type: "uint256",
-      },
-      {
-        name: "exchange_addr",
-        type: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "tokenToExchangeTransferInput",
-    inputs: [
-      {
-        name: "safememe_sold",
-        type: "uint256",
-      },
-      {
-        name: "min_safememe_bought",
+        name: "min_safeMemes_bought",
         type: "uint256",
       },
       {
@@ -810,7 +670,7 @@ export const ExchangeABI = [
         type: "address",
       },
       {
-        name: "exchange_addr",
+        name: "safeMeme",
         type: "address",
       },
     ],
@@ -824,14 +684,14 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "tokenToExchangeSwapOutput",
+    name: "safeMemeToSafeMemeSwapOutput",
     inputs: [
       {
-        name: "safememe_bought",
+        name: "safeMemes_bought",
         type: "uint256",
       },
       {
-        name: "max_safememe_sold",
+        name: "max_safeMemes_sold",
         type: "uint256",
       },
       {
@@ -843,7 +703,7 @@ export const ExchangeABI = [
         type: "uint256",
       },
       {
-        name: "exchange_addr",
+        name: "safeMeme",
         type: "address",
       },
     ],
@@ -857,14 +717,14 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "tokenToExchangeTransferOutput",
+    name: "safeMemeToSafeMemeTransferOutput",
     inputs: [
       {
-        name: "safememe_bought",
+        name: "safeMemes_bought",
         type: "uint256",
       },
       {
-        name: "max_safememe_sold",
+        name: "max_safeMemes_sold",
         type: "uint256",
       },
       {
@@ -880,7 +740,147 @@ export const ExchangeABI = [
         type: "address",
       },
       {
-        name: "exchange_addr",
+        name: "safeMeme",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "safeMemeToExchangeSwapInput",
+    inputs: [
+      {
+        name: "safeMemes_sold",
+        type: "uint256",
+      },
+      {
+        name: "min_safeMemes_bought",
+        type: "uint256",
+      },
+      {
+        name: "min_tokenB_bought",
+        type: "uint256",
+      },
+      {
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        name: "dex_addr",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "safeMemeToExchangeTransferInput",
+    inputs: [
+      {
+        name: "safeMemes_sold",
+        type: "uint256",
+      },
+      {
+        name: "min_safeMemes_bought",
+        type: "uint256",
+      },
+      {
+        name: "min_tokenB_bought",
+        type: "uint256",
+      },
+      {
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        name: "recipient",
+        type: "address",
+      },
+      {
+        name: "dex_addr",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "safeMemeToExchangeSwapOutput",
+    inputs: [
+      {
+        name: "safeMemes_bought",
+        type: "uint256",
+      },
+      {
+        name: "max_safeMemes_sold",
+        type: "uint256",
+      },
+      {
+        name: "max_tokenB_sold",
+        type: "uint256",
+      },
+      {
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        name: "dex_addr",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "safeMemeToExchangeTransferOutput",
+    inputs: [
+      {
+        name: "safeMemes_bought",
+        type: "uint256",
+      },
+      {
+        name: "max_safeMemes_sold",
+        type: "uint256",
+      },
+      {
+        name: "max_tokenB_sold",
+        type: "uint256",
+      },
+      {
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        name: "recipient",
+        type: "address",
+      },
+      {
+        name: "dex_addr",
         type: "address",
       },
     ],
@@ -894,7 +894,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getTokenBToTokenInputPrice",
+    name: "gettokenBToSafeMemeInputPrice",
     inputs: [
       {
         name: "tokenB_sold",
@@ -911,10 +911,10 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getTokenBToTokenOutputPrice",
+    name: "gettokenBToSafeMemeOutputPrice",
     inputs: [
       {
-        name: "safememe_bought",
+        name: "safeMemes_bought",
         type: "uint256",
       },
     ],
@@ -928,10 +928,10 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getTokenToTokenBInputPrice",
+    name: "getSafeMemeTotokenBInputPrice",
     inputs: [
       {
-        name: "safememe_sold",
+        name: "safeMemes_sold",
         type: "uint256",
       },
     ],
@@ -945,7 +945,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getTokenToTokenBOutputPrice",
+    name: "getSafeMemeTotokenBOutputPrice",
     inputs: [
       {
         name: "tokenB_bought",
@@ -962,7 +962,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "tokenAddress",
+    name: "safeMemeAddress",
     inputs: [],
     outputs: [
       {
@@ -1152,7 +1152,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getTokensAvailable",
+    name: "getsafeMemessAvailable",
     inputs: [],
     outputs: [
       {
@@ -1164,7 +1164,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getTokensSold",
+    name: "getsafeMemesSold",
     inputs: [],
     outputs: [
       {
@@ -1176,7 +1176,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getReceivedTokenB",
+    name: "getReceivedtokenB",
     inputs: [],
     outputs: [
       {
@@ -1286,18 +1286,6 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "token",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
     name: "exchangeFactory",
     inputs: [],
     outputs: [
@@ -1310,7 +1298,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "stageTokenBAmounts",
+    name: "stagetokenBAmounts",
     inputs: [
       {
         name: "arg0",
@@ -1327,7 +1315,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "tokenPrices",
+    name: "safeMemePrices",
     inputs: [
       {
         name: "arg0",
@@ -1344,7 +1332,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "soldTokens",
+    name: "soldsafeMeme",
     inputs: [
       {
         name: "arg0",
@@ -1390,7 +1378,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "stageTokenBReceived",
+    name: "stagetokenBReceived",
     inputs: [
       {
         name: "arg0",
@@ -1407,7 +1395,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "lockedTokens",
+    name: "lockedsafeMeme",
     inputs: [],
     outputs: [
       {
@@ -1544,7 +1532,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "saleTokens",
+    name: "salesafeMeme",
     inputs: [],
     outputs: [
       {

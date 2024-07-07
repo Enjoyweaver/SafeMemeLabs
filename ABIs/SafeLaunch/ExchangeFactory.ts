@@ -1,14 +1,14 @@
 export const ExchangeFactoryABI = [
   {
-    name: "NewExchange",
+    name: "NewDEX",
     inputs: [
       {
-        name: "token",
+        name: "safeMeme",
         type: "address",
         indexed: true,
       },
       {
-        name: "exchange",
+        name: "dex",
         type: "address",
         indexed: true,
       },
@@ -43,10 +43,10 @@ export const ExchangeFactoryABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "createExchange",
+    name: "createDEX",
     inputs: [
       {
-        name: "token",
+        name: "safeMeme",
         type: "address",
       },
       {
@@ -114,10 +114,10 @@ export const ExchangeFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getExchange",
+    name: "getDEX",
     inputs: [
       {
-        name: "token",
+        name: "safeMeme",
         type: "address",
       },
     ],
@@ -131,10 +131,10 @@ export const ExchangeFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getToken",
+    name: "getSafeMemeForDEX",
     inputs: [
       {
-        name: "exchange",
+        name: "dex",
         type: "address",
       },
     ],
@@ -148,10 +148,10 @@ export const ExchangeFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getTokenWithId",
+    name: "getSafeMemeWithId",
     inputs: [
       {
-        name: "token_id",
+        name: "safeMeme_id",
         type: "uint256",
       },
     ],
@@ -177,7 +177,7 @@ export const ExchangeFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "tokenCount",
+    name: "safeMemeCount",
     inputs: [],
     outputs: [
       {
@@ -189,7 +189,7 @@ export const ExchangeFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "token_to_exchange",
+    name: "safeMeme_to_exchange",
     inputs: [
       {
         name: "arg0",
@@ -206,7 +206,7 @@ export const ExchangeFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "exchange_to_token",
+    name: "exchange_to_safeMeme",
     inputs: [
       {
         name: "arg0",
@@ -223,7 +223,7 @@ export const ExchangeFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "id_to_token",
+    name: "id_to_safeMeme",
     inputs: [
       {
         name: "arg0",
@@ -253,6 +253,18 @@ export const ExchangeFactoryABI = [
     stateMutability: "view",
     type: "function",
     name: "owner",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "safeMeme",
     inputs: [],
     outputs: [
       {

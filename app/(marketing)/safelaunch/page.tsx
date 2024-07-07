@@ -62,6 +62,7 @@ export default function SafeLaunch(): JSX.Element {
   const [estimatedOutput, setEstimatedOutput] = useState<string>("0")
   const [tokenPrice, setTokenPrice] = useState<string>("0")
   const [currentStage, setCurrentStage] = useState<number>(0)
+  const [saleActive, setSaleActive] = useState(false)
   const [stageInfo, setStageInfo] = useState<
     [ethers.BigNumber, ethers.BigNumber] | null
   >(null)
@@ -98,20 +99,59 @@ export default function SafeLaunch(): JSX.Element {
     }
   }, [chain])
 
+  useEffect(() => {
+    setIsClient(true)
+    if (typeof window !== "undefined" && window.ethereum) {
+      const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
+      setProvider(web3Provider)
+      const chainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
+      const tokenFactory = new ethers.Contract(
+        safeLaunchFactory[chainId],
+        TokenFactoryABI,
+        web3Provider
+      )
+      setTokenFactoryContract(tokenFactory)
+    }
+  }, [chain])
+
+  const fetchDexAddressAndSaleStatus = async (tokenAddress) => {
+    if (!provider) return
+
+    try {
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        provider
+      )
+      const dexAddr = await tokenContract.dexAddress()
+      setDexAddress(dexAddr)
+
+      if (dexAddr && dexAddr !== ethers.constants.AddressZero) {
+        const exchangeContract = new ethers.Contract(
+          dexAddr,
+          ExchangeABI,
+          provider
+        )
+        const isSaleActive = await exchangeContract.saleActive()
+        setSaleActive(isSaleActive)
+      }
+    } catch (error) {
+      console.error("Error fetching dexAddress and sale status:", error)
+    }
+  }
+
   const getAllTokens = async () => {
     try {
       if (!tokenFactoryContract) return []
-      const tokenCount = await tokenFactoryContract.getDeployedTokenCount({
+      const tokenCount = await tokenFactoryContract.getDeployedSafeMemeCount({
         gasLimit: ethers.utils.hexlify(1000000),
       })
       const allTokens: string[] = []
       for (let i = 0; i < tokenCount; i++) {
-        const tokenAddress: string = await tokenFactoryContract.tokensDeployed(
-          i,
-          {
+        const tokenAddress: string =
+          await tokenFactoryContract.safeMemesDeployed(i, {
             gasLimit: ethers.utils.hexlify(1000000),
-          }
-        )
+          })
         allTokens.push(tokenAddress)
       }
       return allTokens
@@ -124,7 +164,7 @@ export default function SafeLaunch(): JSX.Element {
   const getUserTokens = async (userAddress: string) => {
     try {
       if (!tokenFactoryContract) return []
-      const userTokens = await tokenFactoryContract.getTokensDeployedByUser(
+      const userTokens = await tokenFactoryContract.getSafeMemesDeployedByUser(
         userAddress,
         {
           gasLimit: ethers.utils.hexlify(2000000), // Increased gas limit
@@ -160,11 +200,8 @@ export default function SafeLaunch(): JSX.Element {
       )
 
       // Retrieve the exchange address from the SafeMeme contract
-      const exchangeAddress = await tokenContract.exchangeAddress()
-      if (
-        !exchangeAddress ||
-        exchangeAddress === ethers.constants.AddressZero
-      ) {
+      const dexAddress = await tokenContract.dexAddress()
+      if (!dexAddress || dexAddress === ethers.constants.AddressZero) {
         throw new Error(
           "Invalid exchange address retrieved from SafeMeme contract"
         )
@@ -172,7 +209,7 @@ export default function SafeLaunch(): JSX.Element {
 
       // Use the retrieved exchange address to interact with the Exchange contract
       const exchangeContract = new ethers.Contract(
-        exchangeAddress,
+        dexAddress,
         ExchangeABI,
         signer
       )
@@ -190,7 +227,7 @@ export default function SafeLaunch(): JSX.Element {
       const gasLimit = 8000000 // Set a manual gas limit
 
       console.log("Sending transaction to set Token B details...")
-      const tx = await exchangeContract.setTokenBDetails(
+      const tx = await exchangeContract.settokenBDetails(
         tokenBAddress,
         tokenBName,
         tokenBSymbol,
@@ -290,9 +327,9 @@ export default function SafeLaunch(): JSX.Element {
         decimals,
         antiWhalePercentage,
         isSafeLaunched,
-        exchangeAddress,
+        dexAddress,
         isInitialized,
-        lockedTokens, // Fetch locked tokens
+        lockedsafeMeme, // Fetch locked tokens
       ] = await Promise.all([
         tokenContract.name(),
         tokenContract.symbol(),
@@ -303,9 +340,9 @@ export default function SafeLaunch(): JSX.Element {
         tokenContract.isSafeLaunched(),
         tokenContract.exchangeFactory(),
         tokenContract
-          .exchangeAddress()
+          .dexAddress()
           .then((addr) => addr !== ethers.constants.AddressZero),
-        getLockedTokens(tokenAddress), // Fetch locked tokens here
+        getlockedsafeMeme(tokenAddress), // Fetch locked tokens here
       ])
 
       return {
@@ -317,9 +354,9 @@ export default function SafeLaunch(): JSX.Element {
         decimals,
         antiWhalePercentage,
         isSafeLaunched,
-        exchangeAddress,
+        dexAddress,
         isInitialized,
-        lockedTokens, // Include locked tokens in the returned details
+        lockedsafeMeme, // Include locked tokens in the returned details
       }
     } catch (error) {
       console.error(`Error fetching details for token ${tokenAddress}:`, error)
@@ -407,9 +444,9 @@ export default function SafeLaunch(): JSX.Element {
         SafeMemeABI,
         signer
       )
-      const exchangeAddress = await tokenContract.exchangeAddress()
+      const dexAddress = await tokenContract.dexAddress()
       const exchangeContract = new ethers.Contract(
-        exchangeAddress,
+        dexAddress,
         ExchangeABI,
         signer
       )
@@ -425,10 +462,10 @@ export default function SafeLaunch(): JSX.Element {
 
       // Call the correct overloaded function
       const gasLimit = await exchangeContract.estimateGas[
-        "setStageTokenBAmount(uint256,uint256)"
+        "setStagetokenBAmount(uint256,uint256)"
       ](stage, amountInWei)
       const tx = await exchangeContract[
-        "setStageTokenBAmount(uint256,uint256)"
+        "setStagetokenBAmount(uint256,uint256)"
       ](stage, amountInWei, {
         gasLimit: gasLimit.add(100000),
       })
@@ -443,7 +480,7 @@ export default function SafeLaunch(): JSX.Element {
     }
   }
 
-  const getLockedTokens = async (tokenAddress) => {
+  const getlockedsafeMeme = async (tokenAddress) => {
     try {
       if (!provider) return ethers.BigNumber.from(0)
 
@@ -453,20 +490,20 @@ export default function SafeLaunch(): JSX.Element {
         SafeMemeABI,
         provider
       )
-      const exchangeAddress = await tokenContract.exchangeAddress()
+      const dexAddress = await tokenContract.dexAddress()
 
-      if (exchangeAddress === ethers.constants.AddressZero) {
+      if (dexAddress === ethers.constants.AddressZero) {
         return ethers.BigNumber.from(0)
       }
 
       const exchangeContract = new ethers.Contract(
-        exchangeAddress,
+        dexAddress,
         ExchangeABI,
         provider
       )
-      const lockedTokens = await exchangeContract.lockedTokens()
+      const lockedsafeMeme = await exchangeContract.lockedsafeMeme()
 
-      return lockedTokens
+      return lockedsafeMeme
     } catch (error) {
       console.error(`Error fetching locked tokens for ${tokenAddress}:`, error)
       return ethers.BigNumber.from(0)
@@ -493,8 +530,9 @@ export default function SafeLaunch(): JSX.Element {
     tokenAddress: string,
     tokenBAddress: string
   ) => {
-    console.log("Setting Token B for:", tokenAddress, "to:", tokenBAddress)
     setTokenBSelection((prev) => ({ ...prev, [tokenAddress]: tokenBAddress }))
+    // Also update the selectedToken state if necessary
+    setSelectedToken((prev) => ({ ...prev, tokenBAddress }))
   }
 
   const handleSubmitTokenBAmounts = (tokenAddress) => {
@@ -516,7 +554,8 @@ export default function SafeLaunch(): JSX.Element {
       const tokenData = await Promise.all(
         allTokens.map(async (tokenAddress) => {
           const details = await getTokenDetails(tokenAddress)
-          if (details && details.exchangeAddress) {
+          if (details) {
+            await fetchDexAddressAndSaleStatus(tokenAddress)
             const stages = await getStageDetails(tokenAddress) // Ensure this call fetches data correctly
             const tokenBAddress = details.tokenBAddress
             const tokenBDetails = tokenBAddress
@@ -528,7 +567,7 @@ export default function SafeLaunch(): JSX.Element {
         })
       )
       const userTokenAddresses = new Set(
-        userTokens.map((token: string) => token?.toLowerCase())
+        userTokens.map((token) => token?.toLowerCase())
       )
       const deployedTokenData = tokenData
         .filter((token): token is NonNullable<typeof token> => token !== null)
@@ -590,20 +629,6 @@ export default function SafeLaunch(): JSX.Element {
     )
   }
 
-  const isSafeLaunchActive = async (tokenAddress) => {
-    try {
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        provider
-      )
-      return await tokenContract.isSafeLaunched()
-    } catch (error) {
-      console.error("Error checking SafeLaunch status:", error)
-      return false
-    }
-  }
-
   const fetchStageInfo = async (tokenAddress) => {
     if (!provider || !tokenAddress) return
 
@@ -613,29 +638,26 @@ export default function SafeLaunch(): JSX.Element {
         SafeMemeABI,
         provider
       )
-      const safeLaunchActive = await isSafeLaunchActive(tokenAddress)
 
-      if (!safeLaunchActive) {
-        console.error("SafeLaunch is not active")
-        toast.error("SafeLaunch is not active")
-        return
-      }
-
-      const exchangeAddress = await tokenContract.exchangeAddress()
-
-      if (
-        !exchangeAddress ||
-        exchangeAddress === ethers.constants.AddressZero
-      ) {
+      const dexAddress = await tokenContract.dexAddress()
+      if (!dexAddress || dexAddress === ethers.constants.AddressZero) {
         console.error("Invalid exchange address")
         return
       }
 
       const exchangeContract = new ethers.Contract(
-        exchangeAddress,
+        dexAddress,
         ExchangeABI,
         provider
       )
+      const saleActive = await exchangeContract.saleActive()
+      const isSafeLaunchActive = await exchangeContract.isSafeLaunchActive()
+
+      if (!saleActive || !isSafeLaunchActive) {
+        console.error("Sale or SafeLaunch is not active")
+        toast.error("Sale or SafeLaunch is not active")
+        return
+      }
 
       const currentStage = await exchangeContract.getCurrentStage()
       const stageInfo = await exchangeContract.getStageInfo(currentStage)
@@ -666,13 +688,12 @@ export default function SafeLaunch(): JSX.Element {
         SafeMemeABI,
         provider
       )
-      const exchangeAddress = await tokenContract.exchangeAddress()
+      const dexAddress = await tokenContract.dexAddress()
 
-      if (!exchangeAddress || exchangeAddress === ethers.constants.AddressZero)
-        return []
+      if (!dexAddress || dexAddress === ethers.constants.AddressZero) return []
 
       const exchangeContract = new ethers.Contract(
-        exchangeAddress,
+        dexAddress,
         ExchangeABI,
         provider
       )
@@ -1071,12 +1092,12 @@ export default function SafeLaunch(): JSX.Element {
                           </p>
                           <p>
                             <strong>Locked Tokens:</strong>{" "}
-                            {formatNumber(token.lockedTokens, token.decimals)}
+                            {formatNumber(token.lockedsafeMeme, token.decimals)}
                           </p>
                           <label>
                             <strong>Select Token B:</strong>
                             <select
-                              value={selectedToken?.tokenBAddress || ""}
+                              value={tokenBSelection[token.address] || ""}
                               onChange={(e) =>
                                 handleTokenBSelection(
                                   token.address,
