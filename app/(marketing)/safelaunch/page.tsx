@@ -518,7 +518,11 @@ export default function SafeLaunch(): JSX.Element {
           const details = await getTokenDetails(tokenAddress)
           if (details && details.exchangeAddress) {
             const stages = await getStageDetails(tokenAddress) // Ensure this call fetches data correctly
-            return { ...details, stages }
+            const tokenBAddress = details.tokenBAddress
+            const tokenBDetails = tokenBAddress
+              ? await fetchTokenBDetails(tokenBAddress)
+              : null
+            return { ...details, stages, tokenBDetails }
           }
           return details
         })
@@ -719,9 +723,9 @@ export default function SafeLaunch(): JSX.Element {
   }
 
   const handleSwap = async () => {
-    if (!amount || !selectedToken || !provider) {
+    if (!amount || !selectedToken || !provider || !exchangeContract) {
       toast.error("Please enter an amount and ensure wallet is connected")
-      console.error("Swap failed due to missing parameters", {
+      console.error("Token purchase failed due to missing parameters", {
         amount,
         selectedToken,
         provider,
@@ -733,7 +737,7 @@ export default function SafeLaunch(): JSX.Element {
 
     if (!tokenAddress || !tokenBAddress) {
       toast.error("Invalid token addresses")
-      console.error("Swap failed due to invalid token addresses", {
+      console.error("Token purchase failed due to invalid token addresses", {
         tokenAddress,
         tokenBAddress,
       })
@@ -741,8 +745,14 @@ export default function SafeLaunch(): JSX.Element {
     }
 
     try {
+      const parsedAmount = parseFloat(amount)
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        toast.error("Invalid amount entered")
+        return
+      }
+
       console.log(
-        `Attempting to swap with tokenAddress: ${tokenAddress} and tokenBAddress: ${tokenBAddress}`
+        `Attempting to buy tokens with tokenAddress: ${tokenAddress} and tokenBAddress: ${tokenBAddress}`
       )
       const signer = provider.getSigner()
       const tokenBContract = new ethers.Contract(
@@ -750,33 +760,79 @@ export default function SafeLaunch(): JSX.Element {
         SafeMemeABI,
         signer
       )
-      const exchangeContract = new ethers.Contract(
-        tokenAddress,
-        ExchangeABI,
-        signer
-      )
+      const exchangeSigner = exchangeContract.connect(signer)
 
       // Convert the amount to the correct units
       const amountInWei = ethers.utils.parseUnits(amount, 18)
 
       // Approve the Exchange contract to spend Token B
+      console.log("Approving token spend...")
       const approveTx = await tokenBContract.approve(
-        exchangeContract.address,
+        exchangeSigner.address,
         amountInWei
       )
       await approveTx.wait()
-      toast.info("Approval successful. Proceeding with swap...")
+      console.log("Approval successful")
+      toast.info("Approval successful. Proceeding with token purchase...")
 
-      // Perform the token swap with an extremely high gas limit
-      const gasLimit = ethers.BigNumber.from("100000000") // Set a very high gas limit manually
-      const buyTx = await exchangeContract.buyTokens(amountInWei, { gasLimit })
+      // Check if the sale is active
+      const saleActive = await exchangeSigner.saleActive()
+      console.log(`Sale active: ${saleActive}`)
+      if (!saleActive) {
+        toast.error("Sale is not active")
+        console.error("Sale is not active")
+        return
+      }
+
+      // Validate the current stage and amount set
+      const currentStage = await exchangeSigner.getCurrentStage()
+      console.log(`Current stage: ${currentStage}`)
+
+      const stageInfo = await exchangeSigner.getStageInfo(currentStage)
+      console.log(`Stage info: ${JSON.stringify(stageInfo)}`)
+
+      // Ensure stage is set and valid
+      if (!stageInfo || stageInfo[0].eq(0)) {
+        toast.error("Current stage is not properly set")
+        console.error("Current stage is not properly set")
+        return
+      }
+
+      // Manually set a gas limit if gas estimation fails
+      let gasLimit
+      try {
+        console.log("Estimating gas for token purchase...")
+        const gasEstimate = await exchangeSigner.estimateGas.buyTokens(
+          amountInWei
+        )
+        gasLimit = gasEstimate.mul(120).div(100)
+      } catch (gasEstimationError) {
+        console.error(
+          "Gas estimation failed, setting manual gas limit:",
+          gasEstimationError
+        )
+        gasLimit = ethers.BigNumber.from("8000000") // Set a manual gas limit
+      }
+
+      console.log(`Gas limit: ${gasLimit}`)
+
+      console.log("Executing token purchase...")
+      // Perform the token purchase with increased gas limit
+      const buyTx = await exchangeSigner.buyTokens(amountInWei, { gasLimit })
+      console.log("Token purchase transaction sent:", buyTx.hash)
       await buyTx.wait()
-
-      toast.success("Swap successful!")
+      console.log("Token purchase transaction confirmed")
+      toast.success("Token purchase successful!")
       fetchStageInfo(tokenAddress)
     } catch (error) {
-      console.error("Error during swap:", error)
-      toast.error(`Swap failed: ${error.message}`)
+      console.error("Detailed error during token purchase:", error)
+      if (error.reason) {
+        console.error("Error reason:", error.reason)
+      }
+      if (error.data) {
+        console.error("Error data:", error.data)
+      }
+      toast.error(`Token purchase failed: ${error.message}`)
     }
   }
 
@@ -933,97 +989,6 @@ export default function SafeLaunch(): JSX.Element {
     },
   }
 
-  // Function to display token stage details
-  const displayStageDetails = (token) => {
-    return (
-      <div className="stages-container">
-        {token.stages.map((stage, stageIndex) => (
-          <div className="stage" key={stageIndex}>
-            <h4>Stage {stageIndex + 1}</h4>
-            <label>
-              <strong>Token B Amount:</strong>
-              <input
-                type="number"
-                value={tokenBAmounts[token.address]?.[stageIndex] || ""}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value)
-                  if (!isNaN(value)) {
-                    handleTokenBAmountChange(token.address, stageIndex, value)
-                  }
-                }}
-              />
-            </label>
-            {token.isSafeLaunched && stageIndex <= currentStage ? (
-              <>
-                <div className="stagetext">
-                  <p>
-                    <strong>{token.name} Price:</strong>{" "}
-                    {ethers.utils.formatUnits(stage.tokenPrice, token.decimals)}{" "}
-                  </p>
-                  <p>
-                    <strong>Tokens for Sale:</strong>{" "}
-                    {formatNumber(
-                      ethers.BigNumber.from(token.totalSupply).mul(5).div(100),
-                      token.decimals
-                    )}
-                  </p>
-                  <p>
-                    <strong>Tokens remaining for sale:</strong>{" "}
-                    {formatNumber(
-                      ethers.BigNumber.from(token.totalSupply)
-                        .mul(5)
-                        .div(100)
-                        .sub(
-                          ethers.BigNumber.from(
-                            ethers.utils.parseUnits(
-                              stageSoldTokens[
-                                `${token.address}-${stageIndex}`
-                              ] || "0",
-                              token.decimals
-                            )
-                          )
-                        ),
-                      token.decimals
-                    )}
-                  </p>
-                  <p>
-                    <strong>Tokens Sold in Current Stage:</strong>{" "}
-                    {stageSoldTokens[`${token.address}-${stageIndex}`] ||
-                      "Loading..."}
-                  </p>
-                  <p>
-                    <strong>Token B Required:</strong>{" "}
-                    {displayTokenBRequired(stage.tokenBRequired)}
-                  </p>
-                  <p>
-                    <strong>Token B:</strong>{" "}
-                    {isLoadingTokenBDetails
-                      ? "Loading..."
-                      : tokenBDetails[token.tokenBAddress]?.symbol || "Token B"}
-                  </p>
-                </div>
-                <button
-                  className="buy-token-button"
-                  onClick={() => openModal(token.address)}
-                >
-                  Buy Tokens
-                </button>
-              </>
-            ) : (
-              <p>Stage not active yet</p>
-            )}
-            <button
-              className="submit-token-b-amounts-button"
-              onClick={() => handleSubmitTokenBAmounts(token.address)}
-            >
-              Submit Token B Info
-            </button>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
   return (
     <div>
       <Navbar />
@@ -1101,7 +1066,7 @@ export default function SafeLaunch(): JSX.Element {
                           <label>
                             <strong>Select Token B:</strong>
                             <select
-                              value={tokenBSelection[token.address] || ""}
+                              value={selectedToken?.tokenBAddress || ""}
                               onChange={(e) =>
                                 handleTokenBSelection(
                                   token.address,
@@ -1143,19 +1108,132 @@ export default function SafeLaunch(): JSX.Element {
                             onClick={() => {
                               console.log(
                                 "Current Token B Selection:",
-                                tokenBSelection
+                                selectedToken?.tokenBAddress
                               )
                               submitTokenBInfo(token.address)
                             }}
                             disabled={
-                              !tokenBSelection[token.address] ||
+                              !selectedToken?.tokenBAddress ||
                               !token.isInitialized
                             }
                           >
                             Submit Token B Info
                           </button>
 
-                          {displayStageDetails(token)}
+                          <div className="stages-container">
+                            {token.stages.map((stage, stageIndex) => (
+                              <div className="stage" key={stageIndex}>
+                                <h4>Stage {stageIndex + 1}</h4>
+                                <label>
+                                  <strong>Token B Amount:</strong>
+                                  <input
+                                    type="number"
+                                    value={
+                                      tokenBAmounts[token.address]?.[
+                                        stageIndex
+                                      ] || ""
+                                    }
+                                    onChange={(e) => {
+                                      const value = parseFloat(e.target.value)
+                                      if (!isNaN(value)) {
+                                        handleTokenBAmountChange(
+                                          token.address,
+                                          stageIndex,
+                                          value
+                                        )
+                                      }
+                                    }}
+                                  />
+                                </label>
+                                {token.isSafeLaunched &&
+                                stageIndex <= currentStage ? (
+                                  <>
+                                    <div className="stagetext">
+                                      <p>
+                                        <strong>{token.name} Price:</strong>{" "}
+                                        {ethers.utils.formatUnits(
+                                          stage.tokenPrice,
+                                          token.decimals
+                                        )}{" "}
+                                      </p>
+                                      <p>
+                                        <strong>Tokens for Sale:</strong>{" "}
+                                        {formatNumber(
+                                          ethers.BigNumber.from(
+                                            token.totalSupply
+                                          )
+                                            .mul(5)
+                                            .div(100),
+                                          token.decimals
+                                        )}
+                                      </p>
+                                      <p>
+                                        <strong>
+                                          Tokens remaining for sale:
+                                        </strong>{" "}
+                                        {formatNumber(
+                                          ethers.BigNumber.from(
+                                            token.totalSupply
+                                          )
+                                            .mul(5)
+                                            .div(100)
+                                            .sub(
+                                              ethers.BigNumber.from(
+                                                ethers.utils.parseUnits(
+                                                  stageSoldTokens[
+                                                    `${token.address}-${stageIndex}`
+                                                  ] || "0",
+                                                  token.decimals
+                                                )
+                                              )
+                                            ),
+                                          token.decimals
+                                        )}
+                                      </p>
+                                      <p>
+                                        <strong>
+                                          Tokens Sold in Current Stage:
+                                        </strong>{" "}
+                                        {stageSoldTokens[
+                                          `${token.address}-${stageIndex}`
+                                        ] || "Loading..."}
+                                      </p>
+                                      <p>
+                                        <strong>Token B Required:</strong>{" "}
+                                        {displayTokenBRequired(
+                                          stage.tokenBRequired
+                                        )}
+                                      </p>
+                                      <p>
+                                        <strong>Token B:</strong>{" "}
+                                        {combinedTokens.find(
+                                          (token) =>
+                                            token.address ===
+                                            selectedToken?.tokenBAddress
+                                        )?.symbol || "Token B"}
+                                      </p>
+                                    </div>
+                                    <button
+                                      className="buy-token-button"
+                                      onClick={() => openModal(token.address)}
+                                    >
+                                      Buy Tokens
+                                    </button>
+                                  </>
+                                ) : (
+                                  <p>Stage not active yet</p>
+                                )}
+                                <button
+                                  className="submit-token-b-amounts-button"
+                                  onClick={() =>
+                                    handleSubmitTokenBAmounts(token.address)
+                                  }
+                                >
+                                  Submit Token B Info
+                                </button>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     ))}
