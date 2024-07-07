@@ -775,9 +775,8 @@ export default function SafeLaunch(): JSX.Element {
       console.log("Approval successful")
       toast.info("Approval successful. Proceeding with token purchase...")
 
-      // Check if the sale is active
-      const saleActive = await exchangeSigner.saleActive()
-      console.log(`Sale active: ${saleActive}`)
+      // Check if the sale is active immediately before attempting the purchase
+      const saleActive = await updateSaleStatus(exchangeSigner)
       if (!saleActive) {
         toast.error("Sale is not active")
         console.error("Sale is not active")
@@ -833,6 +832,17 @@ export default function SafeLaunch(): JSX.Element {
         console.error("Error data:", error.data)
       }
       toast.error(`Token purchase failed: ${error.message}`)
+    }
+  }
+
+  const updateSaleStatus = async (exchangeSigner) => {
+    try {
+      const saleActive = await exchangeSigner.saleActive()
+      console.log(`Updated sale active status: ${saleActive}`)
+      return saleActive
+    } catch (error) {
+      console.error("Error fetching sale status:", error)
+      return false
     }
   }
 
