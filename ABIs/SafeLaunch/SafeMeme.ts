@@ -44,18 +44,6 @@ export const SafeMemeABI = [
     type: "event",
   },
   {
-    name: "SafeLaunched",
-    inputs: [
-      {
-        name: "safeMeme",
-        type: "address",
-        indexed: true,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
     stateMutability: "nonpayable",
     type: "function",
     name: "setup",
@@ -261,18 +249,6 @@ export const SafeMemeABI = [
     outputs: [],
   },
   {
-    stateMutability: "view",
-    type: "function",
-    name: "isSafeLaunched",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-      },
-    ],
-  },
-  {
     stateMutability: "nonpayable",
     type: "function",
     name: "setExchangeFactory",
@@ -409,18 +385,6 @@ export const SafeMemeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "safeLaunched",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
     name: "whitelist",
     inputs: [
       {
@@ -456,30 +420,6 @@ export const SafeMemeABI = [
       {
         name: "",
         type: "address",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "isInitialized",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "isSafeLaunchActive",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
       },
     ],
   },

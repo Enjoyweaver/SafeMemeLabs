@@ -262,18 +262,6 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "SafeLaunched",
-    inputs: [
-      {
-        name: "safeMeme",
-        type: "address",
-        indexed: true,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
     name: "tokenBSet",
     inputs: [
       {
@@ -1140,18 +1128,6 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getSaleStatus",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
     name: "getsafeMemessAvailable",
     inputs: [],
     outputs: [
@@ -1182,18 +1158,6 @@ export const ExchangeABI = [
       {
         name: "",
         type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "isSafeLaunched",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
       },
     ],
   },
@@ -1407,18 +1371,6 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "safeLaunched",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
     name: "tokenBAddress",
     inputs: [],
     outputs: [
@@ -1449,18 +1401,6 @@ export const ExchangeABI = [
       {
         name: "",
         type: "string",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "saleActive",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
       },
     ],
   },
@@ -1520,48 +1460,12 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "safeLaunchActive",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
     name: "salesafeMeme",
     inputs: [],
     outputs: [
       {
         name: "",
         type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "isInitialized",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "isSafeLaunchActive",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
       },
     ],
   },

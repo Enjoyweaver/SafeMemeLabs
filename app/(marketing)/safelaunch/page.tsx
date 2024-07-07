@@ -33,6 +33,7 @@ import "@/styles/safeLaunch.css"
 export default function SafeLaunch(): JSX.Element {
   const [isClient, setIsClient] = useState(false)
   const [deployedTokenData, setDeployedTokenData] = useState<any[]>([])
+  const [DexAddress, setDexAddress] = useState<any[]>([])
   const [fetchingError, setFetchingError] = useState<string | null>(null)
   const [provider, setProvider] =
     useState<ethers.providers.Web3Provider | null>(null)
@@ -62,7 +63,6 @@ export default function SafeLaunch(): JSX.Element {
   const [estimatedOutput, setEstimatedOutput] = useState<string>("0")
   const [tokenPrice, setTokenPrice] = useState<string>("0")
   const [currentStage, setCurrentStage] = useState<number>(0)
-  const [saleActive, setSaleActive] = useState(false)
   const [stageInfo, setStageInfo] = useState<
     [ethers.BigNumber, ethers.BigNumber] | null
   >(null)
@@ -132,8 +132,6 @@ export default function SafeLaunch(): JSX.Element {
           ExchangeABI,
           provider
         )
-        const isSaleActive = await exchangeContract.saleActive()
-        setSaleActive(isSaleActive)
       }
     } catch (error) {
       console.error("Error fetching dexAddress and sale status:", error)
@@ -199,35 +197,26 @@ export default function SafeLaunch(): JSX.Element {
         signer
       )
 
-      // Retrieve the exchange address from the SafeMeme contract
       const dexAddress = await tokenContract.dexAddress()
       if (!dexAddress || dexAddress === ethers.constants.AddressZero) {
-        throw new Error(
-          "Invalid exchange address retrieved from SafeMeme contract"
-        )
+        throw new Error("Invalid DEX address retrieved from SafeMeme contract")
       }
 
-      // Use the retrieved exchange address to interact with the Exchange contract
-      const exchangeContract = new ethers.Contract(
-        dexAddress,
-        ExchangeABI,
-        signer
-      )
+      const dexContract = new ethers.Contract(dexAddress, ExchangeABI, signer)
 
       console.log("Token Address:", tokenAddress)
-      console.log("Exchange Contract Address:", exchangeContract.address)
+      console.log("DEX Contract Address:", dexContract.address)
       console.log("Token B Address:", tokenBAddress)
       console.log("Token B Name:", tokenBName)
       console.log("Token B Symbol:", tokenBSymbol)
 
-      // Check current state of the contract
-      const currentTokenBAddress = await exchangeContract.tokenBAddress()
+      const currentTokenBAddress = await dexContract.tokenBAddress()
       console.log("Current Token B Address:", currentTokenBAddress)
 
       const gasLimit = 8000000 // Set a manual gas limit
 
       console.log("Sending transaction to set Token B details...")
-      const tx = await exchangeContract.settokenBDetails(
+      const tx = await dexContract.settokenBDetails(
         tokenBAddress,
         tokenBName,
         tokenBSymbol,
@@ -237,6 +226,12 @@ export default function SafeLaunch(): JSX.Element {
 
       await tx.wait()
       console.log("Transaction confirmed")
+
+      // Update local state
+      setTokenBDetails((prev) => ({
+        ...prev,
+        [tokenBAddress]: { name: tokenBName, symbol: tokenBSymbol },
+      }))
 
       toast.success(`Token B details set for token ${tokenAddress}`)
 
@@ -326,10 +321,8 @@ export default function SafeLaunch(): JSX.Element {
         owner,
         decimals,
         antiWhalePercentage,
-        isSafeLaunched,
         dexAddress,
-        isInitialized,
-        lockedsafeMeme, // Fetch locked tokens
+        lockedsafeMeme,
       ] = await Promise.all([
         tokenContract.name(),
         tokenContract.symbol(),
@@ -337,12 +330,9 @@ export default function SafeLaunch(): JSX.Element {
         tokenContract.owner(),
         tokenContract.decimals(),
         tokenContract.antiWhalePercentage(),
-        tokenContract.isSafeLaunched(),
-        tokenContract.exchangeFactory(),
-        tokenContract
-          .dexAddress()
-          .then((addr) => addr !== ethers.constants.AddressZero),
-        getlockedsafeMeme(tokenAddress), // Fetch locked tokens here
+        tokenContract.dexAddress(),
+
+        getlockedsafeMeme(tokenAddress),
       ])
 
       return {
@@ -353,10 +343,8 @@ export default function SafeLaunch(): JSX.Element {
         owner,
         decimals,
         antiWhalePercentage,
-        isSafeLaunched,
         dexAddress,
-        isInitialized,
-        lockedsafeMeme, // Include locked tokens in the returned details
+        lockedsafeMeme,
       }
     } catch (error) {
       console.error(`Error fetching details for token ${tokenAddress}:`, error)
@@ -451,13 +439,6 @@ export default function SafeLaunch(): JSX.Element {
         signer
       )
 
-      // Check if the sale is active
-      const saleActive = await exchangeContract.saleActive()
-      console.log(`Sale active status for ${tokenAddress}:`, saleActive)
-      if (!saleActive) {
-        throw new Error("Sale not active")
-      }
-
       const amountInWei = ethers.utils.parseUnits(amount.toString(), 18) // Convert to 18 decimals
 
       // Call the correct overloaded function
@@ -547,42 +528,79 @@ export default function SafeLaunch(): JSX.Element {
 
   const fetchAllTokenData = async () => {
     try {
+      if (!tokenFactoryContract || !address) {
+        console.log("Token factory contract or address not available")
+        return
+      }
+
+      console.log("Fetching all tokens...")
       const allTokens = await getAllTokens()
-      if (!allTokens || allTokens.length === 0) return
-      const userTokens = await getUserTokens(address!)
-      if (!userTokens) return
+      console.log("All tokens:", allTokens)
+
+      if (!allTokens || allTokens.length === 0) {
+        console.log("No tokens found")
+        setDeployedTokenData([])
+        return
+      }
+
+      console.log("Fetching user tokens...")
+      const userTokens = await getUserTokens(address)
+      console.log("User tokens:", userTokens)
+
+      console.log("Fetching token details...")
       const tokenData = await Promise.all(
         allTokens.map(async (tokenAddress) => {
           const details = await getTokenDetails(tokenAddress)
           if (details) {
             await fetchDexAddressAndSaleStatus(tokenAddress)
-            const stages = await getStageDetails(tokenAddress) // Ensure this call fetches data correctly
-            const tokenBAddress = details.tokenBAddress
-            const tokenBDetails = tokenBAddress
-              ? await fetchTokenBDetails(tokenBAddress)
-              : null
-            return { ...details, stages, tokenBDetails }
+            const stages = await getStageDetails(tokenAddress)
+
+            // Fetch Token B details
+            const tokenContract = new ethers.Contract(
+              tokenAddress,
+              SafeMemeABI,
+              provider
+            )
+            const dexAddress = await tokenContract.dexAddress()
+            if (dexAddress && dexAddress !== ethers.constants.AddressZero) {
+              const exchangeContract = new ethers.Contract(
+                dexAddress,
+                ExchangeABI,
+                provider
+              )
+              const tokenBAddress = await exchangeContract.tokenBAddress()
+              if (tokenBAddress !== ethers.constants.AddressZero) {
+                const tokenBDetails = await fetchTokenBDetails(tokenBAddress)
+                details.tokenBDetails = tokenBDetails
+                setTokenBSelection((prev) => ({
+                  ...prev,
+                  [tokenAddress]: tokenBAddress,
+                }))
+              }
+            }
+
+            return { ...details, stages }
           }
-          return details
+          return null
         })
       )
+
       const userTokenAddresses = new Set(
-        userTokens.map((token) => token?.toLowerCase())
+        userTokens.map((token) => token.toLowerCase())
       )
       const deployedTokenData = tokenData
         .filter((token): token is NonNullable<typeof token> => token !== null)
         .map((token) => ({
           ...token,
-          isUserToken: userTokenAddresses.has(
-            token.address?.toLowerCase() || ""
-          ),
+          isUserToken: userTokenAddresses.has(token.address.toLowerCase()),
         }))
+
+      console.log("Deployed token data:", deployedTokenData)
       setDeployedTokenData(deployedTokenData)
       setDeployedTokens(deployedTokenData)
-
-      console.log("Deployed Tokens:", deployedTokenData)
     } catch (error) {
       console.error("Error fetching token data: ", error)
+      setFetchingError("Failed to fetch token data. Please try again.")
     }
   }
 
@@ -641,27 +659,15 @@ export default function SafeLaunch(): JSX.Element {
 
       const dexAddress = await tokenContract.dexAddress()
       if (!dexAddress || dexAddress === ethers.constants.AddressZero) {
-        console.error("Invalid exchange address")
+        console.error("Invalid DEX address")
         return
       }
 
-      const exchangeContract = new ethers.Contract(
-        dexAddress,
-        ExchangeABI,
-        provider
-      )
-      const saleActive = await exchangeContract.saleActive()
-      const isSafeLaunchActive = await exchangeContract.isSafeLaunchActive()
+      const dexContract = new ethers.Contract(dexAddress, ExchangeABI, provider)
 
-      if (!saleActive || !isSafeLaunchActive) {
-        console.error("Sale or SafeLaunch is not active")
-        toast.error("Sale or SafeLaunch is not active")
-        return
-      }
-
-      const currentStage = await exchangeContract.getCurrentStage()
-      const stageInfo = await exchangeContract.getStageInfo(currentStage)
-      const tokenBAddress = await exchangeContract.tokenBAddress()
+      const currentStage = await dexContract.getCurrentStage()
+      const stageInfo = await dexContract.getStageInfo(currentStage)
+      const tokenBAddress = await dexContract.tokenBAddress()
 
       console.log("Current Stage:", currentStage.toString())
       console.log("Stage Info:", stageInfo)
@@ -744,13 +750,8 @@ export default function SafeLaunch(): JSX.Element {
   }
 
   const handleSwap = async () => {
-    if (!amount || !selectedToken || !provider || !exchangeContract) {
+    if (!amount || !selectedToken || !provider) {
       toast.error("Please enter an amount and ensure wallet is connected")
-      console.error("Token purchase failed due to missing parameters", {
-        amount,
-        selectedToken,
-        provider,
-      })
       return
     }
 
@@ -758,10 +759,6 @@ export default function SafeLaunch(): JSX.Element {
 
     if (!tokenAddress || !tokenBAddress) {
       toast.error("Invalid token addresses")
-      console.error("Token purchase failed due to invalid token addresses", {
-        tokenAddress,
-        tokenBAddress,
-      })
       return
     }
 
@@ -772,98 +769,56 @@ export default function SafeLaunch(): JSX.Element {
         return
       }
 
-      console.log(
-        `Attempting to buy tokens with tokenAddress: ${tokenAddress} and tokenBAddress: ${tokenBAddress}`
-      )
       const signer = provider.getSigner()
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        signer
+      )
+      const dexAddress = await tokenContract.dexAddress()
+
+      if (!dexAddress || dexAddress === ethers.constants.AddressZero) {
+        toast.error("DEX not initialized for this token")
+        return
+      }
+
+      const dexContract = new ethers.Contract(dexAddress, ExchangeABI, signer)
       const tokenBContract = new ethers.Contract(
         tokenBAddress,
         SafeMemeABI,
         signer
       )
-      const exchangeSigner = exchangeContract.connect(signer)
 
-      // Convert the amount to the correct units
+      // Check if Token B details are set
+      const currentTokenBAddress = await dexContract.tokenBAddress()
+      if (currentTokenBAddress === ethers.constants.AddressZero) {
+        toast.error("Token B details are not set")
+        return
+      }
+
+      // Check if swapping is allowed in the current stage
+      const currentStage = await dexContract.getCurrentStage()
+      const stageInfo = await dexContract.getStageInfo(currentStage)
+
       const amountInWei = ethers.utils.parseUnits(amount, 18)
 
-      // Approve the Exchange contract to spend Token B
       console.log("Approving token spend...")
-      const approveTx = await tokenBContract.approve(
-        exchangeSigner.address,
-        amountInWei
-      )
+      const approveTx = await tokenBContract.approve(dexAddress, amountInWei)
       await approveTx.wait()
       console.log("Approval successful")
       toast.info("Approval successful. Proceeding with token purchase...")
 
-      // Check if the sale is active immediately before attempting the purchase
-      const saleActive = await updateSaleStatus(exchangeSigner)
-      if (!saleActive) {
-        toast.error("Sale is not active")
-        console.error("Sale is not active")
-        return
-      }
-
-      // Validate the current stage and amount set
-      const currentStage = await exchangeSigner.getCurrentStage()
-      console.log(`Current stage: ${currentStage}`)
-
-      const stageInfo = await exchangeSigner.getStageInfo(currentStage)
-      console.log(`Stage info: ${JSON.stringify(stageInfo)}`)
-
-      // Ensure stage is set and valid
-      if (!stageInfo || stageInfo[0].eq(0)) {
-        toast.error("Current stage is not properly set")
-        console.error("Current stage is not properly set")
-        return
-      }
-
-      // Manually set a gas limit if gas estimation fails
-      let gasLimit
-      try {
-        console.log("Estimating gas for token purchase...")
-        const gasEstimate = await exchangeSigner.estimateGas.buyTokens(
-          amountInWei
-        )
-        gasLimit = gasEstimate.mul(120).div(100)
-      } catch (gasEstimationError) {
-        console.error(
-          "Gas estimation failed, setting manual gas limit:",
-          gasEstimationError
-        )
-        gasLimit = ethers.BigNumber.from("8000000") // Set a manual gas limit
-      }
-
-      console.log(`Gas limit: ${gasLimit}`)
-
       console.log("Executing token purchase...")
-      // Perform the token purchase with increased gas limit
-      const buyTx = await exchangeSigner.buyTokens(amountInWei, { gasLimit })
+      const gasLimit = ethers.utils.hexlify(9000000) // Set a high gas limit
+      const buyTx = await dexContract.buyTokens(amountInWei, { gasLimit })
       console.log("Token purchase transaction sent:", buyTx.hash)
       await buyTx.wait()
       console.log("Token purchase transaction confirmed")
       toast.success("Token purchase successful!")
       fetchStageInfo(tokenAddress)
     } catch (error) {
-      console.error("Detailed error during token purchase:", error)
-      if (error.reason) {
-        console.error("Error reason:", error.reason)
-      }
-      if (error.data) {
-        console.error("Error data:", error.data)
-      }
+      console.error("Error during token purchase:", error)
       toast.error(`Token purchase failed: ${error.message}`)
-    }
-  }
-
-  const updateSaleStatus = async (exchangeSigner) => {
-    try {
-      const saleActive = await exchangeSigner.saleActive()
-      console.log(`Updated sale active status: ${saleActive}`)
-      return saleActive
-    } catch (error) {
-      console.error("Error fetching sale status:", error)
-      return false
     }
   }
 
@@ -882,17 +837,11 @@ export default function SafeLaunch(): JSX.Element {
       fetchStageInfo(selectedToken.tokenAddress)
     }
   }, [selectedToken?.tokenAddress, provider])
+
   useEffect(() => {
     const fetchSoldTokens = async () => {
       const soldTokensData: { [key: string]: string } = {}
       for (const token of deployedTokenData) {
-        if (token.saleActive) {
-          const sold = await displayTokensSold(
-            token.address,
-            token.currentStage
-          )
-          soldTokensData[`${token.address}-${token.currentStage}`] = sold
-        }
       }
       setStageSoldTokens(soldTokensData)
     }
@@ -921,19 +870,6 @@ export default function SafeLaunch(): JSX.Element {
 
     const signer = provider.getSigner()
     const tokenContract = new ethers.Contract(tokenAddress, SafeMemeABI, signer)
-
-    const handleSafeLaunched = (token) => {
-      console.log(`SafeLaunch started for token ${token}`)
-      toast.success(`SafeLaunch started for token ${token}`)
-      // Fetch updated token data to reflect the new sale status
-      fetchAllTokenData()
-    }
-
-    tokenContract.on("SafeLaunched", handleSafeLaunched)
-
-    return () => {
-      tokenContract.off("SafeLaunched", handleSafeLaunched)
-    }
   }, [provider, selectedToken?.tokenAddress])
 
   const formatNumber = (
@@ -1114,27 +1050,21 @@ export default function SafeLaunch(): JSX.Element {
                             </select>
                           </label>
 
-                          {!token.isInitialized && (
-                            <button
-                              onClick={() =>
-                                initializeSafeLaunch(token.address)
-                              }
-                              className="initialize-launch-button"
-                            >
-                              Initialize SafeLaunch
-                            </button>
-                          )}
+                          <button
+                            onClick={() => initializeSafeLaunch(token.address)}
+                            className="initialize-launch-button"
+                          >
+                            Initialize SafeLaunch
+                          </button>
 
-                          {token.isInitialized && !token.isSafeLaunched && (
-                            <button
-                              onClick={() => startSafeLaunch(token.address)}
-                              className="start-launch-button"
-                            >
-                              Start SafeLaunch
-                            </button>
-                          )}
+                          <button
+                            onClick={() => startSafeLaunch(token.address)}
+                            className="start-launch-button"
+                          >
+                            Start SafeLaunch
+                          </button>
 
-                          {token.isSafeLaunched && <p>SafeLaunch active</p>}
+                          <p>SafeLaunch active</p>
                           <button
                             onClick={() => {
                               console.log(
@@ -1143,10 +1073,7 @@ export default function SafeLaunch(): JSX.Element {
                               )
                               submitTokenBInfo(token.address)
                             }}
-                            disabled={
-                              !selectedToken?.tokenBAddress ||
-                              !token.isInitialized
-                            }
+                            disabled={!selectedToken?.tokenBAddress}
                           >
                             Submit Token B Info
                           </button>
@@ -1176,84 +1103,74 @@ export default function SafeLaunch(): JSX.Element {
                                     }}
                                   />
                                 </label>
-                                {token.isSafeLaunched &&
-                                stageIndex <= currentStage ? (
-                                  <>
-                                    <div className="stagetext">
-                                      <p>
-                                        <strong>{token.name} Price:</strong>{" "}
-                                        {ethers.utils.formatUnits(
-                                          stage.tokenPrice,
-                                          token.decimals
-                                        )}{" "}
-                                      </p>
-                                      <p>
-                                        <strong>Tokens for Sale:</strong>{" "}
-                                        {formatNumber(
-                                          ethers.BigNumber.from(
-                                            token.totalSupply
-                                          )
-                                            .mul(5)
-                                            .div(100),
-                                          token.decimals
-                                        )}
-                                      </p>
-                                      <p>
-                                        <strong>
-                                          Tokens remaining for sale:
-                                        </strong>{" "}
-                                        {formatNumber(
-                                          ethers.BigNumber.from(
-                                            token.totalSupply
-                                          )
-                                            .mul(5)
-                                            .div(100)
-                                            .sub(
-                                              ethers.BigNumber.from(
-                                                ethers.utils.parseUnits(
-                                                  stageSoldTokens[
-                                                    `${token.address}-${stageIndex}`
-                                                  ] || "0",
-                                                  token.decimals
-                                                )
+
+                                <>
+                                  <div className="stagetext">
+                                    <p>
+                                      <strong>{token.name} Price:</strong>{" "}
+                                      {ethers.utils.formatUnits(
+                                        stage.tokenPrice,
+                                        token.decimals
+                                      )}{" "}
+                                    </p>
+                                    <p>
+                                      <strong>Tokens for Sale:</strong>{" "}
+                                      {formatNumber(
+                                        ethers.BigNumber.from(token.totalSupply)
+                                          .mul(5)
+                                          .div(100),
+                                        token.decimals
+                                      )}
+                                    </p>
+                                    <p>
+                                      <strong>
+                                        Tokens remaining for sale:
+                                      </strong>{" "}
+                                      {formatNumber(
+                                        ethers.BigNumber.from(token.totalSupply)
+                                          .mul(5)
+                                          .div(100)
+                                          .sub(
+                                            ethers.BigNumber.from(
+                                              ethers.utils.parseUnits(
+                                                stageSoldTokens[
+                                                  `${token.address}-${stageIndex}`
+                                                ] || "0",
+                                                token.decimals
                                               )
-                                            ),
-                                          token.decimals
-                                        )}
-                                      </p>
-                                      <p>
-                                        <strong>
-                                          Tokens Sold in Current Stage:
-                                        </strong>{" "}
-                                        {stageSoldTokens[
-                                          `${token.address}-${stageIndex}`
-                                        ] || "Loading..."}
-                                      </p>
-                                      <p>
-                                        <strong>Token B Required:</strong>{" "}
-                                        {displayTokenBRequired(
-                                          stage.tokenBRequired
-                                        )}
-                                      </p>
-                                      <p>
-                                        <strong>Token B:</strong>{" "}
-                                        {combinedTokens.find(
-                                          (token) =>
-                                            token.address ===
-                                            selectedToken?.tokenBAddress
-                                        )?.symbol || "Token B"}
-                                      </p>
-                                    </div>
-                                    <button
-                                      className="buy-token-button"
-                                      onClick={() => openModal(token.address)}
-                                    >
-                                      Buy Tokens
-                                    </button>
-                                  </>
-                                ) : (
-                                  <p>Stage not active yet</p>
-                                )}
+                                            )
+                                          ),
+                                        token.decimals
+                                      )}
+                                    </p>
+                                    <p>
+                                      <strong>
+                                        Tokens Sold in Current Stage:
+                                      </strong>{" "}
+                                      {stageSoldTokens[
+                                        `${token.address}-${stageIndex}`
+                                      ] || "Loading..."}
+                                    </p>
+                                    <p>
+                                      <strong>Token B Required:</strong>{" "}
+                                      {displayTokenBRequired(
+                                        stage.tokenBRequired
+                                      )}
+                                    </p>
+                                    <p>
+                                      <strong>Token B:</strong>{" "}
+                                      {tokenBDetails[
+                                        tokenBSelection[token.address]
+                                      ]?.symbol || "Token B"}
+                                    </p>
+                                  </div>
+                                  <button
+                                    className="buy-token-button"
+                                    onClick={() => openModal(token.address)}
+                                  >
+                                    Buy Tokens
+                                  </button>
+                                </>
                                 <button
                                   className="submit-token-b-amounts-button"
                                   onClick={() =>
