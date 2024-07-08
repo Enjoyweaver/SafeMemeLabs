@@ -30,7 +30,7 @@ export const ExchangeABI = [
         indexed: true,
       },
       {
-        name: "safeMeme_sold",
+        name: "soldsafeMeme",
         type: "uint256",
         indexed: true,
       },
