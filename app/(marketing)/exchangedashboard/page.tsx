@@ -121,28 +121,34 @@ export default function Dashboard(): JSX.Element {
         let isInitialized = false
         let dexAddress = ""
         let exchangeBalance = "0"
+
         try {
-          isInitialized = await tokenContract.isSafeLaunched()
           dexAddress = await tokenContract.dexAddress()
-          const exchangeContract = new ethers.Contract(
-            dexAddress,
-            ExchangeABI,
-            provider
-          )
-          tokenBPairing = await exchangeContract.tokenBAddress()
-          const stageNumber = await exchangeContract.getCurrentStage()
-          stage = (stageNumber.toNumber() + 1).toString()
-          isSafeLaunchActive = await exchangeContract.getSaleStatus()
-          isFinalized = !isSafeLaunchActive && stageNumber.toNumber() === 5
-          const balance = await tokenContract.balanceOf(dexAddress)
-          exchangeBalance = ethers.utils.formatUnits(balance, 18)
+          isInitialized = dexAddress !== ethers.constants.AddressZero
+
+          if (isInitialized) {
+            const exchangeContract = new ethers.Contract(
+              dexAddress,
+              ExchangeABI,
+              provider
+            )
+
+            tokenBPairing = await exchangeContract.tokenBAddress()
+            const currentStage = await exchangeContract.getCurrentStage()
+            stage = currentStage.toString()
+            isSafeLaunchActive = await exchangeContract.safeLaunchComplete()
+            isFinalized = isSafeLaunchActive && currentStage.toNumber() === 5
+
+            const balance = await tokenContract.balanceOf(dexAddress)
+            exchangeBalance = ethers.utils.formatUnits(balance, 18)
+          }
         } catch (exchangeError) {
-          console.warn(`Exchange not yet created for token ${tokenAddress}`)
+          console.warn(
+            `Exchange not yet created or initialized for token ${tokenAddress}`
+          )
         }
 
-        // Fetch the factory and tokenFactory addresses directly from the contract state variables
-        const factoryAddress = await tokenContract.exchangeFactory()
-        const exchangeFactoryAddress = factoryAddress
+        const exchangeFactoryAddress = await tokenContract.exchangeFactory()
         const tokenFactoryAddress = await tokenContract.tokenFactory()
 
         tokenList.push({
@@ -152,7 +158,7 @@ export default function Dashboard(): JSX.Element {
           totalSupply: formattedTotalSupply,
           tokenBPairing,
           stage,
-          isSafeLaunchActive: isInitialized && isSafeLaunchActive, // Ensure this reflects the correct logic
+          isSafeLaunchActive: isInitialized && isSafeLaunchActive,
           isFinalized,
           factoryAddress: exchangeFactoryAddress,
           tokenFactoryAddress,

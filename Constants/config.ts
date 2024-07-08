@@ -460,23 +460,23 @@ export const masterVyperTokenCopy: {
 export const safeMemeTemplate: {
   [key: string]: string
 } = {
-  "4002": "0xd6Dfe919eBd9905deE563C89cF70D165c74BAA70",
+  "4002": "0x9D98247b343E1ac0326b13Ef66cec712703D83E3",
 }
 
 export const safeLaunchFactory: {
   [key: string]: string
 } = {
-  "4002": "0x4ec722769566dF9Fd7A0f157AF311002898EFbE2",
+  "4002": "0xE01B44276c9D164560Daf1205A742b587c67A4Ec",
 }
 
 export const exchangeTemplate: {
   [key: string]: string
 } = {
-  "4002": "0xc585990a681BE3F73aEF6cd60317023AfD19817a",
+  "4002": "0xeE93451cc85596E2D88A58E04154f38A81e1630e",
 }
 
 export const exchangeFactory: {
   [key: string]: string
 } = {
-  "4002": "0xC198564a5aB773E9Da718Bd949Cd807360BF8c2a",
+  "4002": "0x950D7821F3a3801D2DE6074f1bC99Ea4261574c0",
 }

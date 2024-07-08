@@ -809,7 +809,7 @@ export default function SafeLaunch(): JSX.Element {
       toast.info("Approval successful. Proceeding with token purchase...")
 
       console.log("Executing token purchase...")
-      const gasLimit = ethers.utils.hexlify(9000000) // Set a high gas limit
+      const gasLimit = ethers.utils.hexlify(9900000) // Set a high gas limit
       const buyTx = await dexContract.buyTokens(amountInWei, { gasLimit })
       console.log("Token purchase transaction sent:", buyTx.hash)
       await buyTx.wait()
