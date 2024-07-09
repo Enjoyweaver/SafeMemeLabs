@@ -364,14 +364,8 @@ export default function Dashboard(): JSX.Element {
                     <th className="table-header narrow-column">
                       SafeLaunch Initialized
                     </th>{" "}
-                    <th className="table-header narrow-column">
-                      SafeLaunch Active
-                    </th>
                     <th className="table-header">Token B Pairing</th>
                     <th className="table-header narrow-column">Stage</th>
-                    <th className="table-header narrow-column">
-                      Sale Finalized
-                    </th>
                     <th className="table-header narrow-column">
                       Factory Address
                     </th>{" "}
@@ -409,13 +403,6 @@ export default function Dashboard(): JSX.Element {
                       <td className="narrow-column">
                         {token.isInitialized ? "Yes" : "No"}
                       </td>
-                      <td className="narrow-column">
-                        {token.isSafeLaunchActive
-                          ? "Active"
-                          : token.isFinalized
-                          ? "Completed"
-                          : "Inactive"}
-                      </td>
                       <td>
                         {token.tokenBPairing ? (
                           <Link
@@ -431,10 +418,6 @@ export default function Dashboard(): JSX.Element {
                       </td>
 
                       <td className="narrow-column">{token.stage}</td>
-
-                      <td className="narrow-column">
-                        {token.isFinalized ? "Yes" : "No"}
-                      </td>
                       <td className="narrow-column">
                         <Link
                           href={getExplorerLink(token.exchangeFactoryAddress)} // Add this line

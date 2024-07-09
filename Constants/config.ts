@@ -273,7 +273,7 @@ export const NativeTokens: {
   [key: string]: { address: string; symbol: string }[]
 } = {
   "4002": [
-    { address: "0x9BFbF5219184C28A3bc6eBc5F07e247739bdFea3", symbol: "FTM" },
+    { address: "0xe04676B9A9A2973BCb0D1478b5E1E9098BBB7f3D", symbol: "FTM" },
   ],
   "250": [
     { address: "0x4e15361fd6b4bb609fa63c81a2be19d873717870", symbol: "FTM" },
@@ -448,35 +448,35 @@ export const frameFactoryDetails: {
 export const tokenVyperDetails: {
   [key: string]: string
 } = {
-  "4002": "0x481288b985e932AD70dd4699AdB471D1B633b361",
+  "4002": "0xc1776D66954DB46B32173154AD4Ed05390807689",
 }
 
 export const masterVyperTokenCopy: {
   [key: string]: string
 } = {
-  "4002": "0x0FF5bEAA6be40072D3bB1D713Ce6Ba05be59b69A",
+  "4002": "0x8586F0c6AE085902663DfBE67A7BE83d4CBA2948",
 }
 
 export const safeMemeTemplate: {
   [key: string]: string
 } = {
-  "4002": "0x9D98247b343E1ac0326b13Ef66cec712703D83E3",
+  "4002": "0xD1C91e5BFd7a07d68fF797F72572EDbfdFE6D115",
 }
 
 export const safeLaunchFactory: {
   [key: string]: string
 } = {
-  "4002": "0xE01B44276c9D164560Daf1205A742b587c67A4Ec",
+  "4002": "0xc1776D66954DB46B32173154AD4Ed05390807689",
 }
 
 export const exchangeTemplate: {
   [key: string]: string
 } = {
-  "4002": "0xeE93451cc85596E2D88A58E04154f38A81e1630e",
+  "4002": "0x8586F0c6AE085902663DfBE67A7BE83d4CBA2948",
 }
 
 export const exchangeFactory: {
   [key: string]: string
 } = {
-  "4002": "0x950D7821F3a3801D2DE6074f1bC99Ea4261574c0",
+  "4002": "0x67BeC9cd01A97ea5BF4209eE9fD256613DdABEbF",
 }

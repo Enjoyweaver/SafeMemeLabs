@@ -1,27 +1,5 @@
 export const ExchangeABI = [
   {
-    name: "SafeMemePurchase",
-    inputs: [
-      {
-        name: "buyer",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "tokenB_sold",
-        type: "uint256",
-        indexed: true,
-      },
-      {
-        name: "safeMeme_bought",
-        type: "uint256",
-        indexed: true,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
     name: "tokenBPurchase",
     inputs: [
       {
