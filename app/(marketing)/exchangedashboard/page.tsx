@@ -367,20 +367,11 @@ export default function Dashboard(): JSX.Element {
                     <th className="table-header">Token B Pairing</th>
                     <th className="table-header narrow-column">Stage</th>
                     <th className="table-header narrow-column">
-                      Factory Address
+                      DEX Address
                     </th>{" "}
                     {/* Add this line */}
                     <th className="table-header narrow-column">
-                      Token Factory Address
-                    </th>{" "}
-                    {/* Add this line */}
-                    {/* Add this line */}
-                    <th className="table-header narrow-column">
-                      Exchange Address
-                    </th>{" "}
-                    {/* Add this line */}
-                    <th className="table-header narrow-column">
-                      Exchange Balance
+                      DEX SafeMeme Balance
                     </th>{" "}
                     {/* Add this line */}
                   </tr>
@@ -418,25 +409,6 @@ export default function Dashboard(): JSX.Element {
                       </td>
 
                       <td className="narrow-column">{token.stage}</td>
-                      <td className="narrow-column">
-                        <Link
-                          href={getExplorerLink(token.exchangeFactoryAddress)} // Add this line
-                          target="_blank"
-                        >
-                          {token.exchangeFactoryAddress.slice(0, 6)}...
-                          {token.exchangeFactoryAddress.slice(-4)}
-                        </Link>
-                      </td>
-                      <td className="narrow-column">
-                        <Link
-                          href={getExplorerLink(token.tokenFactoryAddress)} // Add this line
-                          target="_blank"
-                        >
-                          {token.tokenFactoryAddress.slice(0, 6)}...
-                          {token.tokenFactoryAddress.slice(-4)}
-                        </Link>
-                      </td>
-
                       <td className="narrow-column">
                         <Link
                           href={getExplorerLink(token.dexAddress)} // Add this line

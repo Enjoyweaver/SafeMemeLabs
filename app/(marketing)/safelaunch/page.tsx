@@ -322,36 +322,6 @@ const SafeLaunch: React.FC = () => {
     setIsSwapModalOpen(false)
   }
 
-  const calculateSafeMemeAmount = async (tokenBAmount) => {
-    if (!provider) return
-
-    const exchangeContract = new ethers.Contract(
-      dexAddress,
-      ExchangeABI,
-      provider
-    )
-    const [tokenBRequired, safeMemePrice] = await exchangeContract.getStageInfo(
-      currentStage
-    )
-    const [, safeMemeAvailable] = await exchangeContract.getStageLiquidity(
-      currentStage
-    )
-
-    const tokenBAmountBN = ethers.utils.parseEther(tokenBAmount.toString())
-    let safeMemeToBuy = tokenBAmountBN
-      .mul(safeMemeAvailable)
-      .div(tokenBRequired)
-
-    if (safeMemeToBuy.gt(safeMemeAvailable)) {
-      safeMemeToBuy = safeMemeAvailable
-    }
-
-    setSafeMemeAmount(ethers.utils.formatEther(safeMemeToBuy))
-    setExchangeRate(
-      parseFloat(ethers.utils.formatEther(safeMemeToBuy)) / tokenBAmount
-    )
-  }
-
   const openSwapModal = (dexAddress: string | undefined) => {
     if (!dexAddress) {
       console.error("DEX address is undefined")
@@ -363,6 +333,7 @@ const SafeLaunch: React.FC = () => {
       currentStage = selectedToken.currentStage || 0
     }
     setIsSwapModalOpen(true)
+    console.log("Opening swap modal with DEX address:", dexAddress)
   }
 
   const SwapModal: React.FC<{
@@ -426,7 +397,10 @@ const SafeLaunch: React.FC = () => {
     }
 
     const handleBuyTokens = async () => {
-      if (!provider) return
+      if (!provider || !dexAddress) {
+        console.error("Provider or DEX address is missing")
+        return
+      }
       const signer = provider.getSigner()
       const exchangeContract = new ethers.Contract(
         dexAddress,
@@ -435,6 +409,11 @@ const SafeLaunch: React.FC = () => {
       )
 
       try {
+        console.log("Buying tokens with parameters:", {
+          dexAddress,
+          tokenBAmount: tokenBAmount.toString(),
+          currentStage,
+        })
         const tx = await exchangeContract.buyTokens(
           ethers.utils.parseUnits(tokenBAmount.toString(), 18)
         )
@@ -594,7 +573,7 @@ const SafeLaunch: React.FC = () => {
                           <button
                             className="buy-token-button"
                             onClick={() =>
-                              submitTokenB(token.address, selectedTokenB)
+                              setTokenBAmount(token.address, selectedTokenB)
                             }
                           >
                             Submit Token B
