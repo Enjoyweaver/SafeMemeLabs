@@ -1,1272 +1,250 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
-import { ExchangeABI } from "@/ABIs/SafeLaunch/Exchange"
-import { ExchangeFactoryABI } from "@/ABIs/SafeLaunch/ExchangeFactory"
+import React, { useEffect, useState } from "react"
 import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
-import { ethers } from "ethers"
-import debounce from "lodash.debounce"
-import Modal from "react-modal"
-import { toast } from "react-toastify"
-
-import "react-toastify/dist/ReactToastify.css"
 import {
-  useAccount,
-  useContractRead,
-  useContractWrite,
-  useNetwork,
-  usePrepareContractWrite,
-} from "wagmi"
+  blockExplorerAddress,
+  blockExplorerToken,
+  safeLaunchFactory,
+} from "@/Constants/config"
+import { ethers } from "ethers"
 
+import "@/styles/safeLaunch.css"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
-import {
-  NativeTokens,
-  blockExplorerAddress,
-  exchangeFactory,
-  exchangeTemplate,
-  safeLaunchFactory,
-} from "../../../Constants/config"
-import "@/styles/safeLaunch.css"
+interface Token {
+  address: string
+  name: string
+  symbol: string
+  antiWhalePercentage: number
+  maxTokens: string
+  totalSupply: string
+  safeLaunchInitialized: boolean
+  safeLaunchStarted: boolean
+  lockedTokens?: string
+  dexAddress?: string
+}
 
-export default function SafeLaunch(): JSX.Element {
-  const [isClient, setIsClient] = useState(false)
-  const [deployedTokenData, setDeployedTokenData] = useState<any[]>([])
-  const [DexAddress, setDexAddress] = useState<any[]>([])
-  const [fetchingError, setFetchingError] = useState<string | null>(null)
+const SafeLaunch: React.FC = () => {
+  const [tokens, setTokens] = useState<Token[]>([])
+  const [userAddress, setUserAddress] = useState<string>("")
   const [provider, setProvider] =
     useState<ethers.providers.Web3Provider | null>(null)
-  const [tokenFactoryContract, setTokenFactoryContract] =
-    useState<ethers.Contract | null>(null)
-  const [exchangeContract, setExchangeContract] =
-    useState<ethers.Contract | null>(null)
-  const [tokenBSelection, setTokenBSelection] = useState<{
-    [key: string]: string
-  }>({})
-  const [tokenBDetails, setTokenBDetails] = useState<{
-    [key: string]: { name: string; symbol: string }
-  }>({})
-  const [tokenBAmounts, setTokenBAmounts] = useState<{
-    [key: string]: number[]
-  }>({})
-  const [walletTokens, setWalletTokens] = useState<any[]>([])
-  const [deployedTokens, setDeployedTokens] = useState<any[]>([])
-  const { address, isConnected } = useAccount()
-  const { chain } = useNetwork()
-  const [selectedToken, setSelectedToken] = useState<{
-    tokenAddress: string
-    tokenBAddress: string
-  } | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [amount, setAmount] = useState<string>("1")
-  const [estimatedOutput, setEstimatedOutput] = useState<string>("0")
-  const [tokenPrice, setTokenPrice] = useState<string>("0")
-  const [currentStage, setCurrentStage] = useState<number>(0)
-  const [stageInfo, setStageInfo] = useState<
-    [ethers.BigNumber, ethers.BigNumber] | null
-  >(null)
-  const [isLoadingTokenBDetails, setIsLoadingTokenBDetails] =
-    useState<boolean>(false)
-  const [tokensAvailable, setTokensAvailable] =
-    useState<ethers.BigNumber | null>(null)
-  const [tokensSold, setTokensSold] = useState<ethers.BigNumber | null>(null)
-  const [stageSoldTokens, setStageSoldTokens] = useState<{
-    [key: string]: string
-  }>({})
-  const chainId: string | number = chain ? chain.id : 250
-  // State variables for contract addresses and other data
-  const [tokenFactoryAddress, setTokenFactoryAddress] = useState(null)
+  const [chainId, setChainId] = useState<number | null>(null)
 
   useEffect(() => {
-    setIsClient(true)
-    if (typeof window !== "undefined" && window.ethereum) {
-      const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
-      setProvider(web3Provider)
-      const chainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
-      const tokenFactory = new ethers.Contract(
-        safeLaunchFactory[chainId],
-        TokenFactoryABI,
-        web3Provider
-      )
-      const exchange = new ethers.Contract(
-        exchangeTemplate[chainId],
-        ExchangeABI,
-        web3Provider
-      )
-      setTokenFactoryContract(tokenFactory)
-      setExchangeContract(exchange)
+    const init = async () => {
+      if (typeof window.ethereum !== "undefined") {
+        const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
+        setProvider(web3Provider)
+
+        const network = await web3Provider.getNetwork()
+        setChainId(network.chainId)
+
+        const signer = web3Provider.getSigner()
+        const address = await signer.getAddress()
+        setUserAddress(address)
+
+        await fetchTokens(web3Provider, address, network.chainId)
+      }
     }
-  }, [chain])
+    init()
+  }, [])
 
-  useEffect(() => {
-    setIsClient(true)
-    if (typeof window !== "undefined" && window.ethereum) {
-      const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
-      setProvider(web3Provider)
-      const chainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
-      const tokenFactory = new ethers.Contract(
-        safeLaunchFactory[chainId],
-        TokenFactoryABI,
-        web3Provider
-      )
-      setTokenFactoryContract(tokenFactory)
+  const fetchTokens = async (
+    provider: ethers.providers.Web3Provider,
+    address: string,
+    currentChainId: number
+  ) => {
+    if (!safeLaunchFactory[currentChainId]) {
+      console.error(`No factory address for chain ID ${currentChainId}`)
+      return
     }
-  }, [chain])
 
-  const fetchDexAddressAndSaleStatus = async (tokenAddress) => {
-    if (!provider) return
+    const factoryContract = new ethers.Contract(
+      safeLaunchFactory[currentChainId],
+      TokenFactoryABI,
+      provider
+    )
 
-    try {
+    const tokenAddresses = await factoryContract.getSafeMemesDeployedByUser(
+      address
+    )
+
+    const tokenPromises = tokenAddresses.map(async (tokenAddress: string) => {
       const tokenContract = new ethers.Contract(
         tokenAddress,
         SafeMemeABI,
         provider
       )
-      const dexAddr = await tokenContract.dexAddress()
-      setDexAddress(dexAddr)
-
-      if (dexAddr && dexAddr !== ethers.constants.AddressZero) {
-        const exchangeContract = new ethers.Contract(
-          dexAddr,
-          ExchangeABI,
-          provider
-        )
-      }
-    } catch (error) {
-      console.error("Error fetching dexAddress and sale status:", error)
-    }
-  }
-
-  const getAllTokens = async () => {
-    try {
-      if (!tokenFactoryContract) return []
-      const tokenCount = await tokenFactoryContract.getDeployedSafeMemeCount({
-        gasLimit: ethers.utils.hexlify(1000000),
-      })
-      const allTokens: string[] = []
-      for (let i = 0; i < tokenCount; i++) {
-        const tokenAddress: string =
-          await tokenFactoryContract.safeMemesDeployed(i, {
-            gasLimit: ethers.utils.hexlify(1000000),
-          })
-        allTokens.push(tokenAddress)
-      }
-      return allTokens
-    } catch (error) {
-      console.error("Error fetching all tokens: ", error)
-      return []
-    }
-  }
-
-  const getUserTokens = async (userAddress: string) => {
-    try {
-      if (!tokenFactoryContract) return []
-      const userTokens = await tokenFactoryContract.getSafeMemesDeployedByUser(
-        userAddress,
-        {
-          gasLimit: ethers.utils.hexlify(2000000), // Increased gas limit
-        }
-      )
-      return userTokens
-    } catch (error) {
-      console.error("Error fetching user tokens: ", error)
-      return []
-    }
-  }
-
-  const submitTokenBInfo = async (tokenAddress) => {
-    try {
-      if (!provider) {
-        throw new Error("Provider not available")
-      }
-
-      const tokenBAddress = tokenBSelection[tokenAddress]
-      console.log("Token B Address Retrieved:", tokenBAddress)
-      if (!tokenBAddress) {
-        throw new Error("Token B address must be provided")
-      }
-
-      const tokenBName = tokenBDetails[tokenBAddress]?.name || ""
-      const tokenBSymbol = tokenBDetails[tokenBAddress]?.symbol || ""
-
-      const signer = provider.getSigner()
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        signer
-      )
-
+      const name = await tokenContract.name()
+      const symbol = await tokenContract.symbol()
+      const antiWhalePercentage = await tokenContract.antiWhalePercentage()
+      const totalSupply = await tokenContract.totalSupply()
+      const decimals = await tokenContract.decimals()
+      const maxTokens = totalSupply.mul(antiWhalePercentage).div(100)
       const dexAddress = await tokenContract.dexAddress()
-      if (!dexAddress || dexAddress === ethers.constants.AddressZero) {
-        throw new Error("Invalid DEX address retrieved from SafeMeme contract")
-      }
-
-      const dexContract = new ethers.Contract(dexAddress, ExchangeABI, signer)
-
-      console.log("Token Address:", tokenAddress)
-      console.log("DEX Contract Address:", dexContract.address)
-      console.log("Token B Address:", tokenBAddress)
-      console.log("Token B Name:", tokenBName)
-      console.log("Token B Symbol:", tokenBSymbol)
-
-      const currentTokenBAddress = await dexContract.tokenBAddress()
-      console.log("Current Token B Address:", currentTokenBAddress)
-
-      const gasLimit = 8000000 // Set a manual gas limit
-
-      console.log("Sending transaction to set Token B details...")
-      const tx = await dexContract.settokenBDetails(
-        tokenBAddress,
-        tokenBName,
-        tokenBSymbol,
-        { gasLimit }
-      )
-      console.log("Transaction sent:", tx.hash)
-
-      await tx.wait()
-      console.log("Transaction confirmed")
-
-      // Update local state
-      setTokenBDetails((prev) => ({
-        ...prev,
-        [tokenBAddress]: { name: tokenBName, symbol: tokenBSymbol },
-      }))
-
-      toast.success(`Token B details set for token ${tokenAddress}`)
-
-      // Refresh token data
-      await fetchAllTokenData()
-    } catch (error) {
-      console.error(
-        `Error setting Token B details for token ${tokenAddress}:`,
-        error
-      )
-      toast.error(`Error setting Token B details: ${error.message}`)
-    }
-  }
-
-  const initializeSafeLaunch = async (tokenAddress) => {
-    try {
-      const signer = provider.getSigner()
-      const signerAddress = await signer.getAddress()
-      console.log(`Signer Address: ${signerAddress}`)
-
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        signer
-      )
-      console.log(`Contract Address: ${tokenContract.address}`)
-
-      // Add logging to check the owner of the contract
-      const contractOwner = await tokenContract.owner()
-      console.log(`Contract Owner: ${contractOwner}`)
-
-      const gasLimit = await tokenContract.estimateGas.initializeSafeLaunch()
-      const tx = await tokenContract.initializeSafeLaunch({
-        gasLimit: gasLimit.add(6200000), // Adding extra gas limit
-      })
-      await tx.wait()
-      toast.success(`SafeLaunch initialized for token ${tokenAddress}`)
-      fetchAllTokenData() // Refresh token data
-    } catch (error) {
-      console.error(
-        `Error initializing SafeLaunch for token ${tokenAddress}:`,
-        error
-      )
-      toast.error(`Error initializing SafeLaunch: ${error.message}`)
-    }
-  }
-
-  const startSafeLaunch = async (tokenAddress) => {
-    try {
-      const signer = provider.getSigner()
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        signer
-      )
-
-      const gasLimit = await tokenContract.estimateGas.startSafeLaunch()
-      const tx = await tokenContract.startSafeLaunch({
-        gasLimit: gasLimit.add(6200000), // Adding extra gas limit
-      })
-      await tx.wait()
-      toast.success(`SafeLaunch started for token ${tokenAddress}`)
-      fetchAllTokenData() // Refresh token data
-    } catch (error) {
-      console.error(
-        `Error starting SafeLaunch for token ${tokenAddress}:`,
-        error
-      )
-      toast.error(`Error starting SafeLaunch: ${error.message}`)
-    }
-  }
-
-  const getTokenDetails = async (tokenAddress) => {
-    try {
-      if (!provider) return null
-
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        provider
-      )
-
-      const [
-        name,
-        symbol,
-        totalSupply,
-        owner,
-        decimals,
-        antiWhalePercentage,
-        dexAddress,
-        lockedsafeMeme,
-      ] = await Promise.all([
-        tokenContract.name(),
-        tokenContract.symbol(),
-        tokenContract.totalSupply(),
-        tokenContract.owner(),
-        tokenContract.decimals(),
-        tokenContract.antiWhalePercentage(),
-        tokenContract.dexAddress(),
-
-        getlockedsafeMeme(tokenAddress),
-      ])
+      const safeLaunchInitialized = dexAddress !== ethers.constants.AddressZero
+      const safeLaunchStarted =
+        safeLaunchInitialized && (await tokenContract.balanceOf(dexAddress)) > 0
+      const lockedTokens = safeLaunchStarted
+        ? await tokenContract.balanceOf(dexAddress)
+        : ethers.BigNumber.from(0)
 
       return {
         address: tokenAddress,
         name,
         symbol,
-        totalSupply,
-        owner,
-        decimals,
-        antiWhalePercentage,
-        dexAddress,
-        lockedsafeMeme,
+        antiWhalePercentage: antiWhalePercentage.toNumber(),
+        maxTokens: ethers.utils.formatUnits(maxTokens, decimals),
+        totalSupply: ethers.utils.formatUnits(totalSupply, decimals),
+        safeLaunchInitialized,
+        safeLaunchStarted,
+        lockedTokens: ethers.utils.formatUnits(lockedTokens, decimals),
+        dexAddress: safeLaunchStarted ? dexAddress : undefined,
       }
-    } catch (error) {
-      console.error(`Error fetching details for token ${tokenAddress}:`, error)
-      return null
-    }
-  }
-
-  const fetchTokenSaleData = async (tokenAddress: string) => {
-    if (!provider || !exchangeContract) return
-
-    try {
-      const available = await exchangeContract.getTokensAvailable()
-      const sold = await exchangeContract.getTokensSold()
-
-      setTokensAvailable(available)
-      setTokensSold(sold)
-    } catch (error) {
-      console.error(
-        `Error fetching sale data for token ${tokenAddress}:`,
-        error
-      )
-    }
-  }
-
-  const fetchStageLiquidity = async (tokenAddress, stage) => {
-    if (!provider || !exchangeContract) return
-
-    try {
-      const [tokenBReceived, tokensSold] =
-        await exchangeContract.getStageLiquidity(stage)
-      return {
-        tokensSold,
-        tokenBReceived,
-      }
-    } catch (error) {
-      console.error(
-        `Error fetching stage liquidity for token ${tokenAddress}:`,
-        error
-      )
-      return null
-    }
-  }
-
-  const displayTokensSold = async (tokenAddress, stage) => {
-    const liquidityData = await fetchStageLiquidity(tokenAddress, stage)
-    if (liquidityData) {
-      const { tokensSold } = liquidityData
-      // Format and display the tokens sold
-      return ethers.utils.formatUnits(tokensSold, 18)
-    }
-    return "N/A"
-  }
-
-  const fetchTokenBDetails = async (tokenBAddress: string) => {
-    try {
-      setIsLoadingTokenBDetails(true)
-      if (!provider) return
-      const tokenBContract = new ethers.Contract(
-        tokenBAddress,
-        SafeMemeABI,
-        provider
-      )
-      const [name, symbol] = await Promise.all([
-        tokenBContract.name(),
-        tokenBContract.symbol(),
-      ])
-      setTokenBDetails((prev) => ({
-        ...prev,
-        [tokenBAddress]: { name, symbol },
-      }))
-    } catch (error) {
-      console.error("Error fetching Token B details:", error)
-    } finally {
-      setIsLoadingTokenBDetails(false)
-    }
-  }
-
-  const setStageTokenBAmount = async (tokenAddress, stage, amount) => {
-    try {
-      if (!provider) return
-
-      const signer = provider.getSigner()
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        signer
-      )
-      const dexAddress = await tokenContract.dexAddress()
-      const exchangeContract = new ethers.Contract(
-        dexAddress,
-        ExchangeABI,
-        signer
-      )
-
-      const amountInWei = ethers.utils.parseUnits(amount.toString(), 18) // Convert to 18 decimals
-
-      // Call the correct overloaded function
-      const gasLimit = await exchangeContract.estimateGas[
-        "setStagetokenBAmount(uint256,uint256)"
-      ](stage, amountInWei)
-      const tx = await exchangeContract[
-        "setStagetokenBAmount(uint256,uint256)"
-      ](stage, amountInWei, {
-        gasLimit: gasLimit.add(100000),
-      })
-      await tx.wait()
-      toast.success(
-        `Token B amount set for stage ${stage} of token ${tokenAddress}`
-      )
-      fetchAllTokenData() // Refresh token data to get updated stage info
-    } catch (error) {
-      console.error(`Error setting Token B amount: ${error.message}`)
-      toast.error(`Error setting Token B amount: ${error.message}`)
-    }
-  }
-
-  const getlockedsafeMeme = async (tokenAddress) => {
-    try {
-      if (!provider) return ethers.BigNumber.from(0)
-
-      // Assume SafeMeme contract has the exchange address
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        provider
-      )
-      const dexAddress = await tokenContract.dexAddress()
-
-      if (dexAddress === ethers.constants.AddressZero) {
-        return ethers.BigNumber.from(0)
-      }
-
-      const exchangeContract = new ethers.Contract(
-        dexAddress,
-        ExchangeABI,
-        provider
-      )
-      const lockedsafeMeme = await exchangeContract.lockedsafeMeme()
-
-      return lockedsafeMeme
-    } catch (error) {
-      console.error(`Error fetching locked tokens for ${tokenAddress}:`, error)
-      return ethers.BigNumber.from(0)
-    }
-  }
-
-  const debouncedSetStageTokenBAmount = useCallback(
-    debounce((tokenAddress, stage, amount) => {
-      setStageTokenBAmount(tokenAddress, stage, amount)
-    }, 1000),
-    []
-  )
-
-  const handleTokenBAmountChange = (tokenAddress, stage, amount) => {
-    setTokenBAmounts((prev) => {
-      const currentAmounts = prev[tokenAddress] || []
-      currentAmounts[stage] = amount
-      return { ...prev, [tokenAddress]: currentAmounts }
     })
-    debouncedSetStageTokenBAmount(tokenAddress, stage, amount)
+
+    const fetchedTokens = await Promise.all(tokenPromises)
+    setTokens(fetchedTokens)
   }
 
-  const handleTokenBSelection = (
-    tokenAddress: string,
-    tokenBAddress: string
-  ) => {
-    setTokenBSelection((prev) => ({ ...prev, [tokenAddress]: tokenBAddress }))
-    // Also update the selectedToken state if necessary
-    setSelectedToken((prev) => ({ ...prev, tokenBAddress }))
-  }
-
-  const handleSubmitTokenBAmounts = (tokenAddress) => {
-    if (tokenBAmounts[tokenAddress]) {
-      tokenBAmounts[tokenAddress].forEach((amount, stage) => {
-        if (amount) {
-          setStageTokenBAmount(tokenAddress, stage, amount)
-        }
-      })
-    }
-  }
-
-  const fetchAllTokenData = async () => {
-    try {
-      if (!tokenFactoryContract || !address) {
-        console.log("Token factory contract or address not available")
-        return
-      }
-
-      console.log("Fetching all tokens...")
-      const allTokens = await getAllTokens()
-      console.log("All tokens:", allTokens)
-
-      if (!allTokens || allTokens.length === 0) {
-        console.log("No tokens found")
-        setDeployedTokenData([])
-        return
-      }
-
-      console.log("Fetching user tokens...")
-      const userTokens = await getUserTokens(address)
-      console.log("User tokens:", userTokens)
-
-      console.log("Fetching token details...")
-      const tokenData = await Promise.all(
-        allTokens.map(async (tokenAddress) => {
-          const details = await getTokenDetails(tokenAddress)
-          if (details) {
-            await fetchDexAddressAndSaleStatus(tokenAddress)
-            const stages = await getStageDetails(tokenAddress)
-
-            // Fetch Token B details
-            const tokenContract = new ethers.Contract(
-              tokenAddress,
-              SafeMemeABI,
-              provider
-            )
-            const dexAddress = await tokenContract.dexAddress()
-            if (dexAddress && dexAddress !== ethers.constants.AddressZero) {
-              const exchangeContract = new ethers.Contract(
-                dexAddress,
-                ExchangeABI,
-                provider
-              )
-              const tokenBAddress = await exchangeContract.tokenBAddress()
-              if (tokenBAddress !== ethers.constants.AddressZero) {
-                const tokenBDetails = await fetchTokenBDetails(tokenBAddress)
-                details.tokenBDetails = tokenBDetails
-                setTokenBSelection((prev) => ({
-                  ...prev,
-                  [tokenAddress]: tokenBAddress,
-                }))
-              }
-            }
-
-            return { ...details, stages }
-          }
-          return null
-        })
-      )
-
-      const userTokenAddresses = new Set(
-        userTokens.map((token) => token.toLowerCase())
-      )
-      const deployedTokenData = tokenData
-        .filter((token): token is NonNullable<typeof token> => token !== null)
-        .map((token) => ({
-          ...token,
-          isUserToken: userTokenAddresses.has(token.address.toLowerCase()),
-        }))
-
-      console.log("Deployed token data:", deployedTokenData)
-      setDeployedTokenData(deployedTokenData)
-      setDeployedTokens(deployedTokenData)
-    } catch (error) {
-      console.error("Error fetching token data: ", error)
-      setFetchingError("Failed to fetch token data. Please try again.")
-    }
-  }
-
-  const fetchWalletTokens = async () => {
-    if (!isConnected || !address) return
-
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-
-    const tokenBalances = await Promise.all(
-      deployedTokens.map(async (token) => {
-        if (token.address) {
-          const contract = new ethers.Contract(
-            token.address,
-            SafeMemeABI,
-            provider
-          )
-          try {
-            const balance = await contract.balanceOf(address)
-            return {
-              ...token,
-              balance: ethers.utils.formatUnits(balance, token.decimals),
-            }
-          } catch (error) {
-            console.error(
-              `Failed to fetch balance for token ${token.address}:`,
-              error
-            )
-            return { ...token, balance: "0" } // Handle the error case
-          }
-        } else {
-          console.error(`Token address is undefined for token:`, token)
-          return { ...token, balance: "0" } // Handle the error case
-        }
-      })
-    )
-
-    setWalletTokens(
-      tokenBalances.filter((token) => parseFloat(token.balance) > 0)
-    )
-
-    console.log(
-      "Wallet Tokens:",
-      tokenBalances.filter((token) => parseFloat(token.balance) > 0)
-    )
-  }
-
-  const fetchStageInfo = async (tokenAddress) => {
-    if (!provider || !tokenAddress) return
-
-    try {
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        provider
-      )
-
-      const dexAddress = await tokenContract.dexAddress()
-      if (!dexAddress || dexAddress === ethers.constants.AddressZero) {
-        console.error("Invalid DEX address")
-        return
-      }
-
-      const dexContract = new ethers.Contract(dexAddress, ExchangeABI, provider)
-
-      const currentStage = await dexContract.getCurrentStage()
-      const stageInfo = await dexContract.getStageInfo(currentStage)
-      const tokenBAddress = await dexContract.tokenBAddress()
-
-      console.log("Current Stage:", currentStage.toString())
-      console.log("Stage Info:", stageInfo)
-      console.log("Token B Address:", tokenBAddress)
-
-      setCurrentStage(currentStage.toNumber())
-      setStageInfo(stageInfo)
-      setTokenPrice(ethers.utils.formatUnits(stageInfo[1], 18))
-      setSelectedToken({ tokenAddress, tokenBAddress })
-
-      await fetchTokenBDetails(tokenBAddress)
-    } catch (error) {
-      console.error("Error fetching stage info:", error)
-      toast.error("Failed to fetch stage information")
-    }
-  }
-
-  const getStageDetails = async (tokenAddress) => {
-    try {
-      if (!provider) return []
-
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        provider
-      )
-      const dexAddress = await tokenContract.dexAddress()
-
-      if (!dexAddress || dexAddress === ethers.constants.AddressZero) return []
-
-      const exchangeContract = new ethers.Contract(
-        dexAddress,
-        ExchangeABI,
-        provider
-      )
-
-      const stageDetails = await Promise.all(
-        Array.from({ length: 5 }, async (_, i) => {
-          try {
-            const stage = await exchangeContract.getStageInfo(i, {
-              gasLimit: ethers.utils.hexlify(5000000),
-            })
-            console.log(`Stage ${i} Details:`, stage)
-            return stage
-          } catch (error) {
-            console.error(
-              `Error fetching stage info for stage ${i} of token ${tokenAddress}:`,
-              error
-            )
-            return [ethers.BigNumber.from(0), ethers.BigNumber.from(0)]
-          }
-        })
-      )
-
-      const formattedStageDetails = stageDetails.map((stage, index) => ({
-        stage: index,
-        tokenBRequired: stage[0],
-        tokenPrice: stage[1],
-      }))
-
-      console.log("Formatted Stage Details:", formattedStageDetails)
-      return formattedStageDetails
-    } catch (error) {
-      console.error(
-        `Error fetching stage details for token ${tokenAddress}:`,
-        error
-      )
-      return []
-    }
-  }
-
-  useEffect(() => {
-    if (selectedToken?.tokenAddress) {
-      fetchStageInfo(selectedToken.tokenAddress)
-    }
-  }, [selectedToken?.tokenAddress, provider])
-
-  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAmount(event.target.value)
-  }
-
-  const handleSwap = async () => {
-    if (!amount || !selectedToken || !provider) {
-      toast.error("Please enter an amount and ensure wallet is connected")
-      return
-    }
-
-    const { tokenAddress, tokenBAddress } = selectedToken
-
-    if (!tokenAddress || !tokenBAddress) {
-      toast.error("Invalid token addresses")
-      return
-    }
-
-    try {
-      const parsedAmount = parseFloat(amount)
-      if (isNaN(parsedAmount) || parsedAmount <= 0) {
-        toast.error("Invalid amount entered")
-        return
-      }
-
-      const signer = provider.getSigner()
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        signer
-      )
-      const dexAddress = await tokenContract.dexAddress()
-
-      if (!dexAddress || dexAddress === ethers.constants.AddressZero) {
-        toast.error("DEX not initialized for this token")
-        return
-      }
-
-      const dexContract = new ethers.Contract(dexAddress, ExchangeABI, signer)
-      const tokenBContract = new ethers.Contract(
-        tokenBAddress,
-        SafeMemeABI,
-        signer
-      )
-
-      // Check if Token B details are set
-      const currentTokenBAddress = await dexContract.tokenBAddress()
-      if (currentTokenBAddress === ethers.constants.AddressZero) {
-        toast.error("Token B details are not set")
-        return
-      }
-
-      // Check if swapping is allowed in the current stage
-      const currentStage = await dexContract.getCurrentStage()
-      const stageInfo = await dexContract.getStageInfo(currentStage)
-
-      const amountInWei = ethers.utils.parseUnits(amount, 18)
-
-      console.log("Approving token spend...")
-      const approveTx = await tokenBContract.approve(dexAddress, amountInWei)
-      await approveTx.wait()
-      console.log("Approval successful")
-      toast.info("Approval successful. Proceeding with token purchase...")
-
-      console.log("Executing token purchase...")
-      const gasLimit = ethers.utils.hexlify(9900000) // Set a high gas limit
-      const buyTx = await dexContract.buyTokens(amountInWei, { gasLimit })
-      console.log("Token purchase transaction sent:", buyTx.hash)
-      await buyTx.wait()
-      console.log("Token purchase transaction confirmed")
-      toast.success("Token purchase successful!")
-      fetchStageInfo(tokenAddress)
-    } catch (error) {
-      console.error("Error during token purchase:", error)
-      toast.error(`Token purchase failed: ${error.message}`)
-    }
-  }
-
-  useEffect(() => {
-    if (isClient && isConnected) {
-      fetchAllTokenData()
-    }
-  }, [isClient, isConnected, chain, address, tokenFactoryContract])
-
-  useEffect(() => {
-    fetchWalletTokens()
-  }, [address, deployedTokens])
-
-  useEffect(() => {
-    if (selectedToken?.tokenAddress) {
-      fetchStageInfo(selectedToken.tokenAddress)
-    }
-  }, [selectedToken?.tokenAddress, provider])
-
-  useEffect(() => {
-    const fetchSoldTokens = async () => {
-      const soldTokensData: { [key: string]: string } = {}
-      for (const token of deployedTokenData) {
-      }
-      setStageSoldTokens(soldTokensData)
-    }
-
-    if (deployedTokenData.length > 0) {
-      fetchSoldTokens()
-    }
-  }, [deployedTokenData])
-
-  useEffect(() => {
-    if (amount && tokenPrice) {
-      const amountNumber = parseFloat(amount)
-      const priceNumber = parseFloat(tokenPrice)
-      if (!isNaN(amountNumber) && !isNaN(priceNumber) && priceNumber !== 0) {
-        setEstimatedOutput((amountNumber / priceNumber).toFixed(6))
-      } else {
-        setEstimatedOutput("0")
-      }
-    }
-  }, [amount, tokenPrice])
-
-  useEffect(() => {
-    if (!provider || !selectedToken?.tokenAddress) return
-
-    const tokenAddress = selectedToken.tokenAddress
-
+  const initializeSafeLaunch = async (tokenAddress: string) => {
+    if (!provider || !chainId) return
     const signer = provider.getSigner()
     const tokenContract = new ethers.Contract(tokenAddress, SafeMemeABI, signer)
-  }, [provider, selectedToken?.tokenAddress])
 
-  const formatNumber = (
-    number: ethers.BigNumber | null | undefined,
-    decimals: number
-  ) => {
-    if (!number || number.isZero()) {
-      return "0"
-    }
     try {
-      return ethers.utils.commify(ethers.utils.formatUnits(number, decimals))
+      const tx = await tokenContract.initializeSafeLaunch()
+      await tx.wait()
+      await fetchTokens(provider, userAddress, chainId)
+      alert("SafeLaunch initialized successfully!")
     } catch (error) {
-      console.error("Error formatting number:", error)
-      return "0" // or any appropriate default value
+      console.error("Error initializing SafeLaunch:", error)
+      alert("Failed to initialize SafeLaunch. Please try again.")
     }
   }
 
-  const displayTokenBRequired = (amount: ethers.BigNumber | undefined) => {
-    if (!amount) {
-      console.error("Invalid amount value:", amount)
-      return "0" // or any appropriate default value
+  const startSafeLaunch = async (tokenAddress: string) => {
+    if (!provider || !chainId) return
+    const signer = provider.getSigner()
+    const tokenContract = new ethers.Contract(tokenAddress, SafeMemeABI, signer)
+
+    try {
+      const tx = await tokenContract.startSafeLaunch()
+      await tx.wait()
+      await fetchTokens(provider, userAddress, chainId)
+      alert("Congratulations! 🎉 Your SafeLaunch has started successfully!")
+    } catch (error) {
+      console.error("Error starting SafeLaunch:", error)
+      alert("Failed to start SafeLaunch. Please try again.")
     }
-    return formatNumber(amount, 18)
   }
 
-  const getBlockExplorerLink = (address: string) => {
-    return `${blockExplorerAddress[chainId] || ""}${address}`
-  }
-
-  const shortenAddress = (address: string | undefined) => {
-    if (!address) return ""
+  const truncateAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-6)}`
   }
 
-  const getTokensForCurrentChain = () => {
-    const currentChainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
-    return NativeTokens[currentChainId] || []
-  }
-
-  const combinedTokens = [
-    ...getTokensForCurrentChain(),
-    ...walletTokens
-      .filter((token) => parseFloat(token.balance) > 0)
-      .map((token) => ({
-        chainId,
-        ...token,
-      })),
-  ]
-
-  const openModal = (tokenAddress: string) => {
-    const tokenBAddress = tokenBSelection[tokenAddress]
-    setSelectedToken({ tokenAddress, tokenBAddress })
-    setIsModalOpen(true)
-  }
-
-  const closeModal = () => {
-    setSelectedToken(null)
-    setIsModalOpen(false)
-  }
-
-  const customStyles = {
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      height: "85%",
-      width: "90%", // Set width to 90% for better mobile responsiveness
-      maxWidth: "600px",
-      padding: "0px",
-      borderRadius: "8px",
-      background: "#fff",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      overflow: "hidden",
-      boxSizing: "border-box",
-    },
-    overlay: {
-      backgroundColor: "rgba(0, 0, 0, 0.75)",
-    },
-  }
-
   return (
-    <div>
+    <>
       <Navbar />
-      <div className="flex min-h-screen flex-col">
-        <main className="flex-1">
-          <div className="dashboard">
-            <div className="myTokensHeading">
-              <h1 className="pagetitle">SafeLaunch</h1>
-              <p className="subheading">See all the tokens created!</p>
-            </div>
-            {!isClient && <p className="myTokensError">Loading...</p>}
-            {isClient && isConnected && (
-              <>
-                <h2 className="sectionTitle">All SafeMemes</h2>
-                {deployedTokenData.length === 0 && (
-                  <p className="myTokensError">No tokens available.</p>
-                )}
-                {deployedTokenData.length > 0 && (
-                  <div className="meme-container">
-                    {deployedTokenData.map((token, index: number) => (
-                      <div
-                        className={`meme ${
-                          token.isUserToken ? "user-token" : ""
-                        }`}
-                        key={index}
-                      >
-                        <div className="meme-header">
-                          <h3>
-                            {token.name
-                              ? `${token.name} (${token.symbol})`
-                              : "Token"}
-                          </h3>
-                          {token.isUserToken && (
-                            <span className="user-token-badge">Your Token</span>
-                          )}
-                        </div>
-                        <div className="meme-details">
-                          <p>
-                            <strong>Contract Address:</strong>{" "}
-                            <a
-                              href={getBlockExplorerLink(token.address)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {shortenAddress(token.address)}
-                            </a>
-                          </p>
-                          <p>
-                            <strong>Supply:</strong>{" "}
-                            {token.totalSupply
-                              ? formatNumber(token.totalSupply, token.decimals)
-                              : "N/A"}
-                          </p>
-                          <p>
-                            <strong>Anti-Whale Percentage:</strong>{" "}
-                            {token.antiWhalePercentage
-                              ? `${token.antiWhalePercentage}%`
-                              : "N/A"}
-                          </p>
-                          <p>
-                            <strong>Max Wallet Amount:</strong>{" "}
-                            {formatNumber(
-                              token.totalSupply && token.antiWhalePercentage
-                                ? token.totalSupply
-                                    .mul(token.antiWhalePercentage)
-                                    .div(100)
-                                : ethers.BigNumber.from(0),
-                              token.decimals
-                            )}
-                          </p>
-                          <p>
-                            <strong>Locked Tokens:</strong>{" "}
-                            {formatNumber(token.lockedsafeMeme, token.decimals)}
-                          </p>
-                          <label>
-                            <strong>Select Token B:</strong>
-                            <select
-                              value={tokenBSelection[token.address] || ""}
-                              onChange={(e) =>
-                                handleTokenBSelection(
-                                  token.address,
-                                  e.target.value
-                                )
-                              }
-                            >
-                              <option value="">Select Token B</option>
-                              {combinedTokens.map((option, idx) => (
-                                <option key={idx} value={option.address}>
-                                  {option.symbol}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-
-                          <button
-                            onClick={() => initializeSafeLaunch(token.address)}
-                            className="initialize-launch-button"
-                          >
-                            Initialize SafeLaunch
-                          </button>
-
-                          <button
-                            onClick={() => startSafeLaunch(token.address)}
-                            className="start-launch-button"
-                          >
-                            Start SafeLaunch
-                          </button>
-
-                          <p>SafeLaunch active</p>
-                          <button
-                            onClick={() => {
-                              console.log(
-                                "Current Token B Selection:",
-                                selectedToken?.tokenBAddress
-                              )
-                              submitTokenBInfo(token.address)
-                            }}
-                            disabled={!selectedToken?.tokenBAddress}
-                          >
-                            Submit Token B Info
-                          </button>
-
-                          <div className="stages-container">
-                            {token.stages.map((stage, stageIndex) => (
-                              <div className="stage" key={stageIndex}>
-                                <h4>Stage {stageIndex + 1}</h4>
-                                <label>
-                                  <strong>Token B Amount:</strong>
-                                  <input
-                                    type="number"
-                                    value={
-                                      tokenBAmounts[token.address]?.[
-                                        stageIndex
-                                      ] || ""
-                                    }
-                                    onChange={(e) => {
-                                      const value = parseFloat(e.target.value)
-                                      if (!isNaN(value)) {
-                                        handleTokenBAmountChange(
-                                          token.address,
-                                          stageIndex,
-                                          value
-                                        )
-                                      }
-                                    }}
-                                  />
-                                </label>
-
-                                <>
-                                  <div className="stagetext">
-                                    <p>
-                                      <strong>{token.name} Price:</strong>{" "}
-                                      {ethers.utils.formatUnits(
-                                        stage.tokenPrice,
-                                        token.decimals
-                                      )}{" "}
-                                    </p>
-                                    <p>
-                                      <strong>Tokens for Sale:</strong>{" "}
-                                      {formatNumber(
-                                        ethers.BigNumber.from(token.totalSupply)
-                                          .mul(5)
-                                          .div(100),
-                                        token.decimals
-                                      )}
-                                    </p>
-                                    <p>
-                                      <strong>
-                                        Tokens remaining for sale:
-                                      </strong>{" "}
-                                      {formatNumber(
-                                        ethers.BigNumber.from(token.totalSupply)
-                                          .mul(5)
-                                          .div(100)
-                                          .sub(
-                                            ethers.BigNumber.from(
-                                              ethers.utils.parseUnits(
-                                                stageSoldTokens[
-                                                  `${token.address}-${stageIndex}`
-                                                ] || "0",
-                                                token.decimals
-                                              )
-                                            )
-                                          ),
-                                        token.decimals
-                                      )}
-                                    </p>
-                                    <p>
-                                      <strong>
-                                        Tokens Sold in Current Stage:
-                                      </strong>{" "}
-                                      {stageSoldTokens[
-                                        `${token.address}-${stageIndex}`
-                                      ] || "Loading..."}
-                                    </p>
-                                    <p>
-                                      <strong>Token B Required:</strong>{" "}
-                                      {displayTokenBRequired(
-                                        stage.tokenBRequired
-                                      )}
-                                    </p>
-                                    <p>
-                                      <strong>Token B:</strong>{" "}
-                                      {tokenBDetails[
-                                        tokenBSelection[token.address]
-                                      ]?.symbol || "Token B"}
-                                    </p>
-                                  </div>
-                                  <button
-                                    className="buy-token-button"
-                                    onClick={() => openModal(token.address)}
-                                  >
-                                    Buy Tokens
-                                  </button>
-                                </>
-                                <button
-                                  className="submit-token-b-amounts-button"
-                                  onClick={() =>
-                                    handleSubmitTokenBAmounts(token.address)
-                                  }
-                                >
-                                  Submit Token B Info
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-            {isClient && !isConnected && (
-              <p className="myTokensError">No Account Connected</p>
-            )}
-          </div>
-        </main>
-      </div>
-      {isClient && (
-        <Modal
-          isOpen={isModalOpen}
-          onRequestClose={closeModal}
-          contentLabel="Token Swap Modal"
-          style={customStyles}
-        >
-          <div className="mini-swap-container">
-            <div className="token-swap-inner">
-              <h2 className="pagetitle">Token Swap</h2>
-              <div className="swap-card">
-                <div className="token-section">
-                  <label htmlFor="amount" className="subheading">
-                    Amount of Token B to swap
-                  </label>
-                  <input
-                    type="number"
-                    id="amount"
-                    value={amount}
-                    onChange={handleAmountChange}
-                    placeholder="Amount"
-                    className="input-field"
-                  />
+      <div className="dashboard">
+        <h1 className="pagetitle">SafeLaunch Dashboard</h1>
+        <div className="token-container">
+          <div className="meme-container">
+            {tokens.map((token) => (
+              <div key={token.address} className="meme">
+                <div className="meme-header">
+                  <h3>
+                    {token.name} ({token.symbol})
+                  </h3>
                 </div>
-                <div className="swap-summary">
-                  <p className="swap-summary-item">
-                    Exchange Rate: 1{" "}
-                    {
-                      deployedTokens.find(
-                        (token) => token.address === selectedToken?.tokenAddress
-                      )?.name
-                    }{" "}
-                    = {tokenPrice}{" "}
-                    {combinedTokens.find(
-                      (token) => token.address === selectedToken?.tokenBAddress
-                    )?.symbol || "Token B"}
+                <div className="meme-details">
+                  <p>
+                    <strong>Total Supply:</strong>{" "}
+                    {parseFloat(token.totalSupply).toLocaleString()}{" "}
+                    {token.symbol}
                   </p>
-                  <p className="swap-summary-item">
-                    Estimated{" "}
-                    {
-                      deployedTokens.find(
-                        (token) => token.address === selectedToken?.tokenAddress
-                      )?.name
-                    }{" "}
-                    Output: {estimatedOutput}
+                  <p>
+                    <strong>Contract:</strong>{" "}
+                    <a
+                      href={`${blockExplorerToken[chainId || ""]}${
+                        token.address
+                      }`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {" "}
+                      {truncateAddress(token.address)}
+                    </a>
                   </p>
-                  <p className="swap-summary-item">
-                    Current Stage: {currentStage}
+                  <p>
+                    <strong>Anti-Whale %:</strong> {token.antiWhalePercentage}%
                   </p>
-                  <p className="swap-summary-item">
-                    Token A:{" "}
-                    {
-                      deployedTokens.find(
-                        (token) => token.address === selectedToken?.tokenAddress
-                      )?.name
-                    }
+                  <p>
+                    <strong>Max Tokens/Wallet:</strong>{" "}
+                    {parseFloat(token.maxTokens).toLocaleString()}{" "}
+                    {token.symbol}
                   </p>
-                  <p className="swap-summary-item">
-                    Token B:{" "}
-                    {combinedTokens.find(
-                      (token) => token.address === selectedToken?.tokenBAddress
-                    )?.symbol || "Token B"}
-                  </p>
+                  {!token.safeLaunchInitialized && (
+                    <p>
+                      <strong>Status:</strong> SafeLaunch not started yet
+                    </p>
+                  )}
+                  {token.safeLaunchInitialized && !token.safeLaunchStarted && (
+                    <p>
+                      <strong>Status:</strong> SafeLaunch initialized
+                    </p>
+                  )}
+                  {token.safeLaunchStarted && (
+                    <>
+                      <p>
+                        <strong>Status:</strong> SafeLaunch active
+                      </p>
+                      <p>
+                        <strong>Locked Tokens:</strong>{" "}
+                        {parseFloat(token.lockedTokens || "0").toLocaleString()}{" "}
+                        {token.symbol}
+                      </p>
+                      <p>
+                        <strong>DEX Address:</strong>{" "}
+                        <a
+                          href={`${blockExplorerAddress[chainId || ""]}${
+                            token.dexAddress
+                          }`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {truncateAddress(token.dexAddress || "")}
+                        </a>
+                      </p>
+                    </>
+                  )}
                 </div>
-                <button className="buy-token-button" onClick={handleSwap}>
-                  Swap
-                </button>
+                {!token.safeLaunchInitialized && (
+                  <button
+                    className="buy-token-button"
+                    onClick={() => initializeSafeLaunch(token.address)}
+                  >
+                    Initialize SafeLaunch
+                  </button>
+                )}
+                {token.safeLaunchInitialized && !token.safeLaunchStarted && (
+                  <button
+                    className="buy-token-button"
+                    onClick={() => startSafeLaunch(token.address)}
+                  >
+                    Start SafeLaunch
+                  </button>
+                )}
               </div>
-            </div>
+            ))}
           </div>
-        </Modal>
-      )}
-    </div>
+        </div>
+      </div>
+    </>
   )
 }
+
+export default SafeLaunch

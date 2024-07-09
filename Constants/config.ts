@@ -171,6 +171,18 @@ export const blockExplorerAddress: { [key: string]: string } = {
   "84532": "https://sepolia-explorer.base.org/address/",
 }
 
+export const blockExplorerToken: { [key: string]: string } = {
+  "31": "https://explorer.testnet.rootstock.io/token/",
+  "250": "https://ftmscan.com/token/",
+  "4002": "https://testnet.ftmscan.com/token/",
+  "137": "https://polygonscan.com/token/",
+  "43114": "https://snowtrace.io/token/",
+  "30": "https://explorer.rsk.co/token/",
+  "666666666": "https://degenscan.io/token/",
+  "501": "https://explorer.solana.com/token/",
+  "84532": "https://sepolia-explorer.base.org/token/",
+}
+
 export const blockExplorers: { [key: string]: string } = {
   "31": "https://explorer.testnet.rootstock.io/",
   "250": "https://ftmscan.com/",
