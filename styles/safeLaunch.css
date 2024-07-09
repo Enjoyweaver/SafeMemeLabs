@@ -393,3 +393,30 @@ a .stage-actions input {
 .dark .progress {
   background-color: #e0e0e0;
 }
+
+.swap-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  width: 400px;
+}
+
+.swap-section {
+  margin-bottom: 20px;
+}
+
+.swap-section p {
+  margin: 0 0 10px 0;
+}
+
+.swap-section input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
