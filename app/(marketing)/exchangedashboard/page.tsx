@@ -68,11 +68,19 @@ export default function Dashboard(): JSX.Element {
     exchangeFactoryAddress: "",
     tokenFactoryAddress: "",
   })
-  const provider = new ethers.providers.Web3Provider(window.ethereum)
-  const signer = provider.getSigner()
+  const [provider, setProvider] =
+    useState<ethers.providers.Web3Provider | null>(null)
+  const [signer, setSigner] = useState<ethers.Signer | null>(null)
 
   useEffect(() => {
     setIsClient(true)
+
+    if (typeof window.ethereum !== "undefined") {
+      const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
+      setProvider(web3Provider)
+      const web3Signer = web3Provider.getSigner()
+      setSigner(web3Signer)
+    }
   }, [])
 
   useEffect(() => {

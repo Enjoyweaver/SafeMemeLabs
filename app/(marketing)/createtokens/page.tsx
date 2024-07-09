@@ -23,8 +23,6 @@ import {
   useWaitForTransaction,
 } from "wagmi"
 
-import { ChangeNetwork } from "@/components/changeNetwork/changeNetwork"
-
 import { capitalizeFirstLetter } from "../../../utils/capitilizeFirstLetter"
 import Modal from "./Modal"
 
@@ -219,17 +217,9 @@ export default function Factory(): JSX.Element {
         onClose={() => setShowModal(false)}
       />
       <div className="flex min-h-screen flex-col">
-        {isClient && chainId && !safeLaunchFactory[chainId] && (
-          <ChangeNetwork
-            changeNetworkToChainId={250}
-            dappName={"SafeMeme Labs"}
-            networks={"Avalanche, Base, Degen, Fantom, Rootstock"}
-          />
-        )}
         <div>
           <div className="tokenTypeButtonsContainer">
             <div className="tokenTypeButtonContainer">
-              <button>Vyper ERC-20 Token</button>
               <div className="tokenTypeButtonPopup">
                 Create a standard ERC-20 token using Vyper smart contract
                 language.
