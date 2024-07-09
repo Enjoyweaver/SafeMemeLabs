@@ -2,25 +2,21 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import { erc20ABI } from "@/ABIs/erc20"
-import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
-import { tokenLauncherABI } from "@/ABIs/tokenLauncher"
-import { tokenFactoryABI } from "@/ABIs/vyper/tokenFactory"
-import Modal from "react-modal"
-import { useContractRead, useContractReads, useNetwork } from "wagmi"
-
+import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
+import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 import {
   blockExplorerUrls,
   chains,
-  tokenDeployerDetails,
-  tokenLauncherDetails,
-  tokenVyperDetails,
-} from "../../../Constants/config"
+  rpcUrls,
+  safeLaunchFactory,
+} from "@/Constants/config"
+import { ethers } from "ethers"
+import Modal from "react-modal"
+
 import TokenSwap from "../swap/page"
 import "@/styles/allTokens.css"
 
 export default function AllTokens(): JSX.Element {
-  const [isClient, setIsClient] = useState(false)
   const [contracts, setContracts] = useState<string[]>([])
   const [deployedTokenData, setDeployedTokenData] = useState<any[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -28,166 +24,91 @@ export default function AllTokens(): JSX.Element {
   const [filteredData, setFilteredData] = useState<any[]>([])
   const [selectedBlockchain, setSelectedBlockchain] = useState<string>("")
 
+  const provider = new ethers.providers.JsonRpcProvider(rpcUrls["4002"]) // Using Fantom testnet for example
+
+  const tokenFactoryContract = new ethers.Contract(
+    safeLaunchFactory["4002"],
+    TokenFactoryABI,
+    provider
+  )
+
   useEffect(() => {
-    setIsClient(true)
-    if (typeof window !== "undefined") {
-      const appElement = document.querySelector("#__next")
-      if (appElement) {
-        Modal.setAppElement(appElement)
+    async function fetchDeployedTokens() {
+      try {
+        const totalTokens =
+          await tokenFactoryContract.getDeployedSafeMemeCount()
+        const tokenAddresses: string[] = [] // Explicitly declare the type as string[]
+        for (let i = 0; i < totalTokens.toNumber(); i++) {
+          const tokenAddress: string =
+            await tokenFactoryContract.safeMemesDeployed(i)
+          tokenAddresses.push(tokenAddress)
+        }
+        setContracts(tokenAddresses)
+        fetchTokenDetails(tokenAddresses)
+      } catch (error) {
+        console.error("Error fetching deployed tokens:", error)
       }
     }
+
+    fetchDeployedTokens()
   }, [])
 
-  const { chain } = useNetwork()
-  const chainId: string | number = chain
-    ? chain.id
-    : Object.keys(tokenDeployerDetails)[0]
+  async function fetchTokenDetails(tokenAddresses: string[]) {
+    try {
+      const tokenData = await Promise.all(
+        tokenAddresses.map(async (address) => {
+          const tokenContract = new ethers.Contract(
+            address,
+            SafeMemeABI,
+            provider
+          )
+          const [name, symbol, totalSupply, decimals, antiWhalePercentage] =
+            await Promise.all([
+              tokenContract.name(),
+              tokenContract.symbol(),
+              tokenContract.totalSupply(),
+              tokenContract.decimals(),
+              tokenContract.antiWhalePercentage(),
+            ])
 
-  // Fetch deployed token count
-  const { data: deployerTokenCount } = useContractRead({
-    address: tokenDeployerDetails[chainId] as `0x${string}`,
-    abi: tokenDeployerABI,
-    functionName: "getDeployedTokenCount",
-  })
-
-  const { data: launcherTokenCount } = useContractRead({
-    address: tokenLauncherDetails[chainId] as `0x${string}`,
-    abi: tokenLauncherABI,
-    functionName: "getDeployedTokenCount",
-  })
-
-  const { data: vyperTokenCount } = useContractRead({
-    address: tokenVyperDetails[chainId] as `0x${string}`,
-    abi: tokenFactoryABI,
-    functionName: "getDeployedTokenCount",
-  })
-
-  const deployerTokenCountNumber = deployerTokenCount
-    ? Number(deployerTokenCount)
-    : 0
-  const launcherTokenCountNumber = launcherTokenCount
-    ? Number(launcherTokenCount)
-    : 0
-  const vyperTokenCountNumber = vyperTokenCount ? Number(vyperTokenCount) : 0
-
-  const deployerContractAddresses = Array.from(
-    { length: deployerTokenCountNumber },
-    (_, i) => ({
-      address: tokenDeployerDetails[chainId] as `0x${string}`,
-      abi: tokenDeployerABI,
-      functionName: "tokensDeployed",
-      args: [i],
-    })
-  )
-
-  const launcherContractAddresses = Array.from(
-    { length: launcherTokenCountNumber },
-    (_, i) => ({
-      address: tokenLauncherDetails[chainId] as `0x${string}`,
-      abi: tokenLauncherABI,
-      functionName: "tokensDeployed",
-      args: [i],
-    })
-  )
-
-  const vyperContractAddresses = Array.from(
-    { length: vyperTokenCountNumber },
-    (_, i) => ({
-      address: tokenLauncherDetails[chainId] as `0x${string}`,
-      abi: tokenLauncherABI,
-      functionName: "tokensDeployed",
-      args: [i],
-    })
-  )
-
-  const { data: deployerContracts } = useContractReads({
-    contracts: deployerContractAddresses,
-    enabled: deployerContractAddresses.length > 0,
-  })
-
-  const { data: launcherContracts } = useContractReads({
-    contracts: launcherContractAddresses,
-    enabled: launcherContractAddresses.length > 0,
-  })
-
-  useEffect(() => {
-    if (deployerContracts && launcherContracts) {
-      setContracts([
-        ...deployerContracts.map((c) => c.result),
-        ...launcherContracts.map((c) => c.result),
-      ])
+          return {
+            address,
+            name,
+            symbol,
+            supply: totalSupply.toString(), // Convert BigNumber to string
+            decimals: decimals.toString(), // Convert BigNumber to string
+            antiWhalePercentage: antiWhalePercentage.toString(), // Convert BigNumber to string
+            chainId: 4002, // Example chainId, adjust as needed
+          }
+        })
+      )
+      setDeployedTokenData(tokenData)
+      setFilteredData(tokenData)
+    } catch (error) {
+      console.error("Error fetching token details:", error)
     }
-  }, [deployerContracts, launcherContracts])
-
-  const contractRequests = contracts
-    ?.map((contract) => [
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "name",
-      },
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "symbol",
-      },
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "totalSupply",
-      },
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "decimals",
-      },
-      {
-        address: contract,
-        abi: erc20ABI,
-        functionName: "antiWhalePercentage",
-      },
-    ])
-    .flat()
-
-  const { data: tokenDataResult } = useContractReads({
-    contracts: contractRequests,
-    enabled: !!contractRequests?.length,
-  })
-
-  useEffect(() => {
-    if (tokenDataResult) {
-      const splitTokens = splitData(tokenDataResult)
-      setDeployedTokenData(splitTokens)
-      setFilteredData(splitTokens)
-    }
-  }, [tokenDataResult])
-
-  useEffect(() => {
-    if (selectedBlockchain) {
-      filterTokensByBlockchain()
-    } else {
-      setFilteredData(deployedTokenData)
-    }
-  }, [selectedBlockchain, deployedTokenData])
-
-  function splitData(data: any) {
-    const groupedData = []
-    const namedData = []
-    for (let i = 0; i < data.length; i += 5) {
-      groupedData.push(data.slice(i, i + 5))
-    }
-    for (let i = 0; i < groupedData.length; i++) {
-      namedData.push({
-        name: groupedData[i][0].result,
-        symbol: groupedData[i][1].result,
-        supply: groupedData[i][2].result,
-        decimals: groupedData[i][3].result,
-        antiWhalePercentage: groupedData[i][4].result,
-        chainId: chainId, // Add chainId to each token data object
-      })
-    }
-    return namedData.reverse() // Reverse the namedData to match the reverse order display
   }
+
+  useEffect(() => {
+    async function fetchDeployedTokens() {
+      try {
+        const totalTokens =
+          await tokenFactoryContract.getDeployedSafeMemeCount()
+        const tokenAddresses: string[] = [] // Explicitly declare the type as string[]
+        for (let i = 0; i < totalTokens.toNumber(); i++) {
+          const tokenAddress: string =
+            await tokenFactoryContract.safeMemesDeployed(i)
+          tokenAddresses.push(tokenAddress)
+        }
+        setContracts(tokenAddresses)
+        fetchTokenDetails(tokenAddresses)
+      } catch (error) {
+        console.error("Error fetching deployed tokens:", error)
+      }
+    }
+
+    fetchDeployedTokens()
+  }, [])
 
   const formatNumber = (number: number, decimals: number) => {
     return (number / 10 ** decimals).toLocaleString("en-US", {
@@ -206,7 +127,7 @@ export default function AllTokens(): JSX.Element {
   }
 
   const getBlockExplorerLink = (address: string) => {
-    return `${blockExplorerUrls[chainId] || ""}${address}`
+    return `${blockExplorerUrls["4002"] || ""}${address}`
   }
 
   const shortenAddress = (address: string) => {
@@ -218,11 +139,19 @@ export default function AllTokens(): JSX.Element {
     return chain ? chain.name : "Unknown Blockchain"
   }
 
+  useEffect(() => {
+    filterTokensByBlockchain()
+  }, [selectedBlockchain, deployedTokenData])
+
   const filterTokensByBlockchain = () => {
-    const filteredTokens = deployedTokenData.filter(
-      (token) => getBlockchainName(token.chainId) === selectedBlockchain
-    )
-    setFilteredData(filteredTokens)
+    if (selectedBlockchain === "") {
+      setFilteredData(deployedTokenData)
+    } else {
+      const filteredTokens = deployedTokenData.filter(
+        (token) => getBlockchainName(token.chainId) === selectedBlockchain
+      )
+      setFilteredData(filteredTokens)
+    }
   }
 
   const handleFilterChange = (e) => {
@@ -302,17 +231,13 @@ export default function AllTokens(): JSX.Element {
                           {getBlockchainName(token.chainId)}
                         </p>
                         <p>
-                          <strong>Contract Address:</strong>{" "}
+                          <strong>Contract Address:</strong>
                           <a
-                            href={getBlockExplorerLink(
-                              contracts[contracts.length - 1 - index]
-                            )}
+                            href={getBlockExplorerLink(token.address)}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            {shortenAddress(
-                              contracts[contracts.length - 1 - index]
-                            )}
+                            {shortenAddress(token.address)}
                           </a>
                         </p>
                         <p>
@@ -327,7 +252,7 @@ export default function AllTokens(): JSX.Element {
                           {token.antiWhalePercentage}%
                         </p>
                         <p>
-                          <strong>Max Tokens per Holder:</strong>{" "}
+                          <strong>Max Tokens per Holder:</strong>
                           {formatNumber(
                             (Number(token.supply) * token.antiWhalePercentage) /
                               100,
@@ -338,9 +263,7 @@ export default function AllTokens(): JSX.Element {
 
                       <button
                         className="buy-token-button"
-                        onClick={() =>
-                          openModal(contracts[contracts.length - 1 - index])
-                        }
+                        onClick={() => openModal(token.address)}
                       >
                         Buy {token.symbol}
                       </button>
@@ -352,20 +275,18 @@ export default function AllTokens(): JSX.Element {
           </div>
         </main>
       </div>
-      {isClient && (
-        <Modal
-          isOpen={isModalOpen}
-          onRequestClose={closeModal}
-          contentLabel="Token Swap Modal"
-          style={customStyles}
-        >
-          <div className="token-swap-container">
-            <div className="token-swap-inner">
-              <TokenSwap tokenAddress={selectedToken} hideNavbar={true} />
-            </div>
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Token Swap Modal"
+        style={customStyles}
+      >
+        <div className="token-swap-container">
+          <div className="token-swap-inner">
+            <TokenSwap tokenAddress={selectedToken} hideNavbar={true} />
           </div>
-        </Modal>
-      )}
+        </div>
+      </Modal>
     </div>
   )
 }
