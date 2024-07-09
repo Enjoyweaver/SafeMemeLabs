@@ -35,10 +35,10 @@ export const marketingConfig: MarketingConfig = {
     //  title: "Swap",
     //  href: "/swap",
     //},
-    {
-      title: "SafeMeme",
-      href: "/safememe",
-    },
+    // {
+    //   title: "SafeMeme",
+    //   href: "/safememe",
+    // },
     // {
     //   title: "Profile",
     //   href: "/profile",
@@ -65,12 +65,12 @@ export const marketingConfig: MarketingConfig = {
     //  href: "/deploy",
     // },
     {
-      title: "SafeLaunch",
-      href: "safelaunch",
+      title: "My Profile",
+      href: "myprofile",
     },
     {
-      title: "Start SafeLaunch",
-      href: "/startlaunch",
+      title: "Create Tokens",
+      href: "/createtokens",
     },
     //{
     //  title: "fiveLaunch",
@@ -80,10 +80,10 @@ export const marketingConfig: MarketingConfig = {
     //   title: "startfive",
     //   href: "/startfive",
     // },
-    {
-      title: "SafeSwap",
-      href: "/safeswap",
-    },
+    //{
+    //  title: "SafeSwap",
+    //   href: "/safeswap",
+    //},
     {
       title: "ExchangeDashboard",
       href: "/exchangedashboard",

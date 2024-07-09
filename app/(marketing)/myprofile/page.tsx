@@ -285,7 +285,10 @@ const SafeLaunch: React.FC = () => {
     }
   }
 
-  const setTokenBAmount = async (tokenAddress: string, amount: number) => {
+  const setTokenBAmount = async (
+    tokenAddress: string,
+    tokenBAddress: string
+  ) => {
     if (!provider || !chainId) return
     const signer = provider.getSigner()
     const exchangeFactoryContract = new ethers.Contract(
@@ -301,10 +304,8 @@ const SafeLaunch: React.FC = () => {
     )
 
     try {
-      const tx = await exchangeContract.setStagetokenBAmount(
-        0,
-        ethers.utils.parseUnits(amount.toString(), 18)
-      )
+      const amount = ethers.utils.parseUnits(tokenBAmountInput.toString(), 18)
+      const tx = await exchangeContract.setStagetokenBAmount(0, amount)
       await tx.wait()
       await fetchTokens(provider, userAddress, chainId)
       alert("Token B amount for stage 1 set successfully!")
