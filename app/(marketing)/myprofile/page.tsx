@@ -42,6 +42,17 @@ interface StageInfo {
   availableSafeMeme: string
 }
 
+interface SwapModalProps {
+  isOpen: boolean
+  onRequestClose: () => void
+  dexAddress: string
+  provider: ethers.providers.Web3Provider | null
+  currentStage: number
+  tokenBName: string
+  safeMemeSymbol: string
+  tokenBAddress: string // Add this line
+}
+
 const SafeLaunch: React.FC = () => {
   const [tokens, setTokens] = useState<Token[]>([])
   const [userAddress, setUserAddress] = useState<string>("")
@@ -58,8 +69,9 @@ const SafeLaunch: React.FC = () => {
   const [selectedDexAddress, setSelectedDexAddress] = useState("")
   const [safeMemeAmount, setSafeMemeAmount] = useState<string>("0")
   const [exchangeRate, setExchangeRate] = useState<number>(0)
-  let dexAddress: string
-  let currentStage: number
+  const [tokenBAmountInputs, setTokenBAmountInputs] = useState<number[]>([])
+  const [currentStage, setCurrentStage] = useState<number>(0)
+  const [safeMemeSymbol, setSafeMemeSymbol] = useState<string>("")
 
   useEffect(() => {
     const init = async () => {
@@ -287,32 +299,56 @@ const SafeLaunch: React.FC = () => {
 
   const setTokenBAmount = async (
     tokenAddress: string,
-    tokenBAddress: string
+    tokenBAddress: string,
+    stage: number
   ) => {
-    if (!provider || !chainId) return
+    if (!provider || !chainId) {
+      console.error("Provider or chainId is missing")
+      return
+    }
+
     const signer = provider.getSigner()
     const exchangeFactoryContract = new ethers.Contract(
       exchangeFactory[chainId],
       ExchangeFactoryABI,
       signer
     )
-    const dexAddress = await exchangeFactoryContract.getDEX(tokenAddress)
-    const exchangeContract = new ethers.Contract(
-      dexAddress,
-      ExchangeABI,
-      signer
-    )
 
     try {
-      const amount = ethers.utils.parseUnits(tokenBAmountInput.toString(), 18)
-      const tx = await exchangeContract.setStagetokenBAmount(0, amount)
+      const dexAddress = await exchangeFactoryContract.getDEX(tokenAddress)
+      console.log("DEX Address:", dexAddress)
+      const exchangeContract = new ethers.Contract(
+        dexAddress,
+        ExchangeABI,
+        signer
+      )
+
+      const amount = ethers.utils.parseUnits(
+        tokenBAmountInputs[stage].toString(),
+        18
+      )
+      console.log(
+        `Token B Amount for stage ${stage} (in wei):`,
+        amount.toString()
+      )
+
+      const tx = await exchangeContract.setStagetokenBAmount(stage, amount)
       await tx.wait()
+
       await fetchTokens(provider, userAddress, chainId)
-      alert("Token B amount for stage 1 set successfully!")
+      alert(`Token B amount for stage ${stage + 1} set successfully!`)
     } catch (error) {
-      console.error("Error setting Token B amount:", error)
-      alert("Failed to set Token B amount. Please try again.")
+      console.error(`Error setting Token B amount for stage ${stage}:`, error)
+      alert(
+        `Failed to set Token B amount for stage ${stage + 1}. Please try again.`
+      )
     }
+  }
+
+  const handleTokenBAmountChange = (index: number, value: string) => {
+    const newTokenBAmountInputs = [...tokenBAmountInputs]
+    newTokenBAmountInputs[index] = parseFloat(value)
+    setTokenBAmountInputs(newTokenBAmountInputs)
   }
 
   const truncateAddress = (address: string) => {
@@ -323,29 +359,39 @@ const SafeLaunch: React.FC = () => {
     setIsSwapModalOpen(false)
   }
 
-  const openSwapModal = (dexAddress: string | undefined) => {
+  const openSwapModal = async (dexAddress: string | undefined) => {
     if (!dexAddress) {
       console.error("DEX address is undefined")
       return
     }
     setSelectedDexAddress(dexAddress)
     const selectedToken = tokens.find((t) => t.dexAddress === dexAddress)
-    if (selectedToken) {
-      currentStage = selectedToken.currentStage || 0
+    if (selectedToken && provider) {
+      const exchangeContract = new ethers.Contract(
+        dexAddress,
+        ExchangeABI,
+        provider
+      )
+      const currentStage = await exchangeContract.currentStage()
+      const tokenBAddress = await exchangeContract.tokenBAddress()
+      let tokenBName = "ETH"
+      if (tokenBAddress !== ethers.constants.AddressZero) {
+        const tokenBContract = new ethers.Contract(
+          tokenBAddress,
+          SafeMemeABI,
+          provider
+        )
+        tokenBName = await tokenBContract.symbol()
+      }
+      setCurrentStage(currentStage.toNumber())
+      setSelectedTokenBName(tokenBName)
+      setSafeMemeSymbol(selectedToken.symbol)
+      setSelectedTokenB(tokenBAddress)
     }
     setIsSwapModalOpen(true)
-    console.log("Opening swap modal with DEX address:", dexAddress)
   }
 
-  const SwapModal: React.FC<{
-    isOpen: boolean
-    onRequestClose: () => void
-    dexAddress: string
-    provider: ethers.providers.Web3Provider | null
-    currentStage: number
-    tokenBName: string
-    safeMemeSymbol: string
-  }> = ({
+  const SwapModal: React.FC<SwapModalProps> = ({
     isOpen,
     onRequestClose,
     dexAddress,
@@ -353,18 +399,20 @@ const SafeLaunch: React.FC = () => {
     currentStage,
     tokenBName,
     safeMemeSymbol,
+    tokenBAddress,
   }) => {
-    const [tokenBAmount, setTokenBAmount] = useState<number>(1)
+    const [tokenBAmount, setTokenBAmount] = useState<string>("1")
     const [safeMemeAmount, setSafeMemeAmount] = useState<string>("0")
     const [exchangeRate, setExchangeRate] = useState<number>(0)
+    const [stageInfo, setStageInfo] = useState<StageInfo | null>(null)
 
     useEffect(() => {
-      if (isOpen) {
-        calculateSafeMemeAmount(1)
+      if (isOpen && provider && dexAddress) {
+        fetchStageInfo()
       }
     }, [isOpen, dexAddress, provider, currentStage])
 
-    const calculateSafeMemeAmount = async (tokenBAmount: number) => {
+    const fetchStageInfo = async () => {
       if (!provider || !dexAddress) return
 
       try {
@@ -375,26 +423,46 @@ const SafeLaunch: React.FC = () => {
         )
         const [tokenBRequired, safeMemePrice] =
           await exchangeContract.getStageInfo(currentStage)
-        const [, safeMemeAvailable] = await exchangeContract.getStageLiquidity(
-          currentStage
-        )
+        const [tokenBReceived, soldSafeMeme] =
+          await exchangeContract.getStageLiquidity(currentStage)
+        const totalSupply = await exchangeContract.totalSupply()
+        const MAX_PERCENTAGE_PER_STAGE = ethers.BigNumber.from(10) // 10% per stage
 
-        const tokenBAmountBN = ethers.utils.parseEther(tokenBAmount.toString())
-        let safeMemeToBuy = tokenBAmountBN
-          .mul(safeMemeAvailable)
-          .div(tokenBRequired)
+        const safeMemeForSale = totalSupply
+          .mul(MAX_PERCENTAGE_PER_STAGE)
+          .div(100)
+        const availableSafeMeme = safeMemeForSale.sub(soldSafeMeme)
 
-        if (safeMemeToBuy.gt(safeMemeAvailable)) {
-          safeMemeToBuy = safeMemeAvailable
-        }
+        setStageInfo({
+          safeMemeForSale: ethers.utils.formatEther(safeMemeForSale),
+          requiredTokenB: ethers.utils.formatEther(tokenBRequired),
+          price: ethers.utils.formatEther(safeMemePrice),
+          soldSafeMeme: ethers.utils.formatEther(soldSafeMeme),
+          tokenBReceived: ethers.utils.formatEther(tokenBReceived),
+          availableSafeMeme: ethers.utils.formatEther(availableSafeMeme),
+        })
 
-        setSafeMemeAmount(ethers.utils.formatEther(safeMemeToBuy))
-        setExchangeRate(
-          parseFloat(ethers.utils.formatEther(safeMemeToBuy)) / tokenBAmount
-        )
+        setExchangeRate(parseFloat(ethers.utils.formatEther(safeMemePrice)))
       } catch (error) {
-        console.error("Error calculating SafeMeme amount:", error)
+        console.error("Error fetching stage info:", error)
       }
+    }
+
+    const calculateSafeMemeAmount = (tokenBAmount: string) => {
+      if (!stageInfo) return
+
+      const tokenBAmountBN = ethers.utils.parseEther(tokenBAmount)
+      const safeMemeAmountBN = tokenBAmountBN
+        .mul(ethers.utils.parseEther(stageInfo.safeMemeForSale))
+        .div(ethers.utils.parseEther(stageInfo.requiredTokenB))
+      const availableSafeMeme = ethers.utils.parseEther(
+        stageInfo.availableSafeMeme
+      )
+
+      const finalSafeMemeAmount = safeMemeAmountBN.gt(availableSafeMeme)
+        ? availableSafeMeme
+        : safeMemeAmountBN
+      setSafeMemeAmount(ethers.utils.formatEther(finalSafeMemeAmount))
     }
 
     const handleBuyTokens = async () => {
@@ -402,28 +470,87 @@ const SafeLaunch: React.FC = () => {
         console.error("Provider or DEX address is missing")
         return
       }
-      const signer = provider.getSigner()
-      const exchangeContract = new ethers.Contract(
-        dexAddress,
-        ExchangeABI,
-        signer
-      )
 
       try {
-        console.log("Buying tokens with parameters:", {
+        const signer = provider.getSigner()
+        const exchangeContract = new ethers.Contract(
           dexAddress,
-          tokenBAmount: tokenBAmount.toString(),
-          currentStage,
-        })
-        const tx = await exchangeContract.buyTokens(
-          ethers.utils.parseUnits(tokenBAmount.toString(), 18)
+          ExchangeABI,
+          signer
         )
+        const tokenBContract = new ethers.Contract(
+          tokenBAddress,
+          SafeMemeABI,
+          signer
+        ) // Assuming ERC20ABI is the ABI for Token B
+        const tokenBAmountWei = ethers.utils.parseEther(tokenBAmount)
+
+        // Check if SafeLaunch is complete
+        const safeLaunchComplete = await exchangeContract.safeLaunchComplete()
+        console.log("safeLaunchComplete:", safeLaunchComplete)
+        if (safeLaunchComplete) {
+          alert("SafeLaunch is already complete")
+          return
+        }
+
+        // Check current stage
+        const currentStage = await exchangeContract.currentStage()
+        console.log("currentStage:", currentStage)
+        const SAFE_LAUNCH_STAGES = 5 // This should match the contract's value
+        if (currentStage > SAFE_LAUNCH_STAGES) {
+          alert("Invalid stage")
+          return
+        }
+
+        // Check if stage is set and has amount
+        const stageSet = await exchangeContract.stageSet(currentStage)
+        const stageAmount = await exchangeContract.stagetokenBAmounts(
+          currentStage
+        )
+        console.log("stageSet:", stageSet)
+        console.log("stageAmount:", stageAmount.toString())
+        if (!stageSet || stageAmount.eq(0)) {
+          alert("Stage not set or amount not configured")
+          return
+        }
+
+        // Check the allowance
+        const allowance = await tokenBContract.allowance(
+          userAddress,
+          dexAddress
+        )
+        console.log("Allowance:", allowance.toString())
+
+        // If allowance is less than the amount to be spent, request approval
+        if (allowance.lt(tokenBAmountWei)) {
+          console.log("Requesting token B approval...")
+          const approveTx = await tokenBContract.approve(
+            dexAddress,
+            tokenBAmountWei
+          )
+          await approveTx.wait()
+          console.log("Token B approved")
+        }
+
+        console.log("Buying tokens...")
+        const tx = await exchangeContract.buyTokens(tokenBAmountWei, {
+          value:
+            tokenBAddress === ethers.constants.AddressZero
+              ? tokenBAmountWei
+              : 0,
+          gasLimit: 9000000, // Adjust as needed
+        })
         await tx.wait()
+
         alert(`${safeMemeSymbol} purchased successfully!`)
         onRequestClose()
       } catch (error) {
         console.error(`Error purchasing ${safeMemeSymbol}:`, error)
-        alert(`Failed to purchase ${safeMemeSymbol}. Please try again.`)
+        alert(
+          `Failed to purchase ${safeMemeSymbol}. Error: ${
+            (error as Error).message
+          }`
+        )
       }
     }
 
@@ -447,7 +574,7 @@ const SafeLaunch: React.FC = () => {
                   id="amount"
                   value={tokenBAmount}
                   onChange={(e) => {
-                    const value = parseFloat(e.target.value)
+                    const value = e.target.value
                     setTokenBAmount(value)
                     calculateSafeMemeAmount(value)
                   }}
@@ -455,16 +582,26 @@ const SafeLaunch: React.FC = () => {
                   className="input-field"
                 />
               </div>
-              <div className="swap-summary">
-                <p className="swap-summary-item">
-                  Exchange Rate: {exchangeRate.toFixed(6)} {safeMemeSymbol}s per{" "}
-                  {tokenBName}
-                </p>
-                <p className="swap-summary-item">
-                  Estimated {safeMemeSymbol} Output:{" "}
-                  {parseFloat(safeMemeAmount).toFixed(6)}
-                </p>
-              </div>
+              {stageInfo && (
+                <div className="swap-summary">
+                  <p className="swap-summary-item">
+                    Exchange Rate: 1 {tokenBName} ={" "}
+                    {(
+                      parseFloat(stageInfo.safeMemeForSale) /
+                      parseFloat(stageInfo.requiredTokenB)
+                    ).toFixed(6)}{" "}
+                    {safeMemeSymbol}
+                  </p>
+                  <p className="swap-summary-item">
+                    Estimated {safeMemeSymbol} Output:{" "}
+                    {parseFloat(safeMemeAmount).toFixed(6)}
+                  </p>
+                  <p className="swap-summary-item">
+                    Available {safeMemeSymbol}:{" "}
+                    {parseFloat(stageInfo.availableSafeMeme).toFixed(6)}
+                  </p>
+                </div>
+              )}
               <button className="buy-token-button" onClick={handleBuyTokens}>
                 Swap
               </button>
@@ -574,7 +711,7 @@ const SafeLaunch: React.FC = () => {
                           <button
                             className="buy-token-button"
                             onClick={() =>
-                              setTokenBAmount(token.address, selectedTokenB)
+                              submitTokenB(token.address, selectedTokenB)
                             }
                           >
                             Submit Token B
@@ -633,10 +770,36 @@ const SafeLaunch: React.FC = () => {
                                 ).toLocaleString()}{" "}
                                 {selectedTokenBName}
                               </p>
+                              <input
+                                type="number"
+                                id={`amount-${index}`}
+                                value={tokenBAmountInputs[index] || ""}
+                                onChange={(e) =>
+                                  handleTokenBAmountChange(
+                                    index,
+                                    e.target.value
+                                  )
+                                }
+                                placeholder={`Amount of ${selectedTokenBName}`}
+                                className="input-field"
+                              />
+                              <button
+                                className="buy-token-button"
+                                onClick={() =>
+                                  setTokenBAmount(
+                                    token.address,
+                                    selectedTokenB,
+                                    index
+                                  )
+                                }
+                              >
+                                Submit Token B Amount for Stage {index + 1}
+                              </button>
                             </div>
                           ))}
                         </div>
                       )}
+
                       <button
                         className="buy-token-button"
                         onClick={() =>
@@ -674,19 +837,10 @@ const SafeLaunch: React.FC = () => {
         onRequestClose={closeSwapModal}
         dexAddress={selectedDexAddress}
         provider={provider}
-        currentStage={parseInt(
-          tokens
-            .find((t) => t.dexAddress === selectedDexAddress)
-            ?.currentStage?.toString() || "0"
-        )}
-        tokenBName={
-          tokens.find((t) => t.dexAddress === selectedDexAddress)?.tokenB ||
-          selectedTokenBName
-        }
-        safeMemeSymbol={
-          tokens.find((t) => t.dexAddress === selectedDexAddress)?.symbol ||
-          "SafeMeme"
-        }
+        currentStage={currentStage}
+        tokenBName={selectedTokenBName}
+        safeMemeSymbol={safeMemeSymbol}
+        tokenBAddress={selectedTokenB}
       />
     </>
   )

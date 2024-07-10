@@ -8,7 +8,7 @@ export const ExchangeFactoryABI = [
         indexed: true,
       },
       {
-        name: "dex",
+        name: "DEX",
         type: "address",
         indexed: true,
       },

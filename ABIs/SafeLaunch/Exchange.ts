@@ -550,6 +550,33 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
+    name: "setupSafeLaunchStages",
+    inputs: [],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "swapTokenBForSafeMeme",
+    inputs: [
+      {
+        name: "tokenBAmount",
+        type: "uint256",
+      },
+      {
+        name: "min_safeMeme",
+        type: "uint256",
+      },
+      {
+        name: "deadline",
+        type: "uint256",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
     name: "buyTokens",
     inputs: [
       {
