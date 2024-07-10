@@ -15,8 +15,20 @@ export const marketingConfig: MarketingConfig = {
       href: "/blog",
     },
     {
+      title: "SafeMeme",
+      href: "/safememe",
+    },
+    {
       title: "All Tokens",
       href: "/alltokens",
+    },
+    {
+      title: "Create Tokens",
+      href: "/createtokens",
+    },
+    {
+      title: "My Profile",
+      href: "myprofile",
     },
     //{
     //  title: "Our Memes",
@@ -31,14 +43,11 @@ export const marketingConfig: MarketingConfig = {
     //   title: "Provide LP",
     //   href: "/lp",
     //},
-    {
-      title: "Swap",
-      href: "/swap",
-    },
-    {
-      title: "SafeMeme",
-      href: "/safememe",
-    },
+    //{
+    //  title: "Swap",
+    //  href: "/swap",
+    //},
+
     // {
     //   title: "Profile",
     //   href: "/profile",
@@ -64,14 +73,7 @@ export const marketingConfig: MarketingConfig = {
     //  title: "Manager",
     //  href: "/deploy",
     // },
-    {
-      title: "My Profile",
-      href: "myprofile",
-    },
-    {
-      title: "Create Tokens",
-      href: "/createtokens",
-    },
+
     //{
     //  title: "fiveLaunch",
     //  href: "/fivelaunch",
@@ -85,8 +87,8 @@ export const marketingConfig: MarketingConfig = {
     //   href: "/safeswap",
     //},
     {
-      title: "ExchangeDashboard",
-      href: "/exchangedashboard",
+      title: "Token Specs",
+      href: "/tokenspecs",
     },
   ],
 }

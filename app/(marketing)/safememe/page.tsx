@@ -215,9 +215,10 @@ const SafeMeme = () => {
               like to receive in each phase.
             </p>
             <p className="blog-content">
-              To use the charts, update the "Initial Supply" and "Token B
-              Amounts" inputs to see the charts come alive. The chart shows the
-              price of your SafeMeme token (Token A) in USD.
+              To use the charts, update the Total Supply, the Token B on the
+              blockchain of your choice, and the Token B Amounts inputs to see
+              the charts come alive. The chart shows the price of your SafeMeme
+              token (Token A) in USD.
             </p>
 
             <div className="charts-container">
@@ -283,6 +284,10 @@ const SafeMeme = () => {
                       </div>
                     ))}
                   </div>
+                  <p className="input-section-description">
+                    These are the amounts of the tokens that will be paired and
+                    input into our SafeDEX after completing the SafeLaunch.
+                  </p>
                   <div className="total-section">
                     <label htmlFor="totalAmount">
                       DEX {selectedTokenB} Amount:

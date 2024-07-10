@@ -180,7 +180,7 @@ body {
   background-color: var(--input-light);
   border: 1px solid var(--border-light);
   border-radius: 5px;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 .total-section label {
@@ -377,4 +377,17 @@ body {
 
 .dark .audit-list strong {
   color: var(--primary-dark);
+}
+
+.input-section-description {
+  width: 100%;
+  text-align: center;
+  font-size: 0.9rem;
+  margin: 15px 0; /* Add margin to separate the description from inputs */
+  font-weight: bold;
+  color: var(--foreground-light);
+}
+
+.dark .input-section-description {
+  color: var(--foreground-dark);
 }
