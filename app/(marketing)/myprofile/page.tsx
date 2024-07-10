@@ -31,6 +31,7 @@ interface Token {
   tokenB?: string
   currentStage?: number
   stageInfo?: StageInfo[]
+  tokenBAmountSet?: boolean
 }
 
 interface StageInfo {
@@ -130,7 +131,12 @@ const SafeLaunch: React.FC = () => {
       const safeLaunchStarted =
         safeLaunchInitialized && (await tokenContract.balanceOf(dexAddress)) > 0
 
-      let tokenB, currentStage, stageInfo, lockedTokens, safeMemeForSale
+      let tokenB,
+        currentStage,
+        stageInfo,
+        lockedTokens,
+        safeMemeForSale,
+        tokenBAmountSet = false
       if (safeLaunchStarted) {
         const exchangeContract = new ethers.Contract(
           dexAddress,
@@ -146,6 +152,9 @@ const SafeLaunch: React.FC = () => {
           currentStage,
           totalSupply
         )
+
+        // Check if the tokenBAmount is set for the current stage
+        tokenBAmountSet = await exchangeContract.stageSet(currentStage)
       }
 
       return {
@@ -166,6 +175,7 @@ const SafeLaunch: React.FC = () => {
         tokenB,
         currentStage,
         stageInfo,
+        tokenBAmountSet, // Add this line
       }
     })
 
@@ -179,7 +189,7 @@ const SafeLaunch: React.FC = () => {
     totalSupply: ethers.BigNumber
   ) => {
     const stageInfo: StageInfo[] = []
-    const MAX_PERCENTAGE_PER_STAGE = ethers.BigNumber.from(5) // 5% per stage
+    const MAX_PERCENTAGE_PER_STAGE = ethers.BigNumber.from(10)
 
     for (let i = 0; i <= currentStage; i++) {
       const [tokenBRequired, safeMemePrice] =
@@ -449,7 +459,7 @@ const SafeLaunch: React.FC = () => {
     }
 
     const calculateSafeMemeAmount = (tokenBAmount: string) => {
-      if (!stageInfo) return
+      if (!stageInfo || !tokenBAmount || tokenBAmount === "") return
 
       const tokenBAmountBN = ethers.utils.parseEther(tokenBAmount)
       const safeMemeAmountBN = tokenBAmountBN
@@ -575,8 +585,14 @@ const SafeLaunch: React.FC = () => {
                   value={tokenBAmount}
                   onChange={(e) => {
                     const value = e.target.value
-                    setTokenBAmount(value)
-                    calculateSafeMemeAmount(value)
+                    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                      setTokenBAmount(value)
+                      if (value !== "") {
+                        calculateSafeMemeAmount(value)
+                      } else {
+                        setSafeMemeAmount("0")
+                      }
+                    }
                   }}
                   placeholder="Amount"
                   className="input-field"
@@ -719,35 +735,43 @@ const SafeLaunch: React.FC = () => {
                         </div>
                       )}
                       {token.currentStage !== undefined && token.stageInfo && (
-                        <div>
-                          <p>
+                        <div className="stages-container">
+                          <p className="meme-details">
                             <strong>Current Stage:</strong>{" "}
                             {token.currentStage + 1}
                           </p>
                           {token.stageInfo.map((stage, index) => (
-                            <div key={index}>
-                              <h4>Stage {index + 1}</h4>
-                              <p>
-                                {token.symbol} for sale:{" "}
-                                {parseFloat(
-                                  stage.safeMemeForSale
-                                ).toLocaleString()}{" "}
-                                {token.symbol}
-                              </p>
-                              <p>
-                                Available {token.symbol}:{" "}
-                                {parseFloat(
-                                  stage.availableSafeMeme
-                                ).toLocaleString()}{" "}
-                                {token.symbol}
-                              </p>
-                              <p>
-                                Required {selectedTokenBName}:{" "}
-                                {parseFloat(
-                                  stage.requiredTokenB
-                                ).toLocaleString()}{" "}
-                                {selectedTokenBName}
-                              </p>
+                            <div key={index} className="stage">
+                              <div className="stage-details">
+                                <p>
+                                  {token.symbol} for sale:{" "}
+                                  {parseFloat(
+                                    stage.safeMemeForSale
+                                  ).toLocaleString()}{" "}
+                                </p>
+                                <p>
+                                  Available {token.symbol}:{" "}
+                                  {parseFloat(
+                                    stage.availableSafeMeme
+                                  ).toLocaleString()}{" "}
+                                </p>
+                              </div>
+                              <div className="stage-details">
+                                <p>
+                                  Required {selectedTokenBName}:{" "}
+                                  {parseFloat(
+                                    stage.requiredTokenB
+                                  ).toLocaleString()}{" "}
+                                  {selectedTokenBName}
+                                </p>
+                                <p>
+                                  Received {selectedTokenBName}:{" "}
+                                  {parseFloat(
+                                    stage.tokenBReceived
+                                  ).toLocaleString()}{" "}
+                                  {selectedTokenBName}
+                                </p>
+                              </div>
                               <p>
                                 Price:{" "}
                                 {(
@@ -763,38 +787,35 @@ const SafeLaunch: React.FC = () => {
                                 ).toLocaleString()}{" "}
                                 {token.symbol}
                               </p>
-                              <p>
-                                Received {selectedTokenBName}:{" "}
-                                {parseFloat(
-                                  stage.tokenBReceived
-                                ).toLocaleString()}{" "}
-                                {selectedTokenBName}
-                              </p>
-                              <input
-                                type="number"
-                                id={`amount-${index}`}
-                                value={tokenBAmountInputs[index] || ""}
-                                onChange={(e) =>
-                                  handleTokenBAmountChange(
-                                    index,
-                                    e.target.value
-                                  )
-                                }
-                                placeholder={`Amount of ${selectedTokenBName}`}
-                                className="input-field"
-                              />
-                              <button
-                                className="buy-token-button"
-                                onClick={() =>
-                                  setTokenBAmount(
-                                    token.address,
-                                    selectedTokenB,
-                                    index
-                                  )
-                                }
-                              >
-                                Submit Token B Amount for Stage {index + 1}
-                              </button>
+                              {!token.tokenBAmountSet && (
+                                <div className="stage-actions">
+                                  <input
+                                    type="number"
+                                    id={`amount-${index}`}
+                                    value={tokenBAmountInputs[index] || ""}
+                                    onChange={(e) =>
+                                      handleTokenBAmountChange(
+                                        index,
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder={`Amount of ${selectedTokenBName}`}
+                                    className="input-field"
+                                  />
+                                  <button
+                                    className="buy-token-button"
+                                    onClick={() =>
+                                      setTokenBAmount(
+                                        token.address,
+                                        selectedTokenB,
+                                        index
+                                      )
+                                    }
+                                  >
+                                    Submit Token B Amount for Stage {index + 1}
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>
