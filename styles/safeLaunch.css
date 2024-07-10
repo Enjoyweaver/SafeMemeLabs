@@ -305,15 +305,18 @@ body {
 
 .stages-container {
   color: var(--primary-dark);
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .stage {
-  border: 1px solid #ccc;
-  padding: 1px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  background-color: var(--primary-light);
-  color: var(--secondary-dark);
+  border: 1px solid var(--border-light);
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  background-color: var(--background-light);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .stage-details {
