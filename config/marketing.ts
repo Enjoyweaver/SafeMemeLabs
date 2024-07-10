@@ -31,14 +31,14 @@ export const marketingConfig: MarketingConfig = {
     //   title: "Provide LP",
     //   href: "/lp",
     //},
-    //{
-    //  title: "Swap",
-    //  href: "/swap",
-    //},
-    // {
-    //   title: "SafeMeme",
-    //   href: "/safememe",
-    // },
+    {
+      title: "Swap",
+      href: "/swap",
+    },
+    {
+      title: "SafeMeme",
+      href: "/safememe",
+    },
     // {
     //   title: "Profile",
     //   href: "/profile",

@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
+import { NativeTokens, priceFeedAddresses, rpcUrls } from "@/Constants/config"
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -11,6 +12,7 @@ import {
   Title,
   Tooltip,
 } from "chart.js"
+import { ethers } from "ethers"
 import { Line } from "react-chartjs-2"
 
 import "@/styles/safememe.css"
@@ -27,68 +29,100 @@ ChartJS.register(
 
 const SafeMemeBlogPost = () => {
   const [initialSupply, setInitialSupply] = useState(1000000)
-  const [tokenBReceived, setTokenBReceived] = useState(0)
   const [tokenBPrices, setTokenBPrices] = useState([1, 1, 1, 1, 1])
   const [stageTokenBAmounts, setStageTokenBAmounts] = useState([
     1000, 2000, 3000, 4000, 5000,
   ])
   const [chartData, setChartData] = useState({ labels: [], datasets: [] })
-  const [priceChartData, setPriceChartData] = useState({
-    labels: [],
-    datasets: [],
-  })
+  const [selectedTokenB, setSelectedTokenB] = useState(
+    NativeTokens["4002"][0].symbol
+  )
+  const [tokenPrices, setTokenPrices] = useState({})
+  const [provider, setProvider] = useState(null)
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const web3Provider = new ethers.providers.JsonRpcProvider(rpcUrls["4002"])
+      setProvider(web3Provider)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchTokenPrices()
+  }, [])
 
   useEffect(() => {
     updateChart()
-    updatePriceChart()
-  }, [initialSupply, tokenBReceived, stageTokenBAmounts, tokenBPrices])
+  }, [initialSupply, stageTokenBAmounts, tokenBPrices])
 
-  const updateChart = () => {
-    const labels = []
-    const tokenBData = []
-    const tokenAData = []
+  const fetchTokenPrices = async () => {
+    const allTokenPrices = {}
 
-    stageTokenBAmounts.forEach((amount, index) => {
-      if (tokenBReceived >= amount) {
-        labels.push(`Phase ${index + 1}`)
-        tokenBData.push(amount)
-        tokenAData.push((initialSupply * 5) / 100)
+    const aggregatorV3InterfaceABI = [
+      {
+        inputs: [],
+        name: "latestRoundData",
+        outputs: [
+          { internalType: "uint80", name: "roundId", type: "uint80" },
+          { internalType: "int256", name: "answer", type: "int256" },
+          { internalType: "uint256", name: "startedAt", type: "uint256" },
+          { internalType: "uint256", name: "updatedAt", type: "uint256" },
+          { internalType: "uint80", name: "answeredInRound", type: "uint80" },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+    ]
+
+    for (const [chainId, tokens] of Object.entries(NativeTokens)) {
+      const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
+      const chainPrices = {}
+
+      for (const token of tokens) {
+        const priceFeedAddress =
+          priceFeedAddresses[chainId]?.[`${token.symbol}/USD`]
+        if (!priceFeedAddress) continue
+
+        try {
+          const priceFeed = new ethers.Contract(
+            priceFeedAddress,
+            aggregatorV3InterfaceABI,
+            provider
+          )
+          const roundData = await priceFeed.latestRoundData()
+          const price = parseFloat(
+            ethers.utils.formatUnits(roundData.answer, 8)
+          )
+          chainPrices[token.symbol] = price
+        } catch (error) {
+          console.error(
+            `Error fetching price for ${token.symbol} on chain ${chainId}:`,
+            error
+          )
+          chainPrices[token.symbol] = null
+        }
       }
-    })
 
-    setChartData({
-      labels,
-      datasets: [
-        {
-          label: "Token B Received",
-          data: tokenBData,
-          borderColor: "rgba(75, 192, 192, 1)",
-          backgroundColor: "rgba(75, 192, 192, 0.2)",
-        },
-        {
-          label: "Token A Unlocked",
-          data: tokenAData,
-          borderColor: "rgba(255, 99, 132, 1)",
-          backgroundColor: "rgba(255, 99, 132, 0.2)",
-        },
-      ],
-    })
+      allTokenPrices[chainId] = chainPrices
+    }
+
+    setTokenPrices(allTokenPrices)
   }
 
-  const updatePriceChart = () => {
+  useEffect(() => {
+    fetchTokenPrices()
+  }, [])
+
+  const updateChart = () => {
     const labels = []
     const prices = []
 
     stageTokenBAmounts.forEach((amount, index) => {
-      if (tokenBReceived >= amount) {
-        labels.push(`Phase ${index + 1}`)
-        prices.push(
-          (tokenBPrices[index] * amount) / ((initialSupply * 5) / 100)
-        )
-      }
+      labels.push(`Phase ${index + 1}`)
+      prices.push((tokenBPrices[index] * amount) / ((initialSupply * 5) / 100))
     })
 
-    setPriceChartData({
+    setChartData({
       labels,
       datasets: [
         {
@@ -114,8 +148,14 @@ const SafeMemeBlogPost = () => {
     setTokenBPrices(newPrices)
   }
 
-  const handleTokenBReceivedChange = (value) => {
-    setTokenBReceived(parseFloat(value))
+  const getAllNativeTokens = () => {
+    return Object.values(NativeTokens).flat()
+  }
+
+  const allNativeTokens = getAllNativeTokens()
+
+  const handleSelectedTokenBChange = (e) => {
+    setSelectedTokenB(e.target.value)
   }
 
   return (
@@ -153,16 +193,19 @@ const SafeMemeBlogPost = () => {
             </p>
             <p className="blog-content">
               To use the charts, update the "Initial Supply" and "Token B
-              Received" inputs to see the charts come alive. The first chart
-              shows the unlocking phases based on Token B received, while the
-              second chart displays the price of your SafeMeme token (Token A)
-              in USD.
+              Amounts" inputs to see the charts come alive. The chart shows the
+              price of your SafeMeme token (Token A) in USD.
             </p>
 
             <div className="charts-container">
               <div className="chart-section">
-                <h3 className="chart-title">Tokenomics</h3>
-                <Line data={chartData} />
+                <h3 className="chart-title">Your Tokens Price</h3>
+                <div style={{ width: "100%", height: "400px" }}>
+                  <Line
+                    data={chartData}
+                    options={{ maintainAspectRatio: false }}
+                  />
+                </div>
                 <div className="input-section input-section-main">
                   <div className="input-row-container">
                     <div className="input-row">
@@ -177,15 +220,23 @@ const SafeMemeBlogPost = () => {
                       />
                     </div>
                     <div className="input-row">
-                      <label htmlFor="tokenBReceived">Token B Received:</label>
-                      <input
-                        type="number"
-                        id="tokenBReceived"
-                        value={tokenBReceived}
-                        onChange={(e) =>
-                          handleTokenBReceivedChange(e.target.value)
-                        }
-                      />
+                      <label htmlFor="selectedTokenB">Select Token B:</label>
+                      <select
+                        id="selectedTokenB"
+                        value={selectedTokenB}
+                        onChange={handleSelectedTokenBChange}
+                      >
+                        {allNativeTokens.map((token) => (
+                          <option key={token.address} value={token.symbol}>
+                            {token.symbol}
+                          </option>
+                        ))}
+                      </select>
+                      <div>
+                        {selectedTokenB && tokenPrices["4002"]?.[selectedTokenB]
+                          ? `$${tokenPrices["4002"][selectedTokenB].toFixed(4)}`
+                          : "N/A"}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -201,29 +252,6 @@ const SafeMemeBlogPost = () => {
                         value={amount}
                         onChange={(e) =>
                           handleStageTokenBAmountChange(index, e.target.value)
-                        }
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="chart-section">
-                <h3 className="chart-title">Your Tokens Price</h3>
-                <Line data={priceChartData} />
-                <div className="input-section">
-                  <div className="input-row blank-filler" />
-                  {stageTokenBAmounts.map((_, index) => (
-                    <div key={index} className="input-row threshold-section">
-                      <label htmlFor={`tokenBPrice${index}`}>
-                        Token B Price (USD) for Phase {index + 1}:
-                      </label>
-                      <input
-                        type="text"
-                        id={`tokenBPrice${index}`}
-                        value={tokenBPrices[index]}
-                        onChange={(e) =>
-                          handleTokenBPriceChange(index, e.target.value)
                         }
                       />
                     </div>

@@ -81,10 +81,11 @@ body {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .chart-section {
-  width: 50%;
+  width: 100%; /* Make the chart section take full width */
   margin-top: 20px;
   padding: 20px;
   border: none; /* Remove borders around sections */
@@ -119,7 +120,7 @@ body {
 .input-row {
   display: flex;
   flex-direction: column;
-  margin: 10px 0; /* Add margin to ensure spacing between rows */
+  margin: 10px 20px; /* Add margin to ensure spacing between rows */
 }
 
 .input-row-container {
