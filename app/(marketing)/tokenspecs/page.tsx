@@ -36,15 +36,17 @@ type TokenInfo = {
   tokenName: string
   totalSupply: string
   tokenBPairing: string
-  stage: string // Change type to string to handle "Not started"
+  stage: string
   isSafeLaunchActive: boolean
   isFinalized: boolean
-  factoryAddress: string // Add this line
-  tokenFactoryAddress: string // Add this line
-  exchangeFactoryAddress: string // Add this line
-  isInitialized: boolean // Add this line
-  dexAddress: string // Add this line
-  exchangeBalance: string // Add this line
+  factoryAddress: string
+  tokenFactoryAddress: string
+  exchangeFactoryAddress: string
+  isInitialized: boolean
+  dexAddress: string
+  exchangeBalance: string
+  totalSafeMemeSold: string
+  totalTokenBReceived: string
 }
 
 type ExchangeInfo = {
@@ -129,6 +131,8 @@ export default function Dashboard(): JSX.Element {
         let isInitialized = false
         let dexAddress = ""
         let exchangeBalance = "0"
+        let totalSafeMemeSold = "0"
+        let totalTokenBReceived = "0"
 
         try {
           dexAddress = await tokenContract.dexAddress()
@@ -149,6 +153,16 @@ export default function Dashboard(): JSX.Element {
 
             const balance = await tokenContract.balanceOf(dexAddress)
             exchangeBalance = ethers.utils.formatUnits(balance, 18)
+
+            // Fetch total SafeMemes sold and total Token Bs received
+            totalSafeMemeSold = ethers.utils.formatUnits(
+              await exchangeContract.getsafeMemesSold(),
+              18
+            )
+            totalTokenBReceived = ethers.utils.formatUnits(
+              await exchangeContract.getReceivedtokenB(),
+              18
+            )
           }
         } catch (exchangeError) {
           console.warn(
@@ -174,6 +188,8 @@ export default function Dashboard(): JSX.Element {
           isInitialized,
           dexAddress,
           exchangeBalance,
+          totalSafeMemeSold,
+          totalTokenBReceived,
         })
       }
 
@@ -365,9 +381,9 @@ export default function Dashboard(): JSX.Element {
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th className="table-header">Token Address</th>
-                    <th className="table-header">Token Symbol</th>
                     <th className="table-header">Token Name</th>
+                    <th className="table-header">Token Symbol</th>
+                    <th className="table-header">Token Address</th>
                     <th className="table-header">Total Supply</th>
                     <th className="table-header narrow-column">
                       SafeLaunch Initialized
@@ -377,16 +393,22 @@ export default function Dashboard(): JSX.Element {
                     <th className="table-header narrow-column">
                       DEX Address
                     </th>{" "}
-                    {/* Add this line */}
                     <th className="table-header narrow-column">
                       DEX SafeMeme Balance
                     </th>{" "}
-                    {/* Add this line */}
+                    <th className="table-header narrow-column">
+                      Total Token A Sold
+                    </th>
+                    <th className="table-header narrow-column">
+                      Total Token B Received
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {tokens.map((token, index) => (
                     <tr key={index}>
+                      <td>{token.tokenName}</td>
+                      <td>{token.tokenSymbol}</td>
                       <td>
                         <Link
                           href={getExplorerLink(token.tokenAddress)}
@@ -396,8 +418,6 @@ export default function Dashboard(): JSX.Element {
                           {token.tokenAddress.slice(-4)}
                         </Link>
                       </td>
-                      <td>{token.tokenSymbol}</td>
-                      <td>{token.tokenName}</td>
                       <td>{token.totalSupply.toString()}</td>
                       <td className="narrow-column">
                         {token.isInitialized ? "Yes" : "No"}
@@ -415,18 +435,27 @@ export default function Dashboard(): JSX.Element {
                           "N/A"
                         )}
                       </td>
-
                       <td className="narrow-column">{token.stage}</td>
                       <td className="narrow-column">
                         <Link
-                          href={getExplorerLink(token.dexAddress)} // Add this line
+                          href={getExplorerLink(token.dexAddress)}
                           target="_blank"
                         >
                           {token.dexAddress.slice(0, 6)}...
                           {token.dexAddress.slice(-4)}
                         </Link>
                       </td>
-                      <td className="narrow-column">{token.exchangeBalance}</td>
+                      <td className="narrow-column">
+                        {parseFloat(token.exchangeBalance).toFixed(2)}
+                      </td>
+                      <td className="narrow-column">
+                        {parseFloat(token.totalSafeMemeSold).toFixed(2)}
+                      </td>{" "}
+                      {/* Display total SafeMemes sold */}
+                      <td className="narrow-column">
+                        {parseFloat(token.totalTokenBReceived).toFixed(2)}
+                      </td>{" "}
+                      {/* Display total Token Bs received */}
                     </tr>
                   ))}
                 </tbody>

@@ -135,22 +135,27 @@ body {
   color: var(--secondary-light);
 }
 
+.table-header {
+  text-align: center;
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
+  font-size: small;
 }
 
 .data-table th,
 .data-table td {
   border: 1px solid var(--border-light);
   padding: 8px;
-  text-align: left;
 }
 
 .data-table th {
   background-color: var(--input-light);
   color: var(--text-light);
+  text-align: center;
 }
 
 .data-table td {

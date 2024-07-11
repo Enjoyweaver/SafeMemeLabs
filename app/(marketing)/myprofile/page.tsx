@@ -645,8 +645,7 @@ const SafeLaunch: React.FC = () => {
                 <div className="meme-details">
                   <p>
                     <strong>Total Supply:</strong>{" "}
-                    {parseFloat(token.totalSupply).toLocaleString()}{" "}
-                    {token.symbol}
+                    {parseFloat(token.totalSupply).toLocaleString()}
                   </p>
                   <p>
                     <strong>Contract:</strong> {truncateAddress(token.address)}
@@ -656,12 +655,11 @@ const SafeLaunch: React.FC = () => {
                   </p>
                   <p>
                     <strong>Max Tokens/Wallet:</strong>{" "}
-                    {parseFloat(token.maxTokens).toLocaleString()}{" "}
-                    {token.symbol}
+                    {parseFloat(token.maxTokens).toLocaleString()}
                   </p>
                   {!token.safeLaunchInitialized && (
                     <p>
-                      <strong>Status:</strong> SafeLaunch not started yet
+                      <strong>Status:</strong> SafeLaunch not started
                     </p>
                   )}
                   {token.safeLaunchInitialized && !token.safeLaunchStarted && (
@@ -676,8 +674,7 @@ const SafeLaunch: React.FC = () => {
                       </p>
                       <p>
                         <strong>Locked Tokens:</strong>{" "}
-                        {parseFloat(token.lockedTokens || "0").toLocaleString()}{" "}
-                        {token.symbol}
+                        {parseFloat(token.lockedTokens || "0").toLocaleString()}
                       </p>
                       <p>
                         <strong>DEX Address:</strong>{" "}
@@ -743,50 +740,61 @@ const SafeLaunch: React.FC = () => {
                           {token.stageInfo.map((stage, index) => (
                             <div key={index} className="stage">
                               <div className="stage-details">
-                                <p>
-                                  {token.symbol} for sale:{" "}
-                                  {parseFloat(
-                                    stage.safeMemeForSale
-                                  ).toLocaleString()}{" "}
-                                </p>
-                                <p>
-                                  Available {token.symbol}:{" "}
-                                  {parseFloat(
-                                    stage.availableSafeMeme
-                                  ).toLocaleString()}{" "}
-                                </p>
+                                <div className="stage-detail-item">
+                                  <p>{token.symbol} for sale:</p>
+                                  <p>
+                                    {parseFloat(
+                                      stage.safeMemeForSale
+                                    ).toLocaleString()}
+                                  </p>
+                                </div>
+                                <div className="stage-detail-item">
+                                  <p>Available {token.symbol}:</p>
+                                  <p>
+                                    {parseFloat(
+                                      stage.availableSafeMeme
+                                    ).toLocaleString()}
+                                  </p>
+                                </div>
                               </div>
                               <div className="stage-details">
+                                <div className="stage-detail-item">
+                                  <p>Required {selectedTokenBName}:</p>
+                                  <p>
+                                    {parseFloat(
+                                      stage.requiredTokenB
+                                    ).toLocaleString()}{" "}
+                                    {selectedTokenBName}
+                                  </p>
+                                </div>
+                                <div className="stage-detail-item">
+                                  <p>Received {selectedTokenBName}:</p>
+                                  <p>
+                                    {parseFloat(
+                                      stage.tokenBReceived
+                                    ).toLocaleString()}{" "}
+                                    {selectedTokenBName}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="stage-detail-item">
                                 <p>
-                                  Required {selectedTokenBName}:{" "}
-                                  {parseFloat(
-                                    stage.requiredTokenB
-                                  ).toLocaleString()}{" "}
-                                  {selectedTokenBName}
-                                </p>
-                                <p>
-                                  Received {selectedTokenBName}:{" "}
-                                  {parseFloat(
-                                    stage.tokenBReceived
-                                  ).toLocaleString()}{" "}
-                                  {selectedTokenBName}
+                                  Price:{" "}
+                                  {(
+                                    parseFloat(stage.requiredTokenB) /
+                                    parseFloat(stage.safeMemeForSale)
+                                  ).toFixed(6)}{" "}
+                                  {selectedTokenBName} per {token.symbol}
                                 </p>
                               </div>
-                              <p>
-                                Price:{" "}
-                                {(
-                                  parseFloat(stage.requiredTokenB) /
-                                  parseFloat(stage.safeMemeForSale)
-                                ).toFixed(6)}{" "}
-                                {selectedTokenBName} per {token.symbol}
-                              </p>
-                              <p>
-                                Sold {token.symbol}:{" "}
-                                {parseFloat(
-                                  stage.soldSafeMeme
-                                ).toLocaleString()}{" "}
-                                {token.symbol}
-                              </p>
+                              <div className="stage-detail-item">
+                                <p>
+                                  Sold {token.symbol}:{" "}
+                                  {parseFloat(
+                                    stage.soldSafeMeme
+                                  ).toLocaleString()}
+                                </p>
+                              </div>
                               {!token.tokenBAmountSet && (
                                 <div className="stage-actions">
                                   <input

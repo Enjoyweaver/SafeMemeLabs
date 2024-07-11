@@ -311,7 +311,7 @@ body {
 
 .stage {
   border: 1px solid var(--border-light);
-  padding: 15px;
+  padding: 5px;
   margin-bottom: 20px;
   border-radius: 12px;
   background-color: var(--background-light);
@@ -322,6 +322,18 @@ body {
 .stage-details {
   display: flex;
   justify-content: space-around;
+  margin-bottom: 10px;
+}
+
+.stage-detail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stage-detail-item p {
+  margin: 0;
 }
 
 .stage-header {
