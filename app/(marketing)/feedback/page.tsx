@@ -15,10 +15,26 @@ const HNDL_address = "0x34B4C11DF80599C315dCe3F7aaC816d1e1F26496"
 
 const FeedbackPage = () => {
   const { isConnected, address } = useAccount()
-  const [feedback, setFeedback] = useState(
-    Array(FEEDBACK_ENTRIES).fill({ text: "", address: "", status: "open" })
-  )
+
   const [featureRequests, setFeatureRequests] = useState([])
+  const [firstFeedback, setFirstFeedback] = useState({
+    text: "",
+    address: "",
+    status: "open",
+  })
+  const feedbackInitialState = Array(FEEDBACK_ENTRIES).fill({
+    text: "",
+    address: "",
+    status: "open",
+  })
+
+  feedbackInitialState[0] = {
+    text: "Integrate HNDL into SafeMemes!",
+    address: "0x34B4C11DF80599C315dCe3F7aaC816d1e1F26496",
+    status: "approved",
+  }
+
+  const [feedback, setFeedback] = useState(feedbackInitialState)
   const [checklistItems, setChecklistItems] = useState([
     {
       text: "Create SafeLaunch frontend to interact with SafeLaunch backend",
@@ -484,30 +500,38 @@ const FeedbackPage = () => {
                 onChange={(e) => handleFeedbackChange(e, index)}
                 placeholder={`Feedback ${index + 1}`}
                 className="feedbackInput"
-                disabled={!isConnected || item.status === "approved"}
+                disabled={item.status === "approved"}
               />
-              <a
-                href={`/profile/${item.address}`}
-                className="feedbackWallet"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {getShortAddress(item.address)}
-              </a>
-              <span className={`feedbackStatus ${item.status}`}>
-                {item.status === "open"
-                  ? "Open for feedback"
-                  : item.status === "pending"
-                  ? "Pending"
-                  : "Approved"}
-              </span>
-              <button
-                onClick={() => handleSubmitFeedback(index)}
-                className="feedbackButton"
-                disabled={!isConnected || item.status !== "open"}
-              >
-                Submit Feedback
-              </button>
+              <div className="feedbackDetailsRow">
+                <a
+                  href={`/profile/${item.address}`}
+                  className="feedbackWalletLarge"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {item.address !== ""
+                    ? getShortAddress(item.address)
+                    : "Not provided"}
+                </a>
+                <span className={`feedbackStatusLarge ${item.status}`}>
+                  {item.status === "open"
+                    ? "Open for feedback"
+                    : item.status === "pending"
+                    ? "Pending"
+                    : "Approved"}
+                </span>
+              </div>
+              {item.status === "open" && (
+                <div className="feedbackButtonContainer">
+                  <button
+                    onClick={() => handleSubmitFeedback(index)}
+                    className="feedbackButton"
+                    disabled={!isConnected}
+                  >
+                    Submit Feedback
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>

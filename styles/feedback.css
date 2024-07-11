@@ -181,7 +181,7 @@ body.feedbackBody {
   display: flex;
   flex-direction: row;
   width: 100%;
-  justify-content: flex-start;
+  justify-content: space-around;
 }
 
 .checklistItem .buttonContainer button {
@@ -366,4 +366,33 @@ body.feedbackBody {
 
 .resetButton {
   display: none;
+}
+
+.feedbackInputContainer {
+  margin-bottom: 20px; /* Add some space between feedback items */
+}
+
+.feedbackDetailsRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* Equal space around the elements */
+}
+
+.feedbackWalletLarge {
+  font-size: 1em; /* Adjust this value to make the text bigger */
+  text-align: center;
+}
+
+.feedbackStatusLarge {
+  font-size: 1em; /* Increase this value to make the text even bigger */
+  font-weight: bold;
+  color: green; /* Optional: Change the color to make it stand out */
+  text-align: center;
+}
+
+.feedbackButtonContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
