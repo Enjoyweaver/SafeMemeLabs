@@ -55,6 +55,18 @@ interface SwapModalProps {
   tokenBAddress: string // Add this line
 }
 
+interface NFT {
+  id: string
+  name: string
+  image: string
+}
+
+interface Frame {
+  id: string
+  content: string
+  likes: number
+}
+
 const SafeLaunch: React.FC = () => {
   const [tokens, setTokens] = useState<Token[]>([])
   const [userAddress, setUserAddress] = useState<string>("")
@@ -74,6 +86,10 @@ const SafeLaunch: React.FC = () => {
   const [tokenBAmountInputs, setTokenBAmountInputs] = useState<number[]>([])
   const [currentStage, setCurrentStage] = useState<number>(0)
   const [safeMemeSymbol, setSafeMemeSymbol] = useState<string>("")
+  const [isConnected, setIsConnected] = useState(false)
+  const [activeSection, setActiveSection] = useState<string | null>(null)
+  const [nfts, setNfts] = useState<NFT[]>([])
+  const [frames, setFrames] = useState<Frame[]>([])
 
   useEffect(() => {
     const init = async () => {
@@ -84,16 +100,43 @@ const SafeLaunch: React.FC = () => {
         const network = await web3Provider.getNetwork()
         setChainId(network.chainId)
 
-        const signer = web3Provider.getSigner()
-        const address = await signer.getAddress()
-        setUserAddress(address)
+        try {
+          const signer = web3Provider.getSigner()
+          const address = await signer.getAddress()
+          setUserAddress(address)
+          setIsConnected(true) // Set the connected state to true
 
-        await fetchTokens(web3Provider, address, network.chainId)
-        await fetchTokenBOptions(web3Provider, address, network.chainId)
+          await fetchTokens(web3Provider, address, network.chainId)
+          await fetchTokenBOptions(web3Provider, address, network.chainId)
+          await fetchNFTs(address)
+          await fetchFrames(address)
+        } catch (error) {
+          console.error("No account connected", error)
+        }
       }
     }
     init()
   }, [])
+
+  const fetchNFTs = async (address: string) => {
+    // Placeholder: Replace with actual NFT fetching logic
+    setNfts([
+      { id: "1", name: "Cool NFT #1", image: "https://placeholder.com/150" },
+      { id: "2", name: "Awesome NFT #2", image: "https://placeholder.com/150" },
+    ])
+  }
+
+  const fetchFrames = async (address: string) => {
+    // Placeholder: Replace with actual Frames fetching logic from Warpcast
+    setFrames([
+      { id: "1", content: "This is my first frame!", likes: 10 },
+      { id: "2", content: "Check out my new project", likes: 25 },
+    ])
+  }
+
+  const handleSectionClick = (section: string) => {
+    setActiveSection(activeSection === section ? null : section)
+  }
 
   const fetchTokens = async (
     provider: ethers.providers.Web3Provider,
@@ -632,251 +675,360 @@ const SafeLaunch: React.FC = () => {
   return (
     <>
       <Navbar />
-      <div className="dashboard">
-        <h1 className="pagetitle">SafeLaunch Dashboard</h1>
-        <div className="token-container">
-          <div className="meme-container">
-            {tokens.map((token) => (
-              <div key={token.address} className="meme">
-                <div className="meme-header">
-                  <h3>
-                    {token.name} ({token.symbol})
-                  </h3>
+      <div className={`dashboard ${isConnected ? "active" : "inactive"}`}>
+        <h1 className="pagetitle">Your Dashboard</h1>
+        <div className="dashboard-sections">
+          <div
+            onClick={() => handleSectionClick("NFTs")}
+            className={`dashboard-section ${
+              activeSection === "NFTs" ? "selected" : ""
+            }`}
+          >
+            <h2>NFTs</h2>
+          </div>
+          <div
+            onClick={() => handleSectionClick("Frames")}
+            className={`dashboard-section ${
+              activeSection === "Frames" ? "selected" : ""
+            }`}
+          >
+            <h2>Frames</h2>
+          </div>
+          <div
+            onClick={() => handleSectionClick("Tokens")}
+            className={`dashboard-section ${
+              activeSection === "Tokens" ? "selected" : ""
+            }`}
+          >
+            <h2>Tokens</h2>
+          </div>
+          <div
+            onClick={() => handleSectionClick("SafeMemesNotLaunched")}
+            className={`dashboard-section ${
+              activeSection === "SafeMemesNotLaunched" ? "selected" : ""
+            }`}
+          >
+            <h2>SafeMemes Not Launched</h2>
+          </div>
+          <div
+            onClick={() => handleSectionClick("SafeMemes")}
+            className={`dashboard-section ${
+              activeSection === "SafeMemes" ? "selected" : ""
+            }`}
+          >
+            <h2>SafeMemes Launched</h2>
+          </div>
+          <div
+            onClick={() => handleSectionClick("Rewards")}
+            className={`dashboard-section ${
+              activeSection === "Rewards" ? "selected" : ""
+            }`}
+          >
+            <h2>Rewards</h2>
+          </div>
+          <div
+            onClick={() => handleSectionClick("CreateAirdrop")}
+            className={`dashboard-section ${
+              activeSection === "CreateAirdrop" ? "selected" : ""
+            }`}
+          >
+            <h2>Create Airdrop</h2>
+          </div>
+        </div>
+
+        <div className="section-content">
+          {activeSection === "NFTs" && (
+            <div>
+              {nfts.map((nft) => (
+                <div key={nft.id}>
+                  <img src={nft.image} alt={nft.name} />
+                  <p>{nft.name}</p>
                 </div>
-                <div className="meme-details">
-                  <p>
-                    <strong>Total Supply:</strong>{" "}
-                    {parseFloat(token.totalSupply).toLocaleString()}
-                  </p>
-                  <p>
-                    <strong>Contract:</strong>{" "}
-                    <a
-                      href={`${blockExplorerToken[chainId || ""]}${
-                        token.address
-                      }`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {" "}
-                      {truncateAddress(token.address)}
-                    </a>
-                  </p>
-                  <p>
-                    <strong>Anti-Whale %:</strong> {token.antiWhalePercentage}%
-                  </p>
-                  <p>
-                    <strong>Max Tokens/Wallet:</strong>{" "}
-                    {parseFloat(token.maxTokens).toLocaleString()}
-                  </p>
-                  {!token.safeLaunchInitialized && (
-                    <p>
-                      <strong>Status:</strong> SafeLaunch not started
-                    </p>
-                  )}
-                  {token.safeLaunchInitialized && !token.safeLaunchStarted && (
-                    <p>
-                      <strong>Status:</strong> SafeLaunch initialized
-                    </p>
-                  )}
-                  {token.safeLaunchStarted && (
-                    <>
+              ))}
+            </div>
+          )}
+          {activeSection === "Frames" && (
+            <div>
+              {frames.map((frame) => (
+                <div key={frame.id}>
+                  <p>{frame.content}</p>
+                  <p>Likes: {frame.likes}</p>
+                </div>
+              ))}
+            </div>
+          )}
+          {activeSection === "Tokens" && (
+            <div>{/* Token details rendering logic here */}</div>
+          )}
+          {activeSection === "SafeMemesNotLaunched" && (
+            <div>{/* SafeMemes not launched rendering logic here */}</div>
+          )}
+          {activeSection === "SafeMemesLaunched" && (
+            <div>{/* SafeMemes launched rendering logic here */}</div>
+          )}
+          {activeSection === "Rewards" && (
+            <div>{/* Rewards rendering logic here */}</div>
+          )}
+          {activeSection === "CreateAirdrop" && (
+            <div>{/* Create Airdrop rendering logic here */}</div>
+          )}
+          {activeSection === "SafeMemes" && (
+            <div className="token-container">
+              <div className="meme-container">
+                {tokens.map((token) => (
+                  <div key={token.address} className="meme">
+                    <div className="meme-header">
+                      <h3>
+                        {token.name} ({token.symbol})
+                      </h3>
+                    </div>
+                    <div className="meme-details">
                       <p>
-                        <strong>Status:</strong> SafeLaunch active
+                        <strong>Total Supply:</strong>{" "}
+                        {parseFloat(token.totalSupply).toLocaleString()}
                       </p>
                       <p>
-                        <strong>Locked Tokens:</strong>{" "}
-                        {parseFloat(token.lockedTokens || "0").toLocaleString()}
-                      </p>
-                      <p>
-                        <strong>DEX Address:</strong>{" "}
+                        <strong>Contract:</strong>{" "}
                         <a
-                          href={`${blockExplorerAddress[chainId || ""]}${
-                            token.dexAddress
+                          href={`${blockExplorerToken[chainId || ""]}${
+                            token.address
                           }`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          {truncateAddress(token.dexAddress || "")}
+                          {truncateAddress(token.address)}
                         </a>
                       </p>
-                      {token.tokenB &&
-                      token.tokenB !==
-                        "0x0000000000000000000000000000000000000000" ? (
+                      <p>
+                        <strong>Anti-Whale %:</strong>{" "}
+                        {token.antiWhalePercentage}%
+                      </p>
+                      <p>
+                        <strong>Max Tokens/Wallet:</strong>{" "}
+                        {parseFloat(token.maxTokens).toLocaleString()}
+                      </p>
+                      {!token.safeLaunchInitialized && (
                         <p>
-                          <strong>Token B:</strong>{" "}
-                          <a
-                            href={`${blockExplorerToken[chainId || ""]}${
-                              token.tokenB
-                            }`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {truncateAddress(token.tokenB)}
-                          </a>
+                          <strong>Status:</strong> SafeLaunch not started
                         </p>
-                      ) : (
-                        <div>
+                      )}
+                      {token.safeLaunchInitialized &&
+                        !token.safeLaunchStarted && (
                           <p>
-                            <strong>Select Token B:</strong>
+                            <strong>Status:</strong> SafeLaunch initialized
                           </p>
-                          <select
-                            onChange={(e) => setSelectedTokenB(e.target.value)}
-                          >
-                            <option value="">Select Token B</option>
-                            {tokenBOptions.map((option) => (
-                              <option
-                                key={option.address}
-                                value={option.address}
+                        )}
+                      {token.safeLaunchStarted && (
+                        <>
+                          <p>
+                            <strong>Status:</strong> SafeLaunch active
+                          </p>
+                          <p>
+                            <strong>Locked Tokens:</strong>{" "}
+                            {parseFloat(
+                              token.lockedTokens || "0"
+                            ).toLocaleString()}
+                          </p>
+                          <p>
+                            <strong>DEX Address:</strong>{" "}
+                            <a
+                              href={`${blockExplorerAddress[chainId || ""]}${
+                                token.dexAddress
+                              }`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {truncateAddress(token.dexAddress || "")}
+                            </a>
+                          </p>
+                          {token.tokenB &&
+                          token.tokenB !==
+                            "0x0000000000000000000000000000000000000000" ? (
+                            <p>
+                              <strong>Token B:</strong>{" "}
+                              <a
+                                href={`${blockExplorerToken[chainId || ""]}${
+                                  token.tokenB
+                                }`}
+                                target="_blank"
+                                rel="noopener noreferrer"
                               >
-                                {option.symbol}
-                              </option>
-                            ))}
-                          </select>
+                                {truncateAddress(token.tokenB)}
+                              </a>
+                            </p>
+                          ) : (
+                            <div>
+                              <p>
+                                <strong>Select Token B:</strong>
+                              </p>
+                              <select
+                                onChange={(e) =>
+                                  setSelectedTokenB(e.target.value)
+                                }
+                              >
+                                <option value="">Select Token B</option>
+                                {tokenBOptions.map((option) => (
+                                  <option
+                                    key={option.address}
+                                    value={option.address}
+                                  >
+                                    {option.symbol}
+                                  </option>
+                                ))}
+                              </select>
+                              <button
+                                className="buy-token-button"
+                                onClick={() =>
+                                  submitTokenB(token.address, selectedTokenB)
+                                }
+                              >
+                                Submit Token B
+                              </button>
+                            </div>
+                          )}
+                          {token.currentStage !== undefined &&
+                            token.stageInfo && (
+                              <div className="stages-container">
+                                <div className="stage-title">
+                                  <strong>Current Stage:</strong>{" "}
+                                  {token.currentStage + 1}
+                                </div>
+                                {token.stageInfo.map((stage, index) => (
+                                  <div key={index} className="stage">
+                                    <div className="stage-details">
+                                      <div className="stage-detail-item">
+                                        <p>
+                                          <span className="secondary-dark-color">
+                                            {token.symbol}
+                                          </span>{" "}
+                                          for sale:
+                                        </p>
+                                        <p>
+                                          {parseFloat(
+                                            stage.safeMemeForSale
+                                          ).toLocaleString()}
+                                        </p>
+                                      </div>
+                                      <div className="stage-detail-item">
+                                        <p>
+                                          Available{" "}
+                                          <span className="secondary-dark-color">
+                                            {token.symbol}
+                                          </span>
+                                          :
+                                        </p>
+                                        <p>
+                                          {parseFloat(
+                                            stage.availableSafeMeme
+                                          ).toLocaleString()}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="stage-details">
+                                      <div className="stage-detail-item">
+                                        <p>Required {selectedTokenBName}:</p>
+                                        <p>
+                                          {parseFloat(
+                                            stage.requiredTokenB
+                                          ).toLocaleString()}{" "}
+                                          {selectedTokenBName}
+                                        </p>
+                                      </div>
+                                      <div className="stage-detail-item">
+                                        <p>Received {selectedTokenBName}:</p>
+                                        <p>
+                                          {parseFloat(
+                                            stage.tokenBReceived
+                                          ).toLocaleString()}{" "}
+                                          {selectedTokenBName}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="stage-detail-item">
+                                      <p>
+                                        Price:{" "}
+                                        {(
+                                          parseFloat(stage.requiredTokenB) /
+                                          parseFloat(stage.safeMemeForSale)
+                                        ).toFixed(6)}{" "}
+                                        {selectedTokenBName} per{" "}
+                                        <span className="secondary-dark-color">
+                                          {" "}
+                                          {token.symbol}
+                                        </span>
+                                      </p>
+                                    </div>
+                                    {!token.tokenBAmountSet && (
+                                      <div className="stage-actions">
+                                        <input
+                                          type="number"
+                                          id={`amount-${index}`}
+                                          value={
+                                            tokenBAmountInputs[index] || ""
+                                          }
+                                          onChange={(e) =>
+                                            handleTokenBAmountChange(
+                                              index,
+                                              e.target.value
+                                            )
+                                          }
+                                          placeholder={`Amount of ${selectedTokenBName}`}
+                                          className="input-field"
+                                        />
+                                        <button
+                                          className="buy-token-button"
+                                          onClick={() =>
+                                            setTokenBAmount(
+                                              token.address,
+                                              selectedTokenB,
+                                              index
+                                            )
+                                          }
+                                        >
+                                          Submit Token B Amount for Stage{" "}
+                                          {index + 1}
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
                           <button
                             className="buy-token-button"
                             onClick={() =>
-                              submitTokenB(token.address, selectedTokenB)
+                              token.dexAddress &&
+                              openSwapModal(token.dexAddress)
                             }
                           >
-                            Submit Token B
+                            Buy {token.symbol}
                           </button>
-                        </div>
+                        </>
                       )}
-                      {token.currentStage !== undefined && token.stageInfo && (
-                        <div className="stages-container">
-                          <div className="stage-title">
-                            <strong>Current Stage:</strong>{" "}
-                            {token.currentStage + 1}
-                          </div>
-                          {token.stageInfo.map((stage, index) => (
-                            <div key={index} className="stage">
-                              <div className="stage-details">
-                                <div className="stage-detail-item">
-                                  <p>
-                                    <span className="secondary-dark-color">
-                                      {token.symbol}
-                                    </span>{" "}
-                                    for sale:
-                                  </p>
-                                  <p>
-                                    {parseFloat(
-                                      stage.safeMemeForSale
-                                    ).toLocaleString()}
-                                  </p>
-                                </div>
-                                <div className="stage-detail-item">
-                                  <p>
-                                    Available{" "}
-                                    <span className="secondary-dark-color">
-                                      {token.symbol}
-                                    </span>
-                                    :
-                                  </p>
-                                  <p>
-                                    {parseFloat(
-                                      stage.availableSafeMeme
-                                    ).toLocaleString()}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="stage-details">
-                                <div className="stage-detail-item">
-                                  <p>Required {selectedTokenBName}:</p>
-                                  <p>
-                                    {parseFloat(
-                                      stage.requiredTokenB
-                                    ).toLocaleString()}{" "}
-                                    {selectedTokenBName}
-                                  </p>
-                                </div>
-                                <div className="stage-detail-item">
-                                  <p>Received {selectedTokenBName}:</p>
-                                  <p>
-                                    {parseFloat(
-                                      stage.tokenBReceived
-                                    ).toLocaleString()}{" "}
-                                    {selectedTokenBName}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="stage-detail-item">
-                                <p>
-                                  Price:{" "}
-                                  {(
-                                    parseFloat(stage.requiredTokenB) /
-                                    parseFloat(stage.safeMemeForSale)
-                                  ).toFixed(6)}{" "}
-                                  {selectedTokenBName} per{" "}
-                                  <span className="secondary-dark-color">
-                                    {" "}
-                                    {token.symbol}
-                                  </span>
-                                </p>
-                              </div>
-                              {!token.tokenBAmountSet && (
-                                <div className="stage-actions">
-                                  <input
-                                    type="number"
-                                    id={`amount-${index}`}
-                                    value={tokenBAmountInputs[index] || ""}
-                                    onChange={(e) =>
-                                      handleTokenBAmountChange(
-                                        index,
-                                        e.target.value
-                                      )
-                                    }
-                                    placeholder={`Amount of ${selectedTokenBName}`}
-                                    className="input-field"
-                                  />
-                                  <button
-                                    className="buy-token-button"
-                                    onClick={() =>
-                                      setTokenBAmount(
-                                        token.address,
-                                        selectedTokenB,
-                                        index
-                                      )
-                                    }
-                                  >
-                                    Submit Token B Amount for Stage {index + 1}
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
+                    </div>
+                    {!token.safeLaunchInitialized && (
                       <button
                         className="buy-token-button"
-                        onClick={() =>
-                          token.dexAddress && openSwapModal(token.dexAddress)
-                        }
+                        onClick={() => initializeSafeLaunch(token.address)}
                       >
-                        Buy {token.symbol}
+                        Initialize SafeLaunch
                       </button>
-                    </>
-                  )}
-                </div>
-                {!token.safeLaunchInitialized && (
-                  <button
-                    className="buy-token-button"
-                    onClick={() => initializeSafeLaunch(token.address)}
-                  >
-                    Initialize SafeLaunch
-                  </button>
-                )}
-                {token.safeLaunchInitialized && !token.safeLaunchStarted && (
-                  <button
-                    className="buy-token-button"
-                    onClick={() => startSafeLaunch(token.address)}
-                  >
-                    Start SafeLaunch
-                  </button>
-                )}
+                    )}
+                    {token.safeLaunchInitialized &&
+                      !token.safeLaunchStarted && (
+                        <button
+                          className="buy-token-button"
+                          onClick={() => startSafeLaunch(token.address)}
+                        >
+                          Start SafeLaunch
+                        </button>
+                      )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
       </div>
       <SwapModal
