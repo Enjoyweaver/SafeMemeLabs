@@ -270,7 +270,10 @@ const SafeMeme = () => {
                   <div className="input-row-container">
                     {stageTokenBAmounts.map((amount, index) => (
                       <div key={index} className="input-row threshold-section">
-                        <label htmlFor={`amount${index}`}>
+                        <label
+                          htmlFor={`amount${index}`}
+                          className="centered-label"
+                        >
                           Phase {index + 1} {selectedTokenB} Amount:
                         </label>
                         <input
@@ -284,34 +287,70 @@ const SafeMeme = () => {
                       </div>
                     ))}
                   </div>
+
                   <p className="input-section-description">
                     These are the amounts of the tokens that will be paired and
                     input into our SafeDEX after completing the SafeLaunch.
                   </p>
                   <div className="total-section">
-                    <label htmlFor="totalAmount">
-                      DEX {selectedTokenB} Amount:
-                    </label>
-                    <input
-                      type="number"
-                      id="totalAmount"
-                      value={getTotalTokenB()}
-                      readOnly
-                    />
-                    <label htmlFor="unlockedSupply">50% SafeMeme Supply:</label>
-                    <input
-                      type="number"
-                      id="unlockedSupply"
-                      value={(initialSupply * 0.5).toFixed(0)}
-                      readOnly
-                    />
-                    <label htmlFor="launchPrice">Price at Launch (USD):</label>
-                    <input
-                      type="number"
-                      id="launchPrice"
-                      value={stage6Price.toFixed(4)}
-                      readOnly
-                    />
+                    <div className="total-section-row">
+                      <div className="total-section-item">
+                        <label htmlFor="totalAmount">
+                          DEX {selectedTokenB} Amount:
+                        </label>
+                        <input
+                          type="number"
+                          id="totalAmount"
+                          value={getTotalTokenB()}
+                          readOnly
+                        />
+                      </div>
+                      <div className="total-section-item">
+                        <label htmlFor="unlockedSupply">
+                          50% SafeMeme Supply:
+                        </label>
+                        <input
+                          type="number"
+                          id="unlockedSupply"
+                          value={(initialSupply * 0.5).toFixed(0)}
+                          readOnly
+                        />
+                      </div>
+                    </div>
+                    <div className="total-section-row">
+                      <div className="total-section-item">
+                        <label htmlFor="launchPrice">
+                          Price at Launch (USD):
+                        </label>
+                        <div className="input-container">
+                          <input
+                            type="text"
+                            id="launchPrice"
+                            value={`$${stage6Price.toFixed(4)}`}
+                            readOnly
+                          />
+                        </div>
+                      </div>
+                      <div className="total-section-item">
+                        <label htmlFor="dexCashValue">
+                          DEX Cash Value (USD):
+                        </label>
+                        <div className="input-container">
+                          <input
+                            type="text"
+                            id="dexCashValue"
+                            value={`$${(
+                              getTotalTokenB() *
+                              (selectedTokenB &&
+                              tokenPrices["4002"]?.[selectedTokenB]
+                                ? tokenPrices["4002"][selectedTokenB]
+                                : 0)
+                            ).toFixed(2)}`}
+                            readOnly
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

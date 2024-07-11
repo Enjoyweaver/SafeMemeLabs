@@ -8,6 +8,7 @@ import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 import {
   NativeTokens,
   blockExplorerAddress,
+  blockExplorerToken,
   exchangeFactory,
   safeLaunchFactory,
 } from "@/Constants/config"
@@ -299,7 +300,7 @@ const SafeLaunch: React.FC = () => {
       )
       await tx.wait()
       await fetchTokens(provider, userAddress, chainId)
-      setSelectedTokenBName(selectedTokenB.symbol)
+      setSelectedTokenBName(selectedTokenB.symbol) // Ensure this line correctly updates the state
       alert("Token B information submitted successfully!")
     } catch (error) {
       console.error("Error submitting Token B information:", error)
@@ -648,7 +649,17 @@ const SafeLaunch: React.FC = () => {
                     {parseFloat(token.totalSupply).toLocaleString()}
                   </p>
                   <p>
-                    <strong>Contract:</strong> {truncateAddress(token.address)}
+                    <strong>Contract:</strong>{" "}
+                    <a
+                      href={`${blockExplorerToken[chainId || ""]}${
+                        token.address
+                      }`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {" "}
+                      {truncateAddress(token.address)}
+                    </a>
                   </p>
                   <p>
                     <strong>Anti-Whale %:</strong> {token.antiWhalePercentage}%
@@ -694,7 +705,7 @@ const SafeLaunch: React.FC = () => {
                         <p>
                           <strong>Token B:</strong>{" "}
                           <a
-                            href={`${blockExplorerAddress[chainId || ""]}${
+                            href={`${blockExplorerToken[chainId || ""]}${
                               token.tokenB
                             }`}
                             target="_blank"
@@ -733,15 +744,20 @@ const SafeLaunch: React.FC = () => {
                       )}
                       {token.currentStage !== undefined && token.stageInfo && (
                         <div className="stages-container">
-                          <p className="meme-details">
+                          <div className="stage-title">
                             <strong>Current Stage:</strong>{" "}
                             {token.currentStage + 1}
-                          </p>
+                          </div>
                           {token.stageInfo.map((stage, index) => (
                             <div key={index} className="stage">
                               <div className="stage-details">
                                 <div className="stage-detail-item">
-                                  <p>{token.symbol} for sale:</p>
+                                  <p>
+                                    <span className="secondary-dark-color">
+                                      {token.symbol}
+                                    </span>{" "}
+                                    for sale:
+                                  </p>
                                   <p>
                                     {parseFloat(
                                       stage.safeMemeForSale
@@ -749,7 +765,13 @@ const SafeLaunch: React.FC = () => {
                                   </p>
                                 </div>
                                 <div className="stage-detail-item">
-                                  <p>Available {token.symbol}:</p>
+                                  <p>
+                                    Available{" "}
+                                    <span className="secondary-dark-color">
+                                      {token.symbol}
+                                    </span>
+                                    :
+                                  </p>
                                   <p>
                                     {parseFloat(
                                       stage.availableSafeMeme
@@ -784,15 +806,11 @@ const SafeLaunch: React.FC = () => {
                                     parseFloat(stage.requiredTokenB) /
                                     parseFloat(stage.safeMemeForSale)
                                   ).toFixed(6)}{" "}
-                                  {selectedTokenBName} per {token.symbol}
-                                </p>
-                              </div>
-                              <div className="stage-detail-item">
-                                <p>
-                                  Sold {token.symbol}:{" "}
-                                  {parseFloat(
-                                    stage.soldSafeMeme
-                                  ).toLocaleString()}
+                                  {selectedTokenBName} per{" "}
+                                  <span className="secondary-dark-color">
+                                    {" "}
+                                    {token.symbol}
+                                  </span>
                                 </p>
                               </div>
                               {!token.tokenBAmountSet && (

@@ -135,9 +135,26 @@ body {
 .input-row-container {
   display: flex;
   justify-content: space-between;
-  width: 150%;
-  flex-wrap: nowrap;
-  margin-bottom: 10px;
+  align-items: flex-start;
+  width: 100%;
+  gap: 10px; /* Adjust gap between each input if needed */
+}
+
+.threshold-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100px; /* Adjust width as needed */
+}
+
+.centered-label {
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+input[type="number"] {
+  text-align: center;
+  width: 100%;
 }
 
 .input-row-container .input-row {
@@ -167,15 +184,11 @@ body {
   border: 1px solid var(--border-dark);
 }
 
-.threshold-section {
-  margin-bottom: 5px; /* Reduced margin to condense */
-}
-
 .total-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
+  width: 70%;
   padding: 10px;
   background-color: var(--input-light);
   border: 1px solid var(--border-light);
@@ -390,4 +403,46 @@ body {
 
 .dark .input-section-description {
   color: var(--foreground-dark);
+}
+
+.total-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.total-section-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.total-section-item {
+  flex: 1;
+  text-align: center;
+}
+
+.total-section-item label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.total-section-item input {
+  width: 100%;
+  text-align: center;
+}
+
+.input-container input[type="text"] {
+  width: 100%;
+  padding-left: 10px; /* Adjust padding to accommodate the dollar sign */
+  text-align: center; /* Center align the text */
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+}
+
+.dark .input-container input[type="text"] {
+  background-color: var(--input-dark);
+  color: var(--foreground-dark);
+  border: 1px solid var(--border-dark);
 }

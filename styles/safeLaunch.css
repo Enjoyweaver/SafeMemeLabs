@@ -152,6 +152,7 @@ body {
   align-items: center;
   width: 100%;
   padding: 0;
+  color: var(--primary-dark);
 }
 
 .meme-header h3 {
@@ -171,9 +172,37 @@ body {
   width: 100%;
 }
 
+.stage-title {
+  text-align: center;
+  font-size: 0.9rem;
+  width: 100%;
+  margin-bottom: 10px;
+  margin-top: 20px;
+  color: var(--secondary-dark);
+}
+
+.stage-title p {
+  color: var(--foreground-light) !important;
+  margin: 1px 0px;
+}
+
 .meme-details p {
   color: var(--foreground-light) !important;
   margin: 1px 0px;
+}
+
+.stage-title p strong {
+  display: inline-block;
+  width: 180px;
+  color: var(--secondary-dark);
+}
+
+.dark .stage-title p {
+  color: var(--foreground-dark) !important;
+}
+
+.secondary-dark-color {
+  color: var(--secondary-dark);
 }
 
 .meme-details p strong {
@@ -193,7 +222,7 @@ body {
 .buy-token-button {
   display: inline-block;
   padding: 8px 16px;
-  margin: 10px 0 10px 0;
+  margin: 10px auto; /* Change this line */
   background-color: #000;
   color: #00ff00;
   border: 2px solid #00ff00;
@@ -304,19 +333,26 @@ body {
 }
 
 .stages-container {
-  color: var(--primary-dark);
+  border-color: var(--primary-dark);
   max-width: 400px;
   margin: 0 auto;
 }
 
 .stage {
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--primary-dark); /* Set the border color */
   padding: 5px;
   margin-bottom: 20px;
   border-radius: 12px;
-  background-color: var(--background-light);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: transparent; /* Make the background transparent */
+  box-shadow: 0 0 15px var(--primary-dark); /* Add a glowing effect */
   transition: all 0.3s ease;
+}
+
+.dark .stage {
+  border: 1px solid var(--primary-dark); /* Set the border color */
+  background-color: transparent; /* Make the background transparent */
+  color: var(--primary-dark);
+  box-shadow: 0 0 15px var(--primary-dark); /* Add a glowing effect */
 }
 
 .stage-details {
@@ -394,19 +430,6 @@ a .stage-actions input {
 
 .stagetext p {
   color: var(--primary-dark) !important;
-}
-
-.dark .stage {
-  background-color: var(--primary-light);
-  color: var(--primary-dark);
-}
-
-.dark .progress-bar {
-  background-color: #4caf50;
-}
-
-.dark .progress {
-  background-color: #e0e0e0;
 }
 
 .swap-modal {
