@@ -11,6 +11,7 @@ import "@/styles/feedback.css"
 
 const FEEDBACK_ENTRIES = 21
 const SAFEMEME_WALLET_ADDRESS = "0x8cfeb8Eacdfe56C5C3B529e5EBf9F76399d8Ca49"
+const HNDL_address = "0x34B4C11DF80599C315dCe3F7aaC816d1e1F26496"
 
 const FeedbackPage = () => {
   const { isConnected, address } = useAccount()
@@ -188,7 +189,12 @@ const FeedbackPage = () => {
     setIsClient(true)
     setFeatureRequests([
       {
-        text: "Safe Token Swap",
+        text: "Integrate HNDL into SafeMemes",
+        votes: 0,
+        address: HNDL_address,
+      },
+      {
+        text: "Create a SafeDEX",
         votes: 0,
         address: SAFEMEME_WALLET_ADDRESS,
       },
