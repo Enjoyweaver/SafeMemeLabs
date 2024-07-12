@@ -605,6 +605,14 @@ export const ExchangeABI = [
         name: "",
         type: "uint256",
       },
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
     ],
   },
   {
@@ -642,6 +650,14 @@ export const ExchangeABI = [
         name: "",
         type: "uint256",
       },
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
     ],
   },
   {
@@ -650,6 +666,18 @@ export const ExchangeABI = [
     name: "getCurrentStage",
     inputs: [],
     outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
       {
         name: "",
         type: "uint256",

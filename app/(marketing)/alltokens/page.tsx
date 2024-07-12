@@ -6,21 +6,54 @@ import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 import { chains, rpcUrls, safeLaunchFactory } from "@/Constants/config"
 import { ethers } from "ethers"
-import { useNetwork } from "wagmi"
+import Modal from "react-modal"
+import { useAccount, useNetwork, useWalletClient } from "wagmi"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import "./swap.css"
 import "@/styles/allTokens.css"
 
+interface TokenInfo {
+  address: string
+  name: string
+  symbol: string
+  decimals: string
+  totalSupply: string
+  owner: string
+  chainId: string
+  dexInfo: {
+    currentStage: number
+    tokenBAddress: string
+    tokenBName: string
+    tokenBSymbol: string
+    stageTokenBAmount: string
+    safeMemePrices: string
+    safeMemeAvailable: string
+    tokenBReceived: string
+    soldSafeMeme: string
+    stageRemainingSafeMeme: string
+    safeLaunchActivated: boolean
+    tokenBSet: boolean
+    stageAmountSet: boolean
+  } | null
+}
+
 const Dashboard = () => {
   const [selectedChain, setSelectedChain] = useState("all")
   const [selectedTokenType, setSelectedTokenType] = useState("all")
-  const [tokens, setTokens] = useState([])
+  const [tokens, setTokens] = useState<TokenInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [selectedToken, setSelectedToken] = useState(null)
+  const [swapAmount, setSwapAmount] = useState("1")
+  const [estimatedOutput, setEstimatedOutput] = useState("0")
   const { chain } = useNetwork()
+  const [isSwapping, setIsSwapping] = useState(false)
+  const [swapError, setSwapError] = useState(null)
+  const { address } = useAccount()
+  const { data: walletClient } = useWalletClient()
 
   const tokenTypes = [
     { value: "all", label: "All Tokens" },
@@ -79,20 +112,39 @@ const Dashboard = () => {
           dexContract.tokenBSymbol(),
         ])
 
-      const stageSet = await dexContract.stageSet(currentStage)
-      const stageTokenBAmount = stageSet
-        ? await dexContract.stagetokenBAmounts(currentStage)
-        : ethers.BigNumber.from(0)
+      // New: Get current stage info
+      const [stage, stagetokenBAmount, safeMemePrice, safeMemeRemaining] =
+        await dexContract.getCurrentStage()
+
+      // New: Get stage liquidity
+      const [
+        tokenBReceived,
+        soldSafeMeme,
+        stageRemainingSafeMeme,
+        currentStageFromLiquidity,
+      ] = await dexContract.getStageLiquidity(stage)
+
+      const stageSet = await dexContract.stageSet(stage)
+      const tokenBSet = tokenBAddress !== ethers.constants.AddressZero
+      const stageAmountSet = stageSet && !stagetokenBAmount.isZero()
+      const safeLaunchActivated = tokenBSet && stageAmountSet
 
       return {
-        currentStage: currentStage.toNumber(),
+        currentStage: stage.toNumber(),
         tokenBAddress,
         tokenBName,
         tokenBSymbol,
-        stageTokenBAmount: ethers.utils.formatEther(stageTokenBAmount),
-        safeLaunchActivated: currentStage.gt(0),
-        tokenBSet: tokenBAddress !== ethers.constants.AddressZero,
-        stageAmountSet: stageSet,
+        stageTokenBAmount: ethers.utils.formatEther(stagetokenBAmount),
+        safeMemePrices: ethers.utils.formatEther(safeMemePrice),
+        safeMemeAvailable: ethers.utils.formatEther(safeMemeRemaining),
+        tokenBReceived: ethers.utils.formatEther(tokenBReceived),
+        soldSafeMeme: ethers.utils.formatEther(soldSafeMeme),
+        stageRemainingSafeMeme: ethers.utils.formatEther(
+          stageRemainingSafeMeme
+        ),
+        safeLaunchActivated,
+        tokenBSet,
+        stageAmountSet,
       }
     } catch (error) {
       console.error("Error fetching DEX info:", error)
@@ -161,6 +213,95 @@ const Dashboard = () => {
     })
   }
 
+  const openModal = (token) => {
+    setSelectedToken(token)
+    setModalIsOpen(true)
+    calculateEstimatedOutput("1")
+  }
+
+  const closeModal = () => {
+    setModalIsOpen(false)
+    setSelectedToken(null)
+    setSwapAmount("1")
+    setEstimatedOutput("0")
+  }
+
+  const calculateEstimatedOutput = (amount) => {
+    if (!selectedToken || !selectedToken.dexInfo) return
+
+    const tokenBAmount = ethers.utils.parseEther(amount)
+    const safeMemePrice = ethers.utils.parseEther(
+      selectedToken.dexInfo.safeMemePrices
+    )
+    const safeMemeToReceive = tokenBAmount
+      .mul(ethers.constants.WeiPerEther)
+      .div(safeMemePrice)
+
+    setEstimatedOutput(ethers.utils.formatEther(safeMemeToReceive))
+  }
+
+  const handleAmountChange = (e) => {
+    setSwapAmount(e.target.value)
+    calculateEstimatedOutput(e.target.value)
+  }
+
+  const handleSwap = async () => {
+    if (!selectedToken || !selectedToken.dexInfo || !walletClient) {
+      console.error("Missing required data for swap")
+      return
+    }
+
+    try {
+      setIsSwapping(true)
+      setSwapError(null)
+
+      const signer = await walletClient.account
+
+      const dexContract = new ethers.Contract(
+        selectedToken.dexInfo.address,
+        ExchangeABI,
+        signer
+      )
+      const tokenBContract = new ethers.Contract(
+        selectedToken.dexInfo.tokenBAddress,
+        SafeMemeABI,
+        signer
+      )
+
+      // Convert swapAmount to wei
+      const tokenBAmount = ethers.utils.parseEther(swapAmount)
+
+      // Check if the user has approved enough Token B
+      const allowance = await tokenBContract.allowance(
+        address,
+        selectedToken.dexInfo.address
+      )
+      if (allowance.lt(tokenBAmount)) {
+        // If not, request approval
+        const approveTx = await tokenBContract.approve(
+          selectedToken.dexInfo.address,
+          tokenBAmount
+        )
+        await approveTx.wait()
+      }
+
+      // Call buyTokens function on the DEX contract
+      const buyTokensTx = await dexContract.buyTokens(tokenBAmount)
+      await buyTokensTx.wait()
+
+      console.log("Swap successful!")
+
+      // Refresh token data or update UI as needed
+      fetchAllTokens()
+      closeModal()
+    } catch (error) {
+      console.error("Error during swap:", error)
+      setSwapError(error.message)
+    } finally {
+      setIsSwapping(false)
+    }
+  }
+
   const renderTokens = () => {
     if (loading) {
       return <p className="loading">Loading tokens...</p>
@@ -195,7 +336,8 @@ const Dashboard = () => {
                   token.chainId}
               </p>
               <p>
-                <strong>Address:</strong> {token.address}
+                <strong>Address:</strong>{" "}
+                {`${token.address.slice(0, 6)}...${token.address.slice(-6)}`}
               </p>
               <p>
                 <strong>Decimals:</strong> {token.decimals}
@@ -204,7 +346,8 @@ const Dashboard = () => {
                 <strong>Total Supply:</strong> {token.totalSupply}
               </p>
               <p>
-                <strong>Owner:</strong> {token.owner}
+                <strong>Owner:</strong>{" "}
+                {`${token.owner.slice(0, 6)}...${token.owner.slice(-6)}`}
               </p>
               {token.dexInfo && (
                 <>
@@ -218,7 +361,10 @@ const Dashboard = () => {
                   </p>
                   <p>
                     <strong>Token B Address:</strong>{" "}
-                    {token.dexInfo.tokenBAddress}
+                    {`${token.dexInfo.tokenBAddress.slice(
+                      0,
+                      6
+                    )}...${token.dexInfo.tokenBAddress.slice(-6)}`}
                   </p>
                   <p>
                     <strong>Stage Token B Amount:</strong>{" "}
@@ -239,7 +385,12 @@ const Dashboard = () => {
                 </>
               )}
             </div>
-            <button className="buy-token-button">Buy Token</button>
+            <button
+              className="buy-token-button"
+              onClick={() => openModal(token)}
+            >
+              Buy {token.name}
+            </button>
           </div>
         ))}
       </div>
@@ -287,6 +438,87 @@ const Dashboard = () => {
       </div>
 
       <div className="token-container">{renderTokens()}</div>
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Swap Modal"
+        className="swap-modal"
+        overlayClassName="swap-modal-overlay"
+      >
+        <div className="swap-container">
+          <h1 className="page-title">Token Swap</h1>
+          <div className="swap-card">
+            <div className="token-section">
+              <label htmlFor="tokenFrom">From (Token B)</label>
+              <div className="token-amount-container">
+                <input
+                  type="text"
+                  id="tokenFrom"
+                  value={selectedToken?.dexInfo?.tokenBSymbol || ""}
+                  disabled
+                  className="input-field"
+                />
+                <div className="amount-container">
+                  <div className="amount-input-with-price">
+                    <input
+                      type="number"
+                      id="amount"
+                      value={swapAmount}
+                      onChange={handleAmountChange}
+                      placeholder="Amount"
+                      className="input-field-with-price"
+                      inputMode="numeric"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="token-section">
+              <label htmlFor="tokenTo">To (SafeMeme)</label>
+              <div className="token-amount-container">
+                <input
+                  type="text"
+                  id="tokenTo"
+                  value={selectedToken?.symbol || ""}
+                  disabled
+                  className="input-field"
+                />
+                <div className="amount-containerTo">
+                  <div className="amount-input-with-price">
+                    <input
+                      type="number"
+                      id="estimatedOutput"
+                      value={estimatedOutput}
+                      disabled
+                      className="input-field-with-price"
+                      inputMode="numeric"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="swap-summary">
+              <p>
+                Exchange Rate: 1 {selectedToken?.dexInfo?.tokenBSymbol} ={" "}
+                {estimatedOutput} {selectedToken?.symbol}
+              </p>
+              <p>Current Stage: {selectedToken?.dexInfo?.currentStage}</p>
+              <p>
+                SafeMeme Remaining: {selectedToken?.dexInfo?.safeMemeAvailable}
+              </p>
+            </div>
+            <button
+              className="swap-button"
+              onClick={handleSwap}
+              disabled={isSwapping}
+            >
+              {isSwapping ? "Swapping..." : "Swap"}
+            </button>
+            {swapError && <p className="error-message">{swapError}</p>}
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }
