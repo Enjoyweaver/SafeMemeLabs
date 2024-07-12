@@ -7,7 +7,7 @@ import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 import { chains, rpcUrls, safeLaunchFactory } from "@/Constants/config"
 import { ethers } from "ethers"
 import Modal from "react-modal"
-import { useAccount, useNetwork, useWalletClient } from "wagmi"
+import { useAccount, useConnect, useNetwork, useWalletClient } from "wagmi"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
@@ -23,6 +23,7 @@ interface TokenInfo {
   owner: string
   chainId: string
   dexInfo: {
+    address: string
     currentStage: number
     tokenBAddress: string
     tokenBName: string
@@ -46,7 +47,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [selectedToken, setSelectedToken] = useState(null)
+  const [selectedToken, setSelectedToken] = useState<TokenInfo | null>(null)
   const [swapAmount, setSwapAmount] = useState("1")
   const [estimatedOutput, setEstimatedOutput] = useState("0")
   const { chain } = useNetwork()
@@ -54,7 +55,10 @@ const Dashboard = () => {
   const [swapError, setSwapError] = useState(null)
   const { address } = useAccount()
   const { data: walletClient } = useWalletClient()
-
+  const [provider, setProvider] =
+    useState<ethers.providers.Web3Provider | null>(null)
+  const [chainId, setChainId] = useState<number | null>(null)
+  const [isConnected, setIsConnected] = useState(false)
   const tokenTypes = [
     { value: "all", label: "All Tokens" },
     { value: "withDex", label: "Tokens with DEX" },
@@ -68,6 +72,19 @@ const Dashboard = () => {
   useEffect(() => {
     fetchAllTokens()
   }, [chain, selectedChain, selectedTokenType])
+
+  useEffect(() => {
+    const init = async () => {
+      if (provider) {
+        const network = await provider.getNetwork()
+        setChainId(network.chainId)
+        setIsConnected(true)
+      } else {
+        setIsConnected(false)
+      }
+    }
+    init()
+  }, [provider])
 
   const fetchAllTokens = async () => {
     try {
@@ -112,11 +129,9 @@ const Dashboard = () => {
           dexContract.tokenBSymbol(),
         ])
 
-      // New: Get current stage info
       const [stage, stagetokenBAmount, safeMemePrice, safeMemeRemaining] =
         await dexContract.getCurrentStage()
 
-      // New: Get stage liquidity
       const [
         tokenBReceived,
         soldSafeMeme,
@@ -130,6 +145,7 @@ const Dashboard = () => {
       const safeLaunchActivated = tokenBSet && stageAmountSet
 
       return {
+        address: dexAddress,
         currentStage: stage.toNumber(),
         tokenBAddress,
         tokenBName,
@@ -151,6 +167,13 @@ const Dashboard = () => {
       return null
     }
   }
+
+  useEffect(() => {
+    if (walletClient) {
+      const newProvider = new ethers.providers.Web3Provider(walletClient)
+      setProvider(newProvider)
+    }
+  }, [walletClient])
 
   const getTokenInfo = async (tokenAddress, provider, chainId) => {
     const tokenContract = new ethers.Contract(
@@ -179,7 +202,7 @@ const Dashboard = () => {
       totalSupply: ethers.utils.formatUnits(totalSupply, decimals),
       owner,
       chainId,
-      dexInfo,
+      dexInfo: dexInfo ? { ...dexInfo, address: dexAddress } : null,
     }
   }
 
@@ -227,17 +250,25 @@ const Dashboard = () => {
   }
 
   const calculateEstimatedOutput = (amount) => {
-    if (!selectedToken || !selectedToken.dexInfo) return
+    if (!selectedToken || !selectedToken.dexInfo || !amount || isNaN(amount)) {
+      setEstimatedOutput("0")
+      return
+    }
 
-    const tokenBAmount = ethers.utils.parseEther(amount)
-    const safeMemePrice = ethers.utils.parseEther(
-      selectedToken.dexInfo.safeMemePrices
-    )
-    const safeMemeToReceive = tokenBAmount
-      .mul(ethers.constants.WeiPerEther)
-      .div(safeMemePrice)
+    try {
+      const tokenBAmount = ethers.utils.parseEther(amount)
+      const safeMemePrice = ethers.utils.parseEther(
+        selectedToken.dexInfo.safeMemePrices
+      )
+      const safeMemeToReceive = tokenBAmount
+        .mul(ethers.constants.WeiPerEther)
+        .div(safeMemePrice)
 
-    setEstimatedOutput(ethers.utils.formatEther(safeMemeToReceive))
+      setEstimatedOutput(ethers.utils.formatEther(safeMemeToReceive))
+    } catch (error) {
+      console.error("Error calculating estimated output:", error)
+      setEstimatedOutput("0")
+    }
   }
 
   const handleAmountChange = (e) => {
@@ -246,7 +277,13 @@ const Dashboard = () => {
   }
 
   const handleSwap = async () => {
-    if (!selectedToken || !selectedToken.dexInfo || !walletClient) {
+    if (
+      !selectedToken ||
+      !selectedToken.dexInfo ||
+      !walletClient ||
+      !selectedToken.dexInfo.address ||
+      !provider
+    ) {
       console.error("Missing required data for swap")
       return
     }
@@ -254,8 +291,7 @@ const Dashboard = () => {
     try {
       setIsSwapping(true)
       setSwapError(null)
-
-      const signer = await walletClient.account
+      const signer = provider.getSigner()
 
       const dexContract = new ethers.Contract(
         selectedToken.dexInfo.address,
