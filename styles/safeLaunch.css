@@ -544,15 +544,19 @@ a .stage-actions input {
 
 @media (max-width: 768px) {
   .dashboard-sections {
-    justify-content: flex-start;
-    overflow-x: auto;
-    padding: 5px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 5px;
+    overflow-x: visible;
   }
 
   .dashboard-section {
-    padding: 8px 12px;
+    flex: 1 0 calc(33.333% - 10px); /* This will create a 3-column layout */
+    max-width: calc(33.333% - 10px);
+    margin: 5px;
+    padding: 8px 5px;
     font-size: 0.9rem;
-    margin: 0 3px;
   }
 
   .pagetitle {
@@ -567,7 +571,8 @@ a .stage-actions input {
 
 @media (max-width: 480px) {
   .dashboard-section {
-    padding: 6px 10px;
+    flex: 1 0 calc(50% - 10px); /* This will create a 2-column layout for very small screens */
+    max-width: calc(50% - 10px);
     font-size: 0.8rem;
   }
 
