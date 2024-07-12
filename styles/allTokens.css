@@ -153,6 +153,7 @@ body {
   align-items: center;
   width: 100%;
   padding: 0;
+  color: var(--primary-dark);
 }
 
 .meme-header h3 {
@@ -238,10 +239,6 @@ body {
     width: 100% !important;
     margin-bottom: 10px !important;
     padding: 10px 5px !important;
-  }
-
-  .meme-header h3 {
-    font-size: 1rem !important;
   }
 
   .meme-details {
@@ -552,5 +549,15 @@ body.dark-mode .progress {
 
   .token-type-button {
     width: 100%;
+  }
+
+  .blockchain-dropdown {
+    width: 60%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 2px solid var(--primary-light);
+    border-radius: 4px;
+    background-color: var(--background-light);
+    color: var(--foreground-light);
   }
 }

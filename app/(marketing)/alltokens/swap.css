@@ -1,381 +1,32 @@
 :root {
   --background-light: #ffffff;
   --foreground-light: #000000;
-  --primary-light: #04c44e; /* Pink */
-  --secondary-light: #b80f5e; /* Green */
-  --primary-light: #04c44e; /* Pink */
-  --accent-light: #04c44e; /* Dark Green */
+  --primary-light: #04c44e;
+  --secondary-light: #b80f5e;
+  --accent-light: #04c44e;
   --border-light: #04c44e;
   --text-light: #000000;
-
   --input-light: #e3e4e6;
-  --input-dark: #1a1a2e;
 
   --background-dark: #000000;
   --foreground-dark: #ffffff;
-  --primary-dark: #df1584; /* Pink */
-  --secondary-dark: #41b80a; /* Green */
-  --accent-dark: #41b80a; /* Dark Green */
+  --primary-dark: #df1584;
+  --secondary-dark: #41b80a;
+  --accent-dark: #41b80a;
   --border-dark: #41b80a;
   --text-dark: #ffffff;
+  --input-dark: #1a1a2e;
 }
 
 body {
-  background-color: var(--background-light) !important;
-  color: var(--foreground-light) !important;
-  font-family: Arial, sans-serif !important;
+  background-color: var(--background-light);
+  color: var(--foreground-light);
+  font-family: Arial, sans-serif;
 }
 
 .dark body {
-  background-color: var(--background-dark) !important;
-  color: var(--foreground-dark) !important;
-}
-
-.swap-container {
-  width: 100%;
-  max-width: 600px;
-  margin: 50px auto;
-  padding: 10px 20px 20px 20px;
-  background-color: var(--background-light);
-  border: 2px solid var(--border-light);
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.dark .swap-container {
   background-color: var(--background-dark);
-  border: 2px solid var(--border-dark);
-}
-
-.page-title {
-  text-align: center;
-  font-size: 2rem;
-  color: var(--primary-light);
-  margin-bottom: 20px;
-}
-
-.disclaimer {
-  text-align: center;
-  font-size: 1.3rem;
-  color: var(--primary-light);
-  margin-top: 30px;
-}
-.dark .page-title {
-  color: var(--primary-dark);
-}
-
-.swap-card {
-  display: flex;
-  flex-direction: column;
-}
-
-.token-section,
-.swap-field {
-  border: 1px solid var(--border-light);
-  border-radius: 5px;
-  padding: 10px 0 10px 10px;
-  margin-bottom: 10px;
-}
-
-.dark .token-section,
-.dark .swap-field {
-  border: 1px solid var(--border-dark);
-}
-
-.token-section label,
-.swap-field label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-
-.token-amount-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.input-field {
-  background-color: var(--input-light);
-  border: none;
-  border-radius: 5px;
-  color: var(--foreground-light);
-  padding: 10px;
-  flex: 1;
-}
-
-.dark .input-field {
-  background-color: var(--input-dark);
   color: var(--foreground-dark);
-}
-
-.input-field-with-price {
-  padding-top: 2px; /* Add padding to the top */
-  padding-bottom: 20px; /* Add padding to the bottom */
-  padding-left: 10px; /* Add padding to the left */
-  width: 100%;
-}
-
-.amount-container,
-.amount-containerTo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  position: relative;
-  width: 100%; /* Ensure both containers have the same width */
-  height: 60px; /* Ensure both containers have the same height */
-}
-
-.amount-container .amount-containerTo input {
-  margin-top: 5px;
-  width: 100px;
-}
-
-.amount-input-with-price {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  width: 65%;
-  margin-right: 0.5rem;
-  align-items: flex-start;
-  background-color: var(
-    --input-light
-  ); /* Ensure background color is consistent */
-}
-
-.dark .amount-input-with-price {
-  background-color: var(
-    --input-dark
-  ); /* Ensure background color is consistent */
-}
-
-.amount-input-with-price .input-field-with-price {
-  padding-top: 2px;
-  padding-bottom: 25px;
-  padding-left: 10px; /* Add padding to the left */
-  margin-left: 10px;
-  width: 100%;
-  background-color: var(
-    --input-light
-  ); /* Ensure background color is consistent */
-  color: var(--foreground-light); /* Ensure text color is consistent */
-}
-
-.dark .amount-input-with-price .input-field-with-price {
-  background-color: var(
-    --input-dark
-  ); /* Ensure background color is consistent */
-  color: var(--foreground-dark); /* Ensure text color is consistent */
-}
-
-/* Hide the up/down arrows in the number input for Chrome, Safari, Edge, and Opera */
-.amount-input-with-price input[type="number"]::-webkit-outer-spin-button,
-.amount-input-with-price input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none !important;
-  margin: 0 !important;
-}
-
-/* Hide the up/down arrows in the number input for Firefox */
-.amount-input-with-price input[type="number"] {
-  -moz-appearance: textfield !important;
-  appearance: textfield !important; /* Added this line for broader compatibility */
-}
-
-/* Remove white border on focus */
-.amount-input-with-price input[type="number"]:focus {
-  outline: none;
-  border: none;
-  box-shadow: none;
-}
-
-.quick-select-buttons {
-  display: flex;
-  justify-content: space-between;
-  width: 85%;
-  position: absolute;
-  top: -35px;
-}
-
-.quick-select-buttons button {
-  padding: 3px 3px;
-  background-color: var(--primary-light);
-  border: none;
-  border-radius: 5px;
-  color: var(--text-light);
-  font-size: 12px;
-  cursor: pointer;
-  flex: 1;
-  margin: 0 4px;
-}
-.quick-select-buttons button:hover {
-  background-color: var(--secondary-light);
-}
-
-.dark .quick-select-buttons button {
-  background-color: var(--primary-dark);
-}
-
-.dark .quick-select-buttons button:hover {
-  background-color: var(--secondary-dark);
-}
-
-.reverse-button-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-  margin-top: 10px;
-}
-
-.reverse-button {
-  background-color: var(--primary-light);
-  border: none;
-  border-radius: 50%;
-  color: var(--text-light);
-  cursor: pointer;
-  font-size: 1.5rem;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.reverse-button:hover {
-  background-color: var(--secondary-light);
-}
-
-.dark .reverse-button {
-  background-color: var(--primary-dark);
-}
-
-.dark .reverse-button:hover {
-  background-color: var(--secondary-dark);
-}
-
-.swap-field input {
-  width: 100%;
-  padding: 10px;
-  border: 10px solid var(--border-light);
-  border-radius: 5px;
-}
-
-.dark .swap-field input {
-  border: 1px solid var(--border-dark);
-}
-
-.swap-summary {
-  text-align: left;
-  margin-left: 2rem;
-  font-size: x-small;
-}
-
-.swap-summary p {
-  margin: 5px 0;
-  color: var(--secondary-light);
-}
-
-.dark .swap-summary p {
-  color: var(--secondary-dark);
-}
-
-.swap-button {
-  padding: 10px 20px;
-  background-color: var(--primary-light);
-  border: none;
-  border-radius: 5px;
-  color: var(--text-light);
-  cursor: pointer;
-  font-size: 1rem;
-  margin-top: 5px;
-}
-
-.swap-button:hover {
-  background-color: var(--secondary-light);
-}
-
-.dark .swap-button {
-  background-color: var(--primary-dark);
-}
-
-.dark .swap-button:hover {
-  background-color: var(--secondary-dark);
-}
-
-.price-info {
-  position: absolute;
-  bottom: 5px; /* Position the price at the bottom of the input field */
-  left: 10px; /* Adjust to push the price to the left */
-  font-size: 14px;
-  color: var(--secondary-light);
-  margin-left: 0.5rem;
-}
-
-.dark .price-info {
-  color: var(--secondary-dark);
-}
-
-.quick-select-buttonsTo {
-  display: none;
-}
-
-@media screen and (max-width: 620px) {
-  .quick-select-buttonsTo {
-    display: none;
-  }
-  .swap-container {
-    width: calc(100% - 40px);
-    padding: 20px;
-    margin: 20px auto;
-  }
-  .quick-select-buttons {
-    display: flex;
-    justify-content: space-between;
-    width: 60%;
-    position: relative;
-    top: -24px;
-    margin-right: 1.5rem;
-  }
-
-  .disclaimer {
-    text-align: center;
-    font-size: 1rem;
-    color: var(--primary-light);
-    margin-top: 20px;
-    width: 100%;
-    margin: 0 auto;
-  }
-
-  .amount-container {
-    top: -18px;
-  }
-
-  .amount-containerTo {
-    top: -32px;
-    height: 25px; /* Adjust height for mobile */
-    /*width: 85%;  Adjust width for mobile */
-  }
-
-  .quick-select-buttons button {
-    padding: 3px 3px;
-    background-color: var(--primary-light);
-    border: none;
-    border-radius: 5px;
-    color: var(--text-light);
-    font-size: 10px;
-    cursor: pointer;
-    flex: 1;
-    margin: 0 3px;
-  }
-  .amount-input-with-price {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    width: 80%;
-    margin-right: 0rem;
-    align-items: flex-start;
-  }
 }
 
 .swap-modal {
@@ -383,8 +34,7 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: white;
-  padding: 20px;
+  padding: 2px;
   border-radius: 10px;
   max-width: 500px;
   width: 90%;
@@ -400,4 +50,115 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.swap-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: var(--background-light);
+  border: 4px solid var(--border-light);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark .swap-container {
+  background-color: var(--background-dark);
+  border-color: var(--border-dark);
+}
+
+.page-title {
+  text-align: center;
+  font-size: 2rem;
+  color: var(--primary-light);
+  margin-bottom: 20px;
+}
+
+.dark .page-title {
+  color: var(--primary-dark);
+}
+
+.token-section {
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.dark .token-section {
+  border-color: var(--border-dark);
+}
+
+.token-section label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.token-amount-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.input-field,
+.input-field-with-price {
+  width: 60%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--input-light);
+  color: var(--foreground-light);
+}
+
+.dark .input-field,
+.dark .input-field-with-price {
+  background-color: var(--input-dark);
+  color: var(--foreground-dark);
+}
+
+.swap-summary {
+  margin-top: 20px;
+  font-size: 0.9rem;
+}
+
+.swap-summary p {
+  margin: 5px 0;
+  color: var(--secondary-light);
+}
+
+.dark .swap-summary p {
+  color: var(--secondary-dark);
+}
+
+.swap-button {
+  width: 100%;
+  padding: 10px 20px;
+  background-color: var(--primary-light);
+  border: none;
+  border-radius: 5px;
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 20px;
+}
+
+.dark .swap-button {
+  background-color: var(--primary-dark);
+  color: var(--text-dark);
+}
+
+.swap-button:hover {
+  background-color: var(--secondary-light);
+}
+
+.dark .swap-button:hover {
+  background-color: var(--secondary-dark);
+}
+
+.error-message {
+  color: #ff0000;
+  margin-top: 10px;
+  text-align: center;
 }

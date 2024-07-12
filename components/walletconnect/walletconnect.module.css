@@ -5,7 +5,7 @@
 .nav {
   position: relative;
   height: 10vh;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 
 .navbar {
@@ -17,7 +17,7 @@
   top: 0;
   z-index: 11;
   height: 48.333px;
-  margin-top: 40px;
+  margin-top: 5px;
 }
 
 .navbarLi {

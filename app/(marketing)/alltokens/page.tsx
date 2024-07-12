@@ -239,6 +239,7 @@ const Dashboard = () => {
   const openModal = (token) => {
     setSelectedToken(token)
     setModalIsOpen(true)
+    setSwapAmount("1")
     calculateEstimatedOutput("1")
   }
 
@@ -251,7 +252,7 @@ const Dashboard = () => {
 
   const calculateEstimatedOutput = (amount) => {
     if (!selectedToken || !selectedToken.dexInfo || !amount || isNaN(amount)) {
-      setEstimatedOutput("0")
+      setEstimatedOutput("0.00")
       return
     }
 
@@ -264,16 +265,26 @@ const Dashboard = () => {
         .mul(ethers.constants.WeiPerEther)
         .div(safeMemePrice)
 
-      setEstimatedOutput(ethers.utils.formatEther(safeMemeToReceive))
+      setEstimatedOutput(
+        Number(ethers.utils.formatEther(safeMemeToReceive)).toFixed(2)
+      )
     } catch (error) {
       console.error("Error calculating estimated output:", error)
-      setEstimatedOutput("0")
+      setEstimatedOutput("0.00")
     }
   }
 
+  useEffect(() => {
+    if (selectedToken && modalIsOpen) {
+      calculateEstimatedOutput(swapAmount)
+    }
+  }, [selectedToken, modalIsOpen])
+
   const handleAmountChange = (e) => {
-    setSwapAmount(e.target.value)
-    calculateEstimatedOutput(e.target.value)
+    const value = e.target.value
+    const numericValue = value.replace(/,/g, "").match(/^\d*\.?\d{0,2}/)[0]
+    setSwapAmount(numericValue)
+    calculateEstimatedOutput(numericValue)
   }
 
   const handleSwap = async () => {
@@ -304,30 +315,23 @@ const Dashboard = () => {
         signer
       )
 
-      // Convert swapAmount to wei
       const tokenBAmount = ethers.utils.parseEther(swapAmount)
-
-      // Check if the user has approved enough Token B
       const allowance = await tokenBContract.allowance(
         address,
         selectedToken.dexInfo.address
       )
       if (allowance.lt(tokenBAmount)) {
-        // If not, request approval
         const approveTx = await tokenBContract.approve(
           selectedToken.dexInfo.address,
           tokenBAmount
         )
         await approveTx.wait()
       }
-
-      // Call buyTokens function on the DEX contract
       const buyTokensTx = await dexContract.buyTokens(tokenBAmount)
       await buyTokensTx.wait()
 
       console.log("Swap successful!")
 
-      // Refresh token data or update UI as needed
       fetchAllTokens()
       closeModal()
     } catch (error) {
@@ -336,6 +340,19 @@ const Dashboard = () => {
     } finally {
       setIsSwapping(false)
     }
+  }
+
+  function formatAmount(amount) {
+    if (amount === null || amount === undefined) return ""
+
+    const numAmount = Number(amount)
+
+    if (isNaN(numAmount)) return amount
+
+    return numAmount.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
   }
 
   const renderTokens = () => {
@@ -387,13 +404,14 @@ const Dashboard = () => {
               </p>
               {token.dexInfo && (
                 <>
-                  <h4>DEX Information</h4>
+                  <div className="meme-header">
+                    <h4>SafeLaunch Information</h4>
+                  </div>
                   <p>
                     <strong>Current Stage:</strong> {token.dexInfo.currentStage}
                   </p>
                   <p>
-                    <strong>Token B:</strong> {token.dexInfo.tokenBName} (
-                    {token.dexInfo.tokenBSymbol})
+                    <strong>Token B:</strong> {token.dexInfo.tokenBName}
                   </p>
                   <p>
                     <strong>Token B Address:</strong>{" "}
@@ -421,12 +439,16 @@ const Dashboard = () => {
                 </>
               )}
             </div>
-            <button
-              className="buy-token-button"
-              onClick={() => openModal(token)}
-            >
-              Buy {token.name}
-            </button>
+            {token.dexInfo &&
+              token.dexInfo.safeLaunchActivated &&
+              token.dexInfo.tokenBSet && (
+                <button
+                  className="buy-token-button"
+                  onClick={() => openModal(token)}
+                >
+                  Buy {token.name}
+                </button>
+              )}
           </div>
         ))}
       </div>
@@ -494,16 +516,16 @@ const Dashboard = () => {
                   disabled
                   className="input-field"
                 />
-                <div className="amount-container">
-                  <div className="amount-input-with-price">
+                <div>
+                  <div>
                     <input
-                      type="number"
+                      type="text"
                       id="amount"
                       value={swapAmount}
                       onChange={handleAmountChange}
                       placeholder="Amount"
                       className="input-field-with-price"
-                      inputMode="numeric"
+                      inputMode="decimal"
                     />
                   </div>
                 </div>
@@ -520,15 +542,15 @@ const Dashboard = () => {
                   disabled
                   className="input-field"
                 />
-                <div className="amount-containerTo">
-                  <div className="amount-input-with-price">
+                <div>
+                  <div>
                     <input
-                      type="number"
+                      type="text"
                       id="estimatedOutput"
-                      value={estimatedOutput}
+                      value={formatAmount(estimatedOutput)}
                       disabled
                       className="input-field-with-price"
-                      inputMode="numeric"
+                      inputMode="decimal"
                     />
                   </div>
                 </div>
@@ -537,11 +559,12 @@ const Dashboard = () => {
             <div className="swap-summary">
               <p>
                 Exchange Rate: 1 {selectedToken?.dexInfo?.tokenBSymbol} ={" "}
-                {estimatedOutput} {selectedToken?.symbol}
+                {formatAmount(estimatedOutput)} {selectedToken?.symbol}
               </p>
               <p>Current Stage: {selectedToken?.dexInfo?.currentStage}</p>
               <p>
-                SafeMeme Remaining: {selectedToken?.dexInfo?.safeMemeAvailable}
+                SafeMeme Remaining:{" "}
+                {formatAmount(selectedToken?.dexInfo?.safeMemeAvailable)}
               </p>
             </div>
             <button
