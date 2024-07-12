@@ -6,7 +6,7 @@
   --accent-light: #04c44e;
   --border-light: #04c44e;
   --text-light: #000000;
-
+  --primary-dark-transparent: rgba(223, 21, 132, 0.3);
   --input-light: #e3e4e6;
   --input-dark: #1a1a2e;
 
@@ -89,8 +89,14 @@ body {
 .pagetitle {
   text-align: center;
   font-size: 2.5rem;
-  color: var(--primary-light);
+  color: rgba(4, 196, 78, 0.2);
   margin-bottom: 20px;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.dashboard.active .pagetitle {
+  color: rgb(4, 196, 78);
+  text-shadow: 0 0 10px rgba(4, 196, 78, 0.5);
 }
 
 .subheading {
@@ -254,10 +260,6 @@ body {
 @media (max-width: 768px) {
   .dashboard {
     max-width: 100% !important;
-  }
-
-  .pagetitle {
-    font-size: 1.5rem !important;
   }
 
   .meme {
@@ -472,53 +474,62 @@ a .stage-actions input {
 
 .dashboard-sections {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   width: 100%;
+  border-bottom: 2px solid #333;
   margin-bottom: 20px;
+  padding: 10px 0;
+  overflow-x: auto;
 }
-
 .dashboard-section {
-  padding: 10px;
-  margin: 10px;
-  background-color: #222; /* Darker background for sections */
-  color: #444; /* Dimmed text color */
-  border: 1px solid #333; /* Darker border */
+  padding: 10px 20px;
+  margin: 0 5px;
+  background-color: #222;
+  color: #aaa;
+  border: 2px solid var(--primary-dark-transparent);
+  transition: all 0.3s ease, border-color 0.3s ease;
+  border-radius: 5px;
   cursor: pointer;
-  transition: all 0.3s, background-color 1s, color 1s, box-shadow 1s;
+  transition: all 0.3s ease;
   text-align: center;
+  white-space: nowrap;
+  opacity: 0.7;
+  box-shadow: 0 0 5px rgba(223, 21, 132, 0.2);
 }
 
 .dashboard-section.selected,
-.dashboard.active .dashboard-section:hover {
-  background-color: #555;
+.dashboard.active .dashboard-section:hover,
+.dashboard.active .dashboard-section.selected {
+  background-color: var(--primary-dark);
   color: #fff;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  opacity: 1;
+  box-shadow: 0 0 15px rgba(223, 21, 132, 0.8);
 }
 
 .section-content {
   width: 100%;
   padding: 20px;
-  background-color: #111; /* Darker background for content */
-  color: #888; /* Dimmed text color for content */
-  transition: background-color 0.3s, color 0.3s;
+  color: #888;
+  border-radius: 5px;
+  transition: all 0.3s ease;
 }
 
 .dashboard.active .section-content {
-  color: #000; /* Normal text color when connected */
+  color: #fff;
 }
 
 .dashboard.active .dashboard-section {
-  background-color: #333; /* Lighter background for sections when connected */
-  color: #aaa; /* Brighter text color when connected */
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5); /* Soft glow effect */
+  background-color: #333;
+  opacity: 1;
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 10px rgba(223, 21, 132, 0.5);
 }
 
 .dashboard.active .dashboard-section.selected {
-  background-color: #555;
+  background-color: var(--primary-light);
   color: #fff;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  box-shadow: 0 -3px 10px rgba(255, 255, 255, 0.1);
 }
-
 /* Animation for turning lights on */
 @keyframes fadeIn {
   from {
@@ -528,5 +539,40 @@ a .stage-actions input {
   to {
     background-color: #333;
     color: #aaa;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-sections {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding: 5px 0;
+  }
+
+  .dashboard-section {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    margin: 0 3px;
+  }
+
+  .pagetitle {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+  }
+
+  .section-content {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-section {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .pagetitle {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
   }
 }

@@ -351,6 +351,28 @@ const SafeLaunch: React.FC = () => {
     }
   }
 
+  useEffect(() => {
+    const handleAccountsChanged = (accounts: string[]) => {
+      if (accounts.length > 0) {
+        setIsConnected(true)
+        setUserAddress(accounts[0])
+      } else {
+        setIsConnected(false)
+        setUserAddress("")
+      }
+    }
+
+    if (typeof window.ethereum !== "undefined") {
+      window.ethereum.on("accountsChanged", handleAccountsChanged)
+    }
+
+    return () => {
+      if (typeof window.ethereum !== "undefined") {
+        window.ethereum.removeListener("accountsChanged", handleAccountsChanged)
+      }
+    }
+  }, [])
+
   const setTokenBAmount = async (
     tokenAddress: string,
     tokenBAddress: string,
@@ -708,7 +730,7 @@ const SafeLaunch: React.FC = () => {
               activeSection === "SafeMemesNotLaunched" ? "selected" : ""
             }`}
           >
-            <h2>SafeMemes Not Launched</h2>
+            <h2>SafeMemes</h2>
           </div>
           <div
             onClick={() => handleSectionClick("SafeMemes")}
@@ -733,6 +755,14 @@ const SafeLaunch: React.FC = () => {
             }`}
           >
             <h2>Create Airdrop</h2>
+          </div>
+          <div
+            onClick={() => handleSectionClick("CreateAirdrop")}
+            className={`dashboard-section ${
+              activeSection === "CreateAirdrop" ? "selected" : ""
+            }`}
+          >
+            <h2>Followers</h2>
           </div>
         </div>
 

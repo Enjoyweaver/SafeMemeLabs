@@ -170,7 +170,7 @@ input[type="number"] {
 }
 
 .input-section input {
-  width: 100px;
+  width: 150px;
   padding: 5px;
   margin-bottom: 5px;
   border: 1px solid var(--border-light);

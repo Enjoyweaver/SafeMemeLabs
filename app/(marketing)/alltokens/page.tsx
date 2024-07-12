@@ -63,10 +63,15 @@ export default function AllTokens(): JSX.Element {
   const [tokenBAmount, setTokenBAmount] = useState<string>("1")
   const [safeMemeAmount, setSafeMemeAmount] = useState<string>("0")
   const [exchangeRate, setExchangeRate] = useState<number>(0)
-  const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
+  const [web3Provider, setWeb3Provider] =
+    useState<ethers.providers.Web3Provider | null>(null)
 
   const [userAddress, setUserAddress] = useState<string>("")
-
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.ethereum) {
+      setWeb3Provider(new ethers.providers.Web3Provider(window.ethereum))
+    }
+  }, [])
   const provider = new ethers.providers.JsonRpcProvider(rpcUrls["4002"])
 
   const tokenFactoryContract = new ethers.Contract(
