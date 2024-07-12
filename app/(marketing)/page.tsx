@@ -39,13 +39,6 @@ export default async function IndexPage() {
     <>
       <section className="quando-regular lg:py-15 space-y-2 pb-8 pt-2 md:pb-12 md:pt-10">
         <div className="container flex max-w-5xl flex-col items-center gap-4 text-center">
-          <Link
-            href={siteConfig.links.twitter}
-            className="rounded-2xl bg-muted px-4 py-1.5 text-sm font-medium"
-            target="_blank"
-          >
-            Follow us on Twitter
-          </Link>
           <div className="container relative flex max-w-[40rem] flex-col items-center gap-4">
             <video autoPlay loop muted style={{ borderRadius: "20px" }}>
               <source src="/images/logo.mp4" type="video/mp4" />
@@ -53,7 +46,7 @@ export default async function IndexPage() {
             </video>
           </div>
           <p className="max-w-2xl leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-            Creating a safe meme economy
+            Building the tools for you to create the safe meme economy
           </p>
         </div>
       </section>
@@ -62,26 +55,31 @@ export default async function IndexPage() {
         id="about"
         className="quando-regular container space-y-6 bg-slate-50 py-8 dark:bg-transparent md:py-12 lg:py-24"
       >
-        <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
+        <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
           <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
             About
           </h2>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-            We create safe memes according to guidelines and standards that are
-            transparently displayed in the{" "}
-            <a href="../docs" className="underline underline-offset-4">
-              SafeMeme Laboratory
-            </a>
-            . We are blockchain agnostic and will be developing a diverse
-            portfolio of safe memes on various blockchains over time that will
-            be listed in the SafeMeme Laboratory as they are created.
+            We build the tools for you to create your own safe meme economy.
+            From allowing you to create rugproof tokens, funding them through a
+            SafeLaunch, creating frames on Warpcast, creating token airdrops,
+            and to even creating NFT launches. You'll even be able to create
+            your own profile so that you can build your brand and reward your
+            followers along the way
           </p>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-            The guidelines and standards were established so that we can ensure
-            a safe meme economy and that you can confidently purchase memes
-            without fear of being rugpulled or losing your tokens value through
-            any manipulation. As we grow and develop over time, so will our
-            guidelines and the tooling that we use, though we have a{" "}
+            We are blockchain agnostic and will be developing a diverse
+            portfolio of tools on various blockchains over time that will be
+            listed in the SafeMeme Laboratory as they are created. Our
+            guidelines and standards are transparently displayed in the{" "}
+            <a href="../docs" className="underline underline-offset-4">
+              SafeMeme Laboratory
+            </a>{" "}
+            and were established so that we can ensure a safe meme economy and
+            that you can confidently build without fear of being rugpulled or
+            losing your tokens value through any manipulation. As we grow and
+            develop over time, so will our guidelines and the tooling that we
+            build, though we have a{" "}
             <a href="../blog" className="underline underline-offset-4">
               blog
             </a>{" "}
@@ -133,6 +131,15 @@ export default async function IndexPage() {
               </div>
             </Link>
           )}
+          <div className="container relative flex max-w-[40rem] flex-col items-center ">
+            <Link
+              href={siteConfig.links.twitter}
+              className="rounded-2xl bg-muted px-4 py-1.5 text-sm font-medium"
+              target="_blank"
+            >
+              Follow us on Twitter
+            </Link>
+          </div>
         </div>
       </section>
     </>
