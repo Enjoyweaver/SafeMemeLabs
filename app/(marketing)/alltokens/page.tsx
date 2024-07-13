@@ -148,6 +148,7 @@ const Dashboard = () => {
       const tokenBSet = tokenBAddress !== ethers.constants.AddressZero
       const stageAmountSet = stageSet && !stagetokenBAmount.isZero()
       const safeLaunchActivated = tokenBSet && stageAmountSet
+      const exchangeRate = 1 / ethers.utils.formatUnits(safeMemePrice, 18)
 
       return {
         address: dexAddress,
@@ -166,6 +167,7 @@ const Dashboard = () => {
         safeLaunchActivated,
         tokenBSet,
         stageAmountSet,
+        exchangeRate: exchangeRate.toFixed(2),
       }
     } catch (error) {
       console.error("Error fetching DEX info:", error)
@@ -611,7 +613,7 @@ const Dashboard = () => {
                     <input
                       type="text"
                       id="estimatedOutput"
-                      value={formatAmount(estimatedOutput)}
+                      value={estimatedOutput}
                       disabled
                       className="input-field-with-price"
                       inputMode="decimal"
