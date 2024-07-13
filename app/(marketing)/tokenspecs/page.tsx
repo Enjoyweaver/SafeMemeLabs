@@ -146,10 +146,10 @@ export default function Dashboard(): JSX.Element {
             )
 
             tokenBPairing = await exchangeContract.tokenBAddress()
-            const currentStage = await exchangeContract.getCurrentStage()
-            stage = currentStage.toString()
+            const stageInfo = await exchangeContract.getCurrentStage()
+            stage = (parseInt(stageInfo[0]) + 1).toString()
             isSafeLaunchActive = await exchangeContract.safeLaunchComplete()
-            isFinalized = isSafeLaunchActive && currentStage.toNumber() === 5
+            isFinalized = isSafeLaunchActive && stageInfo.toNumber() === 5
 
             const balance = await tokenContract.balanceOf(dexAddress)
             exchangeBalance = ethers.utils.formatUnits(balance, 18)

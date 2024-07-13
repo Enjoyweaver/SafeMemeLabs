@@ -190,13 +190,12 @@ const SafeLaunch: React.FC = () => {
         tokenB = await exchangeContract.tokenBAddress()
         currentStage = await exchangeContract.currentStage()
         lockedTokens = await exchangeContract.getsafeMemesAvailable()
-        safeMemeForSale = await exchangeContract.getsafeMemesSold()
+        safeMemeForSale = await exchangeContract.salesafeMeme()
         stageInfo = await fetchStageInfo(
           exchangeContract,
           currentStage,
           totalSupply
         )
-
         tokenBAmountSet = await exchangeContract.stageSet(currentStage)
       }
 
@@ -834,8 +833,7 @@ const SafeLaunch: React.FC = () => {
                       </p>
                       <p>
                         <strong>Max Wallet Amount:</strong>{" "}
-                        {parseFloat(token.maxTokens).toLocaleString()}{" "}
-                        {token.symbol}
+                        {parseFloat(token.maxTokens).toLocaleString()}
                       </p>
                       {!token.safeLaunchInitialized && (
                         <p>

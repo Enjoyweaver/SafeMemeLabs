@@ -4,7 +4,13 @@ import { useEffect, useState } from "react"
 import { ExchangeABI } from "@/ABIs/SafeLaunch/Exchange"
 import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
-import { chains, rpcUrls, safeLaunchFactory } from "@/Constants/config"
+import {
+  blockExplorerAddress,
+  blockExplorerToken,
+  chains,
+  rpcUrls,
+  safeLaunchFactory,
+} from "@/Constants/config"
 import { ethers } from "ethers"
 import Modal from "react-modal"
 import { useAccount, useConnect, useNetwork, useWalletClient } from "wagmi"
@@ -134,8 +140,15 @@ const Dashboard = () => {
           dexContract.tokenBSymbol(),
         ])
 
-      const [stage, stagetokenBAmount, safeMemePrice, safeMemeRemaining] =
+      const [stage, stagetokenBAmount, safeMemePrice, safeMemeRemainingRaw] =
         await dexContract.getCurrentStage()
+
+      // Convert safeMemeRemainingRaw from its raw value to a readable format
+      // Assuming safeMemeRemainingRaw is a BigNumber and in the smallest unit
+      const safeMemeRemaining = ethers.utils.formatUnits(
+        safeMemeRemainingRaw,
+        18
+      )
 
       const [
         tokenBReceived,
@@ -148,7 +161,7 @@ const Dashboard = () => {
       const tokenBSet = tokenBAddress !== ethers.constants.AddressZero
       const stageAmountSet = stageSet && !stagetokenBAmount.isZero()
       const safeLaunchActivated = tokenBSet && stageAmountSet
-      const exchangeRate = 1 / ethers.utils.formatUnits(safeMemePrice, 18)
+      const exchangeRate = safeMemePrice
 
       return {
         address: dexAddress,
@@ -158,7 +171,7 @@ const Dashboard = () => {
         tokenBSymbol,
         stageTokenBAmount: ethers.utils.formatEther(stagetokenBAmount),
         safeMemePrices: ethers.utils.formatEther(safeMemePrice),
-        safeMemeAvailable: ethers.utils.formatEther(safeMemeRemaining),
+        safeMemeAvailable: safeMemeRemaining,
         tokenBReceived: ethers.utils.formatEther(tokenBReceived),
         soldSafeMeme: ethers.utils.formatEther(soldSafeMeme),
         stageRemainingSafeMeme: ethers.utils.formatEther(
@@ -167,7 +180,7 @@ const Dashboard = () => {
         safeLaunchActivated,
         tokenBSet,
         stageAmountSet,
-        exchangeRate: exchangeRate.toFixed(2),
+        exchangeRate: exchangeRate,
       }
     } catch (error) {
       console.error("Error fetching DEX info:", error)
@@ -292,21 +305,19 @@ const Dashboard = () => {
 
     try {
       const tokenBAmount = ethers.utils.parseEther(amount)
-      const safeMemePrice = ethers.utils.parseEther(
-        selectedToken.dexInfo.safeMemePrices
+      const safeMemePrice = ethers.BigNumber.from(
+        ethers.utils.parseUnits(selectedToken.dexInfo.safeMemePrices)
       )
-      const safeMemeToReceive = tokenBAmount
-        .mul(ethers.constants.WeiPerEther)
-        .div(safeMemePrice)
+      const safeMemeToReceive = tokenBAmount.mul(safeMemePrice)
 
       setEstimatedOutput(
         Number(ethers.utils.formatEther(safeMemeToReceive)).toFixed(2)
       )
 
-      // Calculate exchange rate for 1 Token B
       const exchangeRateValue = ethers.constants.WeiPerEther.mul(
-        ethers.constants.WeiPerEther
-      ).div(safeMemePrice)
+        safeMemePrice
+      ).div(ethers.constants.WeiPerEther)
+
       setExchangeRate(
         Number(ethers.utils.formatEther(exchangeRateValue)).toFixed(2)
       )
@@ -405,10 +416,12 @@ const Dashboard = () => {
       return numAmount.toFixed(2)
     }
 
-    return numAmount.toLocaleString("en-US", {
-      minimumFractionDigits: 2,
+    const formattedAmount = numAmount.toLocaleString("en-US", {
+      minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     })
+
+    return formattedAmount
   }
 
   const renderTokens = () => {
@@ -446,22 +459,39 @@ const Dashboard = () => {
               </p>
               <p>
                 <strong>Address:</strong>{" "}
-                {`${token.address.slice(0, 6)}...${token.address.slice(-6)}`}
+                <a
+                  href={`${blockExplorerToken[token.chainId || ""]}${
+                    token.address
+                  }`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {`${token.address.slice(0, 6)}...${token.address.slice(-6)}`}{" "}
+                </a>
               </p>
               <p>
-                <strong>Total Supply:</strong> {token.totalSupply}
+                <strong>Total Supply:</strong> {formatAmount(token.totalSupply)}
               </p>
               <p>
                 <strong>Owner:</strong>{" "}
-                {`${token.owner.slice(0, 6)}...${token.owner.slice(-6)}`}
+                <a
+                  href={`${blockExplorerAddress[token.chainId || ""]}${
+                    token.owner
+                  }`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {`${token.owner.slice(0, 6)}...${token.owner.slice(-6)}`}
+                </a>
               </p>
+
               <p>
                 <strong>Anti-Whale Percentage:</strong>{" "}
                 {(token.antiWhalePercentage / 100).toFixed(2)}%
               </p>
               <p>
-                <strong>Max Wallet Amount:</strong> {token.maxWalletAmount}{" "}
-                {token.symbol}
+                <strong>Max Wallet Amount:</strong>{" "}
+                {formatAmount(token.maxWalletAmount)}
               </p>
               {token.dexInfo && (
                 <>
@@ -469,18 +499,52 @@ const Dashboard = () => {
                     <h4>SafeLaunch Information</h4>
                   </div>
                   <p>
-                    <strong>Current Stage:</strong> {token.dexInfo.currentStage}
+                    <strong>DEX Address:</strong>{" "}
+                    <a
+                      href={`${blockExplorerAddress[token.chainId || ""]}${
+                        token.dexInfo.address
+                      }`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {`${token.dexInfo.address.slice(
+                        0,
+                        6
+                      )}...${token.dexInfo.address.slice(-6)}`}
+                    </a>
                   </p>
                   <p>
-                    <strong>Token B:</strong> {token.dexInfo.tokenBName}
+                    <strong>Current Stage:</strong>{" "}
+                    {token.dexInfo.currentStage + 1}
+                  </p>
+                  <p>
+                    <strong>Token B:</strong>{" "}
+                    <a
+                      href={`${blockExplorerToken[token.chainId || ""]}${
+                        token.dexInfo.tokenBAddress
+                      }`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {token.dexInfo.tokenBName}
+                    </a>
                   </p>
                   <p>
                     <strong>Token B Address:</strong>{" "}
-                    {`${token.dexInfo.tokenBAddress.slice(
-                      0,
-                      6
-                    )}...${token.dexInfo.tokenBAddress.slice(-6)}`}
+                    <a
+                      href={`${blockExplorerToken[token.chainId || ""]}${
+                        token.dexInfo.tokenBAddress
+                      }`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {`${token.dexInfo.tokenBAddress.slice(
+                        0,
+                        6
+                      )}...${token.dexInfo.tokenBAddress.slice(-6)}`}
+                    </a>
                   </p>
+
                   <p>
                     <strong>Stage Token B Amount:</strong>{" "}
                     {token.dexInfo.stageTokenBAmount}
@@ -496,6 +560,10 @@ const Dashboard = () => {
                   <p>
                     <strong>Stage Amount Set:</strong>{" "}
                     {token.dexInfo.stageAmountSet ? "Yes" : "No"}
+                  </p>
+                  <p>
+                    <strong>SafeMemes Available:</strong>{" "}
+                    {token.dexInfo.safeMemeAvailable}
                   </p>
                 </>
               )}
