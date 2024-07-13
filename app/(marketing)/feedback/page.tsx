@@ -37,6 +37,11 @@ const FeedbackPage = () => {
   const [feedback, setFeedback] = useState(feedbackInitialState)
   const [checklistItems, setChecklistItems] = useState([
     {
+      text: "Integrate HNDL into the users profile",
+      completed: false,
+      status: "open",
+    },
+    {
       text: "Create SafeLaunch frontend to interact with SafeLaunch backend",
       completed: false,
       status: "open",
@@ -94,16 +99,6 @@ const FeedbackPage = () => {
       status: "open",
     },
     {
-      text: "Install brownie to deploy Vyper contracts",
-      completed: false,
-      status: "open",
-    },
-    {
-      text: "Update the swap contracts to Vyper",
-      completed: false,
-      status: "open",
-    },
-    {
       text: "Implement a secure method for storing private keys",
       completed: false,
       status: "open",
@@ -139,19 +134,29 @@ const FeedbackPage = () => {
       status: "open",
     },
     {
+      text: "Install harhat to deploy Vyper contracts",
+      completed: true,
+      status: "Completed",
+    },
+    {
+      text: "Update the swap contracts to Vyper",
+      completed: true,
+      status: "Completed",
+    },
+    {
       text: "Update token dashboard for all tokens created",
       completed: true,
-      status: "open",
+      status: "Completed",
     },
     {
       text: "Add popup swap in the token dashboard under each token",
       completed: true,
-      status: "open",
+      status: "Completed",
     },
     {
       text: "Create dashboard for created tokens",
       completed: true,
-      status: "open",
+      status: "Completed",
     },
     {
       text: "Create dashboard component showing first 100 $bubbles tokenholders that havent sold yet",
