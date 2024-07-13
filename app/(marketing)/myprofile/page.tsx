@@ -169,7 +169,7 @@ const SafeLaunch: React.FC = () => {
       const antiWhalePercentage = await tokenContract.antiWhalePercentage()
       const totalSupply = await tokenContract.totalSupply()
       const decimals = await tokenContract.decimals()
-      const maxTokens = totalSupply.mul(antiWhalePercentage).div(100)
+      const maxTokens = await tokenContract.getMaxWalletAmount()
       const dexAddress = await tokenContract.dexAddress()
       const safeLaunchInitialized = dexAddress !== ethers.constants.AddressZero
       const safeLaunchStarted =
@@ -196,8 +196,6 @@ const SafeLaunch: React.FC = () => {
           currentStage,
           totalSupply
         )
-
-        // Check if the tokenBAmount is set for the current stage
         tokenBAmountSet = await exchangeContract.stageSet(currentStage)
       }
 
@@ -219,7 +217,7 @@ const SafeLaunch: React.FC = () => {
         tokenB,
         currentStage,
         stageInfo,
-        tokenBAmountSet, // Add this line
+        tokenBAmountSet,
       }
     })
 
@@ -830,12 +828,13 @@ const SafeLaunch: React.FC = () => {
                         </a>
                       </p>
                       <p>
-                        <strong>Anti-Whale %:</strong>{" "}
-                        {token.antiWhalePercentage}%
+                        <strong>Anti-Whale Percentage:</strong>{" "}
+                        {(token.antiWhalePercentage / 100).toFixed(2)}%
                       </p>
                       <p>
-                        <strong>Max Tokens/Wallet:</strong>{" "}
-                        {parseFloat(token.maxTokens).toLocaleString()}
+                        <strong>Max Wallet Amount:</strong>{" "}
+                        {parseFloat(token.maxTokens).toLocaleString()}{" "}
+                        {token.symbol}
                       </p>
                       {!token.safeLaunchInitialized && (
                         <p>

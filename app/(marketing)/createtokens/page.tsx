@@ -107,12 +107,12 @@ export default function Factory(): JSX.Element {
     args: [
       dName,
       dSymbol,
-      dDecimals ? BigInt(Number(dDecimals)) : BigInt(18), // Convert decimals to bigint
+      dDecimals ? BigInt(Number(dDecimals)) : BigInt(18),
       BigInt(dSupply) * BigInt(10 ** (dDecimals ? Number(dDecimals) : 18)),
-      BigInt(Number(dAntiWhalePercentage)), // Convert antiWhalePercentage to bigint
+      BigInt(Math.floor(Number(dAntiWhalePercentage) * 100)),
     ],
-    value: deployFee, // Ensure this is a correct BigNumber
-    enabled: isConnected && isFormFilled() && Boolean(deployFee), // Only prepare if connected, form filled, and fee fetched
+    value: deployFee,
+    enabled: isConnected && isFormFilled() && Boolean(deployFee),
     cacheTime: 0,
     onError: (error) => {
       console.error("Error preparing contract write:", error)
@@ -286,13 +286,16 @@ export default function Factory(): JSX.Element {
                 <label className="inputTitle">Anti-Whale Percentage*</label>
                 <input
                   onKeyDown={(evt) =>
-                    ["e", "E", "+", "-", "."].includes(evt.key) &&
+                    ["e", "E", "+", "-"].includes(evt.key) &&
                     evt.preventDefault()
                   }
                   onChange={setAntiWhalePercentageInput}
                   className="tokenInput"
                   placeholder="3"
                   type="number"
+                  step="0.01"
+                  min="0.01"
+                  max="3"
                   value={antiWhalePercentage}
                 />
                 {!(

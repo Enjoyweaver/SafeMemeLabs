@@ -263,6 +263,30 @@ export const SafeMemeABI = [
   {
     stateMutability: "view",
     type: "function",
+    name: "getMaxWalletAmount",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getAntiWhalePercentage",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
     name: "name",
     inputs: [],
     outputs: [
@@ -420,6 +444,18 @@ export const SafeMemeABI = [
       {
         name: "",
         type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "maxWalletAmount",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
       },
     ],
   },

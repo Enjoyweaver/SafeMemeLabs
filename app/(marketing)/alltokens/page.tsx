@@ -22,6 +22,8 @@ interface TokenInfo {
   totalSupply: string
   owner: string
   chainId: string
+  antiWhalePercentage: string
+  maxWalletAmount: string
   dexInfo: {
     address: string
     currentStage: number
@@ -59,6 +61,7 @@ const Dashboard = () => {
     useState<ethers.providers.Web3Provider | null>(null)
   const [chainId, setChainId] = useState<number | null>(null)
   const [isConnected, setIsConnected] = useState(false)
+  const [exchangeRate, setExchangeRate] = useState("0")
   const tokenTypes = [
     { value: "all", label: "All Tokens" },
     { value: "withDex", label: "Tokens with DEX" },
@@ -71,7 +74,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchAllTokens()
-  }, [chain, selectedChain, selectedTokenType])
+  }, [selectedChain, selectedTokenType])
 
   useEffect(() => {
     const init = async () => {
@@ -92,24 +95,26 @@ const Dashboard = () => {
       setError(null)
       let allTokens = []
 
-      const chainId = chain?.id.toString() || "4002" // Default to Fantom testnet if no chain selected
-      const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
-      const factoryContract = new ethers.Contract(
-        safeLaunchFactory[chainId],
-        TokenFactoryABI,
-        provider
-      )
+      for (const chainId of Object.keys(safeLaunchFactory)) {
+        const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
+        const factoryContract = new ethers.Contract(
+          safeLaunchFactory[chainId],
+          TokenFactoryABI,
+          provider
+        )
 
-      const tokenCount = await factoryContract.getDeployedSafeMemeCount()
-      for (let i = 0; i < tokenCount.toNumber(); i++) {
-        const tokenAddress = await factoryContract.safeMemesDeployed(i)
-        const tokenInfo = await getTokenInfo(tokenAddress, provider, chainId)
-        allTokens.push(tokenInfo)
+        const tokenCount = await factoryContract.getDeployedSafeMemeCount()
+        for (let i = 0; i < tokenCount.toNumber(); i++) {
+          const tokenAddress = await factoryContract.safeMemesDeployed(i)
+          const tokenInfo = await getTokenInfo(tokenAddress, provider, chainId)
+          allTokens.push(tokenInfo)
+        }
       }
 
       setTokens(allTokens)
     } catch (error) {
       console.error("Error fetching tokens:", error)
+      setError(error.message)
     } finally {
       setLoading(false)
     }
@@ -182,15 +187,25 @@ const Dashboard = () => {
       provider
     )
 
-    const [name, symbol, decimals, totalSupply, owner, dexAddress] =
-      await Promise.all([
-        tokenContract.name(),
-        tokenContract.symbol(),
-        tokenContract.decimals(),
-        tokenContract.totalSupply(),
-        tokenContract.owner(),
-        tokenContract.dexAddress(),
-      ])
+    const [
+      name,
+      symbol,
+      decimals,
+      totalSupply,
+      owner,
+      dexAddress,
+      antiWhalePercentage,
+      maxWalletAmount,
+    ] = await Promise.all([
+      tokenContract.name(),
+      tokenContract.symbol(),
+      tokenContract.decimals(),
+      tokenContract.totalSupply(),
+      tokenContract.owner(),
+      tokenContract.dexAddress(),
+      tokenContract.getAntiWhalePercentage(),
+      tokenContract.getMaxWalletAmount(),
+    ])
 
     const dexInfo = await getDexInfo(dexAddress, provider)
 
@@ -202,6 +217,8 @@ const Dashboard = () => {
       totalSupply: ethers.utils.formatUnits(totalSupply, decimals),
       owner,
       chainId,
+      antiWhalePercentage: antiWhalePercentage.toString(),
+      maxWalletAmount: ethers.utils.formatUnits(maxWalletAmount, decimals),
       dexInfo: dexInfo ? { ...dexInfo, address: dexAddress } : null,
     }
   }
@@ -237,6 +254,20 @@ const Dashboard = () => {
   }
 
   const openModal = (token) => {
+    if (!isConnected) {
+      alert("Please connect your wallet first.")
+      return
+    }
+
+    if (chain?.id.toString() !== token.chainId) {
+      alert(
+        `Please switch to the ${
+          chains.find((c) => c.id.toString() === token.chainId)?.name
+        } network to buy this token.`
+      )
+      return
+    }
+
     setSelectedToken(token)
     setModalIsOpen(true)
     setSwapAmount("1")
@@ -253,6 +284,7 @@ const Dashboard = () => {
   const calculateEstimatedOutput = (amount) => {
     if (!selectedToken || !selectedToken.dexInfo || !amount || isNaN(amount)) {
       setEstimatedOutput("0.00")
+      setExchangeRate("0")
       return
     }
 
@@ -268,9 +300,18 @@ const Dashboard = () => {
       setEstimatedOutput(
         Number(ethers.utils.formatEther(safeMemeToReceive)).toFixed(2)
       )
+
+      // Calculate exchange rate for 1 Token B
+      const exchangeRateValue = ethers.constants.WeiPerEther.mul(
+        ethers.constants.WeiPerEther
+      ).div(safeMemePrice)
+      setExchangeRate(
+        Number(ethers.utils.formatEther(exchangeRateValue)).toFixed(2)
+      )
     } catch (error) {
       console.error("Error calculating estimated output:", error)
       setEstimatedOutput("0.00")
+      setExchangeRate("0")
     }
   }
 
@@ -296,6 +337,15 @@ const Dashboard = () => {
       !provider
     ) {
       console.error("Missing required data for swap")
+      return
+    }
+
+    if (chain?.id.toString() !== selectedToken.chainId) {
+      alert(
+        `Please switch to the ${
+          chains.find((c) => c.id.toString() === selectedToken.chainId)?.name
+        } network to complete this swap.`
+      )
       return
     }
 
@@ -342,12 +392,16 @@ const Dashboard = () => {
     }
   }
 
-  function formatAmount(amount) {
+  function formatAmount(amount, isPercentage = false) {
     if (amount === null || amount === undefined) return ""
 
     const numAmount = Number(amount)
 
     if (isNaN(numAmount)) return amount
+
+    if (isPercentage) {
+      return numAmount.toFixed(2)
+    }
 
     return numAmount.toLocaleString("en-US", {
       minimumFractionDigits: 2,
@@ -393,14 +447,19 @@ const Dashboard = () => {
                 {`${token.address.slice(0, 6)}...${token.address.slice(-6)}`}
               </p>
               <p>
-                <strong>Decimals:</strong> {token.decimals}
-              </p>
-              <p>
                 <strong>Total Supply:</strong> {token.totalSupply}
               </p>
               <p>
                 <strong>Owner:</strong>{" "}
                 {`${token.owner.slice(0, 6)}...${token.owner.slice(-6)}`}
+              </p>
+              <p>
+                <strong>Anti-Whale Percentage:</strong>{" "}
+                {(token.antiWhalePercentage / 100).toFixed(2)}%
+              </p>
+              <p>
+                <strong>Max Wallet Amount:</strong> {token.maxWalletAmount}{" "}
+                {token.symbol}
               </p>
               {token.dexInfo && (
                 <>
@@ -446,7 +505,12 @@ const Dashboard = () => {
                   className="buy-token-button"
                   onClick={() => openModal(token)}
                 >
-                  Buy {token.name}
+                  {isConnected && chain?.id.toString() === token.chainId
+                    ? `Buy ${token.name}`
+                    : `Connect to ${
+                        chains.find((c) => c.id.toString() === token.chainId)
+                          ?.name
+                      }`}
                 </button>
               )}
           </div>
@@ -559,7 +623,7 @@ const Dashboard = () => {
             <div className="swap-summary">
               <p>
                 Exchange Rate: 1 {selectedToken?.dexInfo?.tokenBSymbol} ={" "}
-                {formatAmount(estimatedOutput)} {selectedToken?.symbol}
+                {formatAmount(exchangeRate)} {selectedToken?.symbol}
               </p>
               <p>Current Stage: {selectedToken?.dexInfo?.currentStage}</p>
               <p>
