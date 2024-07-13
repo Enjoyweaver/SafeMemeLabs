@@ -196,6 +196,7 @@ const SafeLaunch: React.FC = () => {
           currentStage,
           totalSupply
         )
+
         tokenBAmountSet = await exchangeContract.stageSet(currentStage)
       }
 
