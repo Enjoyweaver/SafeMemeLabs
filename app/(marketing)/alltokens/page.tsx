@@ -328,19 +328,6 @@ const Dashboard = () => {
     }
   }
 
-  useEffect(() => {
-    if (selectedToken && modalIsOpen) {
-      calculateEstimatedOutput(swapAmount)
-    }
-  }, [selectedToken, modalIsOpen])
-
-  const handleAmountChange = (e) => {
-    const value = e.target.value
-    const numericValue = value.replace(/,/g, "").match(/^\d*\.?\d{0,2}/)[0]
-    setSwapAmount(numericValue)
-    calculateEstimatedOutput(numericValue)
-  }
-
   const handleSwap = async () => {
     if (
       !selectedToken ||
@@ -405,6 +392,19 @@ const Dashboard = () => {
     }
   }
 
+  useEffect(() => {
+    if (selectedToken && modalIsOpen) {
+      calculateEstimatedOutput(swapAmount)
+    }
+  }, [selectedToken, modalIsOpen])
+
+  const handleAmountChange = (e) => {
+    const value = e.target.value
+    const numericValue = value.replace(/,/g, "").match(/^\d*\.?\d{0,2}/)[0]
+    setSwapAmount(numericValue)
+    calculateEstimatedOutput(numericValue)
+  }
+
   function formatAmount(amount, isPercentage = false) {
     if (amount === null || amount === undefined) return ""
 
@@ -417,8 +417,8 @@ const Dashboard = () => {
     }
 
     const formattedAmount = numAmount.toLocaleString("en-US", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 18,
     })
 
     return formattedAmount
@@ -563,7 +563,7 @@ const Dashboard = () => {
                   </p>
                   <p>
                     <strong>SafeMemes Available:</strong>{" "}
-                    {token.dexInfo.safeMemeAvailable}
+                    {formatAmount(token.dexInfo.safeMemeAvailable)}
                   </p>
                 </>
               )}
@@ -695,7 +695,7 @@ const Dashboard = () => {
                 Exchange Rate: 1 {selectedToken?.dexInfo?.tokenBSymbol} ={" "}
                 {formatAmount(exchangeRate)} {selectedToken?.symbol}
               </p>
-              <p>Current Stage: {selectedToken?.dexInfo?.currentStage}</p>
+              <p>Current Stage: {selectedToken?.dexInfo?.currentStage + 1}</p>
               <p>
                 SafeMeme Remaining:{" "}
                 {formatAmount(selectedToken?.dexInfo?.safeMemeAvailable)}
