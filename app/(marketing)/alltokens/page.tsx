@@ -126,6 +126,35 @@ const Dashboard = () => {
     }
   }
 
+  useEffect(() => {
+    if (provider && selectedToken) {
+      const dexContract = new ethers.Contract(
+        selectedToken.dexInfo.address,
+        ExchangeABI,
+        provider
+      )
+
+      // Event listener for StageCompleted
+      const handleStageCompleted = async (
+        safeMemeAddress,
+        stage,
+        soldsafeMeme,
+        totalReceived
+      ) => {
+        console.log(`Stage ${stage} completed for SafeMeme: ${safeMemeAddress}`)
+        await fetchAllTokens() // Re-fetch all tokens to update the frontend
+      }
+
+      // Listen for the StageCompleted event
+      dexContract.on("StageCompleted", handleStageCompleted)
+
+      // Clean up the event listener on component unmount
+      return () => {
+        dexContract.off("StageCompleted", handleStageCompleted)
+      }
+    }
+  }, [provider, selectedToken])
+
   const getDexInfo = async (dexAddress, provider) => {
     if (dexAddress === ethers.constants.AddressZero) return null
 

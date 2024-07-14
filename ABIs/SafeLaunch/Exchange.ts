@@ -88,28 +88,6 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "SaleFinalized",
-    inputs: [
-      {
-        name: "safeMeme",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "totalsafeMemeSold",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "totaltokenBReceived",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
     name: "SafeMemePurchased",
     inputs: [
       {

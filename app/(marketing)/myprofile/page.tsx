@@ -52,7 +52,7 @@ interface SwapModalProps {
   currentStage: number
   tokenBName: string
   safeMemeSymbol: string
-  tokenBAddress: string // Add this line
+  tokenBAddress: string
 }
 
 interface NFT {
@@ -104,7 +104,7 @@ const SafeLaunch: React.FC = () => {
           const signer = web3Provider.getSigner()
           const address = await signer.getAddress()
           setUserAddress(address)
-          setIsConnected(true) // Set the connected state to true
+          setIsConnected(true)
 
           await fetchTokens(web3Provider, address, network.chainId)
           await fetchTokenBOptions(web3Provider, address, network.chainId)
@@ -159,65 +159,81 @@ const SafeLaunch: React.FC = () => {
     )
 
     const tokenPromises = tokenAddresses.map(async (tokenAddress: string) => {
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        provider
-      )
-      const name = await tokenContract.name()
-      const symbol = await tokenContract.symbol()
-      const antiWhalePercentage = await tokenContract.antiWhalePercentage()
-      const totalSupply = await tokenContract.totalSupply()
-      const decimals = await tokenContract.decimals()
-      const maxTokens = await tokenContract.getMaxWalletAmount()
-      const dexAddress = await tokenContract.dexAddress()
-      const safeLaunchInitialized = dexAddress !== ethers.constants.AddressZero
-      const safeLaunchStarted =
-        safeLaunchInitialized && (await tokenContract.balanceOf(dexAddress)) > 0
-
-      let tokenB,
-        currentStage,
-        stageInfo,
-        lockedTokens,
-        safeMemeForSale,
-        tokenBAmountSet = false
-      if (safeLaunchStarted) {
-        const exchangeContract = new ethers.Contract(
-          dexAddress,
-          ExchangeABI,
+      try {
+        const tokenContract = new ethers.Contract(
+          tokenAddress,
+          SafeMemeABI,
           provider
         )
-        tokenB = await exchangeContract.tokenBAddress()
-        currentStage = await exchangeContract.currentStage()
-        lockedTokens = await exchangeContract.getsafeMemesAvailable()
-        safeMemeForSale = await exchangeContract.salesafeMeme()
-        stageInfo = await fetchStageInfo(
-          exchangeContract,
-          currentStage,
-          totalSupply
-        )
-        tokenBAmountSet = await exchangeContract.stageSet(currentStage)
-      }
+        const name = await tokenContract.name()
+        const symbol = await tokenContract.symbol()
+        const antiWhalePercentage = await tokenContract.antiWhalePercentage()
+        const totalSupply = await tokenContract.totalSupply()
+        const decimals = await tokenContract.decimals()
+        const maxTokens = await tokenContract.getMaxWalletAmount()
+        const dexAddress = await tokenContract.dexAddress()
+        const safeLaunchInitialized =
+          dexAddress !== ethers.constants.AddressZero
+        const safeLaunchStarted =
+          safeLaunchInitialized &&
+          (await tokenContract.balanceOf(dexAddress)) > 0
 
-      return {
-        address: tokenAddress,
-        name,
-        symbol,
-        antiWhalePercentage: antiWhalePercentage.toNumber(),
-        maxTokens: ethers.utils.formatUnits(maxTokens, decimals),
-        totalSupply: ethers.utils.formatUnits(totalSupply, decimals),
-        safeLaunchInitialized,
-        safeLaunchStarted,
-        lockedTokens: ethers.utils.formatUnits(lockedTokens || 0, decimals),
-        safeMemeForSale: ethers.utils.formatUnits(
-          safeMemeForSale || 0,
-          decimals
-        ),
-        dexAddress: safeLaunchStarted ? dexAddress : undefined,
-        tokenB,
-        currentStage,
-        stageInfo,
-        tokenBAmountSet,
+        let tokenB,
+          currentStage,
+          stageInfo,
+          lockedTokens,
+          safeMemeForSale,
+          tokenBAmountSet = false
+        if (safeLaunchStarted) {
+          const exchangeContract = new ethers.Contract(
+            dexAddress,
+            ExchangeABI,
+            provider
+          )
+          tokenB = await exchangeContract.tokenBAddress()
+          currentStage = await exchangeContract.currentStage()
+          lockedTokens = await exchangeContract.getsafeMemesAvailable()
+          safeMemeForSale = await exchangeContract.salesafeMeme()
+          stageInfo = await fetchStageInfo(
+            exchangeContract,
+            currentStage,
+            totalSupply
+          )
+          tokenBAmountSet = await exchangeContract.stageSet(currentStage)
+        }
+
+        return {
+          address: tokenAddress,
+          name,
+          symbol,
+          antiWhalePercentage: antiWhalePercentage.toNumber(),
+          maxTokens: ethers.utils.formatUnits(maxTokens, decimals),
+          totalSupply: ethers.utils.formatUnits(totalSupply, decimals),
+          safeLaunchInitialized,
+          safeLaunchStarted,
+          lockedTokens: ethers.utils.formatUnits(lockedTokens || 0, decimals),
+          safeMemeForSale: ethers.utils.formatUnits(
+            safeMemeForSale || 0,
+            decimals
+          ),
+          dexAddress: safeLaunchStarted ? dexAddress : undefined,
+          tokenB,
+          currentStage,
+          stageInfo,
+          tokenBAmountSet,
+        }
+      } catch (error) {
+        console.error(`Error fetching token ${tokenAddress}:`, error)
+        return {
+          address: tokenAddress,
+          name: "Unknown",
+          symbol: "Unknown",
+          antiWhalePercentage: 0,
+          maxTokens: "0",
+          totalSupply: "0",
+          safeLaunchInitialized: false,
+          safeLaunchStarted: false,
+        }
       }
     })
 
@@ -232,23 +248,38 @@ const SafeLaunch: React.FC = () => {
   ) => {
     const stageInfo: StageInfo[] = []
     const MAX_PERCENTAGE_PER_STAGE = ethers.BigNumber.from(10)
+    const MAX_STAGES = 5 // Assuming there are 5 stages in total
 
-    for (let i = 0; i <= currentStage; i++) {
-      const [tokenBRequired, safeMemePrice] =
-        await exchangeContract.getStageInfo(i)
-      const [tokenBReceived, soldSafeMeme] =
-        await exchangeContract.getStageLiquidity(i)
-      const safeMemeForSale = totalSupply.mul(MAX_PERCENTAGE_PER_STAGE).div(100)
-      const availableSafeMeme = safeMemeForSale.sub(soldSafeMeme)
+    for (let i = 0; i <= MAX_STAGES; i++) {
+      try {
+        const [tokenBRequired, safeMemePrice] =
+          await exchangeContract.getStageInfo(i)
+        const [tokenBReceived, soldSafeMeme] =
+          await exchangeContract.getStageLiquidity(i)
+        const safeMemeForSale = totalSupply
+          .mul(MAX_PERCENTAGE_PER_STAGE)
+          .div(100)
+        const availableSafeMeme = safeMemeForSale.sub(soldSafeMeme)
 
-      stageInfo.push({
-        safeMemeForSale: ethers.utils.formatEther(safeMemeForSale),
-        requiredTokenB: ethers.utils.formatEther(tokenBRequired),
-        price: ethers.utils.formatEther(safeMemePrice),
-        soldSafeMeme: ethers.utils.formatEther(soldSafeMeme),
-        tokenBReceived: ethers.utils.formatEther(tokenBReceived),
-        availableSafeMeme: ethers.utils.formatEther(availableSafeMeme),
-      })
+        stageInfo.push({
+          safeMemeForSale: ethers.utils.formatEther(safeMemeForSale),
+          requiredTokenB: ethers.utils.formatEther(tokenBRequired),
+          price: ethers.utils.formatEther(safeMemePrice),
+          soldSafeMeme: ethers.utils.formatEther(soldSafeMeme),
+          tokenBReceived: ethers.utils.formatEther(tokenBReceived),
+          availableSafeMeme: ethers.utils.formatEther(availableSafeMeme),
+        })
+      } catch (error) {
+        console.error(`Error fetching stage ${i} info:`, error)
+        stageInfo.push({
+          safeMemeForSale: "0",
+          requiredTokenB: "0",
+          price: "0",
+          soldSafeMeme: "0",
+          tokenBReceived: "0",
+          availableSafeMeme: "0",
+        })
+      }
     }
     return stageInfo
   }
@@ -986,43 +1017,86 @@ const SafeLaunch: React.FC = () => {
                                         </span>
                                       </p>
                                     </div>
-                                    {!token.tokenBAmountSet && (
+                                    {index === token.currentStage && (
                                       <div className="stage-actions">
-                                        <input
-                                          type="number"
-                                          id={`amount-${index}`}
-                                          value={
-                                            tokenBAmountInputs[index] || ""
-                                          }
-                                          onChange={(e) =>
-                                            handleTokenBAmountChange(
-                                              index,
-                                              e.target.value
-                                            )
-                                          }
-                                          placeholder={`Amount of ${selectedTokenBName}`}
-                                          className="input-field"
-                                        />
-                                        <button
-                                          className="buy-token-button"
-                                          onClick={() =>
-                                            setTokenBAmount(
-                                              token.address,
-                                              selectedTokenB,
-                                              index
-                                            )
-                                          }
-                                        >
-                                          Submit Token B Amount for Stage{" "}
-                                          {index + 1}
-                                        </button>
+                                        {!token.tokenBAmountSet ? (
+                                          <>
+                                            <input
+                                              type="number"
+                                              id={`amount-${index}`}
+                                              value={
+                                                tokenBAmountInputs[index] || ""
+                                              }
+                                              onChange={(e) =>
+                                                handleTokenBAmountChange(
+                                                  index,
+                                                  e.target.value
+                                                )
+                                              }
+                                              placeholder={`Amount of ${selectedTokenBName} for Stage ${
+                                                index + 1
+                                              }`}
+                                              className="input-field"
+                                            />
+                                            <button
+                                              className="buy-token-button"
+                                              onClick={() =>
+                                                setTokenBAmount(
+                                                  token.address,
+                                                  selectedTokenB,
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Set Token B Amount for Stage{" "}
+                                              {index + 1}
+                                            </button>
+                                          </>
+                                        ) : (
+                                          <p>
+                                            Token B amount set for this stage
+                                          </p>
+                                        )}
                                       </div>
                                     )}
+                                    {index === token.currentStage + 1 &&
+                                      !stage.requiredTokenB && (
+                                        <div className="stage-actions">
+                                          <input
+                                            type="number"
+                                            id={`amount-${index}`}
+                                            value={
+                                              tokenBAmountInputs[index] || ""
+                                            }
+                                            onChange={(e) =>
+                                              handleTokenBAmountChange(
+                                                index,
+                                                e.target.value
+                                              )
+                                            }
+                                            placeholder={`Amount of ${selectedTokenBName} for Stage ${
+                                              index + 1
+                                            }`}
+                                            className="input-field"
+                                          />
+                                          <button
+                                            className="buy-token-button"
+                                            onClick={() =>
+                                              setTokenBAmount(
+                                                token.address,
+                                                selectedTokenB,
+                                                index
+                                              )
+                                            }
+                                          >
+                                            Set Token B Amount for Next Stage
+                                          </button>
+                                        </div>
+                                      )}
                                   </div>
                                 ))}
                               </div>
                             )}
-
                           <button
                             className="buy-token-button"
                             onClick={() =>
