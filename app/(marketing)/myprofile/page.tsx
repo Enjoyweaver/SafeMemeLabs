@@ -264,6 +264,8 @@ const SafeLaunch: React.FC = () => {
           status = "completed"
         } else if (i === currentStage) {
           status = stageSet ? "open and set" : "open but not set"
+        } else if (i < currentStage) {
+          status = "completed"
         } else {
           status = "not open"
         }
@@ -460,8 +462,7 @@ const SafeLaunch: React.FC = () => {
 
   const handleTokenBAmountChange = (currentStage: number, value: string) => {
     const newTokenBAmountInputs = [...tokenBAmountInputs]
-    const nextAvailableStage = currentStage + 1 // Determine the next available stage
-    newTokenBAmountInputs[nextAvailableStage] = parseFloat(value)
+    newTokenBAmountInputs[currentStage] = parseFloat(value)
     setTokenBAmountInputs(newTokenBAmountInputs)
   }
 
