@@ -616,14 +616,34 @@ export const ExchangeABI = [
         name: "",
         type: "uint256",
       },
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
     ],
   },
   {
     stateMutability: "view",
     type: "function",
-    name: "getCurrentStage",
+    name: "getCurrentStageInfo",
     inputs: [],
     outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
       {
         name: "",
         type: "uint256",
@@ -1586,11 +1606,27 @@ export const ExchangeABI = [
         type: "tuple",
         components: [
           {
+            name: "status",
+            type: "uint256",
+          },
+          {
             name: "tokenBRequired",
             type: "uint256",
           },
           {
-            name: "tokensSold",
+            name: "safeMemePrice",
+            type: "uint256",
+          },
+          {
+            name: "safeMemeAvailable",
+            type: "uint256",
+          },
+          {
+            name: "tokenBReceived",
+            type: "uint256",
+          },
+          {
+            name: "soldsafeMeme",
             type: "uint256",
           },
         ],
