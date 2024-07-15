@@ -660,6 +660,14 @@ export const ExchangeABI = [
         name: "",
         type: "uint256",
       },
+      {
+        name: "",
+        type: "bool",
+      },
+      {
+        name: "",
+        type: "bool",
+      },
     ],
   },
   {
