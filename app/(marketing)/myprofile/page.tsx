@@ -277,6 +277,12 @@ const SafeLaunch: React.FC = () => {
     setTokens(fetchedTokens)
   }
 
+  const refetchTokenInfo = async () => {
+    if (provider && chainId && userAddress) {
+      await fetchTokens(provider, userAddress, chainId)
+    }
+  }
+
   const fetchStageInfo = async (
     exchangeContract: ethers.Contract,
     currentStage: number
@@ -309,12 +315,11 @@ const SafeLaunch: React.FC = () => {
           | "open and set"
           | "open but not set"
           | "not open"
-        if (safeMemeAvailable.eq(0) && soldSafeMeme.gt(0)) {
+
+        if (i < currentStage) {
           stageStatus = "completed"
         } else if (i === currentStage) {
           stageStatus = status === 2 ? "open and set" : "open but not set"
-        } else if (i < currentStage) {
-          stageStatus = "completed"
         } else {
           stageStatus = "not open"
         }
@@ -491,10 +496,7 @@ const SafeLaunch: React.FC = () => {
       )
       const amountInWei = ethers.utils.parseUnits(amount.toString(), 18)
 
-      const tx = await exchangeContract.setStagetokenBAmount(
-        stage - 1,
-        amountInWei
-      )
+      const tx = await exchangeContract.setStagetokenBAmount(stage, amountInWei)
       await tx.wait()
 
       await fetchTokens(provider, userAddress, chainId) // Ensure this updates the UI immediately
@@ -693,7 +695,7 @@ const SafeLaunch: React.FC = () => {
           gasLimit: 9000000, // Adjust as needed
         })
         await tx.wait()
-
+        await refetchTokenInfo()
         alert(`${safeMemeSymbol} purchased successfully!`)
         onRequestClose()
       } catch (error) {
@@ -1050,14 +1052,13 @@ const SafeLaunch: React.FC = () => {
                                   className={`stage ${stage.status}`}
                                 >
                                   <h4>Stage {index + 1}</h4>
-                                  {stage.requiredTokenB &&
-                                  parseFloat(stage.availableSafeMeme) === 0 ? (
+                                  {stage.status === "completed" ? (
                                     <div className="stage-completed">
-                                      <p>Stage Not Started</p>
+                                      <p>Stage Completed</p>
                                       <p>
                                         Price:{" "}
                                         {parseFloat(stage.price).toFixed(6)}{" "}
-                                        {selectedTokenBName} per
+                                        {selectedTokenBName} per{" "}
                                         <span className="secondary-dark-color">
                                           {" "}
                                           {token.symbol}
@@ -1138,9 +1139,51 @@ const SafeLaunch: React.FC = () => {
                                       </div>
                                     </>
                                   )}
+                                  {token.currentStage !== undefined &&
+                                    index === token.currentStage + 1 &&
+                                    stage.status === "not open" && (
+                                      <div className="stage-actions">
+                                        <input
+                                          type="number"
+                                          id={`amount-${
+                                            token.currentStage + 1
+                                          }`}
+                                          value={
+                                            tokenBAmountInputs[
+                                              token.currentStage + 1
+                                            ] || ""
+                                          }
+                                          onChange={(e) =>
+                                            handleTokenBAmountChange(
+                                              token.currentStage + 1,
+                                              e.target.value
+                                            )
+                                          }
+                                          placeholder={`Amount of ${selectedTokenBName} for Stage ${
+                                            token.currentStage + 2
+                                          }`}
+                                          className="input-field"
+                                        />
+                                        <button
+                                          className="buy-token-button"
+                                          onClick={() =>
+                                            setTokenBAmount(
+                                              token.address,
+                                              token.currentStage + 2,
+                                              tokenBAmountInputs[
+                                                token.currentStage + 1
+                                              ] ?? 0
+                                            )
+                                          }
+                                        >
+                                          Set Token B Amount for Stage{" "}
+                                          {token.currentStage + 2}
+                                        </button>
+                                      </div>
+                                    )}
                                 </div>
                               ))}
-                              {token.currentStage == 6 && (
+                              {token.currentStage == SAFE_LAUNCH_STAGES && (
                                 <div className="dex-stage">
                                   <h3>Permanent DEX</h3>
                                   <p>

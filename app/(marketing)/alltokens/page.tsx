@@ -594,7 +594,10 @@ const Dashboard = () => {
                   </p>
                   <p>
                     <strong>SafeMemes Available:</strong>{" "}
-                    {formatAmount(token.dexInfo.safeMemeAvailable)}
+                    {formatAmount(
+                      parseFloat(token.dexInfo.safeMemeAvailable) -
+                        parseFloat(token.dexInfo.soldSafeMeme)
+                    )}
                   </p>
                 </>
               )}
@@ -725,7 +728,12 @@ const Dashboard = () => {
               <p>Current Stage: {selectedToken?.dexInfo?.currentStage + 1}</p>
               <p>
                 SafeMeme Remaining:{" "}
-                {formatAmount(selectedToken?.dexInfo?.safeMemeAvailable)}
+                {selectedToken?.dexInfo
+                  ? formatAmount(
+                      parseFloat(selectedToken.dexInfo.safeMemeAvailable) -
+                        parseFloat(selectedToken.dexInfo.soldSafeMeme)
+                    )
+                  : "0"}
               </p>
             </div>
             <button
