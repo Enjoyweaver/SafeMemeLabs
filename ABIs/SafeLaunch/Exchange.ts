@@ -535,6 +535,18 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
+    name: "startSafeLaunch",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
     name: "buyTokens",
     inputs: [
       {
@@ -1746,6 +1758,30 @@ export const ExchangeABI = [
       {
         name: "",
         type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "isInSafeLaunchMode",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "isInDEXMode",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
       },
     ],
   },

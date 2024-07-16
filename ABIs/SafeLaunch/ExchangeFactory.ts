@@ -165,6 +165,18 @@ export const ExchangeFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
+    name: "getAllCreatedDEXes",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address[]",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
     name: "exchangeTemplate",
     inputs: [],
     outputs: [
@@ -266,6 +278,23 @@ export const ExchangeFactoryABI = [
     type: "function",
     name: "safeMeme",
     inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "safeMemesDeployed",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
     outputs: [
       {
         name: "",

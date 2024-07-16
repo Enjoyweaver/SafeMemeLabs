@@ -141,6 +141,21 @@ const SafeLaunch: React.FC = () => {
     setActiveSection(activeSection === section ? null : section)
   }
 
+  const getStageStatusText = (status) => {
+    switch (status) {
+      case 0:
+        return "Not Open"
+      case 1:
+        return "Open (Not Set)"
+      case 2:
+        return "Open and Set"
+      case 3:
+        return "Completed"
+      default:
+        return "Unknown"
+    }
+  }
+
   const fetchTokens = async (
     provider: ethers.providers.Web3Provider,
     address: string,
@@ -184,19 +199,23 @@ const SafeLaunch: React.FC = () => {
           stageInfo,
           lockedTokens,
           safeMemeForSale,
-          tokenBAmountSet = false
+          tokenBAmountSet = false,
+          currentStageInfo
+
         if (safeLaunchStarted) {
           const exchangeContract = new ethers.Contract(
             dexAddress,
             ExchangeABI,
             provider
           )
+          currentStageInfo = await exchangeContract.getCurrentStageInfo()
+
           tokenB = await exchangeContract.tokenBAddress()
-          currentStage = await exchangeContract.currentStage()
+          currentStage = currentStageInfo[0].toNumber()
           lockedTokens = await exchangeContract.getsafeMemesAvailable()
           safeMemeForSale = await exchangeContract.salesafeMeme()
           stageInfo = await fetchStageInfo(exchangeContract, currentStage)
-          tokenBAmountSet = stageInfo[currentStage].stageSet
+          tokenBAmountSet = currentStageInfo[1].toNumber() === 2 // STAGE_STATUS_OPEN_AND_SET
         }
 
         return {
@@ -218,6 +237,26 @@ const SafeLaunch: React.FC = () => {
           currentStage,
           stageInfo,
           tokenBAmountSet,
+          stageStatus: currentStageInfo
+            ? currentStageInfo[1].toNumber()
+            : undefined,
+          tokenBRequired: currentStageInfo
+            ? ethers.utils.formatEther(currentStageInfo[2])
+            : "0",
+          safeMemePrice: currentStageInfo
+            ? ethers.utils.formatEther(currentStageInfo[3])
+            : "0",
+          safeMemeAvailable: currentStageInfo
+            ? ethers.utils.formatEther(currentStageInfo[4])
+            : "0",
+          tokenBReceived: currentStageInfo
+            ? ethers.utils.formatEther(currentStageInfo[5])
+            : "0",
+          soldSafeMeme: currentStageInfo
+            ? ethers.utils.formatEther(currentStageInfo[6])
+            : "0",
+          tokenBSet: currentStageInfo ? currentStageInfo[7] : false,
+          safeLaunchComplete: currentStageInfo ? currentStageInfo[8] : false,
         }
       } catch (error) {
         console.error(`Error fetching token ${tokenAddress}:`, error)

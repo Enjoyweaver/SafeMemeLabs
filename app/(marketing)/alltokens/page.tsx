@@ -161,34 +161,22 @@ const Dashboard = () => {
     const dexContract = new ethers.Contract(dexAddress, ExchangeABI, provider)
 
     try {
+      const currentStageInfo = await dexContract.getCurrentStageInfo()
       const [
         currentStage,
-        tokenBAddress,
-        tokenBName,
-        tokenBSymbol,
+        stageStatus,
+        tokenBRequired,
+        safeMemePrice,
+        safeMemeAvailable,
+        tokenBReceived,
+        soldSafeMeme,
+        tokenBSet,
         safeLaunchComplete,
-      ] = await Promise.all([
-        dexContract.currentStage(),
-        dexContract.tokenBAddress(),
-        dexContract.tokenBName(),
-        dexContract.tokenBSymbol(),
-        dexContract.safeLaunchComplete(),
-      ])
+      ] = currentStageInfo
 
-      const currentStageInfo = await dexContract.getCurrentStageInfo()
-      const {
-        2: tokenBRequired,
-        3: safeMemePrice,
-        4: safeMemeAvailable,
-        5: tokenBReceived,
-        6: soldsafeMeme,
-      } = currentStageInfo
-
-      const safeMemeRemaining = ethers.utils.formatUnits(safeMemeAvailable, 18)
-      const stageSet = tokenBRequired.gt(0)
-      const tokenBSet = tokenBAddress !== ethers.constants.AddressZero
-      const stageAmountSet = stageSet
-      const safeLaunchActivated = tokenBSet && stageAmountSet
+      const tokenBAddress = await dexContract.tokenBAddress()
+      const tokenBName = await dexContract.tokenBName()
+      const tokenBSymbol = await dexContract.tokenBSymbol()
 
       return {
         address: dexAddress,
@@ -198,12 +186,12 @@ const Dashboard = () => {
         tokenBSymbol,
         stageTokenBAmount: ethers.utils.formatEther(tokenBRequired),
         safeMemePrices: ethers.utils.formatEther(safeMemePrice),
-        safeMemeAvailable: safeMemeRemaining,
+        safeMemeAvailable: ethers.utils.formatEther(safeMemeAvailable),
         tokenBReceived: ethers.utils.formatEther(tokenBReceived),
-        soldSafeMeme: ethers.utils.formatEther(soldsafeMeme),
-        safeLaunchActivated,
+        soldSafeMeme: ethers.utils.formatEther(soldSafeMeme),
+        safeLaunchActivated: tokenBSet,
         tokenBSet,
-        stageAmountSet,
+        stageAmountSet: stageStatus.toNumber() === 2,
         safeLaunchComplete,
       }
     } catch (error) {
@@ -259,6 +247,21 @@ const Dashboard = () => {
       antiWhalePercentage: antiWhalePercentage.toString(),
       maxWalletAmount: ethers.utils.formatUnits(maxWalletAmount, decimals),
       dexInfo: dexInfo ? { ...dexInfo, address: dexAddress } : null,
+    }
+  }
+
+  const getStageStatusText = (status: number): string => {
+    switch (status) {
+      case 0:
+        return "Not Open"
+      case 1:
+        return "Open (Not Set)"
+      case 2:
+        return "Open and Set"
+      case 3:
+        return "Completed"
+      default:
+        return "Unknown"
     }
   }
 
@@ -395,6 +398,16 @@ const Dashboard = () => {
         address,
         selectedToken.dexInfo.address
       )
+
+      if (allowance.lt(tokenBAmount)) {
+        console.log("Allowance insufficient, requesting approval...")
+        const approveTx = await tokenBContract.approve(
+          selectedToken.dexInfo.address,
+          tokenBAmount
+        )
+        await approveTx.wait()
+      }
+
       const buyTokensTx = await dexContract.buyTokens(tokenBAmount)
       await buyTokensTx.wait()
 

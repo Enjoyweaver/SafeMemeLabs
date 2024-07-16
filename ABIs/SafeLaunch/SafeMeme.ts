@@ -285,6 +285,18 @@ export const SafeMemeABI = [
     ],
   },
   {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "isLaunchCompleted",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
     stateMutability: "view",
     type: "function",
     name: "name",
