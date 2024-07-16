@@ -127,7 +127,7 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    if (provider && selectedToken) {
+    if (provider && selectedToken && selectedToken.dexInfo) {
       const dexContract = new ethers.Contract(
         selectedToken.dexInfo.address,
         ExchangeABI,
@@ -161,55 +161,50 @@ const Dashboard = () => {
     const dexContract = new ethers.Contract(dexAddress, ExchangeABI, provider)
 
     try {
-      const [currentStage, tokenBAddress, tokenBName, tokenBSymbol] =
-        await Promise.all([
-          dexContract.currentStage(),
-          dexContract.tokenBAddress(),
-          dexContract.tokenBName(),
-          dexContract.tokenBSymbol(),
-        ])
-
-      const [stage, stagetokenBAmount, safeMemePrice, safeMemeRemainingRaw] =
-        await dexContract.getCurrentStage()
-
-      // Convert safeMemeRemainingRaw from its raw value to a readable format
-      // Assuming safeMemeRemainingRaw is a BigNumber and in the smallest unit
-      const safeMemeRemaining = ethers.utils.formatUnits(
-        safeMemeRemainingRaw,
-        18
-      )
-
       const [
-        tokenBReceived,
-        soldSafeMeme,
-        stageRemainingSafeMeme,
-        currentStageFromLiquidity,
-      ] = await dexContract.getStageLiquidity(stage)
-
-      const stageSet = await dexContract.stageSet(stage)
-      const tokenBSet = tokenBAddress !== ethers.constants.AddressZero
-      const stageAmountSet = stageSet && !stagetokenBAmount.isZero()
-      const safeLaunchActivated = tokenBSet && stageAmountSet
-      const exchangeRate = safeMemePrice
-
-      return {
-        address: dexAddress,
-        currentStage: stage.toNumber(),
+        currentStage,
         tokenBAddress,
         tokenBName,
         tokenBSymbol,
-        stageTokenBAmount: ethers.utils.formatEther(stagetokenBAmount),
+        safeLaunchComplete,
+      ] = await Promise.all([
+        dexContract.currentStage(),
+        dexContract.tokenBAddress(),
+        dexContract.tokenBName(),
+        dexContract.tokenBSymbol(),
+        dexContract.safeLaunchComplete(),
+      ])
+
+      const currentStageInfo = await dexContract.getCurrentStageInfo()
+      const {
+        2: tokenBRequired,
+        3: safeMemePrice,
+        4: safeMemeAvailable,
+        5: tokenBReceived,
+        6: soldsafeMeme,
+      } = currentStageInfo
+
+      const safeMemeRemaining = ethers.utils.formatUnits(safeMemeAvailable, 18)
+      const stageSet = tokenBRequired.gt(0)
+      const tokenBSet = tokenBAddress !== ethers.constants.AddressZero
+      const stageAmountSet = stageSet
+      const safeLaunchActivated = tokenBSet && stageAmountSet
+
+      return {
+        address: dexAddress,
+        currentStage: currentStage.toNumber(),
+        tokenBAddress,
+        tokenBName,
+        tokenBSymbol,
+        stageTokenBAmount: ethers.utils.formatEther(tokenBRequired),
         safeMemePrices: ethers.utils.formatEther(safeMemePrice),
         safeMemeAvailable: safeMemeRemaining,
         tokenBReceived: ethers.utils.formatEther(tokenBReceived),
-        soldSafeMeme: ethers.utils.formatEther(soldSafeMeme),
-        stageRemainingSafeMeme: ethers.utils.formatEther(
-          stageRemainingSafeMeme
-        ),
+        soldSafeMeme: ethers.utils.formatEther(soldsafeMeme),
         safeLaunchActivated,
         tokenBSet,
         stageAmountSet,
-        exchangeRate: exchangeRate,
+        safeLaunchComplete,
       }
     } catch (error) {
       console.error("Error fetching DEX info:", error)
@@ -335,8 +330,9 @@ const Dashboard = () => {
     try {
       const tokenBAmount = ethers.utils.parseEther(amount)
       const safeMemePrice = ethers.BigNumber.from(
-        ethers.utils.parseUnits(selectedToken.dexInfo.safeMemePrices)
+        ethers.utils.parseUnits(selectedToken.dexInfo.safeMemePrices, 18)
       )
+
       const safeMemeToReceive = tokenBAmount.mul(safeMemePrice)
 
       setEstimatedOutput(
@@ -399,13 +395,6 @@ const Dashboard = () => {
         address,
         selectedToken.dexInfo.address
       )
-      if (allowance.lt(tokenBAmount)) {
-        const approveTx = await tokenBContract.approve(
-          selectedToken.dexInfo.address,
-          tokenBAmount
-        )
-        await approveTx.wait()
-      }
       const buyTokensTx = await dexContract.buyTokens(tokenBAmount)
       await buyTokensTx.wait()
 
@@ -720,10 +709,6 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="swap-summary">
-              <p>
-                Exchange Rate: 1 {selectedToken?.dexInfo?.tokenBSymbol} ={" "}
-                {formatAmount(exchangeRate)} {selectedToken?.symbol}
-              </p>
               <p>Current Stage: {selectedToken?.dexInfo?.currentStage + 1}</p>
               <p>
                 SafeMeme Remaining:{" "}

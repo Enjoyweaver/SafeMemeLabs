@@ -627,18 +627,6 @@ const SafeLaunch: React.FC = () => {
           return
         }
 
-        // Check if stage is set and has amount
-        const stageSet = await exchangeContract.stageSet(currentStage)
-        const stageAmount = await exchangeContract.stagetokenBAmounts(
-          currentStage
-        )
-        console.log("stageSet:", stageSet)
-        console.log("stageAmount:", stageAmount.toString())
-        if (!stageSet || stageAmount.eq(0)) {
-          alert("Stage not set or amount not configured")
-          return
-        }
-
         // Check the allowance
         const allowance = await tokenBContract.allowance(
           userAddress,
@@ -718,8 +706,8 @@ const SafeLaunch: React.FC = () => {
                   <p className="swap-summary-item">
                     Exchange Rate: 1 {tokenBName} ={" "}
                     {(
-                      parseFloat(stageInfo.safeMemeForSale) /
-                      parseFloat(stageInfo.requiredTokenB)
+                      parseFloat(stageInfo.requiredTokenB) /
+                      parseFloat(stageInfo.safeMemeForSale)
                     ).toFixed(6)}{" "}
                     {safeMemeSymbol}
                   </p>
