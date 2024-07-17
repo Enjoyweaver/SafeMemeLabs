@@ -646,6 +646,11 @@ const SafeLaunch: React.FC = () => {
         console.error("Provider or DEX address is missing")
         return
       }
+      const [isSubmitting, setIsSubmitting] = useState(false)
+      if (isSubmitting) {
+        return
+      }
+      setIsSubmitting(true)
 
       try {
         const signer = provider.getSigner()
@@ -658,10 +663,9 @@ const SafeLaunch: React.FC = () => {
           tokenBAddress,
           SafeMemeABI,
           signer
-        ) // Assuming ERC20ABI is the ABI for Token B
+        )
         const tokenBAmountWei = ethers.utils.parseEther(tokenBAmount)
 
-        // Check if SafeLaunch is complete
         const safeLaunchComplete = await exchangeContract.safeLaunchComplete()
         console.log("safeLaunchComplete:", safeLaunchComplete)
         if (safeLaunchComplete) {
@@ -672,7 +676,7 @@ const SafeLaunch: React.FC = () => {
         // Check current stage
         const currentStage = await exchangeContract.currentStage()
         console.log("currentStage:", currentStage)
-        const SAFE_LAUNCH_STAGES = 5 // This should match the contract's value
+        const SAFE_LAUNCH_STAGES = 5
         if (currentStage > SAFE_LAUNCH_STAGES) {
           alert("Invalid stage")
           return
@@ -702,7 +706,7 @@ const SafeLaunch: React.FC = () => {
             tokenBAddress === ethers.constants.AddressZero
               ? tokenBAmountWei
               : 0,
-          gasLimit: 9000000, // Adjust as needed
+          gasLimit: 9000000,
         })
         await tx.wait()
         await refetchTokenInfo()
@@ -715,6 +719,8 @@ const SafeLaunch: React.FC = () => {
             (error as Error).message
           }`
         )
+      } finally {
+        setIsSubmitting(false)
       }
     }
 

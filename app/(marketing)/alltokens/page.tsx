@@ -314,6 +314,7 @@ const Dashboard = () => {
     setModalIsOpen(true)
     setSwapAmount("1")
     calculateEstimatedOutput("1")
+    setSwapError(null)
   }
 
   const closeModal = () => {
@@ -336,7 +337,9 @@ const Dashboard = () => {
         ethers.utils.parseUnits(selectedToken.dexInfo.safeMemePrices, 18)
       )
 
-      const safeMemeToReceive = tokenBAmount.mul(safeMemePrice)
+      const safeMemeToReceive = tokenBAmount
+        .mul(safeMemePrice)
+        .div(ethers.constants.WeiPerEther)
 
       setEstimatedOutput(
         Number(ethers.utils.formatEther(safeMemeToReceive)).toFixed(2)
@@ -412,9 +415,6 @@ const Dashboard = () => {
       await buyTokensTx.wait()
 
       console.log("Swap successful!")
-
-      fetchAllTokens()
-      closeModal()
     } catch (error) {
       console.error("Error during swap:", error)
       setSwapError(error.message)
@@ -449,7 +449,7 @@ const Dashboard = () => {
 
     const formattedAmount = numAmount.toLocaleString("en-US", {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 18,
+      maximumFractionDigits: 2,
     })
 
     return formattedAmount
@@ -604,7 +604,7 @@ const Dashboard = () => {
             </div>
             {token.dexInfo &&
               token.dexInfo.safeLaunchActivated &&
-              token.dexInfo.tokenBSet && (
+              token.dexInfo.stageAmountSet && (
                 <button
                   className="buy-token-button"
                   onClick={() => openModal(token)}
