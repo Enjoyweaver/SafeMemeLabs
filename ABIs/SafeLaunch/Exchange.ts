@@ -528,8 +528,13 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "setupSafeLaunchStages",
-    inputs: [],
+    name: "setupStages",
+    inputs: [
+      {
+        name: "total_supply",
+        type: "uint256",
+      },
+    ],
     outputs: [],
   },
   {
