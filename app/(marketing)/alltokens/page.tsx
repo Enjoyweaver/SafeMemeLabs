@@ -727,7 +727,7 @@ const Dashboard = () => {
             <div className="swap-summary">
               <p>Current Stage: {selectedToken?.dexInfo?.currentStage + 1}</p>
               <p>
-                SafeMeme Remaining:{" "}
+                {selectedToken?.symbol || ""} Remaining:{" "}
                 {selectedToken?.dexInfo
                   ? formatAmount(
                       parseFloat(selectedToken.dexInfo.safeMemeAvailable) -

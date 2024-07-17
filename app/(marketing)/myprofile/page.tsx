@@ -646,12 +646,6 @@ const SafeLaunch: React.FC = () => {
         console.error("Provider or DEX address is missing")
         return
       }
-      const [isSubmitting, setIsSubmitting] = useState(false)
-      if (isSubmitting) {
-        return
-      }
-      setIsSubmitting(true)
-
       try {
         const signer = provider.getSigner()
         const exchangeContract = new ethers.Contract(
@@ -719,8 +713,6 @@ const SafeLaunch: React.FC = () => {
             (error as Error).message
           }`
         )
-      } finally {
-        setIsSubmitting(false)
       }
     }
 

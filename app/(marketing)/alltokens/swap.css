@@ -83,7 +83,6 @@ body {
   border: 1px solid var(--border-light);
   border-radius: 5px;
   padding: 10px;
-  margin-bottom: 10px;
 }
 
 .dark .token-section {
@@ -98,7 +97,9 @@ body {
 
 .token-amount-container {
   display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
 }
 
@@ -119,13 +120,15 @@ body {
 }
 
 .swap-summary {
-  margin-top: 20px;
-  font-size: 0.9rem;
+  text-align: left;
+
+  margin-top: 10px;
 }
 
 .swap-summary p {
   margin: 5px 0;
   color: var(--secondary-light);
+  font-size: small;
 }
 
 .dark .swap-summary p {
@@ -133,7 +136,7 @@ body {
 }
 
 .swap-button {
-  width: 100%;
+  width: 50%;
   padding: 10px 20px;
   background-color: var(--primary-light);
   border: none;
@@ -141,7 +144,8 @@ body {
   color: var(--text-light);
   cursor: pointer;
   font-size: 1rem;
-  margin-top: 20px;
+  margin-top: 25px;
+  align-self: center;
 }
 
 .dark .swap-button {
@@ -161,4 +165,9 @@ body {
   color: #ff0000;
   margin-top: 10px;
   text-align: center;
+}
+
+.swap-card {
+  display: flex;
+  flex-direction: column;
 }
