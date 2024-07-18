@@ -500,6 +500,18 @@ const Dashboard = () => {
                 <strong>Max Wallet Amount:</strong>{" "}
                 {formatAmount(token.maxWalletAmount)}
               </p>
+              {token.dexInfo ? (
+                <>
+                  <p>
+                    <strong>SafeLaunch Activated:</strong>{" "}
+                    {token.dexInfo.safeLaunchActivated ? "Yes" : "No"}
+                  </p>
+                </>
+              ) : (
+                <p>
+                  <strong>SafeLaunch Activated:</strong> No
+                </p>
+              )}
               {token.dexInfo && (
                 <>
                   <div className="meme-header">
@@ -555,10 +567,6 @@ const Dashboard = () => {
                   <p>
                     <strong>Stage Token B Amount:</strong>{" "}
                     {token.dexInfo.stageTokenBAmount}
-                  </p>
-                  <p>
-                    <strong>SafeLaunch Activated:</strong>{" "}
-                    {token.dexInfo.safeLaunchActivated ? "Yes" : "No"}
                   </p>
                   <p>
                     <strong>Token B Set:</strong>{" "}

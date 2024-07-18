@@ -334,7 +334,7 @@ body.dark-mode .stage {
 }
 
 .blockchain-dropdown {
-  width: 20%;
+  width: 30%;
   padding: 0.5rem;
   font-size: 1rem;
   border: 2px solid var(--primary-light);

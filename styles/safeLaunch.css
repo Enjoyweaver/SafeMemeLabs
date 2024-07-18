@@ -180,7 +180,7 @@ body {
 
 .stage-title {
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 1rem;
   width: 100%;
   margin-bottom: 10px;
   margin-top: 20px;
@@ -350,6 +350,9 @@ body {
   transition: all 0.3s ease;
 }
 
+.stage-number {
+  font-size: large;
+}
 .dark .stage {
   border: 1px solid var(--primary-dark); /* Set the border color */
   background-color: transparent; /* Make the background transparent */
@@ -391,11 +394,6 @@ body {
   height: 10px;
 }
 
-.stage .progress {
-  height: 100%;
-  background-color: #4caf50;
-}
-
 .stage-actions {
   display: flex;
   flex-direction: inline;
@@ -432,6 +430,7 @@ a .stage-actions input {
 
 .stagetext p {
   color: var(--primary-dark) !important;
+  font-size: large;
 }
 
 .swap-modal {
