@@ -70,12 +70,10 @@ const Dashboard = () => {
   const [exchangeRate, setExchangeRate] = useState("0")
   const tokenTypes = [
     { value: "all", label: "All Tokens" },
-    { value: "withDex", label: "Tokens with DEX" },
     { value: "safeLaunchStarted", label: "SafeLaunch Started" },
-    { value: "tokenBSet", label: "Token B Set" },
-    { value: "tokenBAmountSet", label: "Token B Amount Set" },
     { value: "firstStage", label: "First Stage" },
     { value: "otherStages", label: "Stages 2-5" },
+    { value: "withDex", label: "SafeLaunched" },
   ]
 
   useEffect(() => {
@@ -250,21 +248,6 @@ const Dashboard = () => {
     }
   }
 
-  const getStageStatusText = (status: number): string => {
-    switch (status) {
-      case 0:
-        return "Not Open"
-      case 1:
-        return "Open (Not Set)"
-      case 2:
-        return "Open and Set"
-      case 3:
-        return "Completed"
-      default:
-        return "Unknown"
-    }
-  }
-
   const filterTokens = (tokens) => {
     return tokens.filter((token) => {
       if (selectedTokenType === "all") return true
@@ -272,13 +255,6 @@ const Dashboard = () => {
       if (
         selectedTokenType === "safeLaunchStarted" &&
         token.dexInfo?.safeLaunchActivated
-      )
-        return true
-      if (selectedTokenType === "tokenBSet" && token.dexInfo?.tokenBSet)
-        return true
-      if (
-        selectedTokenType === "tokenBAmountSet" &&
-        token.dexInfo?.stageAmountSet
       )
         return true
       if (

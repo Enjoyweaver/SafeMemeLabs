@@ -324,7 +324,7 @@ body.dark-mode .stage {
 }
 
 .dark .filter-title {
-  color: var(--primary-dark);
+  color: var(--primary-light);
 }
 
 .blockchain-selection,

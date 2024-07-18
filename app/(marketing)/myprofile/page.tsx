@@ -843,7 +843,7 @@ const SafeLaunch: React.FC = () => {
             <h2>Create Airdrop</h2>
           </div>
           <div
-            onClick={() => handleSectionClick("CreateAirdrop")}
+            onClick={() => handleSectionClick("Followers")}
             className={`dashboard-section ${
               activeSection === "CreateAirdrop" ? "selected" : ""
             }`}

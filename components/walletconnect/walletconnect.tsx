@@ -193,7 +193,7 @@ export function Navbar() {
                 />
                 <p className={`${styles.connectText} ${styles.toHide}`}>
                   {address
-                    ? `${address.slice(0, 6)}...${address.slice(-4)}`
+                    ? `${address.slice(0, 6)}...${address.slice(-6)}`
                     : "Error"}
                 </p>
                 <Image
