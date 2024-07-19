@@ -316,12 +316,13 @@
 
 @media screen and (max-width: 768px) {
   .sidebar {
-    width: 180px; /* Adjust for smaller screens */
+    width: 180px;
+    justify-content: left;
+    text-align: left;
   }
 
   .sidebar ul li a {
     font-size: 0.7rem;
-    text-align: left;
   }
 }
 

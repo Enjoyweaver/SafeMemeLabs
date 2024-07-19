@@ -10,9 +10,8 @@ export default function Sidebar() {
     const handleScroll = () => {
       const sections = [
         "about",
-        "open-source",
-        "safelaunch",
         "safememes",
+        "safelaunch",
         "profile",
         "frames",
         "nfts",

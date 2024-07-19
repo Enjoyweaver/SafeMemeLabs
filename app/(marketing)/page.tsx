@@ -97,10 +97,7 @@ export default async function IndexPage() {
           </p>
         </div>
       </section>
-      <section
-        id="open-source"
-        className="quando-regular container py-8 md:py-12 lg:py-2"
-      >
+      <section className="quando-regular container py-8 md:py-12 lg:py-2">
         <section id="safememes" className="container py-8 md:py-12 lg:py-20">
           <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
             <h2 className="quando-regular text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
@@ -126,9 +123,9 @@ export default async function IndexPage() {
             </p>
           </div>
         </section>
-        <section id="safelaunch" className=" py-8 md:py-12 lg:py-20">
+        <section id="safelaunch" className="container py-8 md:py-12 lg:py-20">
           <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
-            <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
+            <h2 className="quando-regular text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
               SafeLaunch
             </h2>
             <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
@@ -239,7 +236,7 @@ export default async function IndexPage() {
             Your browser does not support the video tag.
           </video>
         </div>
-        <section id="followers" className="container py-8 md:py-12 lg:py-20">
+        <section className="container py-8 md:py-12 lg:py-20">
           <div className="quando-regular mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
             <h2 className=" text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
               Proudly Open Source
