@@ -865,12 +865,14 @@ const SafeLaunch: React.FC = () => {
           )}
           {activeSection === "Frames" && (
             <div>
-              {frames.map((frame) => (
-                <div key={frame.id}>
-                  <p>{frame.content}</p>
-                  <p>Likes: {frame.likes}</p>
-                </div>
-              ))}
+              <div>
+                <p className="sectionBody">
+                  Soon you will be able to create and launch Frames on Warpcast
+                  straight from here. We will store the NFTs on Arweave for
+                  permanent decentralization and mint them on the Base
+                  blockchain for Farcaster interoperability.
+                </p>
+              </div>
             </div>
           )}
           {activeSection === "Tokens" && (
