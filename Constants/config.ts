@@ -3,6 +3,7 @@
 import { degen } from "@/utils/degenChain"
 import { rootstockTestnet } from "@/utils/rootstockTestnet"
 import { solana } from "@/utils/solana"
+import { sonicTestnet } from "@/utils/sonic"
 import {
   avalanche,
   base,
@@ -29,6 +30,7 @@ export const { chains, publicClient, webSocketPublicClient } = configureChains(
     rootstockTestnet,
     solana,
     avalanche,
+    sonicTestnet,
   ],
   [publicProvider()]
 )
@@ -472,23 +474,23 @@ export const masterVyperTokenCopy: {
 export const safeMemeTemplate: {
   [key: string]: string
 } = {
-  "4002": "0x6abcF9CBBC0929504e8Ed8487Fc9D175Cfb17A30",
+  "64165": "0xe5355DB1838d2e56786cC7E66FF9a122F2bb3d1d",
 }
 
 export const safeLaunchFactory: {
   [key: string]: string
 } = {
-  "4002": "0x1a56dE04353d2c01Cf59dABD9B85172C7b591A59",
+  "64165": "0x0643e30ABfa871c5a22c602Cb2071c2B1230e0d9",
 }
 
 export const exchangeTemplate: {
   [key: string]: string
 } = {
-  "4002": "0x355aE9cf5f0282048DFBadB2C8D77e1D0f2dF961",
+  "64165": "0x8401eb679FBCc6522B6489C1a5E119532918f88a",
 }
 
 export const exchangeFactory: {
   [key: string]: string
 } = {
-  "4002": "0x389a99683f4703d8Ce7817A6D26853182AAE6663",
+  "64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
 }

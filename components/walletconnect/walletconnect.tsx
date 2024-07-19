@@ -56,6 +56,16 @@ const chainDetails = [
     chainId: 4002,
     logo: "/assets/icons/logos/fantom.png",
   },
+  {
+    name: "Sonic Testnet",
+    chainId: 64165,
+    logo: "/assets/icons/logos/fantom.png",
+  },
+  //{
+  //  name: "Fantom Sonic Testnet",
+  //  chainId: 64240,
+  //  logo: "/assets/icons/logos/fantom.png",
+  //},
   { name: "Rootstock", chainId: 30, logo: "/assets/icons/logos/rootstock.png" },
   {
     name: "Rootstock Testnet",
