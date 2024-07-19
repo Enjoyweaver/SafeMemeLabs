@@ -100,18 +100,32 @@ const Dashboard = () => {
       let allTokens = []
 
       for (const chainId of Object.keys(safeLaunchFactory)) {
-        const provider = new ethers.providers.JsonRpcProvider(rpcUrls[chainId])
-        const factoryContract = new ethers.Contract(
-          safeLaunchFactory[chainId],
-          TokenFactoryABI,
-          provider
-        )
+        try {
+          const rpcUrl = rpcUrls[chainId]
+          const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
 
-        const tokenCount = await factoryContract.getDeployedSafeMemeCount()
-        for (let i = 0; i < tokenCount.toNumber(); i++) {
-          const tokenAddress = await factoryContract.safeMemesDeployed(i)
-          const tokenInfo = await getTokenInfo(tokenAddress, provider, chainId)
-          allTokens.push(tokenInfo)
+          const factoryContract = new ethers.Contract(
+            safeLaunchFactory[chainId],
+            TokenFactoryABI,
+            provider
+          )
+
+          const tokenCount = await factoryContract.getDeployedSafeMemeCount()
+          for (let i = 0; i < tokenCount.toNumber(); i++) {
+            const tokenAddress = await factoryContract.safeMemesDeployed(i)
+            const tokenInfo = await getTokenInfo(
+              tokenAddress,
+              provider,
+              chainId
+            )
+            allTokens.push(tokenInfo)
+          }
+        } catch (networkError) {
+          console.error(
+            `Error fetching tokens for chain ID ${chainId}:`,
+            networkError
+          )
+          // Continue with the next chain ID
         }
       }
 
@@ -610,39 +624,37 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <Navbar />
-      <h1 className="pagetitle">SafeMeme Token Dashboard</h1>
-
-      <div className="filter-section">
-        <div className="blockchain-selection">
-          <h2 className="filter-title">Select Blockchain</h2>
-          <select
-            className="blockchain-dropdown"
-            value={selectedChain}
-            onChange={(e) => setSelectedChain(e.target.value)}
-          >
-            <option value="all">All Blockchains</option>
-            {chains.map((chain) => (
-              <option key={chain.id} value={chain.id.toString()}>
-                {chain.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="token-type-selection">
-          <h2 className="filter-title">Token Types</h2>
-          <div className="token-type-buttons">
-            {tokenTypes.map((type) => (
-              <button
-                key={type.value}
-                className={`token-type-button ${
-                  selectedTokenType === type.value ? "active" : ""
-                }`}
-                onClick={() => setSelectedTokenType(type.value)}
+      <div className="dashboard-header">
+        <h1 className="pagetitle">SafeMeme Token Dashboard</h1>
+        <div className="filter-section">
+          <div className="filter-row">
+            <div className="blockchain-selection">
+              <select
+                className="blockchain-dropdown"
+                value={selectedChain}
+                onChange={(e) => setSelectedChain(e.target.value)}
               >
-                {type.label}
-              </button>
-            ))}
+                <option value="all">All Blockchains</option>
+                {chains.map((chain) => (
+                  <option key={chain.id} value={chain.id.toString()}>
+                    {chain.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="token-type-selection">
+              {tokenTypes.map((type) => (
+                <button
+                  key={type.value}
+                  className={`token-type-button ${
+                    selectedTokenType === type.value ? "active" : ""
+                  }`}
+                  onClick={() => setSelectedTokenType(type.value)}
+                >
+                  {type.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

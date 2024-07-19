@@ -62,9 +62,9 @@ const chainDetails = [
     logo: "/assets/icons/logos/fantom.png",
   },
   //{
-  //  name: "Fantom Sonic Testnet",
-  //  chainId: 64240,
-  //  logo: "/assets/icons/logos/fantom.png",
+  //   name: "Fantom Sonic Testnet",
+  //   chainId: 64240,
+  //   logo: "/assets/icons/logos/fantom.png",
   //},
   { name: "Rootstock", chainId: 30, logo: "/assets/icons/logos/rootstock.png" },
   {
@@ -87,12 +87,7 @@ export function Navbar() {
   const { disconnect } = useDisconnect()
   const { switchNetwork } = useSwitchNetwork()
   const [isCreateTokensPage, setIsCreateTokensPage] = useState(false)
-  const pathname = usePathname()
 
-  useEffect(() => {
-    setIsCreateTokensPage(pathname === "/createtokens")
-  }, [pathname])
-  // Toggle the visibility of the connect wallet overlay
   const toggleConnectOpen = () => {
     setConnectOpen(!connectOpen)
   }
@@ -166,32 +161,30 @@ export function Navbar() {
       </div>
       <div className={styles.navbar}>
         {isClient && isConnected ? (
-          <div className={styles.networkOptionsContainer}>
-            {isCreateTokensPage && (
-              <div className={styles.networkOptions}>
-                {chainDetails.map((chain, index) => (
-                  <button
-                    key={chain.chainId}
-                    className={`${styles.networkOption} ${
-                      chain.chainId === activeChainId ? styles.active : ""
-                    }`}
-                    onClick={() => {
-                      dropdownAction(() => switchNetwork?.(chain.chainId))
-                      setActiveChainId(chain.chainId) // Update active chain ID on click
-                    }}
-                  >
-                    <Image
-                      src={chain.logo}
-                      alt={chain.name}
-                      className={styles.chainLogo}
-                      height={20}
-                      width={20}
-                    />
-                    <span className={styles.chainName}>{chain.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+          <div className={styles.navbarContent}>
+            <div className={styles.networkOptionsContainer}>
+              {chainDetails.map((chain, index) => (
+                <button
+                  key={chain.chainId}
+                  className={`${styles.networkOption} ${
+                    chain.chainId === activeChainId ? styles.active : ""
+                  }`}
+                  onClick={() => {
+                    dropdownAction(() => switchNetwork?.(chain.chainId))
+                    setActiveChainId(chain.chainId)
+                  }}
+                >
+                  <Image
+                    src={chain.logo}
+                    alt={chain.name}
+                    className={styles.chainLogo}
+                    height={20}
+                    width={20}
+                  />
+                  <span className={styles.chainName}>{chain.name}</span>
+                </button>
+              ))}
+            </div>
             <div ref={dropdownRef} className={styles.connectButtonContainer}>
               <div className={styles.navbarLi} onClick={toggleConnectMenuOpen}>
                 <MinidenticonImg
@@ -232,7 +225,7 @@ export function Navbar() {
               className={`${styles.navbarLi} ${styles.connectButton}`}
               onClick={toggleConnectOpen}
             >
-              <p className={styles.connectText}>Connect</p>
+              <p className={styles.connectText}></p>
             </div>
           </div>
         )}

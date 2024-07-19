@@ -48,12 +48,22 @@ body {
   margin-bottom: 20px;
 }
 
+.dashboard-header {
+  background-color: var(--background-light);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.dark .dashboard-header {
+  background-color: var(--background-dark);
+}
+
 .pagetitle {
-  text-align: center;
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: var(--primary-light);
-  margin-bottom: 20px;
-  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .subheading {
@@ -306,11 +316,14 @@ body.dark-mode .stage {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 2rem;
-  background-color: var(--background-light);
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
 }
 
 .dark .filter-section {
@@ -329,18 +342,19 @@ body.dark-mode .stage {
 
 .blockchain-selection,
 .token-type-selection {
-  width: 100%;
-  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .blockchain-dropdown {
-  width: 30%;
   padding: 0.5rem;
-  font-size: 1rem;
+  font-size: 0.9rem;
   border: 2px solid var(--primary-light);
-  border-radius: 4px;
+  border-radius: 20px;
   background-color: var(--background-light);
   color: var(--foreground-light);
+  cursor: pointer;
 }
 
 .dark .blockchain-dropdown {
@@ -386,21 +400,25 @@ body.dark-mode .stage {
 }
 
 @media (max-width: 768px) {
-  .token-type-buttons {
+  .filter-row {
     flex-direction: column;
   }
 
-  .token-type-button {
+  .blockchain-selection,
+  .token-type-selection {
     width: 100%;
+    justify-content: center;
+    margin-bottom: 0.5rem;
   }
 
   .blockchain-dropdown {
-    width: 60%;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: 2px solid var(--primary-light);
-    border-radius: 4px;
-    background-color: var(--background-light);
-    color: var(--foreground-light);
+    width: 100%;
+  }
+
+  .token-type-selection {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
   }
 }

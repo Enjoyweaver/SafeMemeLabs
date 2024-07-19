@@ -1790,4 +1790,4 @@ export const ExchangeABI = [
       },
     ],
   },
-] as const
+]

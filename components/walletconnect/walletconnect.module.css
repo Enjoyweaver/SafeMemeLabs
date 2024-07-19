@@ -1,29 +1,37 @@
 .container {
-  height: 10vh;
+  height: auto;
 }
 
 .nav {
   position: relative;
-  height: 10vh;
-  margin-bottom: 20px;
+  height: auto;
+  margin-bottom: 10px;
 }
 
 .navbar {
-  padding: 0 0px;
+  padding: 5px 0;
   position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
   top: 0;
   z-index: 11;
-  height: 48.333px;
-  margin-top: 40px;
+  height: auto;
+  margin-top: 0;
+}
+
+.navbarContent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .navbarLi {
   font-size: 18px;
   line-height: 26.67px;
-  margin: 10px 15px;
+  margin: 5px 15px;
   display: inline-flex;
   align-items: center;
   height: 26.67px;
@@ -78,7 +86,7 @@
 
 .connectText {
   display: inline;
-  padding: 0 5px;
+  padding: 25px 40px;
   vertical-align: top;
   margin: 0;
 }
@@ -93,43 +101,32 @@
 .connectButtonContainer {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  margin-right: 3rem;
+  width: 300px;
+  padding: 10px 10px;
 }
 
 .connectButtonContainerMobile {
   display: flex;
-  justify-content: center; /* Center the button horizontally */
+  justify-content: center;
   width: 100%;
 }
 
 .networkOptionsContainer {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 5px; /* Adjusted padding for fine-tuning */
-  width: 100%; /* Ensures it takes full width of its parent */
-}
-
-.networkTitle {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-  color: var(--foreground-light);
-}
-
-.networkOptions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  max-width: 500px; /* Ensures no more than 5 items per row */
-  margin: 0 auto; /* Center the container */
+  align-items: center;
+  justify-content: flex-start;
+  padding: 5px;
+  max-width: 90%;
+  margin-left: 3rem;
 }
 
 .networkOption {
   font-size: 12px;
   padding: 5px;
+  margin: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -165,20 +162,22 @@
 .toShow {
   display: none;
 }
+
 .dropdownMenu {
   position: absolute;
-  top: 100%; /* Position right below the address container */
-  left: 50%; /* Center align */
-  transform: translateX(-50%); /* Center align */
-
-  border: 1px solid #ccc; /* Border color */
-  border-radius: 5px; /* Rounded corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow */
-  z-index: 1000; /* Ensure it appears above other elements */
-  padding: 10px; /* Padding inside the dropdown */
-  text-align: center; /* Center text */
+  top: 100%;
+  right: 0;
+  transform: translateY(5px);
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 10px;
+  text-align: center;
+  background-color: var(--background-light);
 }
-@media screen and (max-width: 620px) {
+
+@media screen and (max-width: 768px) {
   .toHide {
     display: none;
   }
@@ -195,27 +194,26 @@
     height: auto;
   }
 
-  .connectButtonContainerMobile {
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Center the button horizontally */
-    width: 100%;
-    margin-top: 20px;
-  }
-  .networkOptionsContainer {
-    padding: 5px;
-    display: flex;
+  .navbarContent {
     flex-direction: column;
     align-items: center;
+  }
+
+  .networkOptionsContainer {
     justify-content: center;
-    width: 100%;
+    margin-right: 0;
+    margin-bottom: 10px;
+    max-width: 100%;
   }
-  .networkOptions {
-    gap: 8px;
-    max-width: 100%; /* Allow full width on mobile */
-    display: flex;
-    justify-content: center; /* Center the options */
+
+  .connectButtonContainer {
+    justify-content: center;
   }
+
+  .connectButtonContainerMobile {
+    margin-top: 10px;
+  }
+
   .networkOption {
     font-size: 10px;
     padding: 3px;
