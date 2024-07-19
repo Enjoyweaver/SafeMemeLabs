@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react"
 import Link from "next/link"
 
 import { env } from "@/env.mjs"
 import { siteConfig } from "@/config/site"
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
+import Sidebar from "@/components/sidebar"
+
+// Import the Sidebar component
 
 async function getGitHubStars(): Promise<string | null> {
   try {
@@ -37,6 +39,7 @@ export default async function IndexPage() {
 
   return (
     <>
+      <Sidebar /> {/* Add the Sidebar component */}
       <section className="quando-regular lg:py-15 space-y-2 pb-8 pt-2 md:pb-12 md:pt-10">
         <div className="container flex max-w-5xl flex-col items-center gap-4 text-center">
           <div className="container relative flex max-w-[40rem] flex-col items-center gap-4">
@@ -50,7 +53,6 @@ export default async function IndexPage() {
           </p>
         </div>
       </section>
-
       <section
         id="about"
         className="quando-regular container space-y-6 bg-slate-50 py-8 dark:bg-transparent md:py-12 lg:py-24"
@@ -65,7 +67,7 @@ export default async function IndexPage() {
             SafeLaunch, creating frames on Warpcast, creating token airdrops,
             and to even creating NFT launches. You'll even be able to create
             your own profile so that you can build your brand and reward your
-            followers along the way
+            followers along the way.
           </p>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
             We are blockchain agnostic and will be developing a diverse
@@ -87,7 +89,86 @@ export default async function IndexPage() {
           </p>
         </div>
       </section>
-      <section id="open-source" className="container py-8 md:py-12 lg:py-24">
+      <section
+        id="open-source"
+        className="container py-8 md:py-12 lg:py-24"
+      ></section>
+      {/* New Sections */}
+      <section id="safememes" className="container py-8 md:py-12 lg:py-24">
+        <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
+          <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
+            SafeMemes
+          </h2>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
+            Content for SafeMemes section.
+          </p>
+        </div>
+      </section>
+      <section id="profile" className="container py-8 md:py-12 lg:py-24">
+        <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
+          <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
+            Profile
+          </h2>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
+            Content for Profile section.
+          </p>
+        </div>
+      </section>
+      <section id="frames" className="container py-8 md:py-12 lg:py-24">
+        <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
+          <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
+            Frames
+          </h2>
+          <p className="sectionBody">
+            Soon you will be able to create and launch Frames on Warpcast
+            straight from here. We will store the NFTs on Arweave for permanent
+            decentralization and mint them on the Base blockchain for Farcaster
+            interoperability.
+          </p>
+        </div>
+      </section>
+      <section id="nfts" className="container py-8 md:py-12 lg:py-24">
+        <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
+          <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
+            NFTs
+          </h2>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
+            Your future NFT content
+          </p>
+        </div>
+      </section>
+      <section id="rewards" className="container py-8 md:py-12 lg:py-24">
+        <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
+          <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
+            Rewards
+          </h2>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
+            Your future rewards content
+          </p>
+        </div>
+      </section>
+      <section id="airdrop" className="container py-8 md:py-12 lg:py-24">
+        <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
+          <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
+            Airdrop
+          </h2>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
+            Your future airdrop content
+          </p>
+        </div>
+      </section>
+      <section id="followers" className="container py-8 md:py-12 lg:py-24">
+        <div
+          className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center"
+          style={{ marginBottom: "80px" }} // Adding marginBottom here
+        >
+          <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
+            Followers
+          </h2>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
+            Your future follower content
+          </p>
+        </div>
         <div className="quando-regular mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
           <h2 className=" text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
             Proudly Open Source
@@ -102,9 +183,8 @@ export default async function IndexPage() {
               className="underline underline-offset-4"
             >
               GitHub
-            </Link>
-            {""} for you to review.
-            <br />
+            </Link>{" "}
+            for you to review.
           </p>
           {stars && (
             <Link
