@@ -11,13 +11,14 @@ export default function Sidebar() {
       const sections = [
         "about",
         "open-source",
+        "safelaunch",
         "safememes",
         "profile",
         "frames",
         "nfts",
         "rewards",
         "airdrop",
-        "followers",
+        "dashboard",
       ]
       let current = ""
 
@@ -47,6 +48,9 @@ export default function Sidebar() {
         <li className={currentSection === "safememes" ? "active" : ""}>
           <a href="#safememes">SafeMemes</a>
         </li>
+        <li className={currentSection === "safelaunch" ? "active" : ""}>
+          <a href="#safelaunch">SafeLaunch</a>
+        </li>
         <li className={currentSection === "profile" ? "active" : ""}>
           <a href="#profile">Profile</a>
         </li>
@@ -62,8 +66,8 @@ export default function Sidebar() {
         <li className={currentSection === "airdrop" ? "active" : ""}>
           <a href="#airdrop">Airdrop</a>
         </li>
-        <li className={currentSection === "followers" ? "active" : ""}>
-          <a href="#followers">Followers</a>
+        <li className={currentSection === "dashboard" ? "active" : ""}>
+          <a href="#dashboard">Dashboard</a>
         </li>
       </ul>
     </div>
