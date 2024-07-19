@@ -70,12 +70,12 @@ export default async function IndexPage() {
             About
           </h2>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-            We build the tools for you to create your own safe meme economy.
-            From allowing you to create rugproof tokens, funding them through a
-            SafeLaunch, creating frames on Warpcast, creating token airdrops,
-            and to even creating NFT launches. You'll even be able to create
-            your own profile so that you can build your brand and reward your
-            followers along the way.
+            We believe you should create and build the safe meme economy, so we
+            are building the tools for you to do that. From allowing you to
+            create rugproof tokens, funding them through a SafeLaunch, creating
+            frames on Warpcast, sending token airdrops, and to even creating NFT
+            launches. You'll even be able to create your own profile so that you
+            can build your brand and reward your followers along the way.
           </p>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
             We are blockchain agnostic and will be developing a diverse
@@ -129,20 +129,19 @@ export default async function IndexPage() {
               SafeLaunch
             </h2>
             <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-              Not every token that is created here will use the SafeLaunch
-              feature, though all have the ability to start a SafeLaunch which
-              is a solution to two hurdles in defi - deploying tokens to DEX's
-              with antiwhale features or with new features that the DEX's may
-              not have have support for, and secondly, deploying a token with
-              enough liquidity to make it more likely to succeed. A SafeLaunch
-              enables you to earn liquidity for your token by selling 50% of the
-              supply over 5 stages. You select what token you want to pair with,
-              you set the price, and the SafeLaunch takes care of the rest. 10%
-              of the supply will be sold in each stage and all of the tokens
-              that are received as payment will be added up over the 5 stages.
-              After all of the are sold, all of the paired tokens received and
-              the remaining 50% of your tokens supply will be sent to a DEX to
-              be permanently listed for sale. This ensures that the tokens are
+              Every token has the ability to start a SafeLaunch which is a
+              solution to two hurdles in defi - deploying tokens to DEX's with
+              antiwhale features or with new features that the DEX's may not
+              have have support for, and secondly, deploying a token with enough
+              liquidity to make it more likely to succeed. A SafeLaunch enables
+              you to earn liquidity for your token by selling 50% of the supply
+              over 5 stages. You select what token you want to pair with, you
+              set the price, and the SafeLaunch takes care of the rest. 10% of
+              the supply will be sold in each stage and all of the tokens that
+              are received as payment will be added up over the 5 stages. After
+              all of the are sold, all of the paired tokens received and the
+              remaining 50% of your tokens supply will be sent to a DEX to be
+              permanently listed for sale. This ensures that the tokens are
               secure and rugproof and that anyone can purchase without the fear
               of a rugpull. And as the creator of the tokens, you will receive
               swap fees for all transactions, forever.
@@ -194,11 +193,12 @@ export default async function IndexPage() {
             <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
               As a creator here you deserve to be rewarded for being a part of
               our growth and helping contribute to the SafeMeme economy, so you
-              will be. From giving feedback to our protocol, to being early
-              buyers of our own SafeMemes, and to even creating your own brand,
-              you deserve to be rewarded for it. And since we are open-source,
-              we will solidify these rewards by programming them onchain for all
-              to verify, in Vyper of course.
+              will be. From providing constructive feedback to our protocol,
+              being early buyers of our own SafeMemes, and to even creating your
+              own brand, liking our github, you deserve to be rewarded for it.
+              And since we are open-source, we will solidify these rewards by
+              programming them onchain for all to verify, and in Vyper of
+              course.
             </p>
           </div>
         </section>

@@ -295,7 +295,7 @@
 
 .sidebar ul li a {
   display: inline-block;
-  padding: 2px 15px;
+  padding: 2px 5px;
   color: #fff;
   text-decoration: none;
   font-size: 0.8rem;
@@ -320,7 +320,7 @@
     width: 180px;
     justify-content: center;
     text-align: left;
-    padding: 10px 5px;
+    padding: 10px;
   }
 
   .sidebar ul li a {
