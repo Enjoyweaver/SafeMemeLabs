@@ -316,9 +316,11 @@
 
 @media screen and (max-width: 768px) {
   .sidebar {
+    left: -10px;
     width: 180px;
-    justify-content: left;
+    justify-content: center;
     text-align: left;
+    padding: 10px 5px;
   }
 
   .sidebar ul li a {
