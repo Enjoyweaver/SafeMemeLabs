@@ -42,6 +42,11 @@ const FeedbackPage = () => {
       status: "open",
     },
     {
+      text: "stage numbers, connect button, stage layout and colors during stages, update creation page messages",
+      completed: false,
+      status: "open",
+    },
+    {
       text: "Create SafeLaunch frontend to interact with SafeLaunch backend",
       completed: false,
       status: "open",

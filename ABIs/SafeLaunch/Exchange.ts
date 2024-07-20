@@ -74,7 +74,7 @@ export const ExchangeABI = [
         indexed: false,
       },
       {
-        name: "safeMemessSold",
+        name: "safeMemesSold",
         type: "uint256",
         indexed: false,
       },
@@ -564,6 +564,18 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
+    name: "getCurrentStageLastTransaction",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
     name: "getStageLiquidity",
     inputs: [
       {
@@ -950,7 +962,7 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "safeMeneToSafeMemeSwapInput",
+    name: "safeMemeToSafeMemeSwapInput",
     inputs: [
       {
         name: "safeMemes_sold",
@@ -1447,6 +1459,23 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
+    name: "safeMemesSold",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
     name: "currentStage",
     inputs: [],
     outputs: [
@@ -1651,6 +1680,10 @@ export const ExchangeABI = [
             type: "uint256",
           },
           {
+            name: "safeMemesSold",
+            type: "uint256",
+          },
+          {
             name: "soldsafeMeme",
             type: "uint256",
           },
@@ -1790,4 +1823,16 @@ export const ExchangeABI = [
       },
     ],
   },
-]
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "totalSafeMemesSold",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+] as const

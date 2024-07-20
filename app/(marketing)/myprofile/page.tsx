@@ -44,6 +44,7 @@ interface StageInfo {
   tokenBReceived: string
   availableSafeMeme: string
   stageSet: boolean
+  safeMemesSold: string
   status: "completed" | "open and set" | "open but not set" | "not open"
 }
 
@@ -225,7 +226,7 @@ const SafeLaunch: React.FC = () => {
           currentStage,
           stageInfo,
           tokenBAmountSet,
-          stageStatus, // Add this line
+          stageStatus,
         }
       } catch (error) {
         console.error(`Error fetching token ${tokenAddress}:`, error)
@@ -267,7 +268,7 @@ const SafeLaunch: React.FC = () => {
           safeMemePrice,
           safeMemeAvailable,
           tokenBReceived,
-          soldsafeMeme,
+          safeMemesSold,
         ] = await exchangeContract.getStageInfo(i)
 
         console.log(`Stage ${i} info:`, {
@@ -276,7 +277,7 @@ const SafeLaunch: React.FC = () => {
           safeMemePrice: safeMemePrice.toString(),
           safeMemeAvailable: safeMemeAvailable.toString(),
           tokenBReceived: tokenBReceived.toString(),
-          soldsafeMeme: soldsafeMeme.toString(),
+          safeMemesSold: safeMemesSold.toString(),
         })
 
         let stageStatus:
@@ -313,7 +314,7 @@ const SafeLaunch: React.FC = () => {
           safeMemeForSale: ethers.utils.formatEther(safeMemeAvailable),
           requiredTokenB: ethers.utils.formatEther(tokenBRequired),
           price: safeMemePrice.toString(),
-          soldsafeMeme: ethers.utils.formatEther(soldsafeMeme),
+          safeMemesSold: ethers.utils.formatEther(safeMemesSold),
           tokenBReceived: ethers.utils.formatEther(tokenBReceived),
           availableSafeMeme: ethers.utils.formatEther(safeMemeAvailable),
           stageSet: status === 2,
@@ -325,7 +326,7 @@ const SafeLaunch: React.FC = () => {
           safeMemeForSale: "0",
           requiredTokenB: "0",
           price: "0",
-          soldsafeMeme: "0",
+          safeMemesSold: "0",
           tokenBReceived: "0",
           availableSafeMeme: "0",
           stageSet: false,
@@ -599,7 +600,7 @@ const SafeLaunch: React.FC = () => {
         )
         const [tokenBRequired, safeMemePrice] =
           await exchangeContract.getStageInfo(currentStage)
-        const [tokenBReceived, soldsafeMeme] =
+        const [tokenBReceived, safeMemesSold] =
           await exchangeContract.getStageLiquidity(currentStage)
         const totalSupply = await exchangeContract.totalSupply()
         const MAX_PERCENTAGE_PER_STAGE = ethers.BigNumber.from(10) // 10% per stage
@@ -607,13 +608,13 @@ const SafeLaunch: React.FC = () => {
         const safeMemeForSale = totalSupply
           .mul(MAX_PERCENTAGE_PER_STAGE)
           .div(100)
-        const availableSafeMeme = safeMemeForSale.sub(soldsafeMeme)
+        const availableSafeMeme = safeMemeForSale.sub(safeMemesSold)
 
         setStageInfo({
           safeMemeForSale: ethers.utils.formatEther(safeMemeForSale),
           requiredTokenB: ethers.utils.formatEther(tokenBRequired),
           price: ethers.utils.formatEther(safeMemePrice),
-          soldsafeMeme: ethers.utils.formatEther(soldsafeMeme),
+          safeMemesSold: ethers.utils.formatEther(safeMemesSold),
           tokenBReceived: ethers.utils.formatEther(tokenBReceived),
           availableSafeMeme: ethers.utils.formatEther(availableSafeMeme),
         })
@@ -1062,7 +1063,7 @@ const SafeLaunch: React.FC = () => {
                                           <p>Sold {token.symbol}:</p>
                                           <p>
                                             {parseFloat(
-                                              stage.soldsafeMeme
+                                              stage.safeMemesSold
                                             ).toLocaleString()}
                                           </p>
                                         </div>

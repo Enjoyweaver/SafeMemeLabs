@@ -41,6 +41,7 @@ interface TokenInfo {
     safeMemeAvailable: string
     tokenBReceived: string
     soldsafeMeme: string
+    safeMemesSold: string
     stageRemainingSafeMeme: string
     safeLaunchActivated: boolean
     tokenBSet: boolean
@@ -175,6 +176,11 @@ const Dashboard = () => {
 
     try {
       const currentStageInfo = await dexContract.getCurrentStageInfo()
+      console.log(
+        "Raw currentStageInfo:",
+        currentStageInfo.map((i) => i.toString())
+      )
+
       const [
         currentStage,
         stageStatus,
@@ -182,7 +188,7 @@ const Dashboard = () => {
         safeMemePrice,
         safeMemeAvailable,
         tokenBReceived,
-        soldSafeMeme,
+        safeMemesSold,
         tokenBSet,
         safeLaunchComplete,
       ] = currentStageInfo
@@ -190,6 +196,9 @@ const Dashboard = () => {
       const tokenBAddress = await dexContract.tokenBAddress()
       const tokenBName = await dexContract.tokenBName()
       const tokenBSymbol = await dexContract.tokenBSymbol()
+
+      const lastTransactionAmount =
+        await dexContract.getCurrentStageLastTransaction()
 
       return {
         address: dexAddress,
@@ -200,8 +209,9 @@ const Dashboard = () => {
         stageTokenBAmount: ethers.utils.formatEther(tokenBRequired),
         safeMemePrices: ethers.utils.formatEther(safeMemePrice),
         safeMemeAvailable: ethers.utils.formatEther(safeMemeAvailable),
-        stagetokenBReceived: ethers.utils.formatEther(tokenBReceived),
-        stagesoldSafeMeme: ethers.utils.formatEther(soldSafeMeme),
+        tokenBReceived: ethers.utils.formatEther(tokenBReceived),
+        safeMemesSold: ethers.utils.formatEther(safeMemesSold),
+        lastTransactionAmount: ethers.utils.formatEther(lastTransactionAmount),
         safeLaunchActivated: tokenBSet,
         tokenBSet,
         stageAmountSet: stageStatus.toNumber() === 2,
@@ -350,6 +360,30 @@ const Dashboard = () => {
     }
   }
 
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null
+
+    if (modalIsOpen && selectedToken && provider) {
+      const updateTokenInfo = async () => {
+        const updatedTokenInfo = await getTokenInfo(
+          selectedToken.address,
+          provider,
+          selectedToken.chainId
+        )
+        setSelectedToken(updatedTokenInfo)
+      }
+
+      updateTokenInfo() // Update immediately
+      intervalId = setInterval(updateTokenInfo, 15000) // Update every 15 seconds
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId)
+      }
+    }
+  }, [modalIsOpen, selectedToken, provider])
+
   const handleSwap = async () => {
     if (
       !selectedToken ||
@@ -406,6 +440,13 @@ const Dashboard = () => {
       await buyTokensTx.wait()
 
       alert("Swap successful!") // Display success message
+
+      const updatedTokenInfo = await getTokenInfo(
+        selectedToken.address,
+        provider,
+        selectedToken.chainId
+      )
+      setSelectedToken(updatedTokenInfo)
 
       await fetchAllTokens() // Re-fetch all tokens to update the frontend
       closeModal() // Close the modal after a successful swap
@@ -625,10 +666,18 @@ const Dashboard = () => {
                     {token.dexInfo.stageAmountSet ? "Yes" : "No"}
                   </p>
                   <p>
+                    <strong>SafeMemes Sold (Cumulative):</strong>{" "}
+                    {formatAmount(token.dexInfo.safeMemesSold || "0")}
+                  </p>
+                  <p>
+                    <strong>SafeMemes Sold (Last Transaction):</strong>{" "}
+                    {formatAmount(token.dexInfo.lastTransactionAmount || "0")}
+                  </p>
+                  <p>
                     <strong>SafeMemes Available:</strong>{" "}
                     {formatAmount(
-                      parseFloat(token.dexInfo.safeMemeAvailable) -
-                        parseFloat(token.dexInfo.soldsafeMeme)
+                      parseFloat(token.dexInfo.safeMemeAvailable || "0") -
+                        parseFloat(token.dexInfo.safeMemesSold || "0")
                     )}
                   </p>
                 </>
