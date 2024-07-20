@@ -28,6 +28,14 @@
   width: 100%;
 }
 
+.navbarContentCenter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
 .navbarLi {
   font-size: 18px;
   line-height: 26.67px;
@@ -101,7 +109,7 @@
 .connectButtonContainer {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   margin-right: 3rem;
   width: 300px;
   padding: 10px 10px;
@@ -165,9 +173,9 @@
 
 .dropdownMenu {
   position: absolute;
-  top: 100%;
-  right: 0;
-  transform: translateY(5px);
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   border: 1px solid #ccc;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -175,6 +183,32 @@
   padding: 10px;
   text-align: center;
   background-color: var(--background-light);
+  display: none; /* Initially hide the dropdown */
+}
+
+.connectButtonContainer:hover .dropdownMenu,
+.dropdownMenu:hover {
+  display: block; /* Show the dropdown on hover */
+}
+
+.dropdownButton {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: var(--input-light);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 5px 0;
+  transition: background-color 0.3s ease;
+}
+
+.dropdownButton:hover {
+  background-color: var(--secondary-light);
+}
+
+.connectButtonContainer:hover .dropdownMenu {
+  display: block; /* Ensure the dropdown remains visible on hover */
 }
 
 @media screen and (max-width: 768px) {

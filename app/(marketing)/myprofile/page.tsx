@@ -40,7 +40,7 @@ interface StageInfo {
   safeMemeForSale: string
   requiredTokenB: string
   price: string
-  soldSafeMeme: string
+  soldsafeMeme: string
   tokenBReceived: string
   availableSafeMeme: string
   stageSet: boolean
@@ -267,7 +267,7 @@ const SafeLaunch: React.FC = () => {
           safeMemePrice,
           safeMemeAvailable,
           tokenBReceived,
-          soldSafeMeme,
+          soldsafeMeme,
         ] = await exchangeContract.getStageInfo(i)
 
         console.log(`Stage ${i} info:`, {
@@ -276,7 +276,7 @@ const SafeLaunch: React.FC = () => {
           safeMemePrice: safeMemePrice.toString(),
           safeMemeAvailable: safeMemeAvailable.toString(),
           tokenBReceived: tokenBReceived.toString(),
-          soldSafeMeme: soldSafeMeme.toString(),
+          soldsafeMeme: soldsafeMeme.toString(),
         })
 
         let stageStatus:
@@ -313,7 +313,7 @@ const SafeLaunch: React.FC = () => {
           safeMemeForSale: ethers.utils.formatEther(safeMemeAvailable),
           requiredTokenB: ethers.utils.formatEther(tokenBRequired),
           price: safeMemePrice.toString(),
-          soldSafeMeme: ethers.utils.formatEther(soldSafeMeme),
+          soldsafeMeme: ethers.utils.formatEther(soldsafeMeme),
           tokenBReceived: ethers.utils.formatEther(tokenBReceived),
           availableSafeMeme: ethers.utils.formatEther(safeMemeAvailable),
           stageSet: status === 2,
@@ -325,7 +325,7 @@ const SafeLaunch: React.FC = () => {
           safeMemeForSale: "0",
           requiredTokenB: "0",
           price: "0",
-          soldSafeMeme: "0",
+          soldsafeMeme: "0",
           tokenBReceived: "0",
           availableSafeMeme: "0",
           stageSet: false,
@@ -599,7 +599,7 @@ const SafeLaunch: React.FC = () => {
         )
         const [tokenBRequired, safeMemePrice] =
           await exchangeContract.getStageInfo(currentStage)
-        const [tokenBReceived, soldSafeMeme] =
+        const [tokenBReceived, soldsafeMeme] =
           await exchangeContract.getStageLiquidity(currentStage)
         const totalSupply = await exchangeContract.totalSupply()
         const MAX_PERCENTAGE_PER_STAGE = ethers.BigNumber.from(10) // 10% per stage
@@ -607,13 +607,13 @@ const SafeLaunch: React.FC = () => {
         const safeMemeForSale = totalSupply
           .mul(MAX_PERCENTAGE_PER_STAGE)
           .div(100)
-        const availableSafeMeme = safeMemeForSale.sub(soldSafeMeme)
+        const availableSafeMeme = safeMemeForSale.sub(soldsafeMeme)
 
         setStageInfo({
           safeMemeForSale: ethers.utils.formatEther(safeMemeForSale),
           requiredTokenB: ethers.utils.formatEther(tokenBRequired),
           price: ethers.utils.formatEther(safeMemePrice),
-          soldSafeMeme: ethers.utils.formatEther(soldSafeMeme),
+          soldsafeMeme: ethers.utils.formatEther(soldsafeMeme),
           tokenBReceived: ethers.utils.formatEther(tokenBReceived),
           availableSafeMeme: ethers.utils.formatEther(availableSafeMeme),
         })
@@ -1062,7 +1062,7 @@ const SafeLaunch: React.FC = () => {
                                           <p>Sold {token.symbol}:</p>
                                           <p>
                                             {parseFloat(
-                                              stage.soldSafeMeme
+                                              stage.soldsafeMeme
                                             ).toLocaleString()}
                                           </p>
                                         </div>

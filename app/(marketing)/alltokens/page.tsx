@@ -40,7 +40,7 @@ interface TokenInfo {
     safeMemePrices: string
     safeMemeAvailable: string
     tokenBReceived: string
-    soldSafeMeme: string
+    soldsafeMeme: string
     stageRemainingSafeMeme: string
     safeLaunchActivated: boolean
     tokenBSet: boolean
@@ -146,23 +146,24 @@ const Dashboard = () => {
         provider
       )
 
-      // Event listener for StageCompleted
-      const handleStageCompleted = async (
-        safeMemeAddress,
-        stage,
-        soldsafeMeme,
-        totalReceived
+      const handleSafeMemePurchased = async (
+        buyer,
+        safeMeme,
+        safeMemeAmount,
+        tokenBAmount,
+        stage
       ) => {
-        console.log(`Stage ${stage} completed for SafeMeme: ${safeMemeAddress}`)
+        console.log(
+          `SafeMeme purchased: ${safeMemeAmount} SafeMeme, ${tokenBAmount} TokenB`
+        )
         await fetchAllTokens() // Re-fetch all tokens to update the frontend
       }
 
-      // Listen for the StageCompleted event
-      dexContract.on("StageCompleted", handleStageCompleted)
+      dexContract.on("SafeMemePurchased", handleSafeMemePurchased)
 
       // Clean up the event listener on component unmount
       return () => {
-        dexContract.off("StageCompleted", handleStageCompleted)
+        dexContract.off("SafeMemePurchased", handleSafeMemePurchased)
       }
     }
   }, [provider, selectedToken])
@@ -199,8 +200,8 @@ const Dashboard = () => {
         stageTokenBAmount: ethers.utils.formatEther(tokenBRequired),
         safeMemePrices: ethers.utils.formatEther(safeMemePrice),
         safeMemeAvailable: ethers.utils.formatEther(safeMemeAvailable),
-        tokenBReceived: ethers.utils.formatEther(tokenBReceived),
-        soldSafeMeme: ethers.utils.formatEther(soldSafeMeme),
+        stagetokenBReceived: ethers.utils.formatEther(tokenBReceived),
+        stagesoldSafeMeme: ethers.utils.formatEther(soldSafeMeme),
         safeLaunchActivated: tokenBSet,
         tokenBSet,
         stageAmountSet: stageStatus.toNumber() === 2,
@@ -404,7 +405,10 @@ const Dashboard = () => {
       const buyTokensTx = await dexContract.buyTokens(tokenBAmount)
       await buyTokensTx.wait()
 
-      console.log("Swap successful!")
+      alert("Swap successful!") // Display success message
+
+      await fetchAllTokens() // Re-fetch all tokens to update the frontend
+      closeModal() // Close the modal after a successful swap
     } catch (error) {
       console.error("Error during swap:", error)
       setSwapError(error.message)
@@ -412,6 +416,36 @@ const Dashboard = () => {
       setIsSwapping(false)
     }
   }
+
+  useEffect(() => {
+    if (provider && selectedToken && selectedToken.dexInfo) {
+      const dexContract = new ethers.Contract(
+        selectedToken.dexInfo.address,
+        ExchangeABI,
+        provider
+      )
+
+      const handleSafeMemePurchased = async (
+        buyer,
+        safeMeme,
+        safeMemeAmount,
+        tokenBAmount,
+        stage
+      ) => {
+        console.log(
+          `SafeMeme purchased: ${safeMemeAmount} SafeMeme, ${tokenBAmount} TokenB`
+        )
+        await fetchAllTokens() // Re-fetch all tokens to update the frontend
+      }
+
+      dexContract.on("SafeMemePurchased", handleSafeMemePurchased)
+
+      // Clean up the event listener on component unmount
+      return () => {
+        dexContract.off("SafeMemePurchased", handleSafeMemePurchased)
+      }
+    }
+  }, [provider, selectedToken])
 
   useEffect(() => {
     if (selectedToken && modalIsOpen) {
@@ -594,7 +628,7 @@ const Dashboard = () => {
                     <strong>SafeMemes Available:</strong>{" "}
                     {formatAmount(
                       parseFloat(token.dexInfo.safeMemeAvailable) -
-                        parseFloat(token.dexInfo.soldSafeMeme)
+                        parseFloat(token.dexInfo.soldsafeMeme)
                     )}
                   </p>
                 </>
@@ -727,7 +761,7 @@ const Dashboard = () => {
                 {selectedToken?.dexInfo
                   ? formatAmount(
                       parseFloat(selectedToken.dexInfo.safeMemeAvailable) -
-                        parseFloat(selectedToken.dexInfo.soldSafeMeme)
+                        parseFloat(selectedToken.dexInfo.soldsafeMeme)
                     )
                   : "0"}
               </p>
