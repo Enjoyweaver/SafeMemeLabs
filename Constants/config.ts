@@ -474,27 +474,27 @@ export const masterVyperTokenCopy: {
 export const safeMemeTemplate: {
   [key: string]: string
 } = {
-  "4002": "0x581FE0F0f0085aFe6D1c29beEe3b9BBB047f5B0f",
+  "4002": "0xb3c47Ac40b3AC3ae6fE52ADDbA93e65b517e4283",
   // "64165": "0xe5355DB1838d2e56786cC7E66FF9a122F2bb3d1d",
 }
 
 export const safeLaunchFactory: {
   [key: string]: string
 } = {
-  "4002": "0x12F2b79849c790b03a2B77f839079700550Af3a1",
+  "4002": "0x24CbaE062a809D36BfADb33FbaDfd3E540C2c730",
   //"64165": "0x0643e30ABfa871c5a22c602Cb2071c2B1230e0d9",
 }
 
 export const exchangeTemplate: {
   [key: string]: string
 } = {
-  "4002": "0xd250bDDE89f6b8f5a9F3d797EE502205ae5D200a",
+  "4002": "0xca3d6C7c165362dbd6111916A058D4Beb514f543",
   // "64165": "0x8401eb679FBCc6522B6489C1a5E119532918f88a",
 }
 
 export const exchangeFactory: {
   [key: string]: string
 } = {
-  "4002": "0xd32F942343c72C5b89C0ef1eAf84A580F122819d",
+  "4002": "0xA3F09DB14c7DE6D60FDae559DD16cCf6A9Cd65C0",
   //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
 }

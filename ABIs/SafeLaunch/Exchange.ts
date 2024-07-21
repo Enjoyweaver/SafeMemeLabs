@@ -610,11 +610,11 @@ export const ExchangeABI = [
     outputs: [
       {
         name: "",
-        type: "uint256[6]",
+        type: "uint256[5]",
       },
       {
         name: "",
-        type: "uint256[6]",
+        type: "uint256[5]",
       },
     ],
   },
@@ -629,6 +629,10 @@ export const ExchangeABI = [
       },
     ],
     outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
       {
         name: "",
         type: "uint256",
@@ -691,6 +695,10 @@ export const ExchangeABI = [
       },
       {
         name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
         type: "bool",
       },
       {
@@ -702,7 +710,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getsafeMemesAvailable",
+    name: "getsafeMemesLocked",
     inputs: [],
     outputs: [
       {

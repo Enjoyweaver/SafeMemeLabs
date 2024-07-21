@@ -74,18 +74,6 @@ body {
   color: var(--foreground-dark) !important;
 }
 
-.token-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 30px;
-  background-color: var(--background-light) !important;
-}
-
-.dark .token-container {
-  background-color: var(--background-dark) !important;
-}
-
 .meme-container {
   display: flex;
   flex-wrap: wrap;

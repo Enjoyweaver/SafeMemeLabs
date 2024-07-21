@@ -181,7 +181,7 @@ const Dashboard = () => {
         tokenBRequired,
         safeMemePrice,
         safeMemeAvailable,
-        tokenBReceived,
+        soldsafeMeme,
         tokenBSet,
         safeLaunchComplete,
       ] = currentStageInfo
@@ -190,10 +190,8 @@ const Dashboard = () => {
       const tokenBName = await dexContract.tokenBName()
       const tokenBSymbol = await dexContract.tokenBSymbol()
 
-      const [tokenBLiquidityReceived, soldsafeMeme] =
+      const [stagetokenBReceived, safeMemesSold, safeMeme_remaining] =
         await dexContract.getStageLiquidity(currentStage.toNumber())
-
-      const cumulativeSafeMemesSold = await dexContract.getsafeMemesSold()
 
       return {
         address: dexAddress,
@@ -204,8 +202,9 @@ const Dashboard = () => {
         stageTokenBAmount: ethers.utils.formatEther(tokenBRequired),
         safeMemePrices: ethers.utils.formatEther(safeMemePrice),
         safeMemeAvailable: ethers.utils.formatEther(safeMemeAvailable),
-        tokenBReceived: ethers.utils.formatEther(tokenBReceived),
-        safeMemesSold: ethers.utils.formatEther(cumulativeSafeMemesSold),
+        tokenBReceived: ethers.utils.formatEther(stagetokenBReceived),
+        safeMemesSold: ethers.utils.formatEther(safeMemesSold),
+        safeMeme_remaining: ethers.utils.formatEther(safeMeme_remaining),
         soldsafeMeme: ethers.utils.formatEther(soldsafeMeme),
         safeLaunchActivated: tokenBSet,
         tokenBSet,
@@ -699,11 +698,8 @@ const Dashboard = () => {
                     {formatAmount(token.dexInfo.soldsafeMeme)}
                   </p>
                   <p>
-                    <strong>SafeMemes Available:</strong>{" "}
-                    {formatAmount(
-                      parseFloat(token.dexInfo.safeMemeAvailable || "0") -
-                        parseFloat(token.dexInfo.safeMemesSold || "0")
-                    )}
+                    <strong>SafeMemes Remaining:</strong>{" "}
+                    {formatAmount(token.dexInfo.safeMeme_remaining)}
                   </p>
                 </>
               )}
@@ -778,7 +774,7 @@ const Dashboard = () => {
         <div className="swap-container">
           <h1 className="page-title">Token Swap</h1>
           <div className="swap-card">
-            <div className="token-section">
+            <div className="token-sectionFrom">
               <label htmlFor="tokenFrom">From (Token B)</label>
               <div className="token-amount-container">
                 <input
@@ -804,7 +800,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="token-section">
+            <div className="token-sectionTo">
               <label htmlFor="tokenTo">To (SafeMeme)</label>
               <div className="token-amount-container">
                 <input

@@ -29,6 +29,17 @@ body {
   color: var(--foreground-dark);
 }
 
+.token-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 30px;
+}
+
+.dark .token-container {
+  background-color: var(--background-dark) !important;
+}
+
 .swap-modal {
   position: absolute;
   top: 50%;
@@ -79,7 +90,20 @@ body {
   color: var(--primary-dark);
 }
 
+.token-sectionFrom {
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 1rem;
+}
+
 .token-section {
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.token-sectionTo {
   border: 1px solid var(--border-light);
   border-radius: 5px;
   padding: 10px;
@@ -100,7 +124,7 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 30px;
 }
 
 .input-field,
