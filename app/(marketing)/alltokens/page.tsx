@@ -98,7 +98,7 @@ const Dashboard = () => {
     try {
       setLoading(true)
       setError(null)
-      let allTokens = []
+      let allTokens: TokenInfo[] = []
 
       for (const chainId of Object.keys(safeLaunchFactory)) {
         try {
@@ -119,14 +119,13 @@ const Dashboard = () => {
               provider,
               chainId
             )
-            allTokens.push(tokenInfo)
+            allTokens.push(tokenInfo as TokenInfo)
           }
         } catch (networkError) {
           console.error(
             `Error fetching tokens for chain ID ${chainId}:`,
             networkError
           )
-          // Continue with the next chain ID
         }
       }
 
@@ -176,11 +175,6 @@ const Dashboard = () => {
 
     try {
       const currentStageInfo = await dexContract.getCurrentStageInfo()
-      console.log(
-        "Raw currentStageInfo:",
-        currentStageInfo.map((i) => i.toString())
-      )
-
       const [
         currentStage,
         stageStatus,
@@ -188,7 +182,6 @@ const Dashboard = () => {
         safeMemePrice,
         safeMemeAvailable,
         tokenBReceived,
-        safeMemesSold,
         tokenBSet,
         safeLaunchComplete,
       ] = currentStageInfo
@@ -197,8 +190,10 @@ const Dashboard = () => {
       const tokenBName = await dexContract.tokenBName()
       const tokenBSymbol = await dexContract.tokenBSymbol()
 
-      const lastTransactionAmount =
-        await dexContract.getCurrentStageLastTransaction()
+      const [tokenBLiquidityReceived, soldsafeMeme] =
+        await dexContract.getStageLiquidity(currentStage.toNumber())
+
+      const cumulativeSafeMemesSold = await dexContract.getsafeMemesSold()
 
       return {
         address: dexAddress,
@@ -210,8 +205,8 @@ const Dashboard = () => {
         safeMemePrices: ethers.utils.formatEther(safeMemePrice),
         safeMemeAvailable: ethers.utils.formatEther(safeMemeAvailable),
         tokenBReceived: ethers.utils.formatEther(tokenBReceived),
-        safeMemesSold: ethers.utils.formatEther(safeMemesSold),
-        lastTransactionAmount: ethers.utils.formatEther(lastTransactionAmount),
+        safeMemesSold: ethers.utils.formatEther(cumulativeSafeMemesSold),
+        soldsafeMeme: ethers.utils.formatEther(soldsafeMeme),
         safeLaunchActivated: tokenBSet,
         tokenBSet,
         stageAmountSet: stageStatus.toNumber() === 2,
@@ -272,6 +267,36 @@ const Dashboard = () => {
       dexInfo: dexInfo ? { ...dexInfo, address: dexAddress } : null,
     }
   }
+
+  useEffect(() => {
+    if (provider && selectedToken && selectedToken.dexInfo) {
+      const dexContract = new ethers.Contract(
+        selectedToken.dexInfo.address,
+        ExchangeABI,
+        provider
+      )
+
+      const handleSafeMemePurchased = async (
+        buyer,
+        safeMeme,
+        safeMemeAmount,
+        tokenBAmount,
+        stage
+      ) => {
+        console.log(
+          `SafeMeme purchased: ${safeMemeAmount} SafeMeme, ${tokenBAmount} TokenB`
+        )
+        await fetchAllTokens() // Re-fetch all tokens to update the frontend
+      }
+
+      dexContract.on("SafeMemePurchased", handleSafeMemePurchased)
+
+      // Clean up the event listener on component unmount
+      return () => {
+        dexContract.off("SafeMemePurchased", handleSafeMemePurchased)
+      }
+    }
+  }, [provider, selectedToken])
 
   const filterTokens = (tokens) => {
     return tokens.filter((token) => {
@@ -667,11 +692,11 @@ const Dashboard = () => {
                   </p>
                   <p>
                     <strong>SafeMemes Sold (Cumulative):</strong>{" "}
-                    {formatAmount(token.dexInfo.safeMemesSold || "0")}
+                    {formatAmount(token.dexInfo.safeMemesSold)}
                   </p>
                   <p>
                     <strong>SafeMemes Sold (Last Transaction):</strong>{" "}
-                    {formatAmount(token.dexInfo.lastTransactionAmount || "0")}
+                    {formatAmount(token.dexInfo.soldsafeMeme)}
                   </p>
                   <p>
                     <strong>SafeMemes Available:</strong>{" "}

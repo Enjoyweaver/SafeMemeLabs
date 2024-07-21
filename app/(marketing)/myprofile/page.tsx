@@ -201,10 +201,10 @@ const SafeLaunch: React.FC = () => {
           tokenB = await exchangeContract.tokenBAddress()
           currentStage = currentStageInfo[0].toNumber()
           stageStatus = currentStageInfo[1].toNumber()
-          lockedTokens = await exchangeContract.getsafeMemesAvailable()
+          lockedTokens = await exchangeContract.getsafeMemesLocked()
           safeMemeForSale = await exchangeContract.salesafeMeme()
           stageInfo = await fetchStageInfo(exchangeContract, currentStage)
-          tokenBAmountSet = stageStatus === 2 // STAGE_STATUS_OPEN_AND_SET
+          tokenBAmountSet = stageStatus === 2
         }
 
         return {
