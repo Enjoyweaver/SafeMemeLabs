@@ -1,5 +1,6 @@
 .container {
   height: auto;
+  top: 15px;
 }
 
 .nav {
@@ -158,6 +159,7 @@
 }
 
 .chainName {
+  display: flex;
   font-size: 12px;
   color: var(--foreground-light);
 }
@@ -192,13 +194,13 @@
 
 .dropdownButton {
   display: block;
-  width: 100%;
+  width: 70%;
   padding: 10px;
-  background-color: var(--input-light);
+  background-color: var(--input-dark);
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin: 5px 0;
+  margin: 5px auto;
   transition: background-color 0.3s ease;
 }
 

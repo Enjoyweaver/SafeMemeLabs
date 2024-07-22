@@ -158,18 +158,22 @@ export function Navbar() {
                   onMouseEnter={() => toggleConnectMenuOpen(true)}
                   onMouseLeave={() => toggleConnectMenuOpen(false)}
                 >
-                  <button
-                    className={styles.dropdownButton}
-                    onClick={toggleNetworkMenuOpen}
-                  >
-                    Change Blockchain
-                  </button>
-                  <button
-                    className={styles.dropdownButton}
-                    onClick={() => disconnect()}
-                  >
-                    Disconnect
-                  </button>
+                  {!networkMenuOpen && (
+                    <>
+                      <button
+                        className={styles.dropdownButton}
+                        onClick={toggleNetworkMenuOpen}
+                      >
+                        Change Blockchain
+                      </button>
+                      <button
+                        className={styles.dropdownButton}
+                        onClick={() => disconnect()}
+                      >
+                        Disconnect
+                      </button>
+                    </>
+                  )}
                   {networkMenuOpen && (
                     <div className={styles.networkOptionsContainer}>
                       {chainDetails.map((chain) => (
