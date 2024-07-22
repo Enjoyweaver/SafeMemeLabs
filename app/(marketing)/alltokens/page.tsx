@@ -350,7 +350,6 @@ const Dashboard = () => {
       }
 
       updateTokenInfo() // Update immediately
-      intervalId = setInterval(updateTokenInfo, 15000) // Update every 15 seconds
     }
 
     return () => {
@@ -412,7 +411,9 @@ const Dashboard = () => {
         await approveTx.wait()
       }
 
-      const buyTokensTx = await dexContract.buyTokens(tokenBAmount)
+      const buyTokensTx = await dexContract.buyTokens(tokenBAmount, {
+        gasLimit: ethers.utils.parseUnits("9000000", "wei"),
+      })
       await buyTokensTx.wait()
 
       alert("Swap successful!") // Display success message

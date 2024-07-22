@@ -296,7 +296,7 @@
 .sidebar ul li a {
   display: inline-block;
   padding: 2px 5px;
-  color: #585454;
+  color: #302c2c;
   text-decoration: none;
   font-size: 0.8rem;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
@@ -320,15 +320,14 @@ body.scrolling .sidebar ul li a {
 
 .sidebar ul li a:hover,
 .sidebar ul li.active a {
-  background-color: #3b9d59; /* Darker green on hover */
-  transform: scale(1.05);
+  transform: scale(1.1);
   border-color: #ff69b4; /* Pink border on active/hover */
-  color: #fff; /* Brighter color for active/hover links */
+  color: #3b9d59; /* Brighter color for active/hover links */
 }
 
 @media screen and (max-width: 768px) {
   .sidebar {
-    left: -12px;
+    left: -8px;
     width: 180px;
     justify-content: center;
     text-align: left;
