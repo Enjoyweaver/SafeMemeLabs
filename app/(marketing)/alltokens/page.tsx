@@ -11,6 +11,7 @@ import {
   rpcUrls,
   safeLaunchFactory,
 } from "@/Constants/config"
+import { getStageInfo } from "@/utils/stageInfo"
 import { ethers } from "ethers"
 import Modal from "react-modal"
 import { useAccount, useConnect, useNetwork, useWalletClient } from "wagmi"
@@ -168,55 +169,6 @@ const Dashboard = () => {
     }
   }, [provider, selectedToken])
 
-  const getDexInfo = async (dexAddress, provider) => {
-    if (dexAddress === ethers.constants.AddressZero) return null
-
-    const dexContract = new ethers.Contract(dexAddress, ExchangeABI, provider)
-
-    try {
-      const currentStageInfo = await dexContract.getCurrentStageInfo()
-      const [
-        currentStage,
-        stageStatus,
-        tokenBRequired,
-        safeMemePrice,
-        safeMemeAvailable,
-        soldsafeMeme,
-        tokenBSet,
-        safeLaunchComplete,
-      ] = currentStageInfo
-
-      const tokenBAddress = await dexContract.tokenBAddress()
-      const tokenBName = await dexContract.tokenBName()
-      const tokenBSymbol = await dexContract.tokenBSymbol()
-
-      const [stagetokenBReceived, safeMemesSold, safeMeme_remaining] =
-        await dexContract.getStageLiquidity(currentStage.toNumber())
-
-      return {
-        address: dexAddress,
-        currentStage: currentStage.toNumber(),
-        tokenBAddress,
-        tokenBName,
-        tokenBSymbol,
-        stageTokenBAmount: ethers.utils.formatEther(tokenBRequired),
-        safeMemePrices: ethers.utils.formatEther(safeMemePrice),
-        safeMemeAvailable: ethers.utils.formatEther(safeMemeAvailable),
-        tokenBReceived: ethers.utils.formatEther(stagetokenBReceived),
-        safeMemesSold: ethers.utils.formatEther(safeMemesSold),
-        safeMeme_remaining: ethers.utils.formatEther(safeMeme_remaining),
-        soldsafeMeme: ethers.utils.formatEther(soldsafeMeme),
-        safeLaunchActivated: tokenBSet,
-        tokenBSet,
-        stageAmountSet: stageStatus.toNumber() === 2,
-        safeLaunchComplete,
-      }
-    } catch (error) {
-      console.error("Error fetching DEX info:", error)
-      return null
-    }
-  }
-
   useEffect(() => {
     if (walletClient) {
       const newProvider = new ethers.providers.Web3Provider(walletClient)
@@ -251,7 +203,7 @@ const Dashboard = () => {
       tokenContract.getMaxWalletAmount(),
     ])
 
-    const dexInfo = await getDexInfo(dexAddress, provider)
+    const dexInfo = await getStageInfo(dexAddress, provider)
 
     return {
       address: tokenAddress,
@@ -541,7 +493,10 @@ const Dashboard = () => {
       maximumFractionDigits: 2,
     })
 
-    return formattedAmount
+    // Adding the additional precision formatting
+    const preciseAmount = parseFloat(amount).toFixed(2)
+
+    return preciseAmount
   }
 
   const renderTokens = () => {
@@ -561,166 +516,220 @@ const Dashboard = () => {
 
     return (
       <div className="meme-container">
-        {filteredTokens.map((token, index) => (
-          <div
-            key={`${token.chainId}-${token.address}-${index}`}
-            className="meme"
-          >
-            <div className="meme-header">
-              <h3>
-                {token.name} ({token.symbol})
-              </h3>
-            </div>
-            <div className="meme-details">
-              <p>
-                <strong>Chain:</strong>{" "}
-                {chains.find((c) => c.id.toString() === token.chainId)?.name ||
-                  token.chainId}
-              </p>
-              <p>
-                <strong>Address:</strong>{" "}
-                <a
-                  href={`${blockExplorerToken[token.chainId || ""]}${
-                    token.address
-                  }`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {`${token.address.slice(0, 6)}...${token.address.slice(-6)}`}{" "}
-                </a>
-              </p>
-              <p>
-                <strong>Total Supply:</strong> {formatAmount(token.totalSupply)}
-              </p>
-              <p>
-                <strong>Owner:</strong>{" "}
-                <a
-                  href={`${blockExplorerAddress[token.chainId || ""]}${
-                    token.owner
-                  }`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {`${token.owner.slice(0, 6)}...${token.owner.slice(-6)}`}
-                </a>
-              </p>
+        {filteredTokens.map((token, index) => {
+          console.log("Stages Section Data:", token)
 
-              <p>
-                <strong>Anti-Whale Percentage:</strong>{" "}
-                {(token.antiWhalePercentage / 100).toFixed(2)}%
-              </p>
-              <p>
-                <strong>Max Wallet Amount:</strong>{" "}
-                {formatAmount(token.maxWalletAmount)}
-              </p>
-              {token.dexInfo ? (
-                <>
-                  <p>
-                    <strong>SafeLaunch Activated:</strong>{" "}
-                    {token.dexInfo.safeLaunchActivated ? "Yes" : "No"}
-                  </p>
-                </>
-              ) : (
+          return (
+            <div
+              key={`${token.chainId}-${token.address}-${index}`}
+              className="meme"
+            >
+              <div className="meme-header">
+                <h3>
+                  {token.name} ({token.symbol})
+                </h3>
+              </div>
+              <div className="meme-details">
                 <p>
-                  <strong>SafeLaunch Activated:</strong> No
+                  <strong>Chain:</strong>{" "}
+                  {chains.find((c) => c.id.toString() === token.chainId)
+                    ?.name || token.chainId}
                 </p>
-              )}
-              {token.dexInfo && (
-                <>
-                  <div className="meme-header">
-                    <h4>SafeLaunch Information</h4>
-                  </div>
+                <p>
+                  <strong>Address:</strong>{" "}
+                  <a
+                    href={`${blockExplorerToken[token.chainId || ""]}${
+                      token.address
+                    }`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {`${token.address.slice(0, 6)}...${token.address.slice(
+                      -6
+                    )}`}{" "}
+                  </a>
+                </p>
+                <p>
+                  <strong>Total Supply:</strong>{" "}
+                  {formatAmount(token.totalSupply)}
+                </p>
+                <p>
+                  <strong>Owner:</strong>{" "}
+                  <a
+                    href={`${blockExplorerAddress[token.chainId || ""]}${
+                      token.owner
+                    }`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {`${token.owner.slice(0, 6)}...${token.owner.slice(-6)}`}
+                  </a>
+                </p>
+                <p>
+                  <strong>Anti-Whale Percentage:</strong>{" "}
+                  {(token.antiWhalePercentage / 100).toFixed(2)}%
+                </p>
+                <p>
+                  <strong>Max Wallet Amount:</strong>{" "}
+                  {formatAmount(token.maxWalletAmount)}
+                </p>
+                {token.dexInfo ? (
+                  <>
+                    <p>
+                      <strong>SafeLaunch Activated:</strong>{" "}
+                      {token.dexInfo.safeLaunchActivated ? "Yes" : "No"}
+                    </p>
+                  </>
+                ) : (
                   <p>
-                    <strong>DEX Address:</strong>{" "}
-                    <a
-                      href={`${blockExplorerAddress[token.chainId || ""]}${
-                        token.dexInfo.address
-                      }`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {`${token.dexInfo.address.slice(
-                        0,
-                        6
-                      )}...${token.dexInfo.address.slice(-6)}`}
-                    </a>
+                    <strong>SafeLaunch Activated:</strong> No
                   </p>
-                  <p>
-                    <strong>Current Stage:</strong>{" "}
-                    {token.dexInfo.currentStage + 1}
-                  </p>
-                  <p>
-                    <strong>Token B:</strong>{" "}
-                    <a
-                      href={`${blockExplorerToken[token.chainId || ""]}${
-                        token.dexInfo.tokenBAddress
-                      }`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {token.dexInfo.tokenBName}
-                    </a>
-                  </p>
-                  <p>
-                    <strong>Token B Address:</strong>{" "}
-                    <a
-                      href={`${blockExplorerToken[token.chainId || ""]}${
-                        token.dexInfo.tokenBAddress
-                      }`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {`${token.dexInfo.tokenBAddress.slice(
-                        0,
-                        6
-                      )}...${token.dexInfo.tokenBAddress.slice(-6)}`}
-                    </a>
-                  </p>
+                )}
+                {token.dexInfo && (
+                  <>
+                    <div className="meme-header">
+                      <h4>SafeLaunch Information</h4>
+                    </div>
+                    <p>
+                      <strong>DEX Address:</strong>{" "}
+                      <a
+                        href={`${blockExplorerAddress[token.chainId || ""]}${
+                          token.dexInfo.address
+                        }`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {`${token.dexInfo.address.slice(
+                          0,
+                          6
+                        )}...${token.dexInfo.address.slice(-6)}`}
+                      </a>
+                    </p>
+                    <p>
+                      <strong>Current Stage:</strong>{" "}
+                      {token.dexInfo.currentStage + 1}
+                    </p>
+                    <p>
+                      <strong>Token B:</strong>{" "}
+                      <a
+                        href={`${blockExplorerToken[token.chainId || ""]}${
+                          token.dexInfo.tokenBAddress
+                        }`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {token.dexInfo.tokenBName}
+                      </a>
+                    </p>
+                    <p>
+                      <strong>Token B Address:</strong>{" "}
+                      <a
+                        href={`${blockExplorerToken[token.chainId || ""]}${
+                          token.dexInfo.tokenBAddress
+                        }`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {`${token.dexInfo.tokenBAddress.slice(
+                          0,
+                          6
+                        )}...${token.dexInfo.tokenBAddress.slice(-6)}`}
+                      </a>
+                    </p>
+                    <p>
+                      <strong>Stage Token B Amount:</strong>{" "}
+                      {token.dexInfo.stageTokenBAmount}
+                    </p>
+                    <p>
+                      <strong>Token B Set:</strong>{" "}
+                      {token.dexInfo.tokenBSet ? "Yes" : "No"}
+                    </p>
+                    <p>
+                      <strong>Stage Amount Set:</strong>{" "}
+                      {token.dexInfo.stageAmountSet ? "Yes" : "No"}
+                    </p>
+                    <p>
+                      <strong>{token.symbol} Sold (Cumulative):</strong>{" "}
+                      {formatAmount(parseFloat(token.dexInfo.safeMemesSold))}
+                    </p>
+                    <p>
+                      <strong>{token.symbol} Remaining:</strong>{" "}
+                      {formatAmount(
+                        parseFloat(token.dexInfo.safeMeme_remaining)
+                      )}
+                    </p>
+                    {token.dexInfo.pastTransactions &&
+                    token.dexInfo.pastTransactions.length > 0 ? (
+                      <>
+                        <div className="meme-header">
+                          <h4>Latest Transaction</h4>
+                        </div>
+                        <p>
+                          <strong>Buyer:</strong>{" "}
+                          <a
+                            href={`${
+                              blockExplorerAddress[token.chainId || ""]
+                            }${
+                              token.dexInfo.pastTransactions[
+                                token.dexInfo.pastTransactions.length - 1
+                              ].buyer
+                            }`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {`${token.dexInfo.pastTransactions[
+                              token.dexInfo.pastTransactions.length - 1
+                            ].buyer.slice(
+                              0,
+                              6
+                            )}...${token.dexInfo.pastTransactions[
+                              token.dexInfo.pastTransactions.length - 1
+                            ].buyer.slice(-6)}`}
+                          </a>
+                        </p>
 
-                  <p>
-                    <strong>Stage Token B Amount:</strong>{" "}
-                    {token.dexInfo.stageTokenBAmount}
-                  </p>
-                  <p>
-                    <strong>Token B Set:</strong>{" "}
-                    {token.dexInfo.tokenBSet ? "Yes" : "No"}
-                  </p>
-                  <p>
-                    <strong>Stage Amount Set:</strong>{" "}
-                    {token.dexInfo.stageAmountSet ? "Yes" : "No"}
-                  </p>
-                  <p>
-                    <strong>SafeMemes Sold (Cumulative):</strong>{" "}
-                    {formatAmount(token.dexInfo.safeMemesSold)}
-                  </p>
-                  <p>
-                    <strong>SafeMemes Sold (Last Transaction):</strong>{" "}
-                    {formatAmount(token.dexInfo.soldsafeMeme)}
-                  </p>
-                  <p>
-                    <strong>SafeMemes Remaining:</strong>{" "}
-                    {formatAmount(token.dexInfo.safeMeme_remaining)}
-                  </p>
-                </>
-              )}
+                        <p>
+                          <strong>SafeMeme Amount:</strong>{" "}
+                          {
+                            token.dexInfo.pastTransactions[
+                              token.dexInfo.pastTransactions.length - 1
+                            ].safeMemeAmount
+                          }
+                        </p>
+                        <p>
+                          <strong>Token B Amount:</strong>{" "}
+                          {
+                            token.dexInfo.pastTransactions[
+                              token.dexInfo.pastTransactions.length - 1
+                            ].tokenBAmount
+                          }
+                        </p>
+                      </>
+                    ) : (
+                      <p>No past transactions found.</p>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {token.dexInfo &&
+                token.dexInfo.safeLaunchActivated &&
+                token.dexInfo.stageAmountSet && (
+                  <button
+                    className="buy-token-button"
+                    onClick={() => openModal(token)}
+                  >
+                    {isConnected && chain?.id.toString() === token.chainId
+                      ? `Buy ${token.name}`
+                      : `Connect to ${
+                          chains.find((c) => c.id.toString() === token.chainId)
+                            ?.name
+                        }`}
+                  </button>
+                )}
             </div>
-            {token.dexInfo &&
-              token.dexInfo.safeLaunchActivated &&
-              token.dexInfo.stageAmountSet && (
-                <button
-                  className="buy-token-button"
-                  onClick={() => openModal(token)}
-                >
-                  {isConnected && chain?.id.toString() === token.chainId
-                    ? `Buy ${token.name}`
-                    : `Connect to ${
-                        chains.find((c) => c.id.toString() === token.chainId)
-                          ?.name
-                      }`}
-                </button>
-              )}
-          </div>
-        ))}
+          )
+        })}
       </div>
     )
   }
@@ -830,8 +839,7 @@ const Dashboard = () => {
                 {selectedToken?.symbol || ""} Remaining:{" "}
                 {selectedToken?.dexInfo
                   ? formatAmount(
-                      parseFloat(selectedToken.dexInfo.safeMemeAvailable) -
-                        parseFloat(selectedToken.dexInfo.soldsafeMeme)
+                      parseFloat(selectedToken.dexInfo.safeMeme_remaining)
                     )
                   : "0"}
               </p>

@@ -269,6 +269,7 @@ const SafeLaunch: React.FC = () => {
           safeMemeAvailable,
           tokenBReceived,
           safeMemesSold,
+          soldsafeMeme,
         ] = await exchangeContract.getStageInfo(i)
         const [tokenBLiquidityReceived, safeMemesSoldInStage] =
           await exchangeContract.getStageLiquidity(i)
@@ -310,7 +311,7 @@ const SafeLaunch: React.FC = () => {
           safeMemesSold: ethers.utils.formatEther(safeMemesSold),
           tokenBReceived: ethers.utils.formatEther(tokenBReceived),
           availableSafeMeme: ethers.utils.formatEther(safeMemeAvailable),
-          soldsafeMeme: ethers.utils.formatEther(safeMemesSoldInStage),
+          soldsafeMeme: ethers.utils.formatEther(soldsafeMeme),
           stageSet: stageStatus === "open and set",
           status: stageStatus,
         })
