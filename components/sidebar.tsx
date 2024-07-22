@@ -1,4 +1,3 @@
-// Sidebar.js
 "use client"
 
 import { useEffect, useState } from "react"
@@ -32,6 +31,20 @@ export default function Sidebar() {
       })
 
       setCurrentSection(current)
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      document.body.classList.add("scrolling")
+
+      clearTimeout(window.scrollTimeout)
+      window.scrollTimeout = setTimeout(() => {
+        document.body.classList.remove("scrolling")
+      }, 200) // Adjust timeout duration as needed
     }
 
     window.addEventListener("scroll", handleScroll)

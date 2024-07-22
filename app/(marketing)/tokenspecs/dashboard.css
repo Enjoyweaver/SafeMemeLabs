@@ -155,7 +155,7 @@ body {
 .data-table th {
   background-color: var(--input-light);
   color: var(--text-light);
-  text-align: center;
+  text-align: ;
 }
 
 .data-table td {

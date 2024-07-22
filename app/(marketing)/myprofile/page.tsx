@@ -1133,9 +1133,7 @@ const SafeLaunch: React.FC = () => {
                                                           e.target.value
                                                         )
                                                       }
-                                                      placeholder={`Amount of ${selectedTokenBName} for Stage ${
-                                                        token.currentStage ?? 0
-                                                      }`}
+                                                      placeholder={`Amount `}
                                                       className="input-field"
                                                     />
                                                     <button
@@ -1153,7 +1151,8 @@ const SafeLaunch: React.FC = () => {
                                                     >
                                                       Set Token B Amount for
                                                       Stage{" "}
-                                                      {token.currentStage ?? 0}
+                                                      {token.currentStage + 1 ??
+                                                        0}
                                                     </button>
                                                   </>
                                                 )}

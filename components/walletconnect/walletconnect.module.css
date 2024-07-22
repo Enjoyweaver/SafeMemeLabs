@@ -182,7 +182,6 @@
   z-index: 1000;
   padding: 10px;
   text-align: center;
-  background-color: var(--background-light);
   display: none; /* Initially hide the dropdown */
 }
 
