@@ -251,8 +251,7 @@
   }
 
   .connectButton {
-    padding: 5px 10px; /* Adjust padding for mobile */
-    border-radius: 15px; /* Adjust border radius for mobile if needed */
+    padding: 15px 20px;
   }
 
   .connectText {
