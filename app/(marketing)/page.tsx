@@ -157,7 +157,8 @@ export default async function IndexPage() {
             <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
               As a creator you deserve a profile that illustrates your talents
               and that you can easily share with others. Your profile page will
-              be like your own personal onchain creative laboratory.
+              be your own onchain creative laboratory that allows you to be as
+              creative as you like.
             </p>
           </div>
         </section>
