@@ -70,12 +70,13 @@ export default async function IndexPage() {
             About
           </h2>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-            We believe you should create and build the safe meme economy, so we
-            are building the tools for you to do that. From allowing you to
-            create rugproof tokens, funding them through a SafeLaunch, creating
-            frames on Warpcast, sending token airdrops, and to even creating NFT
-            launches. You'll even be able to create your own profile so that you
-            can build your brand and reward your followers along the way.
+            We believe you should be the ones that create and build the safe
+            meme economy, so we are building the tools for you to do so. From
+            allowing you to create rugproof tokens, funding them through a
+            SafeLaunch, creating frames on Warpcast, sending token airdrops, and
+            to even creating NFT launches. You'll even be able to create your
+            own profile so that you can build your brand and reward your
+            followers along the way.
           </p>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
             We are blockchain agnostic and will be developing a diverse
