@@ -254,7 +254,8 @@ export default async function IndexPage() {
               >
                 GitHub
               </Link>{" "}
-              for you to review.
+              for you to review. You will even be able to review the results of
+              our testing so that you can verify for yourself.
             </p>
 
             {stars && (
