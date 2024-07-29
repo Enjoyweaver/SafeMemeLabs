@@ -158,7 +158,8 @@ export default async function IndexPage() {
               As a creator you deserve a profile that illustrates your talents
               and that you can easily share with others. Your profile page will
               be your own onchain creative laboratory that allows you to be as
-              creative as you like.
+              creative as you like. Your profile should be an extension of you
+              and the brand youre building.
             </p>
           </div>
         </section>
