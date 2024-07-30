@@ -321,7 +321,7 @@ body.scrolling .sidebar ul li a {
 .sidebar ul li a:hover,
 .sidebar ul li.active a {
   transform: scale(1.1);
-  border-color: #d70d72; /* Pink border on active/hover */
+  border-color: #960c51; /* Pink border on active/hover */
   color: #3b9d59; /* Brighter color for active/hover links */
 }
 

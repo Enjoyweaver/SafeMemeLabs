@@ -78,11 +78,15 @@ export default async function IndexPage() {
             own profile so that you can build your brand and reward your
             followers along the way.
           </p>
+          <br></br>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-            We are blockchain agnostic and will be developing a diverse
-            portfolio of tools on various blockchains over time that will be
-            listed in the SafeMeme Laboratory as they are created. Our
-            guidelines and standards are transparently displayed in the{" "}
+            Even though we are blockchain agnostic and will be developing a
+            diverse portfolio of tools on various blockchains over time, our own
+            data, documents, and information will be permanently stored on the
+            Arweave blockchain. We believe that safety starts with communication
+            and Arweave provides a permanent solution for this. And that starts
+            with our guidelines and standards that are transparently displayed
+            in the{" "}
             <a href="../docs" className="underline underline-offset-4">
               SafeMeme Laboratory
             </a>{" "}
