@@ -25,11 +25,6 @@ export const ExchangeABI = [
     name: "AddLiquidity",
     inputs: [
       {
-        name: "provider",
-        type: "address",
-        indexed: true,
-      },
-      {
         name: "tokenB_amount",
         type: "uint256",
         indexed: true,
@@ -38,6 +33,11 @@ export const ExchangeABI = [
         name: "safeMeme_amount",
         type: "uint256",
         indexed: true,
+      },
+      {
+        name: "deadline",
+        type: "uint256",
+        indexed: false,
       },
     ],
     anonymous: false,
@@ -262,28 +262,6 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "LiquidityAdded",
-    inputs: [
-      {
-        name: "safeMeme_amount",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "tokenB_amount",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "lp_tokens",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
     name: "SafeLaunchCompleted",
     inputs: [
       {
@@ -312,6 +290,30 @@ export const ExchangeABI = [
         name: "safeMeme",
         type: "address",
         indexed: true,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "LogTotalTokenBReceived",
+    inputs: [
+      {
+        name: "total_tokenB_received",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "LogUnlockedSafeMeme",
+    inputs: [
+      {
+        name: "unlocked_safeMeme",
+        type: "uint256",
+        indexed: false,
       },
     ],
     anonymous: false,
@@ -619,6 +621,13 @@ export const ExchangeABI = [
     ],
   },
   {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "testSetSafeLaunchComplete",
+    inputs: [],
+    outputs: [],
+  },
+  {
     stateMutability: "view",
     type: "function",
     name: "getStageInfo",
@@ -736,6 +745,59 @@ export const ExchangeABI = [
     type: "function",
     name: "getReceivedtokenB",
     inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setDEXAddress",
+    inputs: [
+      {
+        name: "dexAddress",
+        type: "address",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "addLiquidityExternal",
+    inputs: [
+      {
+        name: "safeMeme_amount",
+        type: "uint256",
+      },
+      {
+        name: "tokenB_amount",
+        type: "uint256",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getInputPriceExternal",
+    inputs: [
+      {
+        name: "input_amount",
+        type: "uint256",
+      },
+      {
+        name: "input_reserve",
+        type: "uint256",
+      },
+      {
+        name: "output_reserve",
+        type: "uint256",
+      },
+    ],
     outputs: [
       {
         name: "",
@@ -1129,7 +1191,7 @@ export const ExchangeABI = [
         type: "uint256",
       },
       {
-        name: "dex_addr",
+        name: "dexAddress",
         type: "address",
       },
     ],
@@ -1166,7 +1228,7 @@ export const ExchangeABI = [
         type: "address",
       },
       {
-        name: "dex_addr",
+        name: "dexAddress",
         type: "address",
       },
     ],
@@ -1199,7 +1261,7 @@ export const ExchangeABI = [
         type: "uint256",
       },
       {
-        name: "dex_addr",
+        name: "dexAddress",
         type: "address",
       },
     ],
@@ -1236,7 +1298,7 @@ export const ExchangeABI = [
         type: "address",
       },
       {
-        name: "dex_addr",
+        name: "dexAddress",
         type: "address",
       },
     ],
@@ -1756,18 +1818,6 @@ export const ExchangeABI = [
       {
         name: "",
         type: "bool",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "initialSafeMemeReserve",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
       },
     ],
   },

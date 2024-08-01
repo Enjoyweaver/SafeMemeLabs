@@ -21,6 +21,7 @@ import "react-toastify/dist/ReactToastify.css"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 import "./swap.css"
+import { ExchangeABI } from "@/ABIs/SafeLaunch/Exchange"
 import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 
@@ -46,7 +47,7 @@ const TokenSwap: React.FC<{
   const [stageInfo, setStageInfo] = useState(null)
   const [currentStage, setCurrentStage] = useState(0)
   const [tokenPrice, setTokenPrice] = useState(0)
-
+  const [dexStageTokens, setDexStageTokens] = useState<any[]>([])
   const [provider, setProvider] =
     useState<ethers.providers.Web3Provider | null>(null)
   const [tokenFactoryContract, setTokenFactoryContract] =
@@ -250,6 +251,52 @@ const TokenSwap: React.FC<{
     }
   }
 
+  const fetchDEXStageTokens = async () => {
+    if (!provider || !tokenFactoryContract) return
+
+    const allTokens = await getAllTokens()
+    const dexStageTokens = await Promise.all(
+      allTokens.map(async (tokenAddress) => {
+        const tokenContract = new ethers.Contract(
+          tokenAddress,
+          SafeMemeABI,
+          provider
+        )
+        const exchangeContract = new ethers.Contract(
+          tokenAddress,
+          ExchangeABI,
+          provider
+        )
+
+        try {
+          const [name, symbol, safeLaunchComplete] = await Promise.all([
+            tokenContract.name(),
+            tokenContract.symbol(),
+            exchangeContract.safeLaunchComplete(),
+          ])
+
+          if (safeLaunchComplete) {
+            return {
+              address: tokenAddress,
+              name,
+              symbol,
+              chainId,
+            }
+          }
+        } catch (error) {
+          console.error(
+            `Error fetching DEX stage token ${tokenAddress}:`,
+            error
+          )
+        }
+
+        return null
+      })
+    )
+
+    return dexStageTokens.filter((token) => token !== null)
+  }
+
   const fetchWalletTokens = async () => {
     if (!isConnected || !address) return
 
@@ -288,6 +335,9 @@ const TokenSwap: React.FC<{
   useEffect(() => {
     if (isClient && isConnected) {
       fetchAllTokenData()
+      fetchDEXStageTokens().then((tokens) => {
+        setDexStageTokens(tokens)
+      })
     }
   }, [isClient, isConnected, chain, address, tokenFactoryContract])
 
@@ -517,7 +567,8 @@ const TokenSwap: React.FC<{
         chainId,
         ...token,
       })),
-    ...deployedTokens, // Add deployed tokens to the combinedTokens array
+    ...deployedTokens,
+    ...dexStageTokens,
   ]
 
   return (
