@@ -17,7 +17,7 @@ import { toast } from "react-toastify"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
-import "./dashboard.css"
+import "./tokenspecs.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
 import { useDebounce } from "usehooks-ts"
@@ -123,7 +123,6 @@ export default function Dashboard(): JSX.Element {
         const totalSupply = await tokenContract.totalSupply()
         const formattedTotalSupply = ethers.utils.formatUnits(totalSupply, 18)
 
-        // Fetch Exchange details
         let tokenBPairing = ""
         let stage = "Not started"
         let isSafeLaunchActive = false
@@ -146,15 +145,14 @@ export default function Dashboard(): JSX.Element {
             )
 
             tokenBPairing = await exchangeContract.tokenBAddress()
-            const stageInfo = await exchangeContract.getCurrentStage()
-            stage = (parseInt(stageInfo[0]) + 1).toString()
-            isSafeLaunchActive = await exchangeContract.safeLaunchComplete()
-            isFinalized = isSafeLaunchActive && stageInfo.toNumber() === 5
+            const currentStage = await exchangeContract.currentStage()
+            stage = (currentStage.toNumber() + 1).toString()
+            isSafeLaunchActive = !(await exchangeContract.safeLaunchComplete())
+            isFinalized = !isSafeLaunchActive
 
             const balance = await tokenContract.balanceOf(dexAddress)
             exchangeBalance = ethers.utils.formatUnits(balance, 18)
 
-            // Fetch total SafeMemes sold and total Token Bs received
             totalSafeMemeSold = ethers.utils.formatUnits(
               await exchangeContract.getsafeMemesSold(),
               18
@@ -180,7 +178,7 @@ export default function Dashboard(): JSX.Element {
           totalSupply: formattedTotalSupply,
           tokenBPairing,
           stage,
-          isSafeLaunchActive: isInitialized && isSafeLaunchActive,
+          isSafeLaunchActive,
           isFinalized,
           factoryAddress: exchangeFactoryAddress,
           tokenFactoryAddress,
@@ -250,22 +248,6 @@ export default function Dashboard(): JSX.Element {
 
   const getExplorerLink = (address: string) => {
     return `${blockExplorerAddress[selectedChainId]}${address}`
-  }
-
-  const finalizeSale = async (tokenAddress: string) => {
-    try {
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        signer
-      )
-      const tx = await tokenContract.finalizeSaleAndCreateExchange()
-      await tx.wait()
-      toast.success("Sale finalized and exchange created successfully")
-    } catch (error) {
-      console.error("Error finalizing sale and creating exchange:", error)
-      toast.error("Failed to finalize sale and create exchange")
-    }
   }
 
   // Calculate totals
@@ -407,7 +389,15 @@ export default function Dashboard(): JSX.Element {
                 <tbody>
                   {tokens.map((token, index) => (
                     <tr key={index}>
-                      <td>{token.tokenName}</td>
+                      <td>
+                        <Link
+                          href={`/tokendata?tokenAddress=${token.tokenAddress}`}
+                        >
+                          <span className="token-name-link">
+                            {token.tokenName}
+                          </span>
+                        </Link>
+                      </td>
                       <td>{token.tokenSymbol}</td>
                       <td>
                         <Link
@@ -450,12 +440,10 @@ export default function Dashboard(): JSX.Element {
                       </td>
                       <td className="narrow-column">
                         {parseFloat(token.totalSafeMemeSold).toFixed(2)}
-                      </td>{" "}
-                      {/* Display total SafeMemes sold */}
+                      </td>
                       <td className="narrow-column">
                         {parseFloat(token.totalTokenBReceived).toFixed(2)}
-                      </td>{" "}
-                      {/* Display total Token Bs received */}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
