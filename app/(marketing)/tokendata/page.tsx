@@ -275,7 +275,8 @@ export default function TokenData({
         <div className="token-stats">
           <h2>Token Statistics</h2>
           <p>
-            <strong>Current Stage:</strong> {tokenData.currentStage}
+            <strong>Current Stage:</strong>
+            <span> {tokenData.currentStage} of 5</span>
           </p>
           <p>
             <strong>Total SafeMemes Sold:</strong> {tokenData.totalSafeMemeSold}

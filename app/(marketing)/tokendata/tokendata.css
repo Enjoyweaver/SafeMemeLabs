@@ -10,7 +10,7 @@
 
   --background-dark: #000000;
   --foreground-dark: #ffffff;
-  --primary-dark: #df1584;
+  --primary-dark: #bb1a72;
   --secondary-dark: #41b80a;
   --accent-dark: #41b80a;
   --border-dark: #41b80a;
@@ -53,6 +53,13 @@ body {
   justify-content: space-between;
   gap: 20px;
   margin-bottom: 30px;
+}
+
+.token-info h2,
+.token-stats h2,
+.transactions h2 {
+  justify-content: center;
+  text-align: center;
 }
 
 .token-info,
