@@ -288,7 +288,7 @@ export default function Dashboard(): JSX.Element {
       <div className="flex min-h-screen flex-col">
         <div>
           <Navbar />
-          <h1 className="title">Dashboard</h1>
+          <h1 className="title">Token Specs Dashboard</h1>
           <div className="form">
             <div className="inputGroup">
               <label className="inputTitle">Select Blockchain:</label>
@@ -305,8 +305,6 @@ export default function Dashboard(): JSX.Element {
                 ))}
               </select>
             </div>
-
-            <h2 className="subtitle">TokenFactory</h2>
             <div className="table-container">
               <table className="data-table">
                 <thead>
@@ -444,64 +442,6 @@ export default function Dashboard(): JSX.Element {
                       <td className="narrow-column">
                         {parseFloat(token.totalTokenBReceived).toFixed(2)}
                       </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <h2 className="subtitle">ExchangeFactory</h2>
-            <div className="table-container">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th className="table-header">Total Transactions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{totalTransactions}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="table-container">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th className="table-header">Token Address</th>
-                    <th className="table-header">Exchange Address</th>
-                    <th className="table-header">Token Symbol</th>
-                    <th className="table-header">Token Name</th>
-                    <th className="table-header">ETH Balance</th>
-                    <th className="table-header">Token Balance</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {exchanges.map((exchange, index) => (
-                    <tr key={index}>
-                      <td>
-                        <Link
-                          href={getExplorerLink(exchange.tokenAddress)}
-                          target="_blank"
-                        >
-                          {exchange.tokenAddress.slice(0, 6)}...
-                          {exchange.tokenAddress.slice(-4)}
-                        </Link>
-                      </td>
-                      <td>
-                        <Link
-                          href={getExplorerLink(exchange.dexAddress)}
-                          target="_blank"
-                        >
-                          {exchange.dexAddress.slice(0, 6)}...
-                          {exchange.dexAddress.slice(-4)}
-                        </Link>
-                      </td>
-                      <td>{exchange.tokenSymbol}</td>
-                      <td>{exchange.tokenName}</td>
-                      <td>{exchange.ethBalance.toString()}</td>
-                      <td>{exchange.tokenBalance.toString()}</td>
                     </tr>
                   ))}
                 </tbody>

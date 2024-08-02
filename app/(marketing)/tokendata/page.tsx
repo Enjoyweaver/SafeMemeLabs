@@ -136,10 +136,9 @@ export default function TokenData({
         }
       }
 
-      const totalTransactions = transactionsPerStage.reduce((a, b) => a + b, 0)
       const averageTransactionAmount =
-        totalTransactions > 0
-          ? (parseFloat(totalSafeMemeSold) / totalTransactions).toFixed(2)
+        transactionCount > 0
+          ? (parseFloat(totalSafeMemeSold) / transactionCount).toFixed(2)
           : "0"
 
       setTokenData({
@@ -269,7 +268,7 @@ export default function TokenData({
             </Link>
           </p>
           <p>
-            <strong>SafeLaunch Start Time:</strong>{" "}
+            <strong>SafeLaunch Start Time in UTC:</strong>{" "}
             {tokenData.safeLaunchStartTime}
           </p>
         </div>
@@ -285,14 +284,7 @@ export default function TokenData({
             <strong>Total Token B Received:</strong>{" "}
             {tokenData.totalTokenBReceived}
           </p>
-          <ul>
-            {tokenData.transactionsPerStage &&
-              tokenData.transactionsPerStage.map((count, index) => (
-                <li key={index}>
-                  Stage {index + 1}: {count}
-                </li>
-              ))}
-          </ul>
+
           <p>
             <strong>Total Transactions:</strong> {tokenData.transactionCount}
           </p>
