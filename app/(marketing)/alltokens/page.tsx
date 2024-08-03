@@ -21,6 +21,22 @@ import { Navbar } from "@/components/walletconnect/walletconnect"
 import "./swap.css"
 import "@/styles/allTokens.css"
 
+interface DexInfo {
+  currentStage: number
+  status: number
+  tokenBRequired: string
+  safeMemePrice: string
+  safeMemeAvailable: string
+  tokenBReceived: string
+  safeMemesSold: string
+  soldsafeMeme: string
+  tokenBSet: boolean
+  isInSafeLaunchMode: boolean
+  isInDEXMode: boolean
+  address: string
+  safeLaunchComplete: boolean
+}
+
 interface TokenInfo {
   address: string
   name: string
@@ -31,23 +47,6 @@ interface TokenInfo {
   chainId: string
   antiWhalePercentage: string
   maxWalletAmount: string
-  dexInfo: {
-    address: string
-    currentStage: number
-    tokenBAddress: string
-    tokenBName: string
-    tokenBSymbol: string
-    stageTokenBAmount: string
-    safeMemePrices: string
-    safeMemeAvailable: string
-    tokenBReceived: string
-    soldsafeMeme: string
-    safeMemesSold: string
-    stageRemainingSafeMeme: string
-    safeLaunchActivated: boolean
-    tokenBSet: boolean
-    stageAmountSet: boolean
-  } | null
 }
 
 const Dashboard = () => {
@@ -77,6 +76,9 @@ const Dashboard = () => {
     { value: "otherStages", label: "Stages 2-5" },
     { value: "withDex", label: "SafeLaunched" },
   ]
+  const MAX_STAGES = 5
+  const SAFE_LAUNCH_STAGES = 5
+  const STAGE_STATUS_COMPLETED = 3
 
   useEffect(() => {
     fetchAllTokens()
@@ -120,7 +122,7 @@ const Dashboard = () => {
               provider,
               chainId
             )
-            allTokens.push(tokenInfo as TokenInfo)
+            allTokens.push(tokenInfo)
           }
         } catch (networkError) {
           console.error(
@@ -203,7 +205,47 @@ const Dashboard = () => {
       tokenContract.getMaxWalletAmount(),
     ])
 
-    const dexInfo = await getStageInfo(dexAddress, provider)
+    let dexInfo: DexInfo | null = null
+    if (dexAddress !== ethers.constants.AddressZero) {
+      const dexContract = new ethers.Contract(dexAddress, ExchangeABI, provider)
+      try {
+        const [
+          currentStage,
+          status,
+          tokenBRequired,
+          safeMemePrice,
+          safeMemeAvailable,
+          tokenBReceived,
+          safeMemesSold,
+          soldsafeMeme,
+          tokenBSet,
+          isInSafeLaunchMode,
+          isInDEXMode,
+          safeLaunchComplete,
+        ] = await dexContract.getCurrentStageInfo()
+
+        dexInfo = {
+          currentStage: currentStage.toNumber() + 1, // Add 1 to match the Token Data frontend
+          status: status.toNumber(),
+          tokenBRequired: ethers.utils.formatUnits(tokenBRequired, 18),
+          safeMemePrice: ethers.utils.formatUnits(safeMemePrice, 18),
+          safeMemeAvailable: ethers.utils.formatUnits(safeMemeAvailable, 18),
+          tokenBReceived: ethers.utils.formatUnits(tokenBReceived, 18),
+          safeMemesSold: ethers.utils.formatUnits(safeMemesSold, 18),
+          soldsafeMeme: ethers.utils.formatUnits(soldsafeMeme, 18),
+          tokenBSet,
+          isInSafeLaunchMode,
+          isInDEXMode,
+          address: dexAddress,
+          safeLaunchComplete,
+        }
+      } catch (error) {
+        console.error(
+          `Error fetching stage info for token ${tokenAddress}:`,
+          error
+        )
+      }
+    }
 
     return {
       address: tokenAddress,
@@ -215,7 +257,7 @@ const Dashboard = () => {
       chainId,
       antiWhalePercentage: antiWhalePercentage.toString(),
       maxWalletAmount: ethers.utils.formatUnits(maxWalletAmount, decimals),
-      dexInfo: dexInfo ? { ...dexInfo, address: dexAddress } : null,
+      dexInfo,
     }
   }
 
@@ -500,6 +542,20 @@ const Dashboard = () => {
     return preciseAmount
   }
 
+  const isSafeLaunchComplete = (token) => {
+    if (!token.dexInfo) return false
+
+    // SafeLaunch is complete if:
+    // 1. The safeLaunchComplete flag is true
+    // 2. The current stage is 6 (which is the DEX stage, after the 5 SafeLaunch stages)
+    // 3. The status is STAGE_STATUS_COMPLETED (which is 3)
+    return (
+      token.dexInfo.safeLaunchComplete ||
+      token.dexInfo.currentStage === 6 ||
+      token.dexInfo.status === 3
+    )
+  }
+
   const renderTokens = () => {
     if (loading) {
       return <p className="loading">Loading tokens...</p>
@@ -518,7 +574,10 @@ const Dashboard = () => {
     return (
       <div className="meme-container">
         {filteredTokens.map((token, index) => {
-          console.log("Stages Section Data:", token)
+          const safeLaunchComplete =
+            token.dexInfo?.safeLaunchComplete ||
+            token.dexInfo?.currentStage > SAFE_LAUNCH_STAGES ||
+            token.dexInfo?.status === STAGE_STATUS_COMPLETED
 
           return (
             <div
@@ -574,18 +633,19 @@ const Dashboard = () => {
                   <strong>Max Wallet Amount:</strong>{" "}
                   {formatAmount(token.maxWalletAmount)}
                 </p>
-                {token.dexInfo ? (
-                  <>
-                    <p>
-                      <strong>SafeLaunch Activated:</strong>{" "}
-                      {token.dexInfo.safeLaunchActivated ? "Yes" : "No"}
-                    </p>
-                  </>
-                ) : (
+
+                <p>
+                  <strong>Current Stage:</strong>
+                  <span> {token.currentStage} of 5</span>
+                </p>
+
+                <>
                   <p>
-                    <strong>SafeLaunch Activated:</strong> No
+                    <strong>SafeLaunch Activated:</strong>{" "}
+                    {safeLaunchComplete ? "Complete" : "Yes"}
                   </p>
-                )}
+                </>
+
                 {token.dexInfo && (
                   <>
                     <div className="meme-header">
@@ -688,7 +748,6 @@ const Dashboard = () => {
                             ].buyer.slice(-6)}`}
                           </a>
                         </p>
-
                         <p>
                           <strong>SafeMeme Amount:</strong>{" "}
                           {
@@ -712,7 +771,6 @@ const Dashboard = () => {
                   </>
                 )}
               </div>
-
               {token.dexInfo &&
                 token.dexInfo.safeLaunchActivated &&
                 token.dexInfo.stageAmountSet && (
