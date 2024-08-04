@@ -95,6 +95,15 @@ const SafeLaunch: React.FC = () => {
   const [nfts, setNfts] = useState<NFT[]>([])
   const [frames, setFrames] = useState<Frame[]>([])
   const SAFE_LAUNCH_STAGES = 5
+  const [airdropTokenAddress, setAirdropTokenAddress] = useState<string>("")
+  const [airdropAmount, setAirdropAmount] = useState<string>("")
+  const [airdropDuration, setAirdropDuration] = useState<string>("")
+  const [airdropRecipients, setAirdropRecipients] = useState<string[]>([])
+  const [customListName, setCustomListName] = useState<string>("")
+  const [customListAddresses, setCustomListAddresses] = useState<string>("")
+  const [airdropOption, setAirdropOption] = useState<
+    "new" | "existing" | "custom"
+  >("new")
 
   useEffect(() => {
     const init = async () => {
@@ -143,6 +152,68 @@ const SafeLaunch: React.FC = () => {
     setActiveSection(activeSection === section ? null : section)
   }
 
+  const createAirdrop = async () => {
+    if (!provider || !chainId) return
+    const signer = provider.getSigner()
+
+    // Deploy new Airdrop contract
+    const AirdropFactory = new ethers.ContractFactory(
+      AirdropABI,
+      AirdropBytecode,
+      signer
+    )
+    const airdrop = await AirdropFactory.deploy(
+      airdropTokenAddress,
+      ethers.utils.parseEther(airdropAmount),
+      parseInt(airdropDuration) * 24 * 60 * 60 // Convert days to seconds
+    )
+    await airdrop.deployed()
+
+    // Add recipients to the airdrop
+    const recipientChunks = chunkArray(airdropRecipients, 100) // Split into chunks of 100
+    for (const chunk of recipientChunks) {
+      await airdrop.addRecipients(chunk)
+    }
+
+    // Add the new airdrop to the MasterData contract
+    const masterDataContract = new ethers.Contract(
+      masterDataAddress,
+      MasterDataABI,
+      signer
+    )
+    await masterDataContract.addAirdrop(airdrop.address)
+
+    alert("Airdrop created successfully!")
+  }
+
+  const createCustomList = async () => {
+    if (!provider || !chainId) return
+    const signer = provider.getSigner()
+
+    const addresses = customListAddresses
+      .split("\n")
+      .map((addr) => addr.trim())
+      .filter((addr) => ethers.utils.isAddress(addr))
+
+    // Store the custom list in the MasterData contract
+    const masterDataContract = new ethers.Contract(
+      masterDataAddress,
+      MasterDataABI,
+      signer
+    )
+    await masterDataContract.createCustomList(customListName, addresses)
+
+    alert("Custom list created successfully!")
+  }
+
+  const chunkArray = (array: any[], chunkSize: number) => {
+    const chunks = []
+    for (let i = 0; i < array.length; i += chunkSize) {
+      chunks.push(array.slice(i, i + chunkSize))
+    }
+    return chunks
+  }
+
   const fetchTokens = async (
     provider: ethers.providers.Web3Provider,
     address: string,
@@ -180,6 +251,7 @@ const SafeLaunch: React.FC = () => {
         const safeLaunchStarted =
           safeLaunchInitialized &&
           (await tokenContract.balanceOf(dexAddress)) > 0
+        const holders = await tokenContract.getHolders()
 
         let tokenB,
           currentStage,
@@ -227,6 +299,7 @@ const SafeLaunch: React.FC = () => {
           stageInfo,
           tokenBAmountSet,
           stageStatus,
+          holders,
         }
       } catch (error) {
         console.error(`Error fetching token ${tokenAddress}:`, error)
@@ -239,6 +312,7 @@ const SafeLaunch: React.FC = () => {
           totalSupply: "0",
           safeLaunchInitialized: false,
           safeLaunchStarted: false,
+          holders: [],
         }
       }
     })
@@ -884,7 +958,141 @@ const SafeLaunch: React.FC = () => {
             <div>{/* Rewards rendering logic here */}</div>
           )}
           {activeSection === "CreateAirdrop" && (
-            <div>{/* Create Airdrop rendering logic here */}</div>
+            <div className="create-airdrop-container">
+              <h2 className="sectionTitle">Create Airdrop</h2>
+
+              <div className="airdrop-options">
+                <button
+                  className={`option-button ${
+                    airdropOption === "new" ? "selected" : ""
+                  }`}
+                  onClick={() => setAirdropOption("new")}
+                >
+                  New Airdrop
+                </button>
+                <button
+                  className={`option-button ${
+                    airdropOption === "existing" ? "selected" : ""
+                  }`}
+                  onClick={() => setAirdropOption("existing")}
+                >
+                  Existing Lists
+                </button>
+                <button
+                  className={`option-button ${
+                    airdropOption === "custom" ? "selected" : ""
+                  }`}
+                  onClick={() => setAirdropOption("custom")}
+                >
+                  Create Custom List
+                </button>
+              </div>
+
+              {airdropOption === "new" && (
+                <div className="airdrop-form">
+                  <div className="input-group">
+                    <input
+                      type="text"
+                      placeholder="Token Address"
+                      value={airdropTokenAddress}
+                      onChange={(e) => setAirdropTokenAddress(e.target.value)}
+                      className="input-field"
+                    />
+                  </div>
+                  <div className="input-group">
+                    <input
+                      type="text"
+                      placeholder="Amount per Address"
+                      value={airdropAmount}
+                      onChange={(e) => setAirdropAmount(e.target.value)}
+                      className="input-field"
+                    />
+                  </div>
+                  <div className="input-group">
+                    <input
+                      type="text"
+                      placeholder="Duration (in days)"
+                      value={airdropDuration}
+                      onChange={(e) => setAirdropDuration(e.target.value)}
+                      className="input-field"
+                    />
+                  </div>
+                  <button onClick={createAirdrop} className="buy-token-button">
+                    Create Airdrop
+                  </button>
+                </div>
+              )}
+
+              {airdropOption === "existing" && (
+                <div className="existing-lists">
+                  <h3 className="stagetext">Select from Existing Lists</h3>
+                  <div className="list-selection">
+                    {tokens.map((token) => (
+                      <div key={token.address} className="list-option">
+                        <input
+                          type="checkbox"
+                          id={token.address}
+                          value={JSON.stringify(token.holders)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setAirdropRecipients((prev) => [
+                                ...prev,
+                                ...JSON.parse(e.target.value),
+                              ])
+                            } else {
+                              setAirdropRecipients((prev) =>
+                                prev.filter(
+                                  (addr) =>
+                                    !JSON.parse(e.target.value).includes(addr)
+                                )
+                              )
+                            }
+                          }}
+                        />
+                        <label htmlFor={token.address}>
+                          {token.symbol} Holders
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="selected-count">
+                    Selected Addresses: {airdropRecipients.length}
+                  </p>
+                  <button onClick={createAirdrop} className="buy-token-button">
+                    Create Airdrop with Selected Lists
+                  </button>
+                </div>
+              )}
+
+              {airdropOption === "custom" && (
+                <div className="custom-list-form">
+                  <div className="input-group">
+                    <input
+                      type="text"
+                      placeholder="List Name"
+                      value={customListName}
+                      onChange={(e) => setCustomListName(e.target.value)}
+                      className="input-field"
+                    />
+                  </div>
+                  <div className="input-group">
+                    <textarea
+                      placeholder="Enter addresses (one per line)"
+                      value={customListAddresses}
+                      onChange={(e) => setCustomListAddresses(e.target.value)}
+                      className="input-field"
+                      rows={5}
+                    />
+                  </div>
+                  <button
+                    onClick={createCustomList}
+                    className="buy-token-button"
+                  >
+                    Create Custom List
+                  </button>
+                </div>
+              )}
+            </div>
           )}
           {activeSection === "SafeMemes" && (
             <div className="token-container">

@@ -600,3 +600,145 @@ a .stage-actions input {
     margin-bottom: 10px;
   }
 }
+
+.create-airdrop-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: var(--background-light);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  font-size: 2rem;
+  color: var(--primary-dark);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.subsection-title {
+  font-size: 1.5rem;
+  color: var(--secondary-dark);
+  margin-top: 30px;
+  margin-bottom: 15px;
+}
+
+.airdrop-form,
+.custom-list-form {
+  background-color: var(--background-light);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text-light);
+  font-weight: bold;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  background-color: var(--input-light);
+  color: var(--text-light);
+}
+
+.create-airdrop-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: var(--background-light);
+  border-radius: 25px;
+  box-shadow: 0 0 15px var(--primary-dark);
+}
+
+.dark .create-airdrop-container {
+  background-color: var(--background-dark);
+}
+
+.airdrop-options {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.option-button {
+  flex: 1;
+  padding: 10px;
+  margin: 0 5px;
+  background-color: var(--background-light);
+  color: var(--primary-dark);
+  border: 2px solid var(--primary-dark);
+  border-radius: 25px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dark .option-button {
+  background-color: var(--background-dark);
+  color: var(--primary-light);
+  border-color: var(--primary-light);
+}
+
+.option-button.selected {
+  background-color: var(--primary-dark);
+  color: var(--text-light);
+}
+
+.dark .option-button.selected {
+  background-color: var(--primary-light);
+  color: var(--text-dark);
+}
+
+.list-selection {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.list-option {
+  display: flex;
+  align-items: center;
+}
+
+.list-option input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.selected-count {
+  margin-bottom: 15px;
+  font-weight: bold;
+  color: var(--secondary-dark);
+}
+
+.dark .selected-count {
+  color: var(--secondary-light);
+}
+
+@media (max-width: 768px) {
+  .airdrop-options {
+    flex-direction: column;
+  }
+
+  .option-button {
+    margin: 5px 0;
+  }
+
+  .list-selection {
+    grid-template-columns: 1fr;
+  }
+}
