@@ -203,9 +203,9 @@ export default async function IndexPage() {
               rewards program includes various categories to appreciate your
               efforts:
             </p>
-            <div className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 text-left">
+            <div className="max-w-[85%] text-left leading-normal text-muted-foreground sm:text-lg sm:leading-7">
               <div className="mb-4">
-                <h3 className="font-bold ml-10 mt-3">
+                <h3 className="mt-3 ml-10 font-bold">
                   Providing Constructive Feedback:
                 </h3>
                 <p className="ml-16">
@@ -214,7 +214,7 @@ export default async function IndexPage() {
                 </p>
               </div>
               <div className="mb-4">
-                <h3 className="font-bold ml-10">
+                <h3 className="ml-10 font-bold">
                   Protocol Testers (on Testnet):
                 </h3>
                 <p className="ml-16">
@@ -223,19 +223,19 @@ export default async function IndexPage() {
                 </p>
               </div>
               <div className="mb-4">
-                <h3 className="font-bold ml-10">First 100 $bubbles Holders:</h3>
+                <h3 className="ml-10 font-bold">First 100 $bubbles Holders:</h3>
                 <p className="ml-16">
                   Early supporters who bought and held $bubbles without selling.
                 </p>
               </div>
               <div className="mb-4">
-                <h3 className="font-bold ml-10">First 1000 Protocol Users:</h3>
+                <h3 className="ml-10 font-bold">First 1000 Protocol Users:</h3>
                 <p className="ml-16">
                   The initial users who adopted and utilized our protocol.
                 </p>
               </div>
               <div className="mb-4">
-                <h3 className="font-bold ml-10">
+                <h3 className="ml-10 font-bold">
                   First 1000 Profile Initializations:
                 </h3>
                 <p className="ml-16">
@@ -244,7 +244,7 @@ export default async function IndexPage() {
                 </p>
               </div>
               <div className="mb-4">
-                <h3 className="font-bold ml-10">
+                <h3 className="ml-10 font-bold">
                   Liking Our Open-Source GitHub:
                 </h3>
                 <p className="ml-16">
@@ -253,7 +253,7 @@ export default async function IndexPage() {
                 </p>
               </div>
             </div>
-            <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 mt-6">
+            <p className="mt-6 max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
               Your contributions help build a safer and more vibrant meme
               economy. To ensure transparency and trust, all rewards will be
               recorded on-chain through smart contracts written in Vyper. This
