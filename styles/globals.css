@@ -371,6 +371,7 @@ body.scrolling .sidebar ul li a {
 
 .rewardsTabs {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   margin-bottom: 20px;
 }
@@ -379,10 +380,13 @@ body.scrolling .sidebar ul li a {
   background: #df1584;
   border: none;
   padding: 10px 20px;
-  margin: 0 10px;
+  margin: 5px;
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.3s;
+  flex: 0 1 auto;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .tabButton.active,
@@ -457,4 +461,34 @@ body.scrolling .sidebar ul li a {
 #rewards p {
   margin-top: 0;
   margin-bottom: 0;
+}
+
+/* Media queries for mobile responsiveness */
+@media (max-width: 768px) {
+  .tabButton {
+    flex: 1 1 calc(100% - 10px);
+    margin: 5px 0;
+  }
+
+  .rewardsTitle {
+    font-size: 20px;
+  }
+
+  .rewardsintro {
+    font-size: 14px;
+  }
+
+  .claimButton {
+    width: 100%;
+    padding: 8px 16px;
+  }
+
+  .rewardsTable th,
+  .rewardsTable td {
+    padding: 8px;
+  }
+
+  .rewardsTableContainer {
+    margin: 10px 0;
+  }
 }

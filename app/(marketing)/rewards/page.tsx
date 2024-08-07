@@ -9,7 +9,7 @@ import { useAccount } from "wagmi"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 const RewardsPage = () => {
-  const { address } = useAccount() // Get the connected wallet address
+  const { address } = useAccount()
 
   const tokenData = [
     {
@@ -22,25 +22,40 @@ const RewardsPage = () => {
       name: "Protocol Testers",
       tokenAddress: "tbd",
       chainId: 250,
-      description: `These users helped us test the protocol on the testnet and provided valuable feedback.`,
+      description: `As soon as we deploy on the Sonic Builders testnet soon, we will be listing all of the wallets that have participated and will be rewarding them handsomely. 
+      Your participation in testing the protocol is crucial for identifying bugs and providing feedback on improvements, so we will appreciate your support to ensure a smooth and safe launch when we go live.`,
     },
     {
       name: "First 100 Protocol Users",
       tokenAddress: "tbd",
       chainId: 250,
-      description: `These users were the first 100 to use our protocol once it went live.`,
+      description: `These users were the first 100 to use our protocol once it went live. Their early adoption and support are crucial to our success.`,
     },
     {
-      name: "First 100 Profile Initializers",
+      name: "First 1000 Protocol Users",
       tokenAddress: "tbd",
       chainId: 250,
-      description: `These users were the first 100 to initialize their profiles on our platform.`,
+      description: `The first 1000 users who adopted and utilized our protocol will be rewarded for their early support and trust in our platform.`,
+    },
+    {
+      name: "First 1000 Profile Initializations",
+      tokenAddress: "tbd",
+      chainId: 250,
+      description: `The first 1000 users to set up and initialize their profiles on our platform will receive special rewards.`,
+    },
+    {
+      name: "Liking Our Open-Source GitHub",
+      tokenAddress: "tbd",
+      chainId: 250,
+      description: `Show your support by liking our GitHub repository and contributing to our open-source projects. Your involvement helps us grow and improve.`,
     },
   ]
 
   const [selectedSection, setSelectedSection] = useState(tokenData[0])
   const { holders, loading, error } = useTokenHolders(
-    selectedSection.tokenAddress,
+    selectedSection.tokenAddress !== "tbd"
+      ? selectedSection.tokenAddress
+      : null,
     selectedSection.chainId
   )
 
@@ -84,9 +99,6 @@ const RewardsPage = () => {
     }
   }
 
-  if (loading) return <p className="loading">Loading...</p>
-  if (error) return <p className="error">Error: {error}</p>
-
   return (
     <div className="rewardsBody">
       <Navbar />
@@ -117,47 +129,56 @@ const RewardsPage = () => {
           Claim Rewards
         </button>
         <div className="rewardsTableContainer">
-          <table className="rewardsTable">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Wallet Address</th>
-                <th>Token Amount</th>
-                <th>1st Reward</th>
-                <th>2nd Reward</th>
-                <th>3rd Reward</th>
-              </tr>
-            </thead>
-            <tbody>
-              {holders.length > 0 ? (
-                holders
-                  .filter(
-                    (holder) =>
-                      !excludedAddresses.includes(holder.address.toLowerCase())
-                  )
-                  .map((holder, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{shortenAddress(holder.address)}</td>
-                      <td>
-                        {formatNumber(
-                          (holder.balance / Math.pow(10, 18)).toFixed(2)
-                        )}
-                      </td>
-                      <td>Mad Token Claim</td>
-                      <td>Share MemeBox Earnings</td>
-                      <td>Your Choice</td>
-                    </tr>
-                  ))
-              ) : (
+          {selectedSection.tokenAddress !== "tbd" ? (
+            <table className="rewardsTable">
+              <thead>
                 <tr>
-                  <td colSpan="6" className="noData">
-                    No data available for this section.
-                  </td>
+                  <th>#</th>
+                  <th>Wallet Address</th>
+                  <th>Token Amount</th>
+                  <th>1st Reward</th>
+                  <th>2nd Reward</th>
+                  <th>3rd Reward</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {holders.length > 0 ? (
+                  holders
+                    .filter(
+                      (holder) =>
+                        !excludedAddresses.includes(
+                          holder.address.toLowerCase()
+                        )
+                    )
+                    .map((holder, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{shortenAddress(holder.address)}</td>
+                        <td>
+                          {formatNumber(
+                            (holder.balance / Math.pow(10, 18)).toFixed(2)
+                          )}
+                        </td>
+                        <td>Mad Token Claim</td>
+                        <td>Share MemeBox Earnings</td>
+                        <td>Your Choice</td>
+                      </tr>
+                    ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="noData">
+                      No data available for this section.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          ) : (
+            <p className="noData">
+              The Vyper contract for this section hasnt been created and
+              deployed yet, though will be soon!
+            </p>
+          )}
         </div>
       </div>
     </div>
