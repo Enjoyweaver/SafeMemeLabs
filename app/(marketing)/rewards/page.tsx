@@ -9,10 +9,40 @@ import { useAccount } from "wagmi"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 const RewardsPage = () => {
-  const tokenAddress = "0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA"
-  const chainId = 250
-  const { holders, loading, error } = useTokenHolders(tokenAddress, chainId)
   const { address } = useAccount() // Get the connected wallet address
+
+  const tokenData = [
+    {
+      name: "First 100 $bubbles Holders",
+      tokenAddress: "0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA",
+      chainId: 250,
+      description: `These wallets have bought $bubbles and haven't sold anything, and for supporting us as we build SafeMeme Labs, we will be sharing some of our early successes with them. <br></br>You can find more information about $bubbles on our <a href="/memedashboard">Dashboard</a> and also about MemeBox where we launched the token <a href="https://twitter.com/MemeBoxFi">@MemeBoxFi</a>. Check out the token on <a href="https://dexscreener.com/fantom/0x0FE3c2b440AE55eC003165D71F5212B2B8c7ec97">Dex Screener</a>. You can buy $bubbles at <a href="https://memebox.fi/#/swap">https://memebox.fi/#/swap</a>.`,
+    },
+    {
+      name: "Protocol Testers",
+      tokenAddress: "0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA",
+      chainId: 250,
+      description: `These users helped us test the protocol on the testnet and provided valuable feedback.`,
+    },
+    {
+      name: "First 100 Protocol Users",
+      tokenAddress: "0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA",
+      chainId: 250,
+      description: `These users were the first 100 to use our protocol once it went live.`,
+    },
+    {
+      name: "First 100 Profile Initializers",
+      tokenAddress: "0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA",
+      chainId: 250,
+      description: `These users were the first 100 to initialize their profiles on our platform.`,
+    },
+  ]
+
+  const [selectedSection, setSelectedSection] = useState(tokenData[0])
+  const { holders, loading, error } = useTokenHolders(
+    selectedSection.tokenAddress,
+    selectedSection.chainId
+  )
 
   const [canClaim, setCanClaim] = useState(false)
   const excludedAddresses = [
@@ -61,25 +91,24 @@ const RewardsPage = () => {
     <div className="rewardsBody">
       <Navbar />
       <div className="rewardsContainer">
-        <h2 className="rewardsTitle">
-          First 100 "hodling" $bubbles token holders
-        </h2>
-        <p className="rewardsintro">
-          These wallets have bought $bubbles and haven't sold anything, and for
-          supporting us as we build SafeMeme Labs, we will be sharing some of
-          our early successes with them. The rewards are not explicitly defined
-          just yet, though they will be well worth the late reveal. <br></br>
-          <br></br>You can find more information about $bubbles on our{" "}
-          <a href="/memedashboard">Dashboard</a> and also about MemeBox where we
-          launched the token{" "}
-          <a href="https://twitter.com/MemeBoxFi">@MemeBoxFi</a>. Check out the
-          token on{" "}
-          <a href="https://dexscreener.com/fantom/0x0FE3c2b440AE55eC003165D71F5212B2B8c7ec97">
-            Dex Screener
-          </a>
-          . You can buy $bubbles at{" "}
-          <a href="https://memebox.fi/#/swap">https://memebox.fi/#/swap</a>.
-        </p>
+        <div className="rewardsTabs">
+          {tokenData.map((section, index) => (
+            <button
+              key={index}
+              className={`tabButton ${
+                selectedSection.name === section.name ? "active" : ""
+              }`}
+              onClick={() => setSelectedSection(section)}
+            >
+              {section.name}
+            </button>
+          ))}
+        </div>
+        <h2 className="rewardsTitle">{selectedSection.name}</h2>
+        <p
+          className="rewardsintro"
+          dangerouslySetInnerHTML={{ __html: selectedSection.description }}
+        ></p>
         <button
           className="claimButton"
           onClick={handleClaim}
@@ -87,7 +116,6 @@ const RewardsPage = () => {
         >
           Claim Rewards
         </button>
-
         <div className="rewardsTableContainer">
           <table className="rewardsTable">
             <thead>
@@ -101,25 +129,33 @@ const RewardsPage = () => {
               </tr>
             </thead>
             <tbody>
-              {holders
-                .filter(
-                  (holder) =>
-                    !excludedAddresses.includes(holder.address.toLowerCase())
-                )
-                .map((holder, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{shortenAddress(holder.address)}</td>
-                    <td>
-                      {formatNumber(
-                        (holder.balance / Math.pow(10, 18)).toFixed(2)
-                      )}
-                    </td>
-                    <td>Mad Token Claim</td>
-                    <td>Share MemeBox Earnings</td>
-                    <td>Your Choice</td>
-                  </tr>
-                ))}
+              {holders.length > 0 ? (
+                holders
+                  .filter(
+                    (holder) =>
+                      !excludedAddresses.includes(holder.address.toLowerCase())
+                  )
+                  .map((holder, index) => (
+                    <tr key={index}>
+                      <td>{index + 1}</td>
+                      <td>{shortenAddress(holder.address)}</td>
+                      <td>
+                        {formatNumber(
+                          (holder.balance / Math.pow(10, 18)).toFixed(2)
+                        )}
+                      </td>
+                      <td>Mad Token Claim</td>
+                      <td>Share MemeBox Earnings</td>
+                      <td>Your Choice</td>
+                    </tr>
+                  ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="noData">
+                    No data available for this section.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
