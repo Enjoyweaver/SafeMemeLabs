@@ -205,7 +205,7 @@ export default async function IndexPage() {
             </p>
             <div className="max-w-[85%] text-left leading-normal text-muted-foreground sm:text-lg sm:leading-7">
               <div className="mb-4">
-                <h3 className="mt-3 ml-10 font-bold">
+                <h3 className="ml-10 mt-3 font-bold">
                   Providing Constructive Feedback:
                 </h3>
                 <p className="ml-16">
