@@ -193,22 +193,81 @@ export default async function IndexPage() {
           </div>
         </section>
         <section id="rewards" className="container py-8 md:py-12 lg:py-20">
-          <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
+          <div className="mx-auto flex max-w-[58rem] flex-col items-center text-center">
             <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
               Rewards
             </h2>
             <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-              As a creator here you deserve to be rewarded for being a part of
-              our growth and helping contribute to the SafeMeme economy, so you
-              will be. From providing constructive feedback to our protocol,
-              being early buyers of our own SafeMemes, and to even creating your
-              own brand, liking our github, you deserve to be rewarded for it.
-              And since we are open-source, we will solidify these rewards by
-              programming them onchain for all to verify, and in Vyper of
-              course.
+              At SafeMeme Labs, we believe in recognizing and rewarding our
+              contributors for their invaluable support and involvement. Our
+              rewards program includes various categories to appreciate your
+              efforts:
+            </p>
+            <div className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 text-left">
+              <div className="mb-4">
+                <h3 className="font-bold ml-10 mt-3">
+                  Providing Constructive Feedback:
+                </h3>
+                <p className="ml-16">
+                  Your insights and suggestions are crucial in improving our
+                  platform.
+                </p>
+              </div>
+              <div className="mb-4">
+                <h3 className="font-bold ml-10">
+                  Protocol Testers (on Testnet):
+                </h3>
+                <p className="ml-16">
+                  Those who help us test the protocol on the testnet and provide
+                  valuable feedback.
+                </p>
+              </div>
+              <div className="mb-4">
+                <h3 className="font-bold ml-10">First 100 $bubbles Holders:</h3>
+                <p className="ml-16">
+                  Early supporters who bought and held $bubbles without selling.
+                </p>
+              </div>
+              <div className="mb-4">
+                <h3 className="font-bold ml-10">First 1000 Protocol Users:</h3>
+                <p className="ml-16">
+                  The initial users who adopted and utilized our protocol.
+                </p>
+              </div>
+              <div className="mb-4">
+                <h3 className="font-bold ml-10">
+                  First 1000 Profile Initializations:
+                </h3>
+                <p className="ml-16">
+                  The first users to set up and initialize their profiles on our
+                  platform.
+                </p>
+              </div>
+              <div className="mb-4">
+                <h3 className="font-bold ml-10">
+                  Liking Our Open-Source GitHub:
+                </h3>
+                <p className="ml-16">
+                  Show your support by liking our GitHub repository and
+                  contributing to our open-source projects.
+                </p>
+              </div>
+            </div>
+            <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 mt-6">
+              Your contributions help build a safer and more vibrant meme
+              economy. To ensure transparency and trust, all rewards will be
+              recorded on-chain through smart contracts written in Vyper. This
+              will make them verifiable by everyone and demonstrate our
+              commitment to sharing our success with our contributors. You can
+              see the current rewards on our{" "}
+              <a href="/rewards" className="underline underline-offset-4">
+                Rewards Page
+              </a>
+              .
             </p>
           </div>
         </section>
+
         <section id="airdrop" className="container py-8 md:py-12 lg:py-20">
           <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
             <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">

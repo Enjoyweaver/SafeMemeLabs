@@ -20,19 +20,19 @@ const RewardsPage = () => {
     },
     {
       name: "Protocol Testers",
-      tokenAddress: "0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA",
+      tokenAddress: "tbd",
       chainId: 250,
       description: `These users helped us test the protocol on the testnet and provided valuable feedback.`,
     },
     {
       name: "First 100 Protocol Users",
-      tokenAddress: "0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA",
+      tokenAddress: "tbd",
       chainId: 250,
       description: `These users were the first 100 to use our protocol once it went live.`,
     },
     {
       name: "First 100 Profile Initializers",
-      tokenAddress: "0x54B051d102c19c1Cc12a391b0eefCD7eeb64CeDA",
+      tokenAddress: "tbd",
       chainId: 250,
       description: `These users were the first 100 to initialize their profiles on our platform.`,
     },
