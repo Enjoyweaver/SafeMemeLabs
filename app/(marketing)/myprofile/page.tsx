@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { ExchangeABI } from "@/ABIs/SafeLaunch/Exchange"
 import { ExchangeFactoryABI } from "@/ABIs/SafeLaunch/ExchangeFactory"
 import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
@@ -71,7 +71,7 @@ interface Frame {
   likes: number
 }
 
-const SafeLaunch: React.FC = () => {
+const MyProfile: React.FC = () => {
   const [tokens, setTokens] = useState<Token[]>([])
   const [userAddress, setUserAddress] = useState<string>("")
   const [provider, setProvider] =
@@ -105,6 +105,115 @@ const SafeLaunch: React.FC = () => {
     "new" | "existing" | "custom"
   >("new")
 
+  const fetchTokens = useCallback(
+    async (
+      provider: ethers.providers.Web3Provider,
+      address: string,
+      currentChainId: number
+    ) => {
+      if (!safeLaunchFactory[currentChainId]) {
+        console.error(`No factory address for chain ID ${currentChainId}`)
+        return
+      }
+
+      const factoryContract = new ethers.Contract(
+        safeLaunchFactory[currentChainId],
+        TokenFactoryABI,
+        provider
+      )
+      const tokenAddresses = await factoryContract.getSafeMemesDeployedByUser(
+        address
+      )
+
+      const tokenPromises = tokenAddresses.map(async (tokenAddress: string) => {
+        try {
+          const tokenContract = new ethers.Contract(
+            tokenAddress,
+            SafeMemeABI,
+            provider
+          )
+          const name = await tokenContract.name()
+          const symbol = await tokenContract.symbol()
+          const antiWhalePercentage = await tokenContract.antiWhalePercentage()
+          const totalSupply = await tokenContract.totalSupply()
+          const decimals = await tokenContract.decimals()
+          const maxTokens = await tokenContract.getMaxWalletAmount()
+          const dexAddress = await tokenContract.dexAddress()
+          const safeLaunchInitialized =
+            dexAddress !== ethers.constants.AddressZero
+          const safeLaunchStarted =
+            safeLaunchInitialized &&
+            (await tokenContract.balanceOf(dexAddress)) > 0
+
+          let tokenB,
+            currentStage,
+            stageInfo,
+            lockedTokens,
+            safeMemeForSale,
+            tokenBAmountSet = false,
+            currentStageInfo,
+            stageStatus
+
+          if (safeLaunchStarted) {
+            const exchangeContract = new ethers.Contract(
+              dexAddress,
+              ExchangeABI,
+              provider
+            )
+            currentStageInfo = await exchangeContract.getCurrentStageInfo()
+
+            tokenB = await exchangeContract.tokenBAddress()
+            currentStage = currentStageInfo[0].toNumber()
+            stageStatus = currentStageInfo[1].toNumber()
+            lockedTokens = await exchangeContract.getsafeMemesLocked()
+            safeMemeForSale = await exchangeContract.salesafeMeme()
+            stageInfo = await fetchStageInfo(exchangeContract, currentStage)
+            tokenBAmountSet = stageStatus === 2
+          }
+
+          return {
+            address: tokenAddress,
+            name,
+            symbol,
+            antiWhalePercentage: antiWhalePercentage.toNumber(),
+            maxTokens: ethers.utils.formatUnits(maxTokens, decimals),
+            totalSupply: ethers.utils.formatUnits(totalSupply, decimals),
+            safeLaunchInitialized,
+            safeLaunchStarted,
+            lockedTokens: ethers.utils.formatUnits(lockedTokens || 0, decimals),
+            safeMemeForSale: ethers.utils.formatUnits(
+              safeMemeForSale || 0,
+              decimals
+            ),
+            dexAddress: safeLaunchStarted ? dexAddress : undefined,
+            tokenB,
+            currentStage,
+            stageInfo,
+            tokenBAmountSet,
+            stageStatus,
+          }
+        } catch (error) {
+          console.error(`Error fetching token ${tokenAddress}:`, error)
+          return {
+            address: tokenAddress,
+            name: "Unknown",
+            symbol: "Unknown",
+            antiWhalePercentage: 0,
+            maxTokens: "0",
+            totalSupply: "0",
+            safeLaunchInitialized: false,
+            safeLaunchStarted: false,
+          }
+        }
+      })
+
+      const fetchedTokens = await Promise.all(tokenPromises)
+      setTokens(fetchedTokens)
+    },
+    [safeLaunchFactory]
+  )
+
+  // Step 2: Use the fetchTokens function inside the useEffect hook
   useEffect(() => {
     const init = async () => {
       if (typeof window.ethereum !== "undefined") {
@@ -121,16 +230,13 @@ const SafeLaunch: React.FC = () => {
           setIsConnected(true)
 
           await fetchTokens(web3Provider, address, network.chainId)
-          await fetchTokenBOptions(web3Provider, address, network.chainId)
-          await fetchNFTs(address)
-          await fetchFrames(address)
         } catch (error) {
           console.error("No account connected", error)
         }
       }
     }
     init()
-  }, [])
+  }, [fetchTokens])
 
   const fetchNFTs = async (address: string) => {
     // Placeholder: Replace with actual NFT fetching logic
@@ -212,113 +318,6 @@ const SafeLaunch: React.FC = () => {
       chunks.push(array.slice(i, i + chunkSize))
     }
     return chunks
-  }
-
-  const fetchTokens = async (
-    provider: ethers.providers.Web3Provider,
-    address: string,
-    currentChainId: number
-  ) => {
-    if (!safeLaunchFactory[currentChainId]) {
-      console.error(`No factory address for chain ID ${currentChainId}`)
-      return
-    }
-
-    const factoryContract = new ethers.Contract(
-      safeLaunchFactory[currentChainId],
-      TokenFactoryABI,
-      provider
-    )
-    const tokenAddresses = await factoryContract.getSafeMemesDeployedByUser(
-      address
-    )
-    const tokenPromises = tokenAddresses.map(async (tokenAddress: string) => {
-      try {
-        const tokenContract = new ethers.Contract(
-          tokenAddress,
-          SafeMemeABI,
-          provider
-        )
-        const name = await tokenContract.name()
-        const symbol = await tokenContract.symbol()
-        const antiWhalePercentage = await tokenContract.antiWhalePercentage()
-        const totalSupply = await tokenContract.totalSupply()
-        const decimals = await tokenContract.decimals()
-        const maxTokens = await tokenContract.getMaxWalletAmount()
-        const dexAddress = await tokenContract.dexAddress()
-        const safeLaunchInitialized =
-          dexAddress !== ethers.constants.AddressZero
-        const safeLaunchStarted =
-          safeLaunchInitialized &&
-          (await tokenContract.balanceOf(dexAddress)) > 0
-        const holders = await tokenContract.getHolders()
-
-        let tokenB,
-          currentStage,
-          stageInfo,
-          lockedTokens,
-          safeMemeForSale,
-          tokenBAmountSet = false,
-          currentStageInfo,
-          stageStatus
-
-        if (safeLaunchStarted) {
-          const exchangeContract = new ethers.Contract(
-            dexAddress,
-            ExchangeABI,
-            provider
-          )
-          currentStageInfo = await exchangeContract.getCurrentStageInfo()
-
-          tokenB = await exchangeContract.tokenBAddress()
-          currentStage = currentStageInfo[0].toNumber()
-          stageStatus = currentStageInfo[1].toNumber()
-          lockedTokens = await exchangeContract.getsafeMemesLocked()
-          safeMemeForSale = await exchangeContract.salesafeMeme()
-          stageInfo = await fetchStageInfo(exchangeContract, currentStage)
-          tokenBAmountSet = stageStatus === 2
-        }
-
-        return {
-          address: tokenAddress,
-          name,
-          symbol,
-          antiWhalePercentage: antiWhalePercentage.toNumber(),
-          maxTokens: ethers.utils.formatUnits(maxTokens, decimals),
-          totalSupply: ethers.utils.formatUnits(totalSupply, decimals),
-          safeLaunchInitialized,
-          safeLaunchStarted,
-          lockedTokens: ethers.utils.formatUnits(lockedTokens || 0, decimals),
-          safeMemeForSale: ethers.utils.formatUnits(
-            safeMemeForSale || 0,
-            decimals
-          ),
-          dexAddress: safeLaunchStarted ? dexAddress : undefined,
-          tokenB,
-          currentStage,
-          stageInfo,
-          tokenBAmountSet,
-          stageStatus,
-          holders,
-        }
-      } catch (error) {
-        console.error(`Error fetching token ${tokenAddress}:`, error)
-        return {
-          address: tokenAddress,
-          name: "Unknown",
-          symbol: "Unknown",
-          antiWhalePercentage: 0,
-          maxTokens: "0",
-          totalSupply: "0",
-          safeLaunchInitialized: false,
-          safeLaunchStarted: false,
-          holders: [],
-        }
-      }
-    })
-
-    const fetchedTokens = await Promise.all(tokenPromises)
-    setTokens(fetchedTokens)
   }
 
   const refetchTokenInfo = async () => {
@@ -1131,19 +1130,19 @@ const SafeLaunch: React.FC = () => {
                       </p>
                       {!token.safeLaunchInitialized && (
                         <p>
-                          <strong>Status:</strong> SafeLaunch not started
+                          <strong>SafeLaunch Status:</strong> Not Started
                         </p>
                       )}
                       {token.safeLaunchInitialized &&
                         !token.safeLaunchStarted && (
                           <p>
-                            <strong>Status:</strong> SafeLaunch initialized
+                            <strong>SafeLaunch Status:</strong> Initialized
                           </p>
                         )}
                       {token.safeLaunchStarted && (
                         <>
                           <p>
-                            <strong>Status:</strong> SafeLaunch active
+                            <strong>SafeLaunch Status:</strong> Active
                           </p>
                           <p>
                             <strong>Locked Tokens:</strong>{" "}
@@ -1441,4 +1440,4 @@ const SafeLaunch: React.FC = () => {
   )
 }
 
-export default SafeLaunch
+export default MyProfile

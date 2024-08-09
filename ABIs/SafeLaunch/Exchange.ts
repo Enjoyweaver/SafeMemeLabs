@@ -714,6 +714,10 @@ export const ExchangeABI = [
         name: "",
         type: "bool",
       },
+      {
+        name: "",
+        type: "uint256",
+      },
     ],
   },
   {
@@ -779,6 +783,22 @@ export const ExchangeABI = [
       },
     ],
     outputs: [],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getDEXBalance",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
   },
   {
     stateMutability: "view",
