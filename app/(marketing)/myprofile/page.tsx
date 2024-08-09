@@ -105,115 +105,110 @@ const MyProfile: React.FC = () => {
     "new" | "existing" | "custom"
   >("new")
 
-  const fetchTokens = useCallback(
-    async (
-      provider: ethers.providers.Web3Provider,
-      address: string,
-      currentChainId: number
-    ) => {
-      if (!safeLaunchFactory[currentChainId]) {
-        console.error(`No factory address for chain ID ${currentChainId}`)
-        return
-      }
+  const fetchTokens = async (
+    provider: ethers.providers.Web3Provider,
+    address: string,
+    currentChainId: number
+  ) => {
+    if (!safeLaunchFactory[currentChainId]) {
+      console.error(`No factory address for chain ID ${currentChainId}`)
+      return
+    }
 
-      const factoryContract = new ethers.Contract(
-        safeLaunchFactory[currentChainId],
-        TokenFactoryABI,
-        provider
-      )
-      const tokenAddresses = await factoryContract.getSafeMemesDeployedByUser(
-        address
-      )
+    const factoryContract = new ethers.Contract(
+      safeLaunchFactory[currentChainId],
+      TokenFactoryABI,
+      provider
+    )
+    const tokenAddresses = await factoryContract.getSafeMemesDeployedByUser(
+      address
+    )
+    const tokenPromises = tokenAddresses.map(async (tokenAddress: string) => {
+      try {
+        const tokenContract = new ethers.Contract(
+          tokenAddress,
+          SafeMemeABI,
+          provider
+        )
+        const name = await tokenContract.name()
+        const symbol = await tokenContract.symbol()
+        const antiWhalePercentage = await tokenContract.antiWhalePercentage()
+        const totalSupply = await tokenContract.totalSupply()
+        const decimals = await tokenContract.decimals()
+        const maxTokens = await tokenContract.getMaxWalletAmount()
+        const dexAddress = await tokenContract.dexAddress()
+        const safeLaunchInitialized =
+          dexAddress !== ethers.constants.AddressZero
+        const safeLaunchStarted =
+          safeLaunchInitialized &&
+          (await tokenContract.balanceOf(dexAddress)) > 0
 
-      const tokenPromises = tokenAddresses.map(async (tokenAddress: string) => {
-        try {
-          const tokenContract = new ethers.Contract(
-            tokenAddress,
-            SafeMemeABI,
+        let tokenB,
+          currentStage,
+          stageInfo,
+          lockedTokens,
+          safeMemeForSale,
+          tokenBAmountSet = false,
+          currentStageInfo,
+          stageStatus
+
+        if (safeLaunchStarted) {
+          const exchangeContract = new ethers.Contract(
+            dexAddress,
+            ExchangeABI,
             provider
           )
-          const name = await tokenContract.name()
-          const symbol = await tokenContract.symbol()
-          const antiWhalePercentage = await tokenContract.antiWhalePercentage()
-          const totalSupply = await tokenContract.totalSupply()
-          const decimals = await tokenContract.decimals()
-          const maxTokens = await tokenContract.getMaxWalletAmount()
-          const dexAddress = await tokenContract.dexAddress()
-          const safeLaunchInitialized =
-            dexAddress !== ethers.constants.AddressZero
-          const safeLaunchStarted =
-            safeLaunchInitialized &&
-            (await tokenContract.balanceOf(dexAddress)) > 0
+          currentStageInfo = await exchangeContract.getCurrentStageInfo()
 
-          let tokenB,
-            currentStage,
-            stageInfo,
-            lockedTokens,
-            safeMemeForSale,
-            tokenBAmountSet = false,
-            currentStageInfo,
-            stageStatus
-
-          if (safeLaunchStarted) {
-            const exchangeContract = new ethers.Contract(
-              dexAddress,
-              ExchangeABI,
-              provider
-            )
-            currentStageInfo = await exchangeContract.getCurrentStageInfo()
-
-            tokenB = await exchangeContract.tokenBAddress()
-            currentStage = currentStageInfo[0].toNumber()
-            stageStatus = currentStageInfo[1].toNumber()
-            lockedTokens = await exchangeContract.getsafeMemesLocked()
-            safeMemeForSale = await exchangeContract.salesafeMeme()
-            stageInfo = await fetchStageInfo(exchangeContract, currentStage)
-            tokenBAmountSet = stageStatus === 2
-          }
-
-          return {
-            address: tokenAddress,
-            name,
-            symbol,
-            antiWhalePercentage: antiWhalePercentage.toNumber(),
-            maxTokens: ethers.utils.formatUnits(maxTokens, decimals),
-            totalSupply: ethers.utils.formatUnits(totalSupply, decimals),
-            safeLaunchInitialized,
-            safeLaunchStarted,
-            lockedTokens: ethers.utils.formatUnits(lockedTokens || 0, decimals),
-            safeMemeForSale: ethers.utils.formatUnits(
-              safeMemeForSale || 0,
-              decimals
-            ),
-            dexAddress: safeLaunchStarted ? dexAddress : undefined,
-            tokenB,
-            currentStage,
-            stageInfo,
-            tokenBAmountSet,
-            stageStatus,
-          }
-        } catch (error) {
-          console.error(`Error fetching token ${tokenAddress}:`, error)
-          return {
-            address: tokenAddress,
-            name: "Unknown",
-            symbol: "Unknown",
-            antiWhalePercentage: 0,
-            maxTokens: "0",
-            totalSupply: "0",
-            safeLaunchInitialized: false,
-            safeLaunchStarted: false,
-          }
+          tokenB = await exchangeContract.tokenBAddress()
+          currentStage = currentStageInfo[0].toNumber()
+          stageStatus = currentStageInfo[1].toNumber()
+          lockedTokens = await exchangeContract.getsafeMemesLocked()
+          safeMemeForSale = await exchangeContract.salesafeMeme()
+          stageInfo = await fetchStageInfo(exchangeContract, currentStage)
+          tokenBAmountSet = stageStatus === 2
         }
-      })
 
-      const fetchedTokens = await Promise.all(tokenPromises)
-      setTokens(fetchedTokens)
-    },
-    [safeLaunchFactory]
-  )
+        return {
+          address: tokenAddress,
+          name,
+          symbol,
+          antiWhalePercentage: antiWhalePercentage.toNumber(),
+          maxTokens: ethers.utils.formatUnits(maxTokens, decimals),
+          totalSupply: ethers.utils.formatUnits(totalSupply, decimals),
+          safeLaunchInitialized,
+          safeLaunchStarted,
+          lockedTokens: ethers.utils.formatUnits(lockedTokens || 0, decimals),
+          safeMemeForSale: ethers.utils.formatUnits(
+            safeMemeForSale || 0,
+            decimals
+          ),
+          dexAddress: safeLaunchStarted ? dexAddress : undefined,
+          tokenB,
+          currentStage,
+          stageInfo,
+          tokenBAmountSet,
+          stageStatus,
+        }
+      } catch (error) {
+        console.error(`Error fetching token ${tokenAddress}:`, error)
+        return {
+          address: tokenAddress,
+          name: "Unknown",
+          symbol: "Unknown",
+          antiWhalePercentage: 0,
+          maxTokens: "0",
+          totalSupply: "0",
+          safeLaunchInitialized: false,
+          safeLaunchStarted: false,
+        }
+      }
+    })
 
-  // Step 2: Use the fetchTokens function inside the useEffect hook
+    const fetchedTokens = await Promise.all(tokenPromises)
+    setTokens(fetchedTokens)
+  }
+
   useEffect(() => {
     const init = async () => {
       if (typeof window.ethereum !== "undefined") {
@@ -230,13 +225,16 @@ const MyProfile: React.FC = () => {
           setIsConnected(true)
 
           await fetchTokens(web3Provider, address, network.chainId)
+          await fetchTokenBOptions(web3Provider, address, network.chainId)
+          await fetchNFTs(address)
+          await fetchFrames(address)
         } catch (error) {
           console.error("No account connected", error)
         }
       }
     }
     init()
-  }, [fetchTokens])
+  }, [])
 
   const fetchNFTs = async (address: string) => {
     // Placeholder: Replace with actual NFT fetching logic
