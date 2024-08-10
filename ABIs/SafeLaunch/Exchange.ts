@@ -769,22 +769,6 @@ export const ExchangeABI = [
     outputs: [],
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "addLiquidityExternal",
-    inputs: [
-      {
-        name: "safeMeme_amount",
-        type: "uint256",
-      },
-      {
-        name: "tokenB_amount",
-        type: "uint256",
-      },
-    ],
-    outputs: [],
-  },
-  {
     stateMutability: "view",
     type: "function",
     name: "getDEXBalance",

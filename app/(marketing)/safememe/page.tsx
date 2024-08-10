@@ -124,7 +124,7 @@ const SafeMeme = () => {
     const prices = []
 
     stageTokenBAmounts.forEach((amount, index) => {
-      labels.push(`Phase ${index + 1}`)
+      labels.push(`Stage ${index + 1}`)
       prices.push((tokenBPrices[index] * amount) / ((initialSupply * 10) / 100))
     })
 
@@ -134,14 +134,14 @@ const SafeMeme = () => {
     const stage6Price = totalTokenB / unlockedSafeMemeSupply
     setStage6Price(stage6Price)
 
-    labels.push("Phase 6")
+    labels.push("SafeLaunched!")
     prices.push(stage6Price)
 
     setChartData({
       labels,
       datasets: [
         {
-          label: "Price of SafeMeme (USD)",
+          label: "Price of your token (USD)",
           data: prices,
           borderColor: "rgba(54, 162, 235, 1)",
           backgroundColor: "rgba(54, 162, 235, 0.2)",
@@ -246,7 +246,9 @@ const SafeMeme = () => {
                       />
                     </div>
                     <div className="input-rowB">
-                      <label htmlFor="selectedTokenB">Select Token B:</label>
+                      <label htmlFor="selectedTokenB">
+                        Select Native Token:
+                      </label>
                       <select
                         id="selectedTokenB"
                         value={selectedTokenB}
@@ -274,7 +276,7 @@ const SafeMeme = () => {
                           htmlFor={`amount${index}`}
                           className="centered-label"
                         >
-                          Phase {index + 1} {selectedTokenB} Amount:
+                          Stage {index + 1} {selectedTokenB} Amount:
                         </label>
                         <input
                           type="number"

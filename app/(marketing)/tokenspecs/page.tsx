@@ -17,6 +17,7 @@ import { toast } from "react-toastify"
 
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
+import SafeBasePriceComponent from "./safebase"
 import "./tokenspecs.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
@@ -305,6 +306,7 @@ export default function Dashboard(): JSX.Element {
                 ))}
               </select>
             </div>
+            <SafeBasePriceComponent selectedChainId={selectedChainId} />
             <div className="table-container">
               <table className="data-table">
                 <thead>

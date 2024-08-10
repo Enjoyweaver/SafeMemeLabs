@@ -75,9 +75,9 @@ export const metadata = {
     creator: "@SafeMemeLabs",
   },
   icons: {
-    icon: "/images/logo.png",
-    shortcut: "/images/logo.png",
-    apple: "/images/logo.png",
+    icon: "/images/SafeMemeLogo.png",
+    shortcut: "/images/SafeMemeLogo.png",
+    apple: "/images/SafeMemeLogo.png",
   },
   manifest: "/site.webmanifest",
 }
