@@ -22,7 +22,8 @@ const RewardsPage = () => {
       name: "Protocol Testers",
       tokenAddress: "tbd",
       chainId: 250,
-      description: `As soon as we deploy on the Sonic Builders testnet soon, we will be listing all of the wallets that have participated and will be rewarding them handsomely. Your participation in testing the protocol is crucial for identifying bugs and providing feedback on improvements, so we will appreciate your support to ensure a smooth and safe launch when we go live.`,
+      description: `As soon as we deploy on the Sonic Builders testnet soon, we will be listing all of the wallets that have participated and will be rewarding them handsomely, including being whitelisted
+      to be the first ones to buy the SafeMeme Labs token as its released. Your participation in testing the protocol is crucial for identifying bugs and providing feedback on improvements, so we will appreciate your support to ensure a smooth and safe launch when we go live.`,
     },
     {
       name: "First 100 Protocol Users",
