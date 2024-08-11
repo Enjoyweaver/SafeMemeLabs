@@ -742,3 +742,52 @@ a .stage-actions input {
     grid-template-columns: 1fr;
   }
 }
+
+.edit-list-form {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: var(--background-light);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dark .edit-list-form {
+  background-color: var(--background-dark);
+}
+
+.edit-list-form h4 {
+  margin-bottom: 15px;
+  color: var(--secondary-dark);
+}
+
+.dark .edit-list-form h4 {
+  color: var(--secondary-light);
+}
+
+.edit-list-form .input-group {
+  margin-bottom: 15px;
+}
+
+.edit-list-form .input-field {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  background-color: var(--input-light);
+  color: var(--text-light);
+}
+
+.dark .edit-list-form .input-field {
+  border-color: var(--border-dark);
+  background-color: var(--input-dark);
+  color: var(--text-dark);
+}
+
+.edit-list-form textarea.input-field {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.edit-list-form .buy-token-button {
+  margin-top: 10px;
+}

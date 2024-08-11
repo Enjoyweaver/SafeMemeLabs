@@ -19,7 +19,7 @@ import {
 import { ethers } from "ethers"
 import Modal from "react-modal"
 
-import "@/styles/safeLaunch.css"
+import "@/styles/myprofile.css"
 import { Navbar } from "@/components/walletconnect/walletconnect"
 
 interface Token {
@@ -414,6 +414,50 @@ const MyProfile: React.FC = () => {
           error.message || "Unknown error"
         }`
       )
+    }
+  }
+
+  const updateCustomList = async () => {
+    if (!provider || !chainId || selectedListId === null) return
+    const signer = provider.getSigner()
+
+    const customAirdropContractAddress = customAirdropContract[chainId]
+    if (!customAirdropContractAddress) {
+      alert("Custom Airdrop contract not available on this network")
+      return
+    }
+
+    try {
+      const contract = new ethers.Contract(
+        customAirdropContractAddress,
+        CustomAirdropABI,
+        signer
+      )
+
+      console.log("Updating list with ID:", selectedListId)
+      console.log("New list name:", customListName)
+      console.log("New recipients:", airdropRecipients)
+
+      const tx = await contract.updateList(
+        selectedListId,
+        customListName,
+        airdropRecipients
+      )
+      console.log("Transaction sent:", tx.hash)
+      await tx.wait()
+      console.log("Transaction confirmed")
+
+      alert("Custom list updated successfully!")
+      await fetchUserCustomLists()
+    } catch (error) {
+      console.error("Error updating custom list:", error)
+      if (error.reason) {
+        alert(`Failed to update custom list: ${error.reason}`)
+      } else if (error.message) {
+        alert(`Failed to update custom list: ${error.message}`)
+      } else {
+        alert("Failed to update custom list: Unknown error")
+      }
     }
   }
 
@@ -1168,10 +1212,9 @@ const MyProfile: React.FC = () => {
                           onChange={async (e) => {
                             const selectedListId = Number(e.target.value)
                             setSelectedListId(selectedListId)
-                            setAirdropRecipients([]) // Clear previous selection
+                            setAirdropRecipients([]) // Clear token holder selection
 
                             try {
-                              // Ensure provider is initialized
                               if (!provider || !chainId) {
                                 const web3Provider =
                                   new ethers.providers.Web3Provider(
@@ -1186,10 +1229,7 @@ const MyProfile: React.FC = () => {
                                 )
                               }
 
-                              // Define signer
                               const signer = provider.getSigner()
-
-                              // Instantiate the contract
                               const customAirdropContractAddress =
                                 customAirdropContract[chainId]
                               if (!customAirdropContractAddress) {
@@ -1204,11 +1244,10 @@ const MyProfile: React.FC = () => {
                                 signer
                               )
 
-                              // Fetch the recipients for the selected list
-                              const [, , recipients] = await contract.getList(
-                                selectedListId
-                              )
+                              const [name, , recipients] =
+                                await contract.getList(selectedListId)
                               setAirdropRecipients(recipients)
+                              setCustomListName(name)
                             } catch (error) {
                               console.error("Error fetching recipients:", error)
                               alert(
@@ -1221,17 +1260,6 @@ const MyProfile: React.FC = () => {
                         <label htmlFor={`list-${list.id}`}>{list.name}</label>
                       </div>
                     ))}
-
-                    {selectedListId !== null && (
-                      <div className="selected-list-details">
-                        <h5>Selected List Recipients:</h5>
-                        <ul>
-                          {airdropRecipients.map((recipient, index) => (
-                            <li key={index}>{recipient}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
 
                     <h4>Token Holders</h4>
                     {tokens.map((token) => (
@@ -1263,6 +1291,39 @@ const MyProfile: React.FC = () => {
                       </div>
                     ))}
                   </div>
+
+                  {selectedListId !== null && (
+                    <div className="edit-list-form">
+                      <h4>Edit Selected List</h4>
+                      <div className="input-group">
+                        <input
+                          type="text"
+                          value={customListName}
+                          onChange={(e) => setCustomListName(e.target.value)}
+                          placeholder="List Name"
+                          className="input-field"
+                        />
+                      </div>
+                      <div className="input-group">
+                        <textarea
+                          value={airdropRecipients.join("\n")}
+                          onChange={(e) =>
+                            setAirdropRecipients(e.target.value.split("\n"))
+                          }
+                          placeholder="Enter addresses (one per line)"
+                          className="input-field"
+                          rows={5}
+                        />
+                      </div>
+                      <button
+                        onClick={updateCustomList}
+                        className="buy-token-button"
+                      >
+                        Update List
+                      </button>
+                    </div>
+                  )}
+
                   <p className="selected-count">
                     Selected Addresses:{" "}
                     {selectedListId !== null
