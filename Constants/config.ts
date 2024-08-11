@@ -505,3 +505,17 @@ export const safeBaseToken: {
   "4002": "0x64f96f5c95d9a2a4DD40d35d5fADb69D17dAF122",
   //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
 }
+
+export const airdropContract: {
+  [key: string]: string
+} = {
+  "4002": "0xb0d446c03FA811E351B09350f771893e0479798b",
+  //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
+}
+
+export const customAirdropContract: {
+  [key: string]: string
+} = {
+  "4002": "0xcb40221d23151e44a588A62c95Bcf701e34f307d",
+  //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
+}

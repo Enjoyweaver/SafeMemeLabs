@@ -1,14 +1,18 @@
 "use client"
 
 import React, { useCallback, useEffect, useState } from "react"
+import { AirdropABI } from "@/ABIs/Airdrop/Airdrop"
+import { CustomAirdropABI } from "@/ABIs/Airdrop/CustomAirdrop"
 import { ExchangeABI } from "@/ABIs/SafeLaunch/Exchange"
 import { ExchangeFactoryABI } from "@/ABIs/SafeLaunch/ExchangeFactory"
 import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 import {
   NativeTokens,
+  airdropContract,
   blockExplorerAddress,
   blockExplorerToken,
+  customAirdropContract,
   exchangeFactory,
   safeLaunchFactory,
 } from "@/Constants/config"
@@ -104,6 +108,10 @@ const MyProfile: React.FC = () => {
   const [airdropOption, setAirdropOption] = useState<
     "new" | "existing" | "custom"
   >("new")
+  const [userCustomLists, setUserCustomLists] = useState<
+    Array<{ id: number; name: string }>
+  >([])
+  const [selectedListId, setSelectedListId] = useState<number | null>(null)
 
   const fetchTokens = async (
     provider: ethers.providers.Web3Provider,
@@ -260,62 +268,153 @@ const MyProfile: React.FC = () => {
     if (!provider || !chainId) return
     const signer = provider.getSigner()
 
-    // Deploy new Airdrop contract
-    const AirdropFactory = new ethers.ContractFactory(
-      AirdropABI,
-      AirdropBytecode,
-      signer
-    )
-    const airdrop = await AirdropFactory.deploy(
-      airdropTokenAddress,
-      ethers.utils.parseEther(airdropAmount),
-      parseInt(airdropDuration) * 24 * 60 * 60 // Convert days to seconds
-    )
-    await airdrop.deployed()
-
-    // Add recipients to the airdrop
-    const recipientChunks = chunkArray(airdropRecipients, 100) // Split into chunks of 100
-    for (const chunk of recipientChunks) {
-      await airdrop.addRecipients(chunk)
+    const airdropContractAddress = airdropContract[chainId]
+    if (!airdropContractAddress) {
+      alert("Airdrop contract not available on this network")
+      return
     }
 
-    // Add the new airdrop to the MasterData contract
-    const masterDataContract = new ethers.Contract(
-      masterDataAddress,
-      MasterDataABI,
+    const contract = new ethers.Contract(
+      airdropContractAddress,
+      AirdropABI,
       signer
     )
-    await masterDataContract.addAirdrop(airdrop.address)
 
-    alert("Airdrop created successfully!")
+    try {
+      const tx = await contract.airdropToken(
+        airdropTokenAddress,
+        airdropRecipients,
+        airdropRecipients.map(() => ethers.utils.parseEther(airdropAmount))
+      )
+      await tx.wait()
+      alert("Airdrop created successfully!")
+    } catch (error) {
+      console.error("Error creating airdrop:", error)
+      alert(`Failed to create airdrop: ${(error as Error).message}`)
+    }
   }
 
   const createCustomList = async () => {
     if (!provider || !chainId) return
     const signer = provider.getSigner()
 
-    const addresses = customListAddresses
-      .split("\n")
-      .map((addr) => addr.trim())
-      .filter((addr) => ethers.utils.isAddress(addr))
+    const customAirdropContractAddress = customAirdropContract[chainId]
+    if (!customAirdropContractAddress) {
+      alert("Custom Airdrop contract not available on this network")
+      return
+    }
 
-    // Store the custom list in the MasterData contract
-    const masterDataContract = new ethers.Contract(
-      masterDataAddress,
-      MasterDataABI,
+    const contract = new ethers.Contract(
+      customAirdropContractAddress,
+      CustomAirdropABI,
       signer
     )
-    await masterDataContract.createCustomList(customListName, addresses)
 
-    alert("Custom list created successfully!")
+    try {
+      const tx = await contract.createList(
+        customListName,
+        customListAddresses.split("\n")
+      )
+      await tx.wait()
+      alert("Custom list created successfully!")
+    } catch (error) {
+      console.error("Error creating custom list:", error)
+      alert(`Failed to create custom list: ${(error as Error).message}`)
+    }
   }
 
-  const chunkArray = (array: any[], chunkSize: number) => {
-    const chunks = []
-    for (let i = 0; i < array.length; i += chunkSize) {
-      chunks.push(array.slice(i, i + chunkSize))
+  const airdropToCustomList = async () => {
+    if (!provider || !chainId || selectedListId === null) return
+    const signer = provider.getSigner()
+
+    const customAirdropContractAddress = customAirdropContract[chainId]
+    if (!customAirdropContractAddress) {
+      alert("Custom Airdrop contract not available on this network")
+      return
     }
-    return chunks
+
+    const contract = new ethers.Contract(
+      customAirdropContractAddress,
+      CustomAirdropABI,
+      signer
+    )
+
+    try {
+      const [, , listRecipients] = await contract.getList(selectedListId)
+
+      if (listRecipients.length === 0) {
+        alert("The selected list has no recipients")
+        return
+      }
+
+      const amounts = listRecipients.map(() =>
+        ethers.utils.parseEther(airdropAmount)
+      )
+      const totalAmount = amounts.reduce(
+        (a, b) => a.add(b),
+        ethers.BigNumber.from(0)
+      )
+
+      console.log("Airdrop parameters:", {
+        tokenAddress: airdropTokenAddress,
+        listId: selectedListId,
+        recipients: listRecipients,
+        amounts: amounts,
+        totalAmount: ethers.utils.formatEther(totalAmount),
+      })
+
+      if (airdropTokenAddress !== ethers.constants.AddressZero) {
+        // ERC20 token airdrop
+        const tokenContract = new ethers.Contract(
+          airdropTokenAddress,
+          [
+            "function allowance(address owner, address spender) view returns (uint256)",
+            "function approve(address spender, uint256 value) returns (bool)",
+          ],
+          signer
+        )
+        const allowance = await tokenContract.allowance(
+          await signer.getAddress(),
+          customAirdropContractAddress
+        )
+
+        if (allowance.lt(totalAmount)) {
+          const approveTx = await tokenContract.approve(
+            customAirdropContractAddress,
+            totalAmount
+          )
+          await approveTx.wait()
+        }
+
+        // Let provider estimate gas limit
+        const tx = await contract.airdropToken(
+          airdropTokenAddress,
+          selectedListId,
+          amounts
+        )
+        await tx.wait()
+      } else {
+        const tx = await contract.airdropToken(
+          ethers.constants.AddressZero,
+          selectedListId,
+          amounts,
+          {
+            value: totalAmount,
+          }
+        )
+        await tx.wait()
+      }
+      console.log("Attempting airdrop on blockchain with chainId:", chainId)
+
+      alert("Airdrop to custom list created successfully!")
+    } catch (error) {
+      console.error("Error creating airdrop to custom list:", error)
+      alert(
+        `Failed to create airdrop to custom list: ${
+          error.message || "Unknown error"
+        }`
+      )
+    }
   }
 
   const refetchTokenInfo = async () => {
@@ -634,6 +733,40 @@ const MyProfile: React.FC = () => {
     setIsSwapModalOpen(true)
   }
 
+  const fetchUserCustomLists = useCallback(async () => {
+    if (!provider || !chainId || !userAddress) return
+
+    const customAirdropContractAddress = customAirdropContract[chainId]
+    if (!customAirdropContractAddress) {
+      console.error("Custom Airdrop contract not available on this network")
+      return
+    }
+
+    const contract = new ethers.Contract(
+      customAirdropContractAddress,
+      CustomAirdropABI,
+      provider
+    )
+
+    try {
+      const listIds = await contract.getUserLists(userAddress)
+      const listsPromises = listIds.map(async (id: number) => {
+        const [name] = await contract.getList(id)
+        return { id, name }
+      })
+      const lists = await Promise.all(listsPromises)
+      setUserCustomLists(lists)
+    } catch (error) {
+      console.error("Error fetching user's custom lists:", error)
+    }
+  }, [provider, chainId, userAddress])
+
+  useEffect(() => {
+    if (isConnected && provider && chainId && userAddress) {
+      fetchUserCustomLists()
+    }
+  }, [isConnected, provider, chainId, userAddress, fetchUserCustomLists])
+
   const SwapModal: React.FC<SwapModalProps> = ({
     isOpen,
     onRequestClose,
@@ -912,7 +1045,7 @@ const MyProfile: React.FC = () => {
           <div
             onClick={() => handleSectionClick("Followers")}
             className={`dashboard-section ${
-              activeSection === "CreateAirdrop" ? "selected" : ""
+              activeSection === "Followers" ? "selected" : ""
             }`}
           >
             <h2>Followers</h2>
@@ -1024,24 +1157,102 @@ const MyProfile: React.FC = () => {
                 <div className="existing-lists">
                   <h3 className="stagetext">Select from Existing Lists</h3>
                   <div className="list-selection">
+                    <h4>Custom Lists</h4>
+                    {userCustomLists.map((list) => (
+                      <div key={list.id} className="list-option">
+                        <input
+                          type="radio"
+                          id={`list-${list.id}`}
+                          name="selectedList"
+                          value={list.id}
+                          onChange={async (e) => {
+                            const selectedListId = Number(e.target.value)
+                            setSelectedListId(selectedListId)
+                            setAirdropRecipients([]) // Clear previous selection
+
+                            try {
+                              // Ensure provider is initialized
+                              if (!provider || !chainId) {
+                                const web3Provider =
+                                  new ethers.providers.Web3Provider(
+                                    window.ethereum
+                                  )
+                                setProvider(web3Provider)
+                              }
+
+                              if (!provider || !chainId) {
+                                throw new Error(
+                                  "Provider or chainId is not available"
+                                )
+                              }
+
+                              // Define signer
+                              const signer = provider.getSigner()
+
+                              // Instantiate the contract
+                              const customAirdropContractAddress =
+                                customAirdropContract[chainId]
+                              if (!customAirdropContractAddress) {
+                                throw new Error(
+                                  "Custom Airdrop contract address is missing"
+                                )
+                              }
+
+                              const contract = new ethers.Contract(
+                                customAirdropContractAddress,
+                                CustomAirdropABI,
+                                signer
+                              )
+
+                              // Fetch the recipients for the selected list
+                              const [, , recipients] = await contract.getList(
+                                selectedListId
+                              )
+                              setAirdropRecipients(recipients)
+                            } catch (error) {
+                              console.error("Error fetching recipients:", error)
+                              alert(
+                                `Failed to fetch recipients for the selected list: ${error.message}`
+                              )
+                            }
+                          }}
+                          checked={selectedListId === list.id}
+                        />
+                        <label htmlFor={`list-${list.id}`}>{list.name}</label>
+                      </div>
+                    ))}
+
+                    {selectedListId !== null && (
+                      <div className="selected-list-details">
+                        <h5>Selected List Recipients:</h5>
+                        <ul>
+                          {airdropRecipients.map((recipient, index) => (
+                            <li key={index}>{recipient}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    <h4>Token Holders</h4>
                     {tokens.map((token) => (
                       <div key={token.address} className="list-option">
                         <input
                           type="checkbox"
                           id={token.address}
-                          value={JSON.stringify(token.holders)}
+                          value={token.holders ? token.holders.join(",") : ""}
                           onChange={(e) => {
+                            if (!token.holders) return
+                            const addresses = e.target.value
+                              .split(",")
+                              .filter(Boolean)
                             if (e.target.checked) {
                               setAirdropRecipients((prev) => [
-                                ...prev,
-                                ...JSON.parse(e.target.value),
+                                ...new Set([...prev, ...addresses]),
                               ])
+                              setSelectedListId(null) // Clear custom list selection
                             } else {
                               setAirdropRecipients((prev) =>
-                                prev.filter(
-                                  (addr) =>
-                                    !JSON.parse(e.target.value).includes(addr)
-                                )
+                                prev.filter((addr) => !addresses.includes(addr))
                               )
                             }
                           }}
@@ -1053,10 +1264,34 @@ const MyProfile: React.FC = () => {
                     ))}
                   </div>
                   <p className="selected-count">
-                    Selected Addresses: {airdropRecipients.length}
+                    Selected Addresses:{" "}
+                    {selectedListId !== null
+                      ? "Custom List"
+                      : airdropRecipients.length}
                   </p>
-                  <button onClick={createAirdrop} className="buy-token-button">
-                    Create Airdrop with Selected Lists
+                  <div className="input-group">
+                    <input
+                      type="text"
+                      placeholder="Token Address"
+                      value={airdropTokenAddress}
+                      onChange={(e) => setAirdropTokenAddress(e.target.value)}
+                      className="input-field"
+                    />
+                  </div>
+                  <div className="input-group">
+                    <input
+                      type="text"
+                      placeholder="Amount per Address"
+                      value={airdropAmount}
+                      onChange={(e) => setAirdropAmount(e.target.value)}
+                      className="input-field"
+                    />
+                  </div>
+                  <button
+                    onClick={airdropToCustomList}
+                    className="buy-token-button"
+                  >
+                    Create Airdrop with Selected List
                   </button>
                 </div>
               )}

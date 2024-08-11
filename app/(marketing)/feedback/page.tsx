@@ -37,6 +37,11 @@ const FeedbackPage = () => {
   const [feedback, setFeedback] = useState(feedbackInitialState)
   const [checklistItems, setChecklistItems] = useState([
     {
+      text: "Start airdrop and custom airdrop list ability",
+      completed: false,
+      status: "open",
+    },
+    {
       text: "Integrate HNDL into the users profile",
       completed: false,
       status: "open",
