@@ -50,7 +50,7 @@ interface TokenInfo {
   } | null
 }
 
-const Dashboard = () => {
+const AllTokens = () => {
   const [selectedChain, setSelectedChain] = useState("all")
   const [selectedTokenType, setSelectedTokenType] = useState("all")
   const [tokens, setTokens] = useState<TokenInfo[]>([])
@@ -359,6 +359,58 @@ const Dashboard = () => {
     }
   }, [modalIsOpen, selectedToken, provider])
 
+  useEffect(() => {
+    if (provider) {
+      const handleSafeMemePurchased = async (
+        buyer,
+        safeMeme,
+        safeMemeAmount,
+        tokenBAmount,
+        stage
+      ) => {
+        const updatedTokenInfo = await getTokenInfo(
+          safeMeme,
+          provider,
+          chain?.id.toString()
+        )
+        setTokens((prevTokens) =>
+          prevTokens.map((token) =>
+            token.address === safeMeme ? updatedTokenInfo : token
+          )
+        )
+      }
+
+      const subscribeToEvents = async () => {
+        for (const token of tokens) {
+          if (token.dexInfo?.address) {
+            const dexContract = new ethers.Contract(
+              token.dexInfo.address,
+              ExchangeABI,
+              provider
+            )
+            dexContract.on("SafeMemePurchased", handleSafeMemePurchased)
+          }
+        }
+      }
+
+      subscribeToEvents()
+
+      return () => {
+        // Unsubscribe from events when component unmounts
+        for (const token of tokens) {
+          if (token.dexInfo?.address) {
+            const dexContract = new ethers.Contract(
+              token.dexInfo.address,
+              ExchangeABI,
+              provider
+            )
+            dexContract.off("SafeMemePurchased", handleSafeMemePurchased)
+          }
+        }
+      }
+    }
+  }, [provider, tokens, chain])
+
   const handleSwap = async () => {
     if (
       !selectedToken ||
@@ -416,17 +468,25 @@ const Dashboard = () => {
       })
       await buyTokensTx.wait()
 
-      alert("Swap successful!") // Display success message
-
+      // Update only the selected token's information
       const updatedTokenInfo = await getTokenInfo(
         selectedToken.address,
         provider,
         selectedToken.chainId
       )
-      setSelectedToken(updatedTokenInfo)
 
-      await fetchAllTokens() // Re-fetch all tokens to update the frontend
-      closeModal() // Close the modal after a successful swap
+      // Update the tokens state
+      setTokens((prevTokens) =>
+        prevTokens.map((token) =>
+          token.address === updatedTokenInfo.address ? updatedTokenInfo : token
+        )
+      )
+
+      // Close the modal
+      closeModal()
+
+      // Show a success message without reloading the page
+      alert("Swap successful!")
     } catch (error) {
       console.error("Error during swap:", error)
       setSwapError(error.message)
@@ -860,4 +920,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default AllTokens

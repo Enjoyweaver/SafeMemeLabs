@@ -52,8 +52,17 @@ const TokenSwap: React.FC<{
     useState<ethers.providers.Web3Provider | null>(null)
   const [tokenFactoryContract, setTokenFactoryContract] =
     useState<ethers.Contract | null>(null)
+  const [exchangeContract, setExchangeContract] =
+    useState<ethers.Contract | null>(null)
 
   const chainId = chain ? chain.id : Object.keys(safeLaunchFactory)[0]
+
+  useEffect(() => {
+    if (provider && tokenAddress) {
+      const contract = new ethers.Contract(tokenAddress, ExchangeABI, provider)
+      setExchangeContract(contract)
+    }
+  }, [provider, tokenAddress])
 
   useEffect(() => {
     setIsClient(true)
@@ -150,31 +159,28 @@ const TokenSwap: React.FC<{
 
   const getTokenDetails = async (tokenAddress: string) => {
     try {
-      if (!provider) return null
+      if (!provider || !exchangeContract) return null
       const tokenContract = new ethers.Contract(
         tokenAddress,
         SafeMemeABI,
         provider
       )
-      const [
-        name,
-        symbol,
-        totalSupply,
-        owner,
-        decimals,
-        antiWhalePercentage,
-        saleActive,
-        currentStage,
-      ] = await Promise.all([
-        tokenContract.name(),
-        tokenContract.symbol(),
-        tokenContract.totalSupply(),
-        tokenContract.owner(),
-        tokenContract.decimals(),
-        tokenContract.antiWhalePercentage(),
-        tokenContract.getSaleStatus(),
-        tokenContract.getCurrentStage(),
+
+      const [name, symbol, totalSupply, owner, decimals, antiWhalePercentage] =
+        await Promise.all([
+          tokenContract.name(),
+          tokenContract.symbol(),
+          tokenContract.totalSupply(),
+          tokenContract.owner(),
+          tokenContract.decimals(),
+          tokenContract.getAntiWhalePercentage(),
+        ])
+
+      const [currentStageInfo, safeLaunchComplete] = await Promise.all([
+        exchangeContract.getCurrentStageInfo(),
+        exchangeContract.safeLaunchComplete(),
       ])
+
       return {
         address: tokenAddress,
         name,
@@ -183,8 +189,8 @@ const TokenSwap: React.FC<{
         owner,
         decimals,
         antiWhalePercentage,
-        saleActive,
-        currentStage,
+        currentStage: currentStageInfo[0].toNumber(),
+        safeLaunchComplete,
       }
     } catch (error) {
       console.error(`Error fetching details for token ${tokenAddress}:`, error)
@@ -194,15 +200,10 @@ const TokenSwap: React.FC<{
 
   const getStageDetails = async (tokenAddress: string) => {
     try {
-      if (!provider) return []
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        provider
-      )
+      if (!exchangeContract) return []
 
       const stageDetails = await Promise.all(
-        Array.from({ length: 5 }, (_, i) => tokenContract.getStageInfo(i))
+        Array.from({ length: 5 }, (_, i) => exchangeContract.getStageInfo(i))
       )
 
       return stageDetails
@@ -446,21 +447,17 @@ const TokenSwap: React.FC<{
   }
 
   const fetchStageInfo = async (tokenAddress) => {
-    if (typeof window !== "undefined" && window.ethereum) {
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      if (!provider || !tokenAddress) return
+    if (!exchangeContract) return
 
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        SafeMemeABI,
-        provider
-      )
-      const currentStage = await tokenContract.getCurrentStage()
-      const stageInfo = await tokenContract.getStageInfo(currentStage)
+    try {
+      const currentStageInfo = await exchangeContract.getCurrentStageInfo()
+      const stageInfo = await exchangeContract.getStageInfo(currentStageInfo[0])
 
-      setCurrentStage(currentStage)
+      setCurrentStage(currentStageInfo[0].toNumber())
       setStageInfo(stageInfo)
-      setTokenPrice(stageInfo[1])
+      setTokenPrice(ethers.utils.formatUnits(stageInfo[2], 18)) // Assuming safeMemePrice is at index 2
+    } catch (error) {
+      console.error("Error fetching stage info:", error)
     }
   }
 
@@ -494,26 +491,24 @@ const TokenSwap: React.FC<{
   }, [amount, selectedTokenFrom, selectedTokenTo, tokenPrices])
 
   const handleSwap = async () => {
-    if (isConnected && amount > 0 && selectedTokenFrom && selectedTokenTo) {
+    if (
+      isConnected &&
+      amount > 0 &&
+      selectedTokenFrom &&
+      selectedTokenTo &&
+      exchangeContract
+    ) {
       try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = provider.getSigner()
-        const tokenContract = new ethers.Contract(
-          selectedTokenFrom.split("-")[0],
-          SafeMemeABI,
-          signer
-        )
+        const connectedExchangeContract = exchangeContract.connect(signer)
 
         // Calculate the amount in Wei
         const amountInWei = ethers.utils.parseUnits(amount.toString(), 18)
-        const tokenBAddress = selectedTokenTo.split("-")[0]
-
-        // Approve the token transfer if necessary
-        await approveTokens(tokenBAddress, amountInWei)
 
         // Perform the swap
-        await tokenContract.buyTokens(amountInWei, tokenBAddress, {
+        await connectedExchangeContract.buyTokens(amountInWei, {
           gasLimit: ethers.utils.hexlify(1000000),
+          value: amountInWei, // Assuming Token B is the native token (e.g., ETH)
         })
 
         console.log(
