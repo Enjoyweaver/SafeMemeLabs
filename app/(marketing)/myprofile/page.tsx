@@ -1047,14 +1047,6 @@ const MyProfile: React.FC = () => {
             <h2>Frames</h2>
           </div>
           <div
-            onClick={() => handleSectionClick("Tokens")}
-            className={`dashboard-section ${
-              activeSection === "Tokens" ? "selected" : ""
-            }`}
-          >
-            <h2>Tokens</h2>
-          </div>
-          <div
             onClick={() => handleSectionClick("SafeMemesNotLaunched")}
             className={`dashboard-section ${
               activeSection === "SafeMemesNotLaunched" ? "selected" : ""
@@ -1085,14 +1077,6 @@ const MyProfile: React.FC = () => {
             }`}
           >
             <h2>Create Airdrop</h2>
-          </div>
-          <div
-            onClick={() => handleSectionClick("Followers")}
-            className={`dashboard-section ${
-              activeSection === "Followers" ? "selected" : ""
-            }`}
-          >
-            <h2>Followers</h2>
           </div>
         </div>
 
