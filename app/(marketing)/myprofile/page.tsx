@@ -1046,21 +1046,14 @@ const MyProfile: React.FC = () => {
           >
             <h2>Frames</h2>
           </div>
-          <div
-            onClick={() => handleSectionClick("SafeMemesNotLaunched")}
-            className={`dashboard-section ${
-              activeSection === "SafeMemesNotLaunched" ? "selected" : ""
-            }`}
-          >
-            <h2>SafeMemes</h2>
-          </div>
+
           <div
             onClick={() => handleSectionClick("SafeMemes")}
             className={`dashboard-section ${
               activeSection === "SafeMemes" ? "selected" : ""
             }`}
           >
-            <h2>SafeMemes Launched</h2>
+            <h2>SafeMemes</h2>
           </div>
           <div
             onClick={() => handleSectionClick("Rewards")}
