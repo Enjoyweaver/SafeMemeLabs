@@ -8,7 +8,7 @@ export const ExchangeABI = [
         indexed: true,
       },
       {
-        name: "soldsafeMeme",
+        name: "soldsafeMemeThisTX",
         type: "uint256",
         indexed: true,
       },
@@ -74,7 +74,7 @@ export const ExchangeABI = [
         indexed: false,
       },
       {
-        name: "safeMemesSold",
+        name: "safeMemesSoldThisStage",
         type: "uint256",
         indexed: false,
       },
@@ -101,7 +101,7 @@ export const ExchangeABI = [
         indexed: true,
       },
       {
-        name: "safeMemeAmount",
+        name: "soldsafeMemeThisTX",
         type: "uint256",
         indexed: false,
       },
@@ -165,7 +165,7 @@ export const ExchangeABI = [
         indexed: false,
       },
       {
-        name: "safeMemesSold",
+        name: "safeMemesSoldThisStage",
         type: "uint256",
         indexed: false,
       },
@@ -296,10 +296,15 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "LogTotalTokenBReceived",
+    name: "BuyTokensStarted",
     inputs: [
       {
-        name: "total_tokenB_received",
+        name: "buyer",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "tokenBAmount",
         type: "uint256",
         indexed: false,
       },
@@ -308,10 +313,272 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "LogUnlockedSafeMeme",
+    name: "CurrentStageStatus",
     inputs: [
       {
-        name: "unlocked_safeMeme",
+        name: "stage",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "status",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "SafeMemeAmountCalculated",
+    inputs: [
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "CurrentSafeMemeRemaining",
+    inputs: [
+      {
+        name: "remaining",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "AmountsAdjusted",
+    inputs: [
+      {
+        name: "safeMemeAmount",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "tokenBAmount",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "MaxTransferLimit",
+    inputs: [
+      {
+        name: "limit",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "AttemptingTokenBTransfer",
+    inputs: [
+      {
+        name: "sender",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "receiver",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "TokenBTransferSuccessful",
+    inputs: [
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "CurrentStageInfoBeforeUpdate",
+    inputs: [
+      {
+        name: "stage",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "safeMemeRemaining",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "tokenBReceived",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "safeMemesSoldThisStage",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "UpdatedStageInfo",
+    inputs: [
+      {
+        name: "stage",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "safeMemeRemaining",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "tokenBReceived",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "safeMemesSoldThisStage",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "AttemptingSafeMemeTransfer",
+    inputs: [
+      {
+        name: "receiver",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "SafeMemeTransferSuccessful",
+    inputs: [
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "ExcessTokenBAmount",
+    inputs: [
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "AttemptingExcessTokenBReturn",
+    inputs: [
+      {
+        name: "receiver",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "ExcessTokenBReturnSuccessful",
+    inputs: [
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "CurrentStageCompleted",
+    inputs: [
+      {
+        name: "stage",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "ProgressedToNextStage",
+    inputs: [
+      {
+        name: "newStage",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "BuyTokensCompleted",
+    inputs: [
+      {
+        name: "buyer",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "safeMemeAmount",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "tokenBAmount",
         type: "uint256",
         indexed: false,
       },
@@ -358,21 +625,17 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "safeMemeAddress",
+    name: "getAddresses",
     inputs: [],
     outputs: [
       {
         name: "",
         type: "address",
       },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "factoryAddress",
-    inputs: [],
-    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
       {
         name: "",
         type: "address",
@@ -441,6 +704,97 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
+    name: "activateSafeLaunch",
+    inputs: [],
+    outputs: [],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getStageDetails",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256[5]",
+      },
+      {
+        name: "",
+        type: "uint256[5]",
+      },
+      {
+        name: "",
+        type: "uint256[5]",
+      },
+      {
+        name: "",
+        type: "uint256[5]",
+      },
+      {
+        name: "",
+        type: "uint256[5]",
+      },
+      {
+        name: "",
+        type: "uint256[5]",
+      },
+      {
+        name: "",
+        type: "uint256[5]",
+      },
+      {
+        name: "",
+        type: "bool[5]",
+      },
+      {
+        name: "",
+        type: "bool[5]",
+      },
+      {
+        name: "",
+        type: "bool[5]",
+      },
+      {
+        name: "",
+        type: "bool[5]",
+      },
+    ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "settokenBDetails",
+    inputs: [
+      {
+        name: "_tokenBAddress",
+        type: "address",
+      },
+      {
+        name: "_tokenBName",
+        type: "string",
+      },
+      {
+        name: "_tokenBSymbol",
+        type: "string",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setStagetokenBAmount",
+    inputs: [
+      {
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
     name: "transfer",
     inputs: [
       {
@@ -487,73 +841,6 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "activateSafeLaunch",
-    inputs: [],
-    outputs: [],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "settokenBDetails",
-    inputs: [
-      {
-        name: "_tokenBAddress",
-        type: "address",
-      },
-      {
-        name: "_tokenBName",
-        type: "string",
-      },
-      {
-        name: "_tokenBSymbol",
-        type: "string",
-      },
-    ],
-    outputs: [],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "setStagetokenBAmount",
-    inputs: [
-      {
-        name: "stage",
-        type: "uint256",
-      },
-      {
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    outputs: [],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "setupStages",
-    inputs: [
-      {
-        name: "total_supply",
-        type: "uint256",
-      },
-    ],
-    outputs: [],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "startSafeLaunch",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-      },
-    ],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
     name: "buyTokens",
     inputs: [
       {
@@ -562,227 +849,6 @@ export const ExchangeABI = [
       },
     ],
     outputs: [],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "getCurrentStageLastTransaction",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "getStageLiquidity",
-    inputs: [
-      {
-        name: "stage",
-        type: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "getAllStagesLiquidity",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256[5]",
-      },
-      {
-        name: "",
-        type: "uint256[5]",
-      },
-    ],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "testSetSafeLaunchComplete",
-    inputs: [],
-    outputs: [],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "getStageInfo",
-    inputs: [
-      {
-        name: "stage",
-        type: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "getCurrentStageInfo",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "bool",
-      },
-      {
-        name: "",
-        type: "bool",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "getsafeMemesLocked",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "getsafeMemesSold",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "getReceivedtokenB",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "setDEXAddress",
-    inputs: [
-      {
-        name: "dexAddress",
-        type: "address",
-      },
-    ],
-    outputs: [],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "getDEXBalance",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
   },
   {
     stateMutability: "view",
@@ -1516,7 +1582,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "soldsafeMeme",
+    name: "soldsafeMemeThisTX",
     inputs: [
       {
         name: "arg0",
@@ -1533,7 +1599,7 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "safeMemesSold",
+    name: "safeMemesSoldThisStage",
     inputs: [
       {
         name: "arg0",
@@ -1746,7 +1812,11 @@ export const ExchangeABI = [
             type: "uint256",
           },
           {
-            name: "safeMemeAvailable",
+            name: "safeMemeInitialStageAmount",
+            type: "uint256",
+          },
+          {
+            name: "safeMemeRemaining",
             type: "uint256",
           },
           {
@@ -1754,11 +1824,11 @@ export const ExchangeABI = [
             type: "uint256",
           },
           {
-            name: "safeMemesSold",
+            name: "safeMemesSoldThisStage",
             type: "uint256",
           },
           {
-            name: "soldsafeMeme",
+            name: "soldsafeMemeThisTX",
             type: "uint256",
           },
         ],
@@ -1864,18 +1934,6 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "isInSafeLaunchMode",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
     name: "isInDEXMode",
     inputs: [],
     outputs: [
@@ -1889,6 +1947,130 @@ export const ExchangeABI = [
     stateMutability: "view",
     type: "function",
     name: "totalSafeMemesSold",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "stage_statuses",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "tuple",
+        components: [
+          {
+            name: "is_open",
+            type: "bool",
+          },
+          {
+            name: "tokenBRequired_set",
+            type: "bool",
+          },
+          {
+            name: "tokenBReceived_met",
+            type: "bool",
+          },
+          {
+            name: "stage_completed",
+            type: "bool",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "totalSafeMemesSoldPercentage",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "safeMemeRemaining",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "totalTokenBReceived",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "lockedSafeMemeLiquidity",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "lockedTokenBLiquidity",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "max_tokens",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "min_liquidity",
     inputs: [],
     outputs: [
       {
