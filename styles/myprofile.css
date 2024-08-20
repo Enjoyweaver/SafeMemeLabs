@@ -493,16 +493,18 @@ a .stage-actions input {
 .dashboard-sections {
   display: flex;
   justify-content: center;
-  width: 100%;
-  border-bottom: 2px solid #333;
-  border-radius: 25px;
+  width: 60%;
+  border-bottom: 4px solid #333;
+  border-radius: 0 0 50px 50px; /* Increased curvature at the bottom */
   margin-bottom: 20px;
   padding: 10px 0;
   overflow-x: auto;
+  box-shadow: 0 15px 15px -10px rgba(0, 0, 0, 0.3);
 }
+
 .dashboard-section {
   padding: 10px 20px;
-  margin: 0 5px;
+  margin: 0 10px;
   background-color: #222;
   color: #aaa;
   border: 2px solid var(--primary-dark-transparent);
@@ -512,7 +514,7 @@ a .stage-actions input {
   transition: all 0.3s ease;
   text-align: center;
   white-space: nowrap;
-  opacity: 0.7;
+  opacity: 0.5;
   box-shadow: 0 0 5px rgba(223, 21, 132, 0.2);
 }
 
@@ -790,4 +792,29 @@ a .stage-actions input {
 
 .edit-list-form .buy-token-button {
   margin-top: 10px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 2s ease-in-out;
+}
+
+.message-box {
+  background-color: #222;
+  color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 400px;
+  width: 80%;
+  box-shadow: 0 0 15px rgba(223, 21, 132, 0.8);
 }

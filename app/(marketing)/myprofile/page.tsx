@@ -112,6 +112,9 @@ const MyProfile: React.FC = () => {
     Array<{ id: number; name: string }>
   >([])
   const [selectedListId, setSelectedListId] = useState<number | null>(null)
+  const [showMessage, setShowMessage] = useState(false)
+  const [messageContent, setMessageContent] = useState("")
+  const [opacity, setOpacity] = useState(1)
 
   const fetchTokens = async (
     provider: ethers.providers.Web3Provider,
@@ -868,6 +871,21 @@ const MyProfile: React.FC = () => {
       }
     }
 
+    useEffect(() => {
+      const fadeTimer = setTimeout(() => {
+        setOpacity(0) // Start fading out after 3 seconds
+      }, 3000)
+
+      const hideTimer = setTimeout(() => {
+        setShowMessage(false) // Hide the message completely after 5 seconds
+      }, 5000)
+
+      return () => {
+        clearTimeout(fadeTimer)
+        clearTimeout(hideTimer)
+      }
+    }, [])
+
     const calculateSafeMemeAmount = (tokenBAmount: string) => {
       if (!stageInfo || !tokenBAmount || tokenBAmount === "") return
 
@@ -1031,15 +1049,34 @@ const MyProfile: React.FC = () => {
         <h1 className="pagetitle">Your Dashboard</h1>
         <div className="dashboard-sections">
           <div
-            onClick={() => handleSectionClick("NFTs")}
+            onClick={() => {
+              if (isConnected) {
+                handleSectionClick("NFTs")
+              } else {
+                setMessageContent(
+                  "You must connect your wallet to start your dashboard and access the NFTs section."
+                )
+                setShowMessage(true)
+              }
+            }}
             className={`dashboard-section ${
               activeSection === "NFTs" ? "selected" : ""
             }`}
           >
             <h2>NFTs</h2>
           </div>
+
           <div
-            onClick={() => handleSectionClick("Frames")}
+            onClick={() => {
+              if (isConnected) {
+                handleSectionClick("Frames")
+              } else {
+                setMessageContent(
+                  "You must connect your wallet to start your dashboard and access the Frames section."
+                )
+                setShowMessage(true)
+              }
+            }}
             className={`dashboard-section ${
               activeSection === "Frames" ? "selected" : ""
             }`}
@@ -1048,23 +1085,52 @@ const MyProfile: React.FC = () => {
           </div>
 
           <div
-            onClick={() => handleSectionClick("SafeMemes")}
+            onClick={() => {
+              if (isConnected) {
+                handleSectionClick("SafeMemes")
+              } else {
+                setMessageContent(
+                  "You must connect your wallet to start your dashboard and access the SafeMemes section."
+                )
+                setShowMessage(true)
+              }
+            }}
             className={`dashboard-section ${
               activeSection === "SafeMemes" ? "selected" : ""
             }`}
           >
             <h2>SafeMemes</h2>
           </div>
+
           <div
-            onClick={() => handleSectionClick("Rewards")}
+            onClick={() => {
+              if (isConnected) {
+                handleSectionClick("Rewards")
+              } else {
+                setMessageContent(
+                  "You must connect your wallet to start your dashboard and access the Rewards section."
+                )
+                setShowMessage(true)
+              }
+            }}
             className={`dashboard-section ${
               activeSection === "Rewards" ? "selected" : ""
             }`}
           >
             <h2>Rewards</h2>
           </div>
+
           <div
-            onClick={() => handleSectionClick("CreateAirdrop")}
+            onClick={() => {
+              if (isConnected) {
+                handleSectionClick("CreateAirdrop")
+              } else {
+                setMessageContent(
+                  "You must connect your wallet to start your dashboard and access the Create Airdrop section."
+                )
+                setShowMessage(true)
+              }
+            }}
             className={`dashboard-section ${
               activeSection === "CreateAirdrop" ? "selected" : ""
             }`}
@@ -1072,6 +1138,13 @@ const MyProfile: React.FC = () => {
             <h2>Create Airdrop</h2>
           </div>
         </div>
+        {showMessage && (
+          <div className="overlay" style={{ opacity }}>
+            <div className="message-box">
+              <p>{messageContent}</p>
+            </div>
+          </div>
+        )}
 
         <div className="section-content">
           {activeSection === "NFTs" && (
