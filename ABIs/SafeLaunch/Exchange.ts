@@ -633,6 +633,18 @@ export const ExchangeABI = [
     type: "event",
   },
   {
+    name: "FeeCharged",
+    inputs: [
+      {
+        name: "fee",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
     stateMutability: "nonpayable",
     type: "function",
     name: "setup",
@@ -901,16 +913,12 @@ export const ExchangeABI = [
     type: "fallback",
   },
   {
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
     type: "function",
     name: "tokenBTosafeMemeSwapInput",
     inputs: [
       {
-        name: "tokenB_sold",
-        type: "uint256",
-      },
-      {
-        name: "min_safeMeme",
+        name: "min_safememes",
         type: "uint256",
       },
       {
@@ -1019,31 +1027,6 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "safeMemeTotokenBSwapInput",
-    inputs: [
-      {
-        name: "safeMemes_sold",
-        type: "uint256",
-      },
-      {
-        name: "min_tokenB",
-        type: "uint256",
-      },
-      {
-        name: "deadline",
-        type: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
     name: "safeMemeTotokenBTransferInput",
     inputs: [
       {
@@ -1061,6 +1044,31 @@ export const ExchangeABI = [
       {
         name: "recipient",
         type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "payable",
+    type: "function",
+    name: "safeMemeTotokenBSwapInput",
+    inputs: [
+      {
+        name: "safeMemes_sold",
+        type: "uint256",
+      },
+      {
+        name: "min_tokenB",
+        type: "uint256",
+      },
+      {
+        name: "deadline",
+        type: "uint256",
       },
     ],
     outputs: [
@@ -1469,6 +1477,30 @@ export const ExchangeABI = [
       {
         name: "",
         type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getLastFee",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getAllFees",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256[100]",
       },
     ],
   },
@@ -2084,6 +2116,47 @@ export const ExchangeABI = [
     stateMutability: "view",
     type: "function",
     name: "lockedTokenBLiquidity",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "lastFee",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "allFees",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "feeCount",
     inputs: [],
     outputs: [
       {
