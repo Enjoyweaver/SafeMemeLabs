@@ -1,5 +1,27 @@
 export const ExchangeABI = [
   {
+    name: "DEXTokenPurchase",
+    inputs: [
+      {
+        name: "buyer",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "tokenB_sold",
+        type: "uint256",
+        indexed: true,
+      },
+      {
+        name: "safememes_bought",
+        type: "uint256",
+        indexed: true,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
     name: "tokenBPurchase",
     inputs: [
       {
@@ -290,6 +312,30 @@ export const ExchangeABI = [
         name: "safeMeme",
         type: "address",
         indexed: true,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "LogTotalTokenBReceived",
+    inputs: [
+      {
+        name: "total_tokenB_received",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "LogUnlockedSafeMeme",
+    inputs: [
+      {
+        name: "unlocked_safeMeme",
+        type: "uint256",
+        indexed: false,
       },
     ],
     anonymous: false,
@@ -851,39 +897,18 @@ export const ExchangeABI = [
     outputs: [],
   },
   {
-    stateMutability: "view",
-    type: "function",
-    name: "getInputPriceExternal",
-    inputs: [
-      {
-        name: "input_amount",
-        type: "uint256",
-      },
-      {
-        name: "input_reserve",
-        type: "uint256",
-      },
-      {
-        name: "output_reserve",
-        type: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
     stateMutability: "payable",
     type: "fallback",
   },
   {
-    stateMutability: "payable",
+    stateMutability: "nonpayable",
     type: "function",
     name: "tokenBTosafeMemeSwapInput",
     inputs: [
+      {
+        name: "tokenB_sold",
+        type: "uint256",
+      },
       {
         name: "min_safeMeme",
         type: "uint256",
@@ -1763,6 +1788,18 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
+    name: "dex",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
     name: "salesafeMeme",
     inputs: [],
     outputs: [
@@ -2047,30 +2084,6 @@ export const ExchangeABI = [
     stateMutability: "view",
     type: "function",
     name: "lockedTokenBLiquidity",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "max_tokens",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "min_liquidity",
     inputs: [],
     outputs: [
       {
