@@ -34,6 +34,8 @@ interface Token {
   lockedTokens?: string
   dexAddress?: string
   tokenB?: string
+  tokenBName?: string
+  tokenBSymbol?: string
   currentStage?: number
   stageInfo?: StageInfo[]
   tokenBAmountSet?: boolean
@@ -155,12 +157,13 @@ const MyProfile: React.FC = () => {
           (await tokenContract.balanceOf(dexAddress)) > 0
 
         let tokenB,
+          tokenBName,
+          tokenBSymbol,
           currentStage,
           stageInfo,
           lockedTokens,
           safeMemeForSale,
           tokenBAmountSet = false,
-          currentStageInfo,
           stageStatus
 
         if (safeLaunchStarted) {
@@ -169,21 +172,59 @@ const MyProfile: React.FC = () => {
             ExchangeABI,
             provider
           )
-          currentStageInfo = await exchangeContract.getCurrentStageInfo()
+
+          // Fetch current stage
+          currentStage = await exchangeContract.currentStage()
+
+          // Fetch stage details
+          const stageDetails = await exchangeContract.getStageDetails()
 
           tokenB = await exchangeContract.tokenBAddress()
-          currentStage = currentStageInfo[0].toNumber()
-          stageStatus = currentStageInfo[1].toNumber()
-          lockedTokens = await exchangeContract.getsafeMemesLocked()
+          lockedTokens = await exchangeContract.lockedsafeMeme()
           safeMemeForSale = await exchangeContract.salesafeMeme()
-          stageInfo = await fetchStageInfo(exchangeContract, currentStage)
-          tokenBAmountSet = stageStatus === 2
+          if (tokenB !== ethers.constants.AddressZero) {
+            const tokenBContract = new ethers.Contract(
+              tokenB,
+              SafeMemeABI,
+              provider
+            )
+            tokenBName = await tokenBContract.name()
+            tokenBSymbol = await tokenBContract.symbol()
+          } else {
+            tokenBName = "ETH"
+            tokenBSymbol = "ETH"
+          }
+          // Process stage info
+          stageInfo = stageDetails[0].map((status, index) => ({
+            status: status.toNumber(),
+            tokenBRequired: ethers.utils.formatEther(stageDetails[1][index]),
+            safeMemePrice: ethers.utils.formatEther(stageDetails[2][index]),
+            safeMemeRemaining: ethers.utils.formatEther(stageDetails[3][index]),
+            tokenBReceived: ethers.utils.formatEther(stageDetails[4][index]),
+            safeMemesSoldThisStage: ethers.utils.formatEther(
+              stageDetails[5][index]
+            ),
+            soldsafeMemeThisTX: ethers.utils.formatEther(
+              stageDetails[6][index]
+            ),
+            is_open: stageDetails[7][index],
+            tokenBRequired_set: stageDetails[8][index],
+            tokenBReceived_met: stageDetails[9][index],
+            stage_completed: stageDetails[10][index],
+          }))
+
+          stageStatus = stageInfo[currentStage.toNumber()].status
+          tokenBAmountSet =
+            stageInfo[currentStage.toNumber()].tokenBRequired_set
         }
 
         return {
           address: tokenAddress,
           name,
           symbol,
+          tokenB,
+          tokenBName,
+          tokenBSymbol,
           antiWhalePercentage: antiWhalePercentage.toNumber(),
           maxTokens: ethers.utils.formatUnits(maxTokens, decimals),
           totalSupply: ethers.utils.formatUnits(totalSupply, decimals),
@@ -195,8 +236,7 @@ const MyProfile: React.FC = () => {
             decimals
           ),
           dexAddress: safeLaunchStarted ? dexAddress : undefined,
-          tokenB,
-          currentStage,
+          currentStage: currentStage ? currentStage.toNumber() : undefined,
           stageInfo,
           tokenBAmountSet,
           stageStatus,
@@ -695,10 +735,14 @@ const MyProfile: React.FC = () => {
       )
       const amountInWei = ethers.utils.parseUnits(amount.toString(), 18)
 
-      // Fetch current stage info
-      const currentStageInfo = await exchangeContract.getCurrentStageInfo()
-      const currentStage = currentStageInfo[0].toNumber()
-      const stageStatus = currentStageInfo[1].toNumber()
+      // Fetch current stage
+      const currentStage = await exchangeContract.currentStage()
+
+      // Fetch stage details
+      const stageDetails = await exchangeContract.getStageDetails()
+
+      // Get the status of the current stage
+      const stageStatus = stageDetails[0][currentStage.toNumber()]
 
       // Add logs to debug
       console.log(`Setting Token B amount for stage: ${stage}`)
@@ -706,20 +750,20 @@ const MyProfile: React.FC = () => {
       console.log(`Stage status: ${stageStatus}`)
 
       // Check if the stage matches the current stage and is open but not set
-      if (stage !== currentStage) {
+      if (stage !== currentStage.toNumber()) {
         console.error("Can only set amount for the current stage")
         alert("Can only set amount for the current stage")
         return
       }
 
-      if (stageStatus !== 1) {
-        // STAGE_STATUS_OPEN_NOT_SET
+      // STAGE_STATUS_OPEN_NOT_SET is 1 in the contract
+      if (stageStatus.toNumber() !== 1) {
         console.error("Stage must be open and not set")
         alert("Stage must be open and not set")
         return
       }
 
-      const tx = await exchangeContract.setStagetokenBAmount(stage, amountInWei)
+      const tx = await exchangeContract.setStagetokenBAmount(amountInWei)
       await tx.wait()
 
       await fetchTokens(provider, userAddress, chainId) // Ensure this updates the UI immediately
@@ -814,6 +858,22 @@ const MyProfile: React.FC = () => {
     }
   }, [isConnected, provider, chainId, userAddress, fetchUserCustomLists])
 
+  const formatSignificantDigits = (number) => {
+    if (number === 0) return "0"
+    const parts = number.toExponential(2).split("e")
+    const coefficient = parseFloat(parts[0])
+    const exponent = parseInt(parts[1])
+    if (exponent < 0) {
+      return (
+        "0." +
+        "0".repeat(Math.abs(exponent) - 1) +
+        coefficient.toString().replace(".", "")
+      )
+    } else {
+      return number.toFixed(2)
+    }
+  }
+
   const SwapModal: React.FC<SwapModalProps> = ({
     isOpen,
     onRequestClose,
@@ -844,10 +904,20 @@ const MyProfile: React.FC = () => {
           ExchangeABI,
           provider
         )
-        const [tokenBRequired, safeMemePrice] =
-          await exchangeContract.getStageInfo(currentStage)
-        const [tokenBReceived, safeMemesSold] =
+        const [
+          status,
+          tokenBRequired,
+          safeMemePrice,
+          safeMemeAvailable,
+          tokenBReceived,
+          safeMemesSold,
+          soldsafeMeme,
+        ] = await exchangeContract.getStageInfo(currentStage)
+
+        // Fetch stage liquidity
+        const [tokenBLiquidityReceived, safeMemesSoldInStage] =
           await exchangeContract.getStageLiquidity(currentStage)
+
         const totalSupply = await exchangeContract.totalSupply()
         const MAX_PERCENTAGE_PER_STAGE = ethers.BigNumber.from(10) // 10% per stage
 
@@ -857,12 +927,14 @@ const MyProfile: React.FC = () => {
         const availableSafeMeme = safeMemeForSale.sub(safeMemesSold)
 
         setStageInfo({
+          status: status.toNumber(),
+          tokenBRequired: ethers.utils.formatEther(tokenBRequired),
+          safeMemePrice: ethers.utils.formatEther(safeMemePrice),
           safeMemeForSale: ethers.utils.formatEther(safeMemeForSale),
-          requiredTokenB: ethers.utils.formatEther(tokenBRequired),
-          price: ethers.utils.formatEther(safeMemePrice),
           safeMemesSold: ethers.utils.formatEther(safeMemesSold),
           tokenBReceived: ethers.utils.formatEther(tokenBReceived),
           availableSafeMeme: ethers.utils.formatEther(availableSafeMeme),
+          soldsafeMeme: ethers.utils.formatEther(soldsafeMeme),
         })
 
         setExchangeRate(parseFloat(ethers.utils.formatEther(safeMemePrice)))
@@ -1381,13 +1453,18 @@ const MyProfile: React.FC = () => {
                       : airdropRecipients.length}
                   </p>
                   <div className="input-group">
-                    <input
-                      type="text"
-                      placeholder="Token Address"
+                    <select
                       value={airdropTokenAddress}
                       onChange={(e) => setAirdropTokenAddress(e.target.value)}
                       className="input-field"
-                    />
+                    >
+                      <option value="">Select a token from your wallet</option>
+                      {tokens.map((token) => (
+                        <option key={token.address} value={token.address}>
+                          {token.symbol} - {token.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div className="input-group">
                     <input
@@ -1563,163 +1640,208 @@ const MyProfile: React.FC = () => {
                               </button>
                             </div>
                           )}
+
                           {token.stageInfo && (
                             <div className="stages-container">
                               <div className="stage-title">
                                 <strong>SafeLaunch Stages</strong>
                               </div>
-                              {token.stageInfo.map((stage, index) => (
-                                <div
-                                  key={index}
-                                  className={`stage ${stage.status}`}
-                                >
-                                  <h4 className="stage-number">
-                                    Stage {index + 1}
-                                  </h4>
-                                  {stage.status === "completed" ? (
-                                    <div className="stage-completed">
-                                      <p>Stage Completed</p>
-                                      <p>
-                                        Price:{" "}
-                                        {parseFloat(stage.price).toFixed(6)}{" "}
-                                        {selectedTokenBName} per{" "}
-                                        <span className="secondary-dark-color">
-                                          {token.symbol}
-                                        </span>
-                                      </p>
-                                    </div>
-                                  ) : (
-                                    <>
-                                      <div className="stage-details">
-                                        <div className="secondary-dark-color">
-                                          <p>
-                                            Available{" "}
-                                            <span className="secondary-dark-color">
-                                              {token.symbol}
-                                            </span>
-                                            :
-                                          </p>
-                                          <p>
-                                            {parseFloat(
-                                              stage.availableSafeMeme
-                                            ).toLocaleString()}
-                                          </p>
-                                        </div>
-                                        <div className="stage-detail-item">
-                                          <p>Sold {token.symbol}:</p>
-                                          <p>
-                                            {parseFloat(
-                                              stage.soldsafeMeme
-                                            ).toLocaleString()}
-                                          </p>{" "}
-                                          {/* Update this line */}
-                                        </div>
-                                      </div>
-                                      <div className="stage-details">
-                                        <div className="stage-detail-item">
-                                          <p>Required {selectedTokenBName}:</p>
-                                          <p>
-                                            {parseFloat(
-                                              stage.requiredTokenB
-                                            ).toLocaleString()}{" "}
-                                            {selectedTokenBName}
-                                          </p>
-                                        </div>
-                                        <div className="stage-detail-item">
-                                          <p>Received {selectedTokenBName}:</p>
-                                          <p>
-                                            {parseFloat(
-                                              stage.tokenBReceived
-                                            ).toLocaleString()}{" "}
-                                            {selectedTokenBName}
-                                          </p>
-                                        </div>
-                                      </div>
-                                      <div className="stage-details">
-                                        <div className="stage-detail-item">
-                                          <p>
-                                            Price:{" "}
-                                            {(
-                                              1 /
-                                              (parseFloat(stage.price) /
-                                                Math.pow(10, 18))
-                                            ).toFixed(7)}{" "}
-                                            {selectedTokenBName} per{" "}
+                              {token.stageInfo &&
+                                token.stageInfo.map((stage, index) => (
+                                  <div
+                                    key={index}
+                                    className={`stage ${
+                                      stage.status === 3
+                                        ? "completed"
+                                        : stage.status === 2
+                                        ? "open-and-set"
+                                        : stage.status === 1
+                                        ? "open-but-not-set"
+                                        : "not-open"
+                                    }`}
+                                  >
+                                    <h4 className="stage-number">
+                                      Stage {index + 1}
+                                    </h4>
+
+                                    {stage.status === 3 ? (
+                                      <div className="stage-completed">
+                                        <p>Stage Completed</p>
+                                        <p>
+                                          Price:{" "}
+                                          {parseFloat(
+                                            stage.safeMemePrice
+                                          ).toFixed(6)}{" "}
+                                          {selectedTokenBName} per{" "}
+                                          <span className="secondary-dark-color">
                                             {token.symbol}
-                                            <br />
-                                            Or:{" "}
-                                            {(
-                                              parseFloat(stage.price) /
-                                              Math.pow(10, 18)
-                                            ).toLocaleString(undefined, {
-                                              minimumFractionDigits: 2,
-                                              maximumFractionDigits: 2,
-                                            })}{" "}
-                                            {token.symbol} per{" "}
-                                            {selectedTokenBName}
-                                          </p>
-                                        </div>
+                                          </span>
+                                        </p>
                                       </div>
-                                      {token.currentStage !== undefined &&
-                                        token.currentStage === index && (
-                                          <div className="stage-actions">
-                                            {token.tokenB &&
-                                            token.tokenB !==
-                                              "0x0000000000000000000000000000000000000000" &&
-                                            !token.tokenBAmountSet ? (
-                                              <>
-                                                {token.stageStatus === 1 && (
-                                                  <>
-                                                    <input
-                                                      type="number"
-                                                      id={`amount-${token.currentStage}`}
-                                                      value={
-                                                        tokenBAmountInputs[
-                                                          token.currentStage!
-                                                        ] || ""
-                                                      }
-                                                      onChange={(e) =>
-                                                        handleTokenBAmountChange(
-                                                          token.currentStage!,
-                                                          e.target.value
-                                                        )
-                                                      }
-                                                      placeholder={`Amount `}
-                                                      className="input-field"
-                                                    />
-                                                    <button
-                                                      className="buy-token-button"
-                                                      onClick={() =>
-                                                        setTokenBAmount(
-                                                          token.address,
-                                                          token.currentStage ??
-                                                            0,
+                                    ) : (
+                                      <>
+                                        <div className="stage-details">
+                                          <div className="secondary-dark-color stage-detail-item">
+                                            <p>
+                                              Available{" "}
+                                              <span className="secondary-dark-color">
+                                                {token.symbol}
+                                              </span>
+                                              :
+                                            </p>
+                                            <p>
+                                              {parseFloat(
+                                                stage.safeMemeRemaining
+                                              ).toLocaleString()}
+                                            </p>
+                                          </div>
+                                          <div className="stage-detail-item">
+                                            <p>
+                                              Sold{" "}
+                                              <span className="secondary-dark-color">
+                                                {token.symbol}
+                                              </span>
+                                              :
+                                            </p>
+                                            <p>
+                                              {parseFloat(
+                                                stage.safeMemesSoldThisStage
+                                              ).toLocaleString()}
+                                            </p>
+                                          </div>
+                                        </div>
+                                        <div className="stage-details">
+                                          <div className="stage-detail-item">
+                                            <p>
+                                              Required{" "}
+                                              <span className="primary-dark-color">
+                                                {selectedTokenBName}
+                                              </span>
+                                              :
+                                            </p>
+                                            <p>
+                                              {parseFloat(
+                                                stage.tokenBRequired
+                                              ).toLocaleString()}{" "}
+                                              <span className="primary-dark-color">
+                                                {selectedTokenBName}
+                                              </span>
+                                            </p>
+                                          </div>
+                                          <div className="stage-detail-item">
+                                            <p>
+                                              Received{" "}
+                                              <span className="primary-dark-color">
+                                                {selectedTokenBName}
+                                              </span>
+                                              :
+                                            </p>
+                                            <p>
+                                              {parseFloat(
+                                                stage.tokenBReceived
+                                              ).toLocaleString()}{" "}
+                                              <span className="primary-dark-color">
+                                                {selectedTokenBName}
+                                              </span>
+                                            </p>
+                                          </div>
+                                        </div>
+                                        <div className="stage-details">
+                                          <div className="stage-detail-item">
+                                            <p>
+                                              Price:{" "}
+                                              {(
+                                                1 /
+                                                parseFloat(stage.safeMemePrice)
+                                              ).toLocaleString(undefined, {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2,
+                                              })}{" "}
+                                              <span className="primary-dark-color">
+                                                {token.tokenBSymbol ||
+                                                  token.tokenBName ||
+                                                  selectedTokenBName ||
+                                                  "Token B"}
+                                              </span>{" "}
+                                              per{" "}
+                                              <span className="secondary-dark-color">
+                                                {token.symbol}
+                                              </span>
+                                              <br />
+                                              Or:{" "}
+                                              {formatSignificantDigits(
+                                                parseFloat(stage.safeMemePrice)
+                                              )}{" "}
+                                              <span className="secondary-dark-color">
+                                                {token.symbol}
+                                              </span>{" "}
+                                              per{" "}
+                                              <span className="primary-dark-color">
+                                                {token.tokenBSymbol ||
+                                                  token.tokenBName ||
+                                                  selectedTokenBName ||
+                                                  "Token B"}
+                                              </span>
+                                            </p>
+                                          </div>
+                                        </div>
+                                        {token.currentStage !== undefined &&
+                                          token.currentStage === index && (
+                                            <div className="stage-actions">
+                                              {token.tokenB &&
+                                              token.tokenB !==
+                                                "0x0000000000000000000000000000000000000000" &&
+                                              !stage.tokenBRequired_set ? (
+                                                <>
+                                                  {stage.status === 1 && (
+                                                    <>
+                                                      <input
+                                                        type="number"
+                                                        id={`amount-${token.currentStage}`}
+                                                        value={
                                                           tokenBAmountInputs[
                                                             token.currentStage!
-                                                          ] ?? 0
-                                                        )
-                                                      }
-                                                    >
-                                                      Set Token B Amount for
-                                                      Stage{" "}
-                                                      {token.currentStage + 1 ??
-                                                        0}
-                                                    </button>
-                                                  </>
-                                                )}
-                                              </>
-                                            ) : (
-                                              <p>
-                                                Token B amount set for this
-                                                stage
-                                              </p>
-                                            )}
-                                          </div>
-                                        )}
-                                    </>
-                                  )}
-                                </div>
-                              ))}
+                                                          ] || ""
+                                                        }
+                                                        onChange={(e) =>
+                                                          handleTokenBAmountChange(
+                                                            token.currentStage!,
+                                                            e.target.value
+                                                          )
+                                                        }
+                                                        placeholder={`Amount `}
+                                                        className="input-field"
+                                                      />
+                                                      <button
+                                                        className="buy-token-button"
+                                                        onClick={() =>
+                                                          setTokenBAmount(
+                                                            token.address,
+                                                            token.currentStage ??
+                                                              0,
+                                                            tokenBAmountInputs[
+                                                              token.currentStage!
+                                                            ] ?? 0
+                                                          )
+                                                        }
+                                                      >
+                                                        Set Token B Amount for
+                                                        Stage{" "}
+                                                        {token.currentStage +
+                                                          1 ?? 0}
+                                                      </button>
+                                                    </>
+                                                  )}
+                                                </>
+                                              ) : (
+                                                <p></p>
+                                              )}
+                                            </div>
+                                          )}
+                                      </>
+                                    )}
+                                  </div>
+                                ))}
 
                               {token.currentStage == SAFE_LAUNCH_STAGES && (
                                 <div className="dex-stage">

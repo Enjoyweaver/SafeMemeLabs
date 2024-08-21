@@ -219,6 +219,9 @@ body {
   color: var(--secondary-dark);
 }
 
+.primary-dark-color {
+  color: var(--primary-dark);
+}
 .meme-details p strong {
   display: inline-block;
   width: 180px;
@@ -358,23 +361,38 @@ body {
 }
 
 .stage {
-  border: 1px solid var(--primary-dark); /* Set the border color */
+  border: 1px solid var(--primary-dark);
   padding: 5px;
   margin-bottom: 20px;
   border-radius: 12px;
-  background-color: transparent; /* Make the background transparent */
-  box-shadow: 0 0 15px var(--primary-dark); /* Add a glowing effect */
+  background-color: transparent;
+  box-shadow: 0 0 15px var(--primary-dark);
   transition: all 0.3s ease;
+}
+
+.stage.open-and-set,
+.stage.open-but-not-set,
+.stage.completed {
+  box-shadow: 0 0 15px var(--primary-light);
+}
+
+.dark .stage {
+  border: 1px solid var(--primary-dark);
+  background-color: transparent;
+  color: var(--primary-dark);
+  box-shadow: 0 0 15px var(--primary-dark);
+}
+
+.dark .stage.open-and-set,
+.dark .stage.open-but-not-set,
+.dark .stage.completed {
+  box-shadow: 0 0 15px var(--secondary-dark);
 }
 
 .stage-number {
   font-size: large;
-}
-.dark .stage {
-  border: 1px solid var(--primary-dark); /* Set the border color */
-  background-color: transparent; /* Make the background transparent */
-  color: var(--primary-dark);
-  box-shadow: 0 0 15px var(--primary-dark); /* Add a glowing effect */
+  text-align: center;
+  margin-bottom: 0.69rem;
 }
 
 .stage-details {
@@ -817,4 +835,63 @@ a .stage-actions input {
   max-width: 400px;
   width: 80%;
   box-shadow: 0 0 15px rgba(223, 21, 132, 0.8);
+}
+
+.edit-list-form {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: var(--background-light);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dark .edit-list-form {
+  background-color: var(--background-dark);
+}
+
+.edit-list-form h4 {
+  margin-bottom: 15px;
+  color: var(--secondary-dark);
+}
+
+.dark .edit-list-form h4 {
+  color: var(--secondary-light);
+}
+
+.edit-list-form .input-group {
+  margin-bottom: 15px;
+}
+
+.edit-list-form .input-field {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  background-color: var(--input-light);
+  color: var(--text-light);
+}
+
+.dark .edit-list-form .input-field {
+  border-color: var(--border-dark);
+  background-color: var(--input-dark);
+  color: var(--text-dark);
+}
+
+.edit-list-form select.input-field {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 20px;
+  padding-right: 30px;
+}
+
+.dark .edit-list-form select.input-field {
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23ffffff" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+}
+
+.edit-list-form .buy-token-button {
+  margin-top: 10px;
 }
