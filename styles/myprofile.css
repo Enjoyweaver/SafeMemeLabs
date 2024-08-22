@@ -895,3 +895,72 @@ a .stage-actions input {
 .edit-list-form .buy-token-button {
   margin-top: 10px;
 }
+
+.nft-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.nft-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.nft-item {
+  background-color: var(--background-light);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.dark .nft-item {
+  background-color: var(--background-dark);
+  border-color: var(--border-dark);
+}
+
+.nft-item:hover {
+  transform: scale(1.05);
+}
+
+.nft-image {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.nft-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: var(--text-light);
+}
+
+.dark .nft-name {
+  color: var(--text-dark);
+}
+
+.nft-id {
+  font-size: 0.9em;
+  color: var(--secondary-dark);
+  margin-bottom: 5px;
+}
+
+.nft-contract {
+  display: inline-block;
+  padding: 5px 10px;
+  background-color: var(--primary-dark);
+  color: var(--text-light);
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 0.8em;
+  transition: background-color 0.2s;
+}
+
+.nft-contract:hover {
+  background-color: var(--secondary-dark);
+}

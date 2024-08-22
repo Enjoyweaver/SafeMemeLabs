@@ -12,10 +12,12 @@ import {
   airdropContract,
   blockExplorerAddress,
   blockExplorerToken,
+  chains,
   customAirdropContract,
   exchangeFactory,
   safeLaunchFactory,
 } from "@/Constants/config"
+import { Alchemy, Network } from "alchemy-sdk"
 import { ethers } from "ethers"
 import Modal from "react-modal"
 
@@ -65,16 +67,19 @@ interface SwapModalProps {
   tokenBAddress: string
 }
 
-interface NFT {
-  id: string
-  name: string
-  image: string
-}
-
 interface Frame {
   id: string
   content: string
   likes: number
+}
+
+interface NFT {
+  id: string
+  name: string
+  image: string
+  contractAddress: string
+  tokenId: string
+  chainId: number
 }
 
 const MyProfile: React.FC = () => {
@@ -99,6 +104,7 @@ const MyProfile: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false)
   const [activeSection, setActiveSection] = useState<string | null>(null)
   const [nfts, setNfts] = useState<NFT[]>([])
+  const [isLoadingNFTs, setIsLoadingNFTs] = useState(false)
   const [frames, setFrames] = useState<Frame[]>([])
   const SAFE_LAUNCH_STAGES = 5
   const [airdropTokenAddress, setAirdropTokenAddress] = useState<string>("")
@@ -117,6 +123,76 @@ const MyProfile: React.FC = () => {
   const [showMessage, setShowMessage] = useState(false)
   const [messageContent, setMessageContent] = useState("")
   const [opacity, setOpacity] = useState(1)
+  const [walletError, setWalletError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const init = async () => {
+      console.log("Initializing MyProfile component")
+      if (typeof window.ethereum !== "undefined") {
+        console.log("Ethereum object found")
+        try {
+          const web3Provider = new ethers.providers.Web3Provider(
+            window.ethereum
+          )
+          setProvider(web3Provider)
+          console.log("Web3Provider set")
+
+          const network = await web3Provider.getNetwork()
+          setChainId(network.chainId)
+          console.log("Chain ID set:", network.chainId)
+
+          const accounts = await window.ethereum.request({
+            method: "eth_accounts",
+          })
+          console.log("Accounts:", accounts)
+
+          if (accounts.length > 0) {
+            const address = accounts[0]
+            setUserAddress(address)
+            setIsConnected(true)
+            console.log("User connected:", address)
+
+            await fetchTokens(web3Provider, address, network.chainId)
+            await fetchTokenBOptions(web3Provider, address, network.chainId)
+            await fetchNFTs(address)
+            await fetchFrames(address)
+          } else {
+            console.log("No accounts found. Prompting user to connect.")
+            const newAccounts = await window.ethereum.request({
+              method: "eth_requestAccounts",
+            })
+            if (newAccounts.length > 0) {
+              const address = newAccounts[0]
+              setUserAddress(address)
+              setIsConnected(true)
+              console.log("User connected after prompt:", address)
+
+              await fetchTokens(web3Provider, address, network.chainId)
+              await fetchTokenBOptions(web3Provider, address, network.chainId)
+              await fetchNFTs(address)
+              await fetchFrames(address)
+            } else {
+              throw new Error("User denied account access")
+            }
+          }
+        } catch (error) {
+          console.error("Error during initialization:", error)
+          setWalletError(
+            error.message || "An error occurred while connecting to your wallet"
+          )
+          setIsConnected(false)
+        }
+      } else {
+        console.error(
+          "Ethereum object not found. Please install MetaMask or another web3 wallet."
+        )
+        setWalletError(
+          "Web3 wallet not detected. Please install MetaMask or another web3 wallet."
+        )
+      }
+    }
+    init()
+  }, [])
 
   const fetchTokens = async (
     provider: ethers.providers.Web3Provider,
@@ -288,11 +364,42 @@ const MyProfile: React.FC = () => {
   }, [])
 
   const fetchNFTs = async (address: string) => {
-    // Placeholder: Replace with actual NFT fetching logic
-    setNfts([
-      { id: "1", name: "Cool NFT #1", image: "https://placeholder.com/150" },
-      { id: "2", name: "Awesome NFT #2", image: "https://placeholder.com/150" },
-    ])
+    console.log("Fetching NFTs for address:", address)
+    setIsLoadingNFTs(true)
+    const allNFTs: NFT[] = []
+
+    const supportedChains = chains.filter((chain) => chain.id !== 501)
+
+    for (const chain of supportedChains) {
+      console.log(`Fetching NFTs for chain: ${chain.name} (${chain.id})`)
+      const settings = {
+        apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
+        network: Network[chain.network as keyof typeof Network],
+      }
+      const alchemy = new Alchemy(settings)
+
+      try {
+        const nftsForOwner = await alchemy.nft.getNftsForOwner(address)
+        console.log(
+          `Found ${nftsForOwner.ownedNfts.length} NFTs on ${chain.name}`
+        )
+        const chainNFTs = nftsForOwner.ownedNfts.map((nft) => ({
+          id: nft.tokenId,
+          name: nft.title,
+          image: nft.media[0]?.gateway || "https://via.placeholder.com/150",
+          chainId: chain.id,
+          contractAddress: nft.contract.address,
+          tokenId: nft.tokenId,
+        }))
+        allNFTs.push(...chainNFTs)
+      } catch (error) {
+        console.error(`Error fetching NFTs for chain ${chain.id}:`, error)
+      }
+    }
+
+    console.log(`Total NFTs found across all chains: ${allNFTs.length}`)
+    setNfts(allNFTs)
+    setIsLoadingNFTs(false)
   }
 
   const fetchFrames = async (address: string) => {
@@ -1220,13 +1327,27 @@ const MyProfile: React.FC = () => {
 
         <div className="section-content">
           {activeSection === "NFTs" && (
-            <div>
-              {nfts.map((nft) => (
-                <div key={nft.id}>
-                  <img src={nft.image} alt={nft.name} />
-                  <p>{nft.name}</p>
+            <div className="nft-container">
+              <h2 className="sectionTitle">Your NFTs</h2>
+              {isLoadingNFTs ? (
+                <p>Loading NFTs...</p>
+              ) : nfts.length > 0 ? (
+                <div className="nft-grid">
+                  {nfts.map((nft) => (
+                    <div key={`${nft.chainId}-${nft.id}`} className="nft-item">
+                      <img src={nft.image} alt={nft.name} />
+                      <p>{nft.name}</p>
+                      <p>
+                        Chain:{" "}
+                        {chains.find((chain) => chain.id === nft.chainId)
+                          ?.name || "Unknown"}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                <p>No NFTs found.</p>
+              )}
             </div>
           )}
           {activeSection === "Frames" && (
@@ -1855,16 +1976,6 @@ const MyProfile: React.FC = () => {
                               )}
                             </div>
                           )}
-
-                          <button
-                            className="buy-token-button"
-                            onClick={() =>
-                              token.dexAddress &&
-                              openSwapModal(token.dexAddress)
-                            }
-                          >
-                            Buy {token.symbol}
-                          </button>
                         </>
                       )}
                     </div>

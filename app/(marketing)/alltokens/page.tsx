@@ -11,7 +11,7 @@ import {
   rpcUrls,
   safeLaunchFactory,
 } from "@/Constants/config"
-import { getStageInfo } from "@/utils/stageInfo"
+import { getStageDetails } from "@/utils/getStageDetails"
 import { ethers } from "ethers"
 import Modal from "react-modal"
 import { useAccount, useConnect, useNetwork, useWalletClient } from "wagmi"
@@ -203,7 +203,73 @@ const AllTokens = () => {
       tokenContract.getMaxWalletAmount(),
     ])
 
-    const dexInfo = await getStageInfo(dexAddress, provider)
+    let dexInfo = null
+    if (dexAddress !== ethers.constants.AddressZero) {
+      const exchangeContract = new ethers.Contract(
+        dexAddress,
+        ExchangeABI,
+        provider
+      )
+      const [safeLaunchComplete, isInDEXMode, currentStage, stageDetails] =
+        await Promise.all([
+          exchangeContract.safeLaunchComplete(),
+          exchangeContract.isInDEXMode(),
+          exchangeContract.currentStage(),
+          exchangeContract.getStageDetails(),
+        ])
+
+      const [
+        stageStatuses,
+        tokenBRequired,
+        safeMemePrices,
+        safeMemeRemaining,
+        tokenBReceived,
+        safeMemesSoldThisStage,
+        soldsafeMemeThisTX,
+        is_open,
+        tokenBRequired_set,
+        tokenBReceived_met,
+        stage_completed,
+      ] = stageDetails
+
+      const currentStageIndex = currentStage.toNumber()
+
+      dexInfo = {
+        address: dexAddress,
+        safeLaunchComplete,
+        isInDEXMode,
+        currentStage: currentStageIndex,
+        safeLaunchActivated:
+          safeLaunchComplete || isInDEXMode || currentStageIndex > 0,
+        tokenBAddress: await exchangeContract.tokenBAddress(),
+        tokenBName: await exchangeContract.tokenBName(),
+        tokenBSymbol: await exchangeContract.tokenBSymbol(),
+        stageTokenBAmount: ethers.utils.formatEther(
+          tokenBRequired[currentStageIndex]
+        ),
+        safeMemePrices: ethers.utils.formatEther(
+          safeMemePrices[currentStageIndex]
+        ),
+        safeMemeAvailable: ethers.utils.formatEther(
+          safeMemeRemaining[currentStageIndex]
+        ),
+        tokenBReceived: ethers.utils.formatEther(
+          tokenBReceived[currentStageIndex]
+        ),
+        soldsafeMeme: ethers.utils.formatEther(
+          soldsafeMemeThisTX[currentStageIndex]
+        ),
+        safeMemesSold: ethers.utils.formatEther(
+          safeMemesSoldThisStage[currentStageIndex]
+        ),
+        stageRemainingSafeMeme: ethers.utils.formatEther(
+          safeMemeRemaining[currentStageIndex]
+        ),
+        tokenBSet: tokenBRequired_set[currentStageIndex],
+        stageAmountSet: tokenBRequired_set[currentStageIndex],
+        stageStatus: stageStatuses[currentStageIndex].toNumber(),
+      }
+    }
 
     return {
       address: tokenAddress,
@@ -215,7 +281,7 @@ const AllTokens = () => {
       chainId,
       antiWhalePercentage: antiWhalePercentage.toString(),
       maxWalletAmount: ethers.utils.formatUnits(maxWalletAmount, decimals),
-      dexInfo: dexInfo ? { ...dexInfo, address: dexAddress } : null,
+      dexInfo: dexInfo,
     }
   }
 
@@ -716,7 +782,7 @@ const AllTokens = () => {
                     <p>
                       <strong>{token.symbol} Remaining:</strong>{" "}
                       {formatAmount(
-                        parseFloat(token.dexInfo.safeMeme_remaining)
+                        parseFloat(token.dexInfo.safeMemeRemaining)
                       )}
                     </p>
                     {token.dexInfo.pastTransactions &&
@@ -900,7 +966,7 @@ const AllTokens = () => {
                 {selectedToken?.symbol || ""} Remaining:{" "}
                 {selectedToken?.dexInfo
                   ? formatAmount(
-                      parseFloat(selectedToken.dexInfo.safeMeme_remaining)
+                      parseFloat(selectedToken.dexInfo.safeMemeRemaining)
                     )
                   : "0"}
               </p>
