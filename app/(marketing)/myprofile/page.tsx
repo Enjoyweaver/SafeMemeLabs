@@ -124,6 +124,37 @@ const MyProfile: React.FC = () => {
   const [messageContent, setMessageContent] = useState("")
   const [opacity, setOpacity] = useState(1)
   const [walletError, setWalletError] = useState<string | null>(null)
+  const [fees, setFees] = useState([])
+
+  useEffect(() => {
+    const fetchFees = async () => {
+      if (provider && selectedDexAddress) {
+        try {
+          const exchangeContract = new ethers.Contract(
+            selectedDexAddress,
+            ExchangeABI,
+            provider
+          )
+          const pastTransactions = await exchangeContract.getPastTransactions()
+
+          const formattedFees = pastTransactions.map((tx) => ({
+            swapFee: ethers.utils.formatEther(tx.swapFee),
+            ownerFee: ethers.utils.formatEther(tx.ownerFee),
+            houseFee: ethers.utils.formatEther(tx.houseFee),
+            timestamp: new Date(
+              tx.txtimestamp.toNumber() * 1000
+            ).toLocaleString(),
+          }))
+
+          setFees(formattedFees)
+        } catch (error) {
+          console.error("Error fetching fees:", error)
+        }
+      }
+    }
+
+    fetchFees()
+  }, [selectedDexAddress, provider])
 
   useEffect(() => {
     const init = async () => {
@@ -1670,6 +1701,32 @@ const MyProfile: React.FC = () => {
                         <strong>Max Wallet Amount:</strong>{" "}
                         {parseFloat(token.maxTokens).toLocaleString()}
                       </p>
+
+                      {token.dexAddress && (
+                        <div className="fee-display">
+                          <h4>Past Transaction Fees</h4>
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>Timestamp</th>
+                                <th>Swap Fee</th>
+                                <th>Owner Fee</th>
+                                <th>House Fee</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {fees.map((fee, index) => (
+                                <tr key={index}>
+                                  <td>{fee.timestamp}</td>
+                                  <td>{fee.swapFee} ETH</td>
+                                  <td>{fee.ownerFee} ETH</td>
+                                  <td>{fee.houseFee} ETH</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
                       {!token.safeLaunchInitialized && (
                         <p>
                           <strong>SafeLaunch Status:</strong> Not Started
