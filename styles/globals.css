@@ -327,7 +327,7 @@ body.scrolling .sidebar ul li a {
 
 @media screen and (max-width: 768px) {
   .sidebar {
-    left: -8px;
+    left: -10px;
     width: 180px;
     justify-content: center;
     text-align: left;
@@ -336,6 +336,9 @@ body.scrolling .sidebar ul li a {
 
   .sidebar ul li a {
     font-size: 0.7rem;
+  }
+  .sidebar ul li:not(.active) a {
+    color: #5a5757 !important; /* Dim color for inactive links */
   }
 }
 
