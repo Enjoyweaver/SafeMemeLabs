@@ -36,7 +36,7 @@ export const metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description:
-    "Designing and building the safe meme economy tools you need to create rugproof tokens, safe Frames, and send airdrops.",
+    "Building the safe meme economy tools you need to create rugproof tokens, safe Frames, and send airdrops.",
   keywords: [
     "safe meme",
     "meme",

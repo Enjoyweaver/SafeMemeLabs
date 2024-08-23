@@ -340,14 +340,14 @@ body.dark-mode .stage {
   font-size: 0.9rem;
   border: 2px solid var(--primary-light);
   border-radius: 20px;
-  background-color: var(--background-light);
+  background-color: var(--input-light);
   color: var(--foreground-light);
   cursor: pointer;
 }
 
 .dark .blockchain-dropdown {
   border-color: var(--primary-dark);
-  background-color: var(--background-dark);
+  background-color: var(--input-dark);
   color: var(--foreground-dark);
 }
 
@@ -381,12 +381,6 @@ body.dark-mode .stage {
   color: var(--background-light);
 }
 
-.dark .token-type-button:hover,
-.dark .token-type-button.active {
-  background-color: var(--primary-dark);
-  color: var(--background-dark);
-}
-
 @media (max-width: 768px) {
   .filter-row {
     flex-direction: column;
@@ -409,4 +403,47 @@ body.dark-mode .stage {
     justify-content: center;
     gap: 0.5rem;
   }
+}
+
+.token-type-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border: 2px solid var(--primary-light);
+  border-radius: 20px;
+  background-color: var(--input-light); /* Updated for dropdown */
+  color: var(--primary-light);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dark .token-type-button {
+  border-color: var(--primary-dark);
+  background-color: var(--input-dark); /* Updated for dropdown */
+  color: var(--primary-dark);
+}
+
+.token-type-button:hover,
+.token-type-button.active {
+  background-color: var(--primary-light);
+  color: var(--background-light);
+}
+
+.dark .token-type-button:hover,
+.dark .token-type-button.active {
+  background-color: var(--primary-dark);
+  color: var(--background-dark);
+}
+
+.token-type-button select {
+  background-color: var(
+    --input-light
+  ); /* Add dark theme background for dropdown */
+  color: var(--foreground-light);
+}
+
+.dark .token-type-button select {
+  background-color: var(
+    --input-dark
+  ); /* Add dark theme background for dropdown */
+  color: var(--foreground-dark);
 }

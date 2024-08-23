@@ -72,9 +72,19 @@ const AllTokens = () => {
   const [exchangeRate, setExchangeRate] = useState("0")
   const tokenTypes = [
     { value: "all", label: "All Tokens" },
-    { value: "safeLaunchStarted", label: "SafeLaunch Started" },
-    { value: "firstStage", label: "First Stage" },
-    { value: "otherStages", label: "Stages 2-5" },
+    { value: "safeLaunchStarted", label: "SafeLaunch In Progress" },
+    {
+      value: "stageSelection",
+      label: "Stages",
+      subOptions: [
+        { value: "stage1", label: "Stage 1" },
+        { value: "stage2", label: "Stage 2" },
+        { value: "stage3", label: "Stage 3" },
+        { value: "stage4", label: "Stage 4" },
+        { value: "stage5", label: "Stage 5" },
+        { value: "dexStage", label: "DEX Stage" },
+      ],
+    },
     { value: "withDex", label: "SafeLaunched" },
   ]
 
@@ -883,17 +893,44 @@ const AllTokens = () => {
               </select>
             </div>
             <div className="token-type-selection">
-              {tokenTypes.map((type) => (
-                <button
-                  key={type.value}
-                  className={`token-type-button ${
-                    selectedTokenType === type.value ? "active" : ""
-                  }`}
-                  onClick={() => setSelectedTokenType(type.value)}
-                >
-                  {type.label}
-                </button>
-              ))}
+              {tokenTypes.map((type) => {
+                if (type.subOptions) {
+                  return (
+                    <select
+                      key={type.value}
+                      className={`token-type-button ${
+                        selectedTokenType.startsWith("stage") ||
+                        selectedTokenType === "dexStage"
+                          ? "active"
+                          : ""
+                      }`}
+                      value={selectedTokenType}
+                      onChange={(e) => setSelectedTokenType(e.target.value)}
+                    >
+                      <option value="" disabled>
+                        {type.label}
+                      </option>
+                      {type.subOptions.map((subOption) => (
+                        <option key={subOption.value} value={subOption.value}>
+                          {subOption.label}
+                        </option>
+                      ))}
+                    </select>
+                  )
+                } else {
+                  return (
+                    <button
+                      key={type.value}
+                      className={`token-type-button ${
+                        selectedTokenType === type.value ? "active" : ""
+                      }`}
+                      onClick={() => setSelectedTokenType(type.value)}
+                    >
+                      {type.label}
+                    </button>
+                  )
+                }
+              })}
             </div>
           </div>
         </div>
