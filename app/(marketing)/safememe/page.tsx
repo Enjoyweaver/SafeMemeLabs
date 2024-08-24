@@ -29,17 +29,20 @@ ChartJS.register(
 
 const SafeMeme = () => {
   const [initialSupply, setInitialSupply] = useState(1000000)
+  const [dexPercentage, setDexPercentage] = useState(45)
   const [tokenBPrices, setTokenBPrices] = useState([1, 1, 1, 1, 1])
   const [stageTokenBAmounts, setStageTokenBAmounts] = useState([
-    1000, 2000, 3000, 4000, 5000,
+    10000, 11000, 12000, 13000, 14000,
   ])
   const [chartData, setChartData] = useState({ labels: [], datasets: [] })
+  const [selectedChainId, setSelectedChainId] = useState("250")
   const [selectedTokenB, setSelectedTokenB] = useState(
-    NativeTokens["4002"][0].symbol
+    NativeTokens[selectedChainId][0].symbol
   )
   const [tokenPrices, setTokenPrices] = useState({})
   const [provider, setProvider] = useState(null)
-  const [stage6Price, setStage6Price] = useState(0)
+  const [dexPrice, setDexPrice] = useState(0)
+  const [safeMemePerStage, setSafeMemePerStage] = useState(0)
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -53,17 +56,67 @@ const SafeMeme = () => {
   }, [])
 
   useEffect(() => {
-    updateChart()
-  }, [initialSupply, stageTokenBAmounts, tokenBPrices, selectedTokenB])
+    updateCalculations()
+  }, [
+    initialSupply,
+    dexPercentage,
+    stageTokenBAmounts,
+    tokenBPrices,
+    selectedTokenB,
+  ])
 
   useEffect(() => {
-    if (selectedTokenB && tokenPrices["4002"]?.[selectedTokenB]) {
+    if (selectedTokenB && tokenPrices[selectedChainId]?.[selectedTokenB]) {
       const newTokenBPrices = stageTokenBAmounts.map(
-        () => tokenPrices["4002"][selectedTokenB]
+        () => tokenPrices[selectedChainId][selectedTokenB]
       )
       setTokenBPrices(newTokenBPrices)
     }
-  }, [selectedTokenB, tokenPrices])
+  }, [selectedTokenB, selectedChainId, tokenPrices])
+
+  useEffect(() => {
+    updateStageTokenBAmounts(selectedTokenB)
+  }, [selectedTokenB])
+
+  const updateCalculations = () => {
+    const dexSupply = initialSupply * (dexPercentage / 100)
+    const stageSupply = initialSupply - dexSupply
+    const newSafeMemePerStage = stageSupply / 5
+
+    setSafeMemePerStage(newSafeMemePerStage)
+
+    const labels = []
+    const prices = []
+    let cumulativeTokenB = 0
+
+    stageTokenBAmounts.forEach((amount, index) => {
+      labels.push(`Stage ${index + 1}`)
+
+      const currentPriceRequired = tokenBPrices[index] * amount
+      const safeMemePrice = currentPriceRequired / newSafeMemePerStage
+
+      cumulativeTokenB += currentPriceRequired
+      prices.push(safeMemePrice)
+    })
+
+    const newDexPrice = cumulativeTokenB / dexSupply
+    setDexPrice(newDexPrice)
+
+    labels.push("SafeLaunched!")
+    prices.push(newDexPrice)
+
+    setChartData({
+      labels,
+      datasets: [
+        {
+          label: "Price of your token (USD)",
+          data: prices,
+          borderColor: "rgba(54, 162, 235, 1)",
+          backgroundColor: "rgba(54, 162, 235, 0.2)",
+        },
+      ],
+    })
+  }
 
   const fetchTokenPrices = async () => {
     const allTokenPrices = {}
@@ -119,40 +172,36 @@ const SafeMeme = () => {
     setTokenPrices(allTokenPrices)
   }
 
-  const updateChart = () => {
-    const labels = []
-    const prices = []
+  const updateStageTokenBAmounts = (token) => {
+    let newAmounts
+    switch (token) {
+      case "BTC":
+      case "rBTC":
+        newAmounts = [0.1, 0.11, 0.12, 0.13, 0.14]
+        break
+      case "FTM":
+      case "MATIC":
+        newAmounts = [1000, 1100, 1200, 1300, 1400]
+        break
+      case "AVAX":
+        newAmounts = [100, 110, 120, 130, 140]
+        break
+      default:
+        newAmounts = [1000, 1100, 1200, 1300, 1400]
+    }
+    setStageTokenBAmounts(newAmounts)
+  }
 
-    stageTokenBAmounts.forEach((amount, index) => {
-      labels.push(`Stage ${index + 1}`)
-      prices.push((tokenBPrices[index] * amount) / ((initialSupply * 10) / 100))
-    })
-
-    // Calculate the price for the 6th stage
-    const totalTokenB = getTotalTokenB()
-    const unlockedSafeMemeSupply = initialSupply * 0.5
-    const stage6Price = totalTokenB / unlockedSafeMemeSupply
-    setStage6Price(stage6Price)
-
-    labels.push("SafeLaunched!")
-    prices.push(stage6Price)
-
-    setChartData({
-      labels,
-      datasets: [
-        {
-          label: "Price of your token (USD)",
-          data: prices,
-          borderColor: "rgba(54, 162, 235, 1)",
-          backgroundColor: "rgba(54, 162, 235, 0.2)",
-        },
-      ],
-    })
+  const handleDexPercentageChange = (e) => {
+    const newPercentage = parseFloat(e.target.value)
+    if (newPercentage >= 0 && newPercentage <= 100) {
+      setDexPercentage(newPercentage)
+    }
   }
 
   const handleStageTokenBAmountChange = (index, value) => {
     const newAmounts = [...stageTokenBAmounts]
-    newAmounts[index] = parseInt(value) || 0
+    newAmounts[index] = parseFloat(value) || 0
     setStageTokenBAmounts(newAmounts)
   }
 
@@ -165,10 +214,6 @@ const SafeMeme = () => {
   }
 
   const allNativeTokens = getAllNativeTokens()
-
-  const handleSelectedTokenBChange = (e) => {
-    setSelectedTokenB(e.target.value)
-  }
 
   return (
     <div>
@@ -188,14 +233,13 @@ const SafeMeme = () => {
             <p className="blog-content">
               Every SafeMeme token you create is an ERC20 compatible token with
               the additional ability of creating a SafeLaunch. Upon initializing
-              a SafeLaunch, 50% of the total supply is sold in 5 stages with 10%
-              of the supply in each stage. In each stage, you set the amount of
-              Token B required to purchase tokens in the stage. The remaining
-              50% is locked until the initial 50% is sold. The purpose of this
-              staged approach is to build liquidity as you build your community.
-              At the end of your SafeLaunch, the remaining 50% is unlocked and
-              paired with the Token B liquidity used to buy the initial 50%.
-              This process provides a safe and stable launch for your token.
+              a SafeLaunch, the total supply is divided between the stages and
+              the DEX. In each stage, you set the amount of Token B required to
+              purchase tokens in the stage. The purpose of this staged approach
+              is to build liquidity as you build your community. At the end of
+              your SafeLaunch, the DEX portion is paired with the Token B
+              liquidity used to buy the stage portions. This process provides a
+              safe and stable launch for your token.
             </p>
             <h2 className="section-title">SafeLaunch Liquidity</h2>
             <p className="blog-content">
@@ -211,14 +255,14 @@ const SafeMeme = () => {
               The charts below illustrate the pricing, liquidity, and phases for
               SafeMeme tokens. Token A is your created SafeMeme token, while
               Token B is the paired token used to purchase Token A. Adjust the
-              token supply of your Token A and the amount of Token B you would
-              like to receive in each phase.
+              token supply of your Token A, the DEX percentage, and the amount
+              of Token B you would like to receive in each phase.
             </p>
             <p className="blog-content">
-              To use the charts, update the Total Supply, the Token B on the
-              blockchain of your choice, and the Token B Amounts inputs to see
-              the charts come alive. The chart shows the price of your SafeMeme
-              token (Token A) in USD.
+              To use the charts, update the Total Supply, the DEX percentage,
+              the Token B on the blockchain of your choice, and the Token B
+              Amounts inputs to see the charts come alive. The chart shows the
+              price of your SafeMeme token (Token A) in USD.
             </p>
 
             <div className="charts-container">
@@ -237,32 +281,55 @@ const SafeMeme = () => {
                         Your Token Supply (Token A):
                       </label>
                       <input
-                        type="number"
+                        type="text"
                         id="initialSupply"
-                        value={initialSupply}
+                        value={initialSupply.toLocaleString()}
                         onChange={(e) =>
-                          setInitialSupply(parseInt(e.target.value) || 0)
+                          setInitialSupply(
+                            parseInt(e.target.value.replace(/,/g, "")) || 0
+                          )
                         }
                       />
                     </div>
                     <div className="input-rowB">
+                      <label htmlFor="dexPercentage">
+                        DEX Supply Percentage:
+                      </label>
+                      <input
+                        type="number"
+                        id="dexPercentage"
+                        value={dexPercentage}
+                        onChange={handleDexPercentageChange}
+                        min="0"
+                        max="100"
+                        step="1"
+                      />
+                    </div>
+                    <div className="input-rowC">
                       <label htmlFor="selectedTokenB">
                         Select Native Token:
                       </label>
                       <select
-                        id="selectedTokenB"
-                        value={selectedTokenB}
-                        onChange={handleSelectedTokenBChange}
+                        id="selectedChain"
+                        value={selectedChainId}
+                        onChange={(e) => {
+                          const chainId = e.target.value
+                          setSelectedChainId(chainId)
+                          setSelectedTokenB(NativeTokens[chainId][0].symbol)
+                        }}
                       >
-                        {allNativeTokens.map((token) => (
-                          <option key={token.address} value={token.symbol}>
-                            {token.symbol}
+                        {Object.keys(NativeTokens).map((chainId) => (
+                          <option key={chainId} value={chainId}>
+                            {NativeTokens[chainId][0].symbol}{" "}
                           </option>
                         ))}
                       </select>
                       <div>
-                        {selectedTokenB && tokenPrices["4002"]?.[selectedTokenB]
-                          ? `$${tokenPrices["4002"][selectedTokenB].toFixed(4)}`
+                        {selectedTokenB &&
+                        tokenPrices[selectedChainId]?.[selectedTokenB]
+                          ? `$${tokenPrices[selectedChainId][selectedTokenB]
+                              .toFixed(4)
+                              .toLocaleString()}`
                           : "N/A"}
                       </div>
                     </div>
@@ -285,15 +352,29 @@ const SafeMeme = () => {
                           onChange={(e) =>
                             handleStageTokenBAmountChange(index, e.target.value)
                           }
+                          step={
+                            selectedTokenB === "BTC" ||
+                            selectedTokenB === "rBTC"
+                              ? "0.01"
+                              : "1"
+                          }
                         />
+                        <div className="safememe-amount">
+                          SafeMeme:{" "}
+                          {safeMemePerStage
+                            .toFixed(0)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        </div>
+                        <div className="stage-price">
+                          Price: $
+                          {(
+                            (amount * tokenBPrices[index]) /
+                            safeMemePerStage
+                          ).toFixed(6)}
+                        </div>
                       </div>
                     ))}
                   </div>
-
-                  <p className="input-section-description">
-                    These are the amounts of the tokens that will be paired and
-                    input into our SafeDEX after completing the SafeLaunch.
-                  </p>
                   <div className="total-section">
                     <div className="total-section-row">
                       <div className="total-section-item">
@@ -301,20 +382,20 @@ const SafeMeme = () => {
                           DEX {selectedTokenB} Amount:
                         </label>
                         <input
-                          type="number"
+                          type="text"
                           id="totalAmount"
-                          value={getTotalTokenB()}
+                          value={getTotalTokenB().toLocaleString()}
                           readOnly
                         />
                       </div>
                       <div className="total-section-item">
-                        <label htmlFor="unlockedSupply">
-                          50% SafeMeme Supply:
-                        </label>
+                        <label htmlFor="dexSupply">DEX SafeMeme Supply:</label>
                         <input
-                          type="number"
-                          id="unlockedSupply"
-                          value={(initialSupply * 0.5).toFixed(0)}
+                          type="text"
+                          id="dexSupply"
+                          value={(initialSupply * (dexPercentage / 100))
+                            .toFixed(0)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                           readOnly
                         />
                       </div>
@@ -328,7 +409,7 @@ const SafeMeme = () => {
                           <input
                             type="text"
                             id="launchPrice"
-                            value={`$${stage6Price.toFixed(4)}`}
+                            value={`$${dexPrice.toFixed(6)}`}
                             readOnly
                           />
                         </div>
@@ -344,10 +425,12 @@ const SafeMeme = () => {
                             value={`$${(
                               getTotalTokenB() *
                               (selectedTokenB &&
-                              tokenPrices["4002"]?.[selectedTokenB]
-                                ? tokenPrices["4002"][selectedTokenB]
+                              tokenPrices[selectedChainId]?.[selectedTokenB]
+                                ? tokenPrices[selectedChainId][selectedTokenB]
                                 : 0)
-                            ).toFixed(2)}`}
+                            )
+                              .toFixed(2)
+                              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}
                             readOnly
                           />
                         </div>
