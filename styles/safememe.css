@@ -109,35 +109,11 @@ body {
   background-color: var(--background-dark);
 }
 
-.input-section {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  width: 100%;
-  margin-top: 20px;
-}
-
 .input-row {
   display: flex;
   flex-direction: column;
   margin: 5px 10px; /* Add margin to ensure spacing between rows */
   flex-wrap: nowrap;
-}
-
-.input-rowA {
-  margin-left: 60px;
-}
-
-.input-rowB {
-  margin-right: 140px;
-}
-
-.input-row-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
-  gap: 10px; /* Adjust gap between each input if needed */
 }
 
 .threshold-section {
@@ -238,11 +214,6 @@ input[type="number"] {
 
   .chart-section {
     width: 100%;
-  }
-
-  .input-row-container {
-    flex-direction: column;
-    align-items: center;
   }
 
   .input-row-container .input-row {
@@ -442,6 +413,129 @@ input[type="number"] {
 }
 
 .dark .input-container input[type="text"] {
+  background-color: var(--input-dark);
+  color: var(--foreground-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.input-section {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center; /* Center the entire input section */
+}
+
+.input-row-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.input-rowA,
+.input-rowB,
+.input-rowC {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.styled-select {
+  display: flex;
+  align-items: center;
+}
+
+.styled-select label {
+  margin-right: 10px;
+}
+
+.styled-select select {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.token-price-display {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+  margin-left: 10px;
+}
+
+@media (max-width: 768px) {
+  .input-row-container {
+    flex-direction: column;
+  }
+
+  .input-rowA,
+  .input-rowB,
+  .input-rowC {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+
+  .styled-select {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .token-price-display {
+    margin-left: 0;
+    margin-top: 5px;
+  }
+}
+
+.stage-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  background-color: var(--input-light);
+  flex: 1;
+  min-width: 100px;
+  max-width: calc(20% - 10px);
+  box-sizing: border-box;
+  text-align: center; /* Center the content within each stage container */
+}
+
+.stage-info {
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.stage-input {
+  max-width: 75%;
+  padding: 2px;
+  text-align: center;
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.safememe-amount,
+.stage-price {
+  color: var(
+    --primary-light
+  ); /* Use the primary color for the amount and price */
+  font-weight: bold;
+}
+
+.dark .safememe-amount,
+.dark .stage-price {
+  color: var(
+    --primary-light
+  ); /* Use the dark theme primary color in dark mode */
+}
+
+.dark .stage-container {
+  background-color: var(--input-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.dark .stage-input {
   background-color: var(--input-dark);
   color: var(--foreground-dark);
   border: 1px solid var(--border-dark);

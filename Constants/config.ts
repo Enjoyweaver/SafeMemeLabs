@@ -287,7 +287,7 @@ export const NativeTokens: {
   [key: string]: { address: string; symbol: string }[]
 } = {
   "4002": [
-    { address: "0xe04676B9A9A2973BCb0D1478b5E1E9098BBB7f3D", symbol: "FTM" },
+    { address: "0xe04676B9A9A2973BCb0D1478b5E1E9098BBB7f3D", symbol: "tFTM" },
   ],
   "250": [
     { address: "0x4e15361fd6b4bb609fa63c81a2be19d873717870", symbol: "FTM" },
@@ -301,17 +301,14 @@ export const NativeTokens: {
       symbol: "AVAX",
     },
   ],
-  "30": [
-    { address: "0x542fDA317318eBF1d3DEAf76E0b632741A7e677d", symbol: "RBTC" },
-  ],
-  "31": [
-    { address: "0x542fDA317318eBF1d3DEAf76E0b632741A7e677d", symbol: "tRBTC" },
-  ],
+  //"30": [
+  //  { address: "0x542fDA317318eBF1d3DEAf76E0b632741A7e677d", symbol: "RBTC" },
+  //],
+  //"31": [
+  //  { address: "0x542fDA317318eBF1d3DEAf76E0b632741A7e677d", symbol: "tRBTC" },
+  //],
   "1337": [
     { address: "0x0000000000000000000000000000000000000000", symbol: "BTC" },
-  ],
-  "1": [
-    { address: "0x4e15361fd6b4bb609fa63c81a2be19d873717870", symbol: "FTM" },
   ],
 }
 

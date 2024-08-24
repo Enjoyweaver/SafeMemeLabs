@@ -29,12 +29,23 @@ ChartJS.register(
 
 const SafeMeme = () => {
   const [initialSupply, setInitialSupply] = useState(1000000)
-  const [dexPercentage, setDexPercentage] = useState(45)
+  const [dexPercentage, setDexPercentage] = useState(25)
   const [tokenBPrices, setTokenBPrices] = useState([1, 1, 1, 1, 1])
   const [stageTokenBAmounts, setStageTokenBAmounts] = useState([
-    10000, 11000, 12000, 13000, 14000,
+    1000, 1300, 1690, 2190, 2850,
   ])
-  const [chartData, setChartData] = useState({ labels: [], datasets: [] })
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "Price of your token (USD)",
+        data: [],
+        borderColor: "rgba(54, 162, 235, 1)",
+        backgroundColor: "rgba(54, 162, 235, 0.2)",
+      },
+    ],
+  })
+
   const [selectedChainId, setSelectedChainId] = useState("250")
   const [selectedTokenB, setSelectedTokenB] = useState(
     NativeTokens[selectedChainId][0].symbol
@@ -42,7 +53,22 @@ const SafeMeme = () => {
   const [tokenPrices, setTokenPrices] = useState({})
   const [provider, setProvider] = useState(null)
   const [dexPrice, setDexPrice] = useState(0)
-  const [safeMemePerStage, setSafeMemePerStage] = useState(0)
+  const [stagePercentages, setStagePercentages] = useState([13, 14, 15, 16, 17])
+
+  const getFontColor = (token) => {
+    switch (token) {
+      case "FTM":
+        return "blue"
+      case "AVAX":
+        return "red"
+      case "MATIC":
+        return "purple"
+      case "BTC":
+        return "gold"
+      default:
+        return "black"
+    }
+  }
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -56,13 +82,18 @@ const SafeMeme = () => {
   }, [])
 
   useEffect(() => {
+    updateStagePercentages()
+  }, [dexPercentage])
+
+  useEffect(() => {
     updateCalculations()
   }, [
     initialSupply,
     dexPercentage,
-    stageTokenBAmounts,
     tokenBPrices,
     selectedTokenB,
+    stageTokenBAmounts,
+    stagePercentages,
   ])
 
   useEffect(() => {
@@ -74,43 +105,54 @@ const SafeMeme = () => {
     }
   }, [selectedTokenB, selectedChainId, tokenPrices])
 
-  useEffect(() => {
-    updateStageTokenBAmounts(selectedTokenB)
-  }, [selectedTokenB])
+  const updateStagePercentages = () => {
+    let percentages
+    if (dexPercentage === 25) {
+      percentages = [13, 14, 15, 16, 17]
+    } else if (dexPercentage === 40) {
+      percentages = [10, 11, 12, 13, 14]
+    } else if (dexPercentage === 20) {
+      percentages = [15, 16, 17, 18, 19]
+    } else {
+      percentages = [13, 14, 15, 16, 17]
+    }
+    setStagePercentages(percentages)
+  }
 
   const updateCalculations = () => {
-    const dexSupply = initialSupply * (dexPercentage / 100)
-    const stageSupply = initialSupply - dexSupply
-    const newSafeMemePerStage = stageSupply / 5
+    const selectedTokenBPrice =
+      tokenPrices[selectedChainId]?.[selectedTokenB] || 0
 
-    setSafeMemePerStage(newSafeMemePerStage)
-
-    const labels = []
-    const prices = []
-    let cumulativeTokenB = 0
-
-    stageTokenBAmounts.forEach((amount, index) => {
-      labels.push(`Stage ${index + 1}`)
-
-      const currentPriceRequired = tokenBPrices[index] * amount
-      const safeMemePrice = currentPriceRequired / newSafeMemePerStage
-
-      cumulativeTokenB += currentPriceRequired
-      prices.push(safeMemePrice)
+    const labels = stageTokenBAmounts.map((_, index) => `Stage ${index + 1}`)
+    const prices = stageTokenBAmounts.map((amount, index) => {
+      const price =
+        (amount * tokenBPrices[index]) /
+        ((stagePercentages[index] * initialSupply) / 100)
+      return price.toFixed(6)
     })
 
-    const newDexPrice = cumulativeTokenB / dexSupply
-    setDexPrice(newDexPrice)
+    const totalTokenBFromStages = stageTokenBAmounts.reduce(
+      (sum, amount) => sum + amount,
+      0
+    )
+    const dexSupply = (initialSupply * dexPercentage) / 100
+
+    const dexPrice =
+      dexSupply > 0
+        ? ((totalTokenBFromStages * selectedTokenBPrice) / dexSupply).toFixed(6)
+        : "0.000000"
 
     labels.push("SafeLaunched!")
-    prices.push(newDexPrice)
+    prices.push(dexPrice)
+
+    setDexPrice(parseFloat(dexPrice)) // Ensure dexPrice is a number for further use
 
     setChartData({
       labels,
       datasets: [
         {
           label: "Price of your token (USD)",
-          data: prices,
+          data: prices.map((price) => parseFloat(price)), // Ensure the data passed to the chart is numeric
           borderColor: "rgba(54, 162, 235, 1)",
           backgroundColor: "rgba(54, 162, 235, 0.2)",
         },
@@ -172,29 +214,9 @@ const SafeMeme = () => {
     setTokenPrices(allTokenPrices)
   }
 
-  const updateStageTokenBAmounts = (token) => {
-    let newAmounts
-    switch (token) {
-      case "BTC":
-      case "rBTC":
-        newAmounts = [0.1, 0.11, 0.12, 0.13, 0.14]
-        break
-      case "FTM":
-      case "MATIC":
-        newAmounts = [1000, 1100, 1200, 1300, 1400]
-        break
-      case "AVAX":
-        newAmounts = [100, 110, 120, 130, 140]
-        break
-      default:
-        newAmounts = [1000, 1100, 1200, 1300, 1400]
-    }
-    setStageTokenBAmounts(newAmounts)
-  }
-
   const handleDexPercentageChange = (e) => {
     const newPercentage = parseFloat(e.target.value)
-    if (newPercentage >= 0 && newPercentage <= 100) {
+    if (newPercentage >= 20 && newPercentage <= 40) {
       setDexPercentage(newPercentage)
     }
   }
@@ -203,6 +225,7 @@ const SafeMeme = () => {
     const newAmounts = [...stageTokenBAmounts]
     newAmounts[index] = parseFloat(value) || 0
     setStageTokenBAmounts(newAmounts)
+    updateCalculations()
   }
 
   const getTotalTokenB = () => {
@@ -271,9 +294,32 @@ const SafeMeme = () => {
                 <div style={{ width: "100%", height: "350px" }}>
                   <Line
                     data={chartData}
-                    options={{ maintainAspectRatio: false }}
+                    options={{
+                      maintainAspectRatio: false,
+                      plugins: {
+                        tooltip: {
+                          callbacks: {
+                            label: function (tooltipItem) {
+                              return `${
+                                tooltipItem.dataset.label
+                              }: $${parseFloat(tooltipItem.raw).toFixed(6)}`
+                            },
+                          },
+                        },
+                      },
+                      scales: {
+                        y: {
+                          ticks: {
+                            callback: function (value) {
+                              return `$${parseFloat(value).toFixed(6)}`
+                            },
+                          },
+                        },
+                      },
+                    }}
                   />
                 </div>
+
                 <div className="input-section input-section-main">
                   <div className="input-row-container">
                     <div className="input-rowA">
@@ -300,15 +346,13 @@ const SafeMeme = () => {
                         id="dexPercentage"
                         value={dexPercentage}
                         onChange={handleDexPercentageChange}
-                        min="0"
-                        max="100"
+                        min="20"
+                        max="40"
                         step="1"
                       />
                     </div>
-                    <div className="input-rowC">
-                      <label htmlFor="selectedTokenB">
-                        Select Native Token:
-                      </label>
+                    <div className="input-rowC styled-select">
+                      <label htmlFor="selectedTokenB">Select Token B:</label>
                       <select
                         id="selectedChain"
                         value={selectedChainId}
@@ -317,6 +361,7 @@ const SafeMeme = () => {
                           setSelectedChainId(chainId)
                           setSelectedTokenB(NativeTokens[chainId][0].symbol)
                         }}
+                        style={{ color: getFontColor(selectedTokenB) }}
                       >
                         {Object.keys(NativeTokens).map((chainId) => (
                           <option key={chainId} value={chainId}>
@@ -324,7 +369,10 @@ const SafeMeme = () => {
                           </option>
                         ))}
                       </select>
-                      <div>
+                      <div
+                        className="token-price-display"
+                        style={{ color: getFontColor(selectedTokenB) }}
+                      >
                         {selectedTokenB &&
                         tokenPrices[selectedChainId]?.[selectedTokenB]
                           ? `$${tokenPrices[selectedChainId][selectedTokenB]
@@ -335,105 +383,118 @@ const SafeMeme = () => {
                     </div>
                   </div>
                 </div>
+
                 <div className="input-section">
                   <div className="input-row-container">
                     {stageTokenBAmounts.map((amount, index) => (
-                      <div key={index} className="input-row threshold-section">
-                        <label
-                          htmlFor={`amount${index}`}
-                          className="centered-label"
-                        >
-                          Stage {index + 1} {selectedTokenB} Amount:
-                        </label>
-                        <input
-                          type="number"
-                          id={`amount${index}`}
-                          value={amount}
-                          onChange={(e) =>
-                            handleStageTokenBAmountChange(index, e.target.value)
-                          }
-                          step={
-                            selectedTokenB === "BTC" ||
-                            selectedTokenB === "rBTC"
-                              ? "0.01"
-                              : "1"
-                          }
-                        />
-                        <div className="safememe-amount">
-                          SafeMeme:{" "}
-                          {safeMemePerStage
-                            .toFixed(0)
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                      <div key={index} className="stage-container">
+                        <div className="stage-info">
+                          <label
+                            htmlFor={`amount${index}`}
+                            className="centered-label"
+                          >
+                            Stage {index + 1} {selectedTokenB} Amount:
+                          </label>
+                          <input
+                            type="number"
+                            id={`amount${index}`}
+                            value={amount}
+                            onChange={(e) =>
+                              handleStageTokenBAmountChange(
+                                index,
+                                e.target.value
+                              )
+                            }
+                            step={
+                              selectedTokenB === "BTC" ||
+                              selectedTokenB === "rBTC"
+                                ? "0.01"
+                                : "1"
+                            }
+                            className="stage-input"
+                          />
                         </div>
-                        <div className="stage-price">
-                          Price: $
-                          {(
-                            (amount * tokenBPrices[index]) /
-                            safeMemePerStage
-                          ).toFixed(6)}
+                        <div className="stage-info">
+                          <label className="centered-label">SafeMeme:</label>
+                          <div className="safememe-amount">
+                            {((stagePercentages[index] * initialSupply) / 100)
+                              .toFixed(0)
+                              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                          </div>
+                        </div>
+                        <div className="stage-info">
+                          <label className="centered-label">Price:</label>
+                          <div className="stage-price">
+                            $
+                            {(
+                              (amount * tokenBPrices[index]) /
+                              ((stagePercentages[index] * initialSupply) / 100)
+                            ).toFixed(6)}
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
-                  <div className="total-section">
-                    <div className="total-section-row">
-                      <div className="total-section-item">
-                        <label htmlFor="totalAmount">
-                          DEX {selectedTokenB} Amount:
-                        </label>
+                </div>
+
+                <div className="total-section">
+                  <div className="total-section-row">
+                    <div className="total-section-item">
+                      <label htmlFor="totalAmount">
+                        DEX {selectedTokenB} Amount:
+                      </label>
+                      <input
+                        type="text"
+                        id="totalAmount"
+                        value={getTotalTokenB().toLocaleString()}
+                        readOnly
+                      />
+                    </div>
+                    <div className="total-section-item">
+                      <label htmlFor="dexSupply">DEX SafeMeme Supply:</label>
+                      <input
+                        type="text"
+                        id="dexSupply"
+                        value={(initialSupply * (dexPercentage / 100))
+                          .toFixed(0)
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        readOnly
+                      />
+                    </div>
+                  </div>
+                  <div className="total-section-row">
+                    <div className="total-section-item">
+                      <label htmlFor="launchPrice">
+                        Price at Launch (USD):
+                      </label>
+                      <div className="input-container">
                         <input
                           type="text"
-                          id="totalAmount"
-                          value={getTotalTokenB().toLocaleString()}
-                          readOnly
-                        />
-                      </div>
-                      <div className="total-section-item">
-                        <label htmlFor="dexSupply">DEX SafeMeme Supply:</label>
-                        <input
-                          type="text"
-                          id="dexSupply"
-                          value={(initialSupply * (dexPercentage / 100))
-                            .toFixed(0)
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                          id="launchPrice"
+                          value={`$${dexPrice.toFixed(6)}`}
                           readOnly
                         />
                       </div>
                     </div>
-                    <div className="total-section-row">
-                      <div className="total-section-item">
-                        <label htmlFor="launchPrice">
-                          Price at Launch (USD):
-                        </label>
-                        <div className="input-container">
-                          <input
-                            type="text"
-                            id="launchPrice"
-                            value={`$${dexPrice.toFixed(6)}`}
-                            readOnly
-                          />
-                        </div>
-                      </div>
-                      <div className="total-section-item">
-                        <label htmlFor="dexCashValue">
-                          DEX Cash Value (USD):
-                        </label>
-                        <div className="input-container">
-                          <input
-                            type="text"
-                            id="dexCashValue"
-                            value={`$${(
-                              getTotalTokenB() *
-                              (selectedTokenB &&
-                              tokenPrices[selectedChainId]?.[selectedTokenB]
-                                ? tokenPrices[selectedChainId][selectedTokenB]
-                                : 0)
-                            )
-                              .toFixed(2)
-                              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}
-                            readOnly
-                          />
-                        </div>
+                    <div className="total-section-item">
+                      <label htmlFor="dexCashValue">
+                        DEX Cash Value (USD):
+                      </label>
+                      <div className="input-container">
+                        <input
+                          type="text"
+                          id="dexCashValue"
+                          value={`$${(
+                            getTotalTokenB() *
+                            (selectedTokenB &&
+                            tokenPrices[selectedChainId]?.[selectedTokenB]
+                              ? tokenPrices[selectedChainId][selectedTokenB]
+                              : 0)
+                          )
+                            .toFixed(2)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}
+                          readOnly
+                        />
                       </div>
                     </div>
                   </div>
