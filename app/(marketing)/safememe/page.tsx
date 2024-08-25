@@ -54,6 +54,7 @@ const SafeMeme = () => {
   const [provider, setProvider] = useState(null)
   const [dexPrice, setDexPrice] = useState(0)
   const [stagePercentages, setStagePercentages] = useState([13, 14, 15, 16, 17])
+  const [loadingPrices, setLoadingPrices] = useState(true)
 
   const getFontColor = (token) => {
     switch (token) {
@@ -162,6 +163,7 @@ const SafeMeme = () => {
 
   const fetchTokenPrices = async () => {
     const allTokenPrices = {}
+    setLoadingPrices(true) // Set loading to true before fetching prices
 
     const aggregatorV3InterfaceABI = [
       {
@@ -212,6 +214,7 @@ const SafeMeme = () => {
     }
 
     setTokenPrices(allTokenPrices)
+    setLoadingPrices(false) // Set loading to false after prices have been fetched
   }
 
   const handleDexPercentageChange = (e) => {
@@ -292,35 +295,39 @@ const SafeMeme = () => {
               <div className="chart-section">
                 <h3 className="chart-title">Your Tokens Price</h3>
                 <div style={{ width: "100%", height: "350px" }}>
-                  <Line
-                    data={chartData}
-                    options={{
-                      maintainAspectRatio: false,
-                      plugins: {
-                        tooltip: {
-                          callbacks: {
-                            label: function (tooltipItem) {
-                              return `${
-                                tooltipItem.dataset.label
-                              }: $${parseFloat(tooltipItem.raw).toFixed(6)}`
+                  {loadingPrices ? (
+                    <p>Loading chart...</p> // Show this message until prices are loaded
+                  ) : (
+                    <Line
+                      data={chartData}
+                      options={{
+                        maintainAspectRatio: false,
+                        plugins: {
+                          tooltip: {
+                            callbacks: {
+                              label: function (tooltipItem) {
+                                return `${
+                                  tooltipItem.dataset.label
+                                }: $${parseFloat(tooltipItem.raw).toFixed(6)}`
+                              },
                             },
                           },
                         },
-                      },
-                      scales: {
-                        y: {
-                          ticks: {
-                            callback: function (value) {
-                              return `$${parseFloat(value).toFixed(6)}`
+                        scales: {
+                          y: {
+                            ticks: {
+                              callback: function (value) {
+                                return `$${parseFloat(value).toFixed(6)}`
+                              },
                             },
                           },
                         },
-                      },
-                    }}
-                  />
+                      }}
+                    />
+                  )}
                 </div>
 
-                <div className="input-section input-section-main">
+                <div className="input-section ">
                   <div className="input-row-container">
                     <div className="input-rowA">
                       <label htmlFor="initialSupply">
