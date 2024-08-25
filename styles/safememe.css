@@ -529,6 +529,9 @@ input[type="number"] {
     margin-bottom: 15px;
     max-width: none;
   }
+  .input-rowC {
+    margin-top: 1.5rem;
+  }
 
   .styled-select {
     flex-direction: row;
@@ -539,6 +542,15 @@ input[type="number"] {
     margin-left: 10px;
     margin-top: 0;
     font-size: 16px;
+  }
+
+  .total-section {
+    width: 85%;
+    margin: 0 auto;
+  }
+
+  .total-section-item input {
+    width: 100%;
   }
 }
 
