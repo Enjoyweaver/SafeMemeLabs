@@ -516,73 +516,71 @@ input[type="number"] {
 }
 
 @media (max-width: 768px) {
-  @media (max-width: 768px) {
-    .input-row-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
+  .input-row-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
 
-    .input-rowA,
-    .input-rowB,
-    .input-rowC {
-      flex: 1 1 100%;
-      margin-right: 0;
-      margin-bottom: 15px;
-      max-width: none;
-    }
+  .input-rowA,
+  .input-rowB,
+  .input-rowC {
+    flex: 1 1 100%;
+    margin-right: 0;
+    margin-bottom: 15px;
+    max-width: none;
+  }
 
-    .input-rowC {
-      margin-top: 1.5rem;
-    }
+  .input-rowC {
+    margin-top: 1.5rem;
+  }
 
-    .styled-select {
-      flex-direction: row;
-      align-items: center;
-    }
+  .styled-select {
+    flex-direction: row;
+    align-items: center;
+  }
 
-    .token-price-display {
-      margin-left: 10px;
-      margin-top: 0;
-      font-size: 16px;
-    }
+  .token-price-display {
+    margin-left: 10px;
+    margin-top: 0;
+    font-size: 16px;
+  }
 
-    .total-section {
-      width: 100%;
-      margin: 0 auto;
-    }
+  .total-section {
+    width: 100%;
+    margin: 0 auto;
+  }
 
-    .total-section-item input {
-      width: 100%;
-    }
+  .total-section-item input {
+    width: 100%;
+  }
 
-    .stage-container {
-      max-width: 48%;
-      margin-bottom: 10px;
-    }
+  .stage-container {
+    max-width: 48%;
+    margin-bottom: 10px;
+  }
 
-    .input-section {
-      padding: 15px;
-      border-radius: 8px;
-    }
+  .input-section {
+    padding: 15px;
+    border-radius: 8px;
+  }
 
-    .input-rowA input,
-    .input-rowB input,
-    .styled-select select {
-      font-size: 16px;
-      padding: 10px;
-    }
+  .input-rowA input,
+  .input-rowB input,
+  .styled-select select {
+    font-size: 16px;
+    padding: 10px;
+  }
 
-    .stage-container {
-      width: 48%;
-      margin-bottom: 15px;
-      box-sizing: border-box;
-    }
+  .stage-container {
+    width: 48%;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+  }
 
-    .stage-info label,
-    .stage-info .safememe-amount,
-    .stage-info .stage-price {
-      font-size: 14px;
-    }
+  .stage-info label,
+  .stage-info .safememe-amount,
+  .stage-info .stage-price {
+    font-size: 14px;
   }
 }
