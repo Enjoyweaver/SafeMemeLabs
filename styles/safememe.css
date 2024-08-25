@@ -518,6 +518,8 @@ input[type="number"] {
 @media (max-width: 768px) {
   @media (max-width: 768px) {
     .input-row-container {
+      display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
     }
 
@@ -560,10 +562,8 @@ input[type="number"] {
     }
 
     .input-section {
-      background-color: var(--accent-light);
-      padding: 10px;
+      padding: 15px;
       border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     .input-rowA input,
@@ -571,6 +571,18 @@ input[type="number"] {
     .styled-select select {
       font-size: 16px;
       padding: 10px;
+    }
+
+    .stage-container {
+      width: 48%;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    .stage-info label,
+    .stage-info .safememe-amount,
+    .stage-info .stage-price {
+      font-size: 14px;
     }
   }
 }
