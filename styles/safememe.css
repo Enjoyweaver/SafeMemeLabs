@@ -516,56 +516,61 @@ input[type="number"] {
 }
 
 @media (max-width: 768px) {
-  .input-row-container {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
+  @media (max-width: 768px) {
+    .input-row-container {
+      justify-content: space-between;
+    }
 
-  .input-rowA,
-  .input-rowB,
-  .input-rowC {
-    flex: 1 1 100%;
-    margin-right: 0;
-    margin-bottom: 15px;
-    max-width: none;
-  }
-  .input-rowC {
-    margin-top: 1.5rem;
-  }
+    .input-rowA,
+    .input-rowB,
+    .input-rowC {
+      flex: 1 1 100%;
+      margin-right: 0;
+      margin-bottom: 15px;
+      max-width: none;
+    }
 
-  .styled-select {
-    flex-direction: row;
-    align-items: center;
-  }
+    .input-rowC {
+      margin-top: 1.5rem;
+    }
 
-  .token-price-display {
-    margin-left: 10px;
-    margin-top: 0;
-    font-size: 16px;
-  }
+    .styled-select {
+      flex-direction: row;
+      align-items: center;
+    }
 
-  .total-section {
-    width: 85%;
-    margin: 0 auto;
-  }
+    .token-price-display {
+      margin-left: 10px;
+      margin-top: 0;
+      font-size: 16px;
+    }
 
-  .total-section-item input {
-    width: 100%;
-  }
-}
+    .total-section {
+      width: 100%;
+      margin: 0 auto;
+    }
 
-@media (max-width: 768px) {
-  .stage-container {
-    max-width: 45%;
-    margin-bottom: 10px;
-  }
-}
+    .total-section-item input {
+      width: 100%;
+    }
 
-@media (max-width: 768px) {
-  .input-rowA input,
-  .input-rowB input,
-  .styled-select select {
-    font-size: 16px;
-    padding: 10px;
+    .stage-container {
+      max-width: 48%;
+      margin-bottom: 10px;
+    }
+
+    .input-section {
+      background-color: var(--accent-light);
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .input-rowA input,
+    .input-rowB input,
+    .styled-select select {
+      font-size: 16px;
+      padding: 10px;
+    }
   }
 }
