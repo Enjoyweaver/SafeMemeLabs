@@ -11,7 +11,6 @@ import {
   rpcUrls,
   safeLaunchFactory,
 } from "@/Constants/config"
-import { getStageDetails } from "@/utils/getStageDetails"
 import { ethers } from "ethers"
 import Modal from "react-modal"
 import { useAccount, useConnect, useNetwork, useWalletClient } from "wagmi"

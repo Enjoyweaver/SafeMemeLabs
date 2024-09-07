@@ -125,6 +125,13 @@ const MyProfile: React.FC = () => {
   const [opacity, setOpacity] = useState(1)
   const [walletError, setWalletError] = useState<string | null>(null)
   const [fees, setFees] = useState([])
+  const [totalHolders, setTotalHolders] = useState(0)
+  const [totalTransactions, setTotalTransactions] = useState(0)
+  const [totalOwnerFees, setTotalOwnerFees] = useState("0")
+  const [totalNFTs, setTotalNFTs] = useState(0)
+  const [totalFrames, setTotalFrames] = useState(0)
+  const [totalSafeMemes, setTotalSafeMemes] = useState(0)
+  const [totalSafeLaunched, setTotalSafeLaunched] = useState(0)
 
   useEffect(() => {
     const fetchFees = async () => {
@@ -1257,6 +1264,36 @@ const MyProfile: React.FC = () => {
       <Navbar />
       <div className={`dashboard ${isConnected ? "active" : "inactive"}`}>
         <h1 className="pagetitle">Your Dashboard</h1>
+        <div className="dashboard-overview">
+          <div className="overview-item">
+            <h3>Holders</h3>
+            <p>{totalHolders}</p>
+          </div>
+          <div className="overview-item">
+            <h3>Transactions</h3>
+            <p>{totalTransactions}</p>
+          </div>
+          <div className="overview-item">
+            <h3>Owner Fees</h3>
+            <p>{parseFloat(totalOwnerFees).toFixed(4)} ETH</p>
+          </div>
+          <div className="overview-item">
+            <h3>NFTs</h3>
+            <p>{nfts.length}</p>
+          </div>
+          <div className="overview-item">
+            <h3>Frames</h3>
+            <p>{frames.length}</p>
+          </div>
+          <div className="overview-item">
+            <h3>SafeMemes</h3>
+            <p>{totalSafeMemes}</p>
+          </div>
+          <div className="overview-item">
+            <h3>SafeLaunched</h3>
+            <p>{totalSafeLaunched}</p>
+          </div>
+        </div>
         <div className="dashboard-sections">
           <div
             onClick={() => {
