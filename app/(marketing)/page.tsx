@@ -62,43 +62,31 @@ export default async function IndexPage() {
         </div>
       </section>
       <section
-        id="about"
+        id="intro"
         className="quando-regular container space-y-6 bg-slate-50 py-8 dark:bg-transparent md:py-12 lg:py-20"
       >
         <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
           <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
-            About
+            Intro
           </h2>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-            We believe you should be the ones that create and build the safe
-            meme economy, so we are building the tools for you to do so. From
-            allowing you to create rugproof tokens, funding them through a
-            SafeLaunch, creating frames on Warpcast, sending token airdrops, and
-            to even creating NFT launches. You'll even be able to create your
-            own profile so that you can build your brand and reward your
-            followers along the way.
+            At SafeMeme Labs, our goal is to empower creators by providing tools
+            to build rugproof tokens, fund projects through SafeLaunch, create
+            customizable airdrops, launch NFTs, and build Frames on Warpcast.
+            With SafeMeme Labs, you can easily customize your profile, engage
+            with your followers, and build your brand with confidence.
           </p>
           <br></br>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-            Even though we are blockchain agnostic and will be developing a
-            diverse portfolio of tools on various blockchains over time, our own
-            data, documents, and information will be permanently stored on the
-            Arweave blockchain. We believe that safety starts with communication
-            and Arweave provides a permanent solution for this. And that starts
-            with our guidelines and standards that are transparently displayed
-            in the{" "}
-            <a href="../docs" className="underline underline-offset-4">
-              SafeMeme Laboratory
-            </a>{" "}
-            and were established so that we can ensure a safe meme economy and
-            that you can confidently build without fear of being rugpulled or
-            losing your tokens value through any manipulation. As we grow and
-            develop over time, so will our guidelines and the tooling that we
-            build, though we have a{" "}
+            We are developing on multiple blockchains to give you the
+            flexibility and security you need for your projects. Our transparent
+            guidelines and standards are designed to protect the meme economy
+            from manipulation, ensuring that your projects remain secure and
+            reliable. Stay updated with our latest developments through our{" "}
             <a href="../blog" className="underline underline-offset-4">
               blog
-            </a>{" "}
-            and will frequently post our updates there.
+            </a>
+            , as we continue to evolve our tools and best practices.
           </p>
         </div>
       </section>
@@ -153,17 +141,19 @@ export default async function IndexPage() {
             </p>
           </div>
         </section>
-        <section id="profile" className=" py-8 md:py-12 lg:py-20">
+        <section id="profile" className="py-8 md:py-12 lg:py-20">
           <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
             <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
               Profile
             </h2>
             <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-              As a creator you deserve a profile that illustrates your talents
-              and that you can easily share with others. Your profile page will
-              be your own onchain creative laboratory that allows you to be as
-              creative as you like. Your profile should be an extension of you
-              and the brand youre building.
+              The profile feature allows creators to organize and present their
+              projects. It provides a space where you can display tokens, NFTs,
+              and other assets you have created or launched. The profile can be
+              customized to reflect your work and your brand, making it easier
+              to share with others. In addition, followers can view your
+              activity and engage with your projects directly through your
+              profile.
             </p>
           </div>
         </section>
@@ -173,10 +163,13 @@ export default async function IndexPage() {
               Frames
             </h2>
             <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-              Soon you will be able to create and launch Frames on Warpcast
-              straight from here. We will store the NFTs on Arweave for
-              permanent decentralization and mint them on the Base blockchain
-              for Farcaster interoperability.
+              The Frames feature will allow users to create and launch visual
+              assets, called Frames, on Warpcast. These Frames can be minted as
+              NFTs and made available for use across compatible platforms. The
+              NFTs will be stored permanently on Arweave and will be minted on
+              the Base blockchain. This will enable interoperability with
+              Farcaster and other connected systems, making the NFTs accessible
+              across different platforms.
             </p>
           </div>
         </section>
@@ -186,12 +179,24 @@ export default async function IndexPage() {
               NFTs
             </h2>
             <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-              Your NFTs are a part of you and you deserve a cool shelf for
-              others to see them on. And if someone wants to make an offer on
-              one of them, thats cool too.
+              SafeMeme Labs gives you the ability to not only showcase your NFTs
+              but also list them for sale. Youll be able to display your
+              collection on your profile, allowing others to browse and make
+              offers on your NFTs. Additionally, by listing your NFTs for sale
+              through our platform, youll earn royalties on every transaction
+              involving your NFTs, forever.
+            </p>
+            <br></br>
+            <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
+              On top of earning royalties from NFT sales, youll also benefit
+              from gas fees generated by deploying and listing your collections
+              for sale. This creates an ongoing revenue stream, ensuring that as
+              your NFTs change hands, you continue to earn from each
+              transaction.
             </p>
           </div>
         </section>
+
         <section id="rewards" className="container py-8 md:py-12 lg:py-20">
           <div className="mx-auto flex max-w-[58rem] flex-col items-center text-center">
             <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
@@ -293,6 +298,23 @@ export default async function IndexPage() {
               here by everyone. This is to view and analyze what is being
               created, what is being sold, what are the fee's generated, and
               whose getting paid.
+            </p>
+          </div>
+        </section>
+        <section id="insurance" className="container py-8 md:py-12 lg:py-20">
+          <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
+            <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
+              Insurance
+            </h2>
+            <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
+              To further safeguard your assets, we have established an insurance
+              pool that collects 0.04% of every transaction involving
+              SafeLaunched tokens. This insurance pool is designed to protect
+              users in the event of fund losses due to exploits or unforeseen
+              events. The pool is continuously replenished and will be
+              transparently displayed in real-time in the dashboard, ensuring
+              you have visibility into the financial health and security of your
+              investments.
             </p>
           </div>
         </section>

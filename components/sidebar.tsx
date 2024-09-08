@@ -8,7 +8,7 @@ export default function Sidebar() {
   useEffect(() => {
     const handleScroll = () => {
       const sections = [
-        "about",
+        "intro",
         "safememes",
         "safelaunch",
         "profile",
@@ -17,6 +17,7 @@ export default function Sidebar() {
         "rewards",
         "airdrop",
         "dashboard",
+        "insurance",
       ]
       let current = ""
 
@@ -55,7 +56,7 @@ export default function Sidebar() {
     <div className="sidebar">
       <ul>
         <li className={currentSection === "about" ? "active" : ""}>
-          <a href="#about">About</a>
+          <a href="#intro">Intro</a>
         </li>
         <li className={currentSection === "safememes" ? "active" : ""}>
           <a href="#safememes">SafeMemes</a>
@@ -80,6 +81,9 @@ export default function Sidebar() {
         </li>
         <li className={currentSection === "dashboard" ? "active" : ""}>
           <a href="#dashboard">Dashboard</a>
+        </li>
+        <li className={currentSection === "insurance" ? "active" : ""}>
+          <a href="#insurance">Insurance</a>
         </li>
       </ul>
     </div>
