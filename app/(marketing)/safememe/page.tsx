@@ -107,17 +107,19 @@ const SafeMeme = () => {
   }, [selectedTokenB, selectedChainId, tokenPrices])
 
   const updateStagePercentages = () => {
-    let percentages
-    if (dexPercentage === 25) {
-      percentages = [13, 14, 15, 16, 17]
-    } else if (dexPercentage === 40) {
-      percentages = [10, 11, 12, 13, 14]
-    } else if (dexPercentage === 20) {
-      percentages = [15, 16, 17, 18, 19]
-    } else {
-      percentages = [13, 14, 15, 16, 17]
-    }
-    setStagePercentages(percentages)
+    const dexSupply = (initialSupply * dexPercentage) / 100
+    const remainingSupply = initialSupply - dexSupply
+    const basePercentage = (100 - dexPercentage) / 5
+
+    const newStagePercentages = [
+      basePercentage - 2, // Stage 1: -2%
+      basePercentage - 1, // Stage 2: -1%
+      basePercentage, // Stage 3: Base percentage
+      basePercentage + 1, // Stage 4: +1%
+      basePercentage + 2, // Stage 5: +2%
+    ]
+
+    setStagePercentages(newStagePercentages)
   }
 
   const updateCalculations = () => {
@@ -126,9 +128,8 @@ const SafeMeme = () => {
 
     const labels = stageTokenBAmounts.map((_, index) => `Stage ${index + 1}`)
     const prices = stageTokenBAmounts.map((amount, index) => {
-      const price =
-        (amount * tokenBPrices[index]) /
-        ((stagePercentages[index] * initialSupply) / 100)
+      const stageSupply = (stagePercentages[index] * initialSupply) / 100
+      const price = (amount * tokenBPrices[index]) / stageSupply
       return price.toFixed(6)
     })
 
@@ -219,7 +220,7 @@ const SafeMeme = () => {
 
   const handleDexPercentageChange = (e) => {
     const newPercentage = parseFloat(e.target.value)
-    if (newPercentage >= 20 && newPercentage <= 40) {
+    if (newPercentage >= 25 && newPercentage <= 40) {
       setDexPercentage(newPercentage)
     }
   }
@@ -353,7 +354,7 @@ const SafeMeme = () => {
                         id="dexPercentage"
                         value={dexPercentage}
                         onChange={handleDexPercentageChange}
-                        min="20"
+                        min="25"
                         max="40"
                         step="1"
                       />
