@@ -84,7 +84,24 @@ export const ExchangeFactoryABI = [
   {
     stateMutability: "nonpayable",
     type: "constructor",
-    inputs: [],
+    inputs: [
+      {
+        name: "safeMemeLabs",
+        type: "address",
+      },
+      {
+        name: "insurancePoolAddress",
+        type: "address",
+      },
+      {
+        name: "insurancePoolContract",
+        type: "address",
+      },
+      {
+        name: "houseFeesContract",
+        type: "address",
+      },
+    ],
     outputs: [],
   },
   {
@@ -295,6 +312,54 @@ export const ExchangeFactoryABI = [
         type: "uint256",
       },
     ],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "insurancePoolAddress",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "insurancePoolContract",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "safeMemeLabs",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "houseFeesContract",
+    inputs: [],
     outputs: [
       {
         name: "",

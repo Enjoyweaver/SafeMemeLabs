@@ -247,9 +247,15 @@ const MyProfile: React.FC = () => {
       TokenFactoryABI,
       provider
     )
+
+    // Fetch token addresses deployed by the user
     const tokenAddresses = await factoryContract.getSafeMemesDeployedByUser(
       address
     )
+
+    // Update the totalSafeMemes state with the number of tokens created
+    setTotalSafeMemes(tokenAddresses.length)
+
     const tokenPromises = tokenAddresses.map(async (tokenAddress: string) => {
       try {
         const tokenContract = new ethers.Contract(
@@ -371,31 +377,123 @@ const MyProfile: React.FC = () => {
     })
 
     const fetchedTokens = await Promise.all(tokenPromises)
-    setTokens(fetchedTokens)
+    setTokens(fetchedTokens.filter(Boolean)) // Filter out any null values from failed fetches
+  }
+
+  const fetchTotalHolders = async (
+    provider: ethers.providers.Web3Provider,
+    address: string,
+    currentChainId: number
+  ) => {
+    if (!safeLaunchFactory[currentChainId]) {
+      console.error(`No factory address for chain ID ${currentChainId}`)
+      return
+    }
+
+    const factoryContract = new ethers.Contract(
+      safeLaunchFactory[currentChainId],
+      TokenFactoryABI,
+      provider
+    )
+
+    const tokenAddresses = await factoryContract.getSafeMemesDeployedByUser(
+      address
+    )
+
+    const holderPromises = tokenAddresses.map(async (tokenAddress: string) => {
+      try {
+        const tokenContract = new ethers.Contract(
+          tokenAddress,
+          SafeMemeABI,
+          provider
+        )
+        const holdersCount = await tokenContract.holdersCount()
+        console.log(
+          `Holders count for token ${tokenAddress}:`,
+          holdersCount.toNumber()
+        )
+        return holdersCount.toNumber()
+      } catch (error) {
+        console.error(
+          `Error fetching holders for token ${tokenAddress}:`,
+          error
+        )
+        return 0
+      }
+    })
+
+    const holdersCounts = await Promise.all(holderPromises)
+    const totalHolders = holdersCounts.reduce((acc, count) => acc + count, 0)
+    console.log(`Total holders across tokens:`, totalHolders)
+    setTotalHolders(totalHolders)
   }
 
   useEffect(() => {
     const init = async () => {
+      console.log("Initializing MyProfile component")
       if (typeof window.ethereum !== "undefined") {
-        const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
-        setProvider(web3Provider)
-
-        const network = await web3Provider.getNetwork()
-        setChainId(network.chainId)
-
+        console.log("Ethereum object found")
         try {
-          const signer = web3Provider.getSigner()
-          const address = await signer.getAddress()
-          setUserAddress(address)
-          setIsConnected(true)
+          const web3Provider = new ethers.providers.Web3Provider(
+            window.ethereum
+          )
+          setProvider(web3Provider)
+          console.log("Web3Provider set")
 
-          await fetchTokens(web3Provider, address, network.chainId)
-          await fetchTokenBOptions(web3Provider, address, network.chainId)
-          await fetchNFTs(address)
-          await fetchFrames(address)
+          const network = await web3Provider.getNetwork()
+          setChainId(network.chainId)
+          console.log("Chain ID set:", network.chainId)
+
+          const accounts = await window.ethereum.request({
+            method: "eth_accounts",
+          })
+          console.log("Accounts:", accounts)
+
+          if (accounts.length > 0) {
+            const address = accounts[0]
+            setUserAddress(address)
+            setIsConnected(true)
+            console.log("User connected:", address)
+
+            await fetchTokens(web3Provider, address, network.chainId)
+            await fetchTokenBOptions(web3Provider, address, network.chainId)
+            await fetchNFTs(address)
+            await fetchFrames(address)
+            await fetchTotalHolders(web3Provider, address, network.chainId)
+          } else {
+            console.log("No accounts found. Prompting user to connect.")
+            const newAccounts = await window.ethereum.request({
+              method: "eth_requestAccounts",
+            })
+            if (newAccounts.length > 0) {
+              const address = newAccounts[0]
+              setUserAddress(address)
+              setIsConnected(true)
+              console.log("User connected after prompt:", address)
+
+              await fetchTokens(web3Provider, address, network.chainId)
+              await fetchTokenBOptions(web3Provider, address, network.chainId)
+              await fetchNFTs(address)
+              await fetchFrames(address)
+              await fetchTotalHolders(web3Provider, address, network.chainId)
+            } else {
+              throw new Error("User denied account access")
+            }
+          }
         } catch (error) {
-          console.error("No account connected", error)
+          console.error("Error during initialization:", error)
+          setWalletError(
+            error.message || "An error occurred while connecting to your wallet"
+          )
+          setIsConnected(false)
         }
+      } else {
+        console.error(
+          "Ethereum object not found. Please install MetaMask or another web3 wallet."
+        )
+        setWalletError(
+          "Web3 wallet not detected. Please install MetaMask or another web3 wallet."
+        )
       }
     }
     init()
@@ -438,14 +536,6 @@ const MyProfile: React.FC = () => {
     console.log(`Total NFTs found across all chains: ${allNFTs.length}`)
     setNfts(allNFTs)
     setIsLoadingNFTs(false)
-  }
-
-  const fetchFrames = async (address: string) => {
-    // Placeholder: Replace with actual Frames fetching logic from Warpcast
-    setFrames([
-      { id: "1", content: "This is my first frame!", likes: 10 },
-      { id: "2", content: "Check out my new project", likes: 25 },
-    ])
   }
 
   const handleSectionClick = (section: string) => {
@@ -1266,6 +1356,14 @@ const MyProfile: React.FC = () => {
         <h1 className="pagetitle">Your Dashboard</h1>
         <div className="dashboard-overview">
           <div className="overview-item">
+            <h3>SafeMemes</h3>
+            <p>{totalSafeMemes}</p>
+          </div>
+          <div className="overview-item">
+            <h3>SafeLaunched</h3>
+            <p>{totalSafeLaunched}</p>
+          </div>
+          <div className="overview-item">
             <h3>Holders</h3>
             <p>{totalHolders}</p>
           </div>
@@ -1284,14 +1382,6 @@ const MyProfile: React.FC = () => {
           <div className="overview-item">
             <h3>Frames</h3>
             <p>{frames.length}</p>
-          </div>
-          <div className="overview-item">
-            <h3>SafeMemes</h3>
-            <p>{totalSafeMemes}</p>
-          </div>
-          <div className="overview-item">
-            <h3>SafeLaunched</h3>
-            <p>{totalSafeLaunched}</p>
           </div>
         </div>
         <div className="dashboard-sections">

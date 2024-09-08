@@ -471,4 +471,45 @@ export const SafeMemeABI = [
       },
     ],
   },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "safeMemeLabs",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "holders",
+    inputs: [
+      {
+        name: "arg0",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "holdersCount",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
 ] as const

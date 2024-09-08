@@ -44,28 +44,6 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "AddLiquidity",
-    inputs: [
-      {
-        name: "tokenB_amount",
-        type: "uint256",
-        indexed: true,
-      },
-      {
-        name: "safeMeme_amount",
-        type: "uint256",
-        indexed: true,
-      },
-      {
-        name: "deadline",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
     name: "StageStarted",
     inputs: [
       {
@@ -174,28 +152,6 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "StageLiquidityUpdated",
-    inputs: [
-      {
-        name: "stage",
-        type: "uint256",
-        indexed: true,
-      },
-      {
-        name: "tokenBReceived",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "safeMemesSoldThisStage",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
     name: "Transfer",
     inputs: [
       {
@@ -262,28 +218,6 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "InternalTransfer",
-    inputs: [
-      {
-        name: "_from",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "_to",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "_value",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
     name: "SafeLaunchCompleted",
     inputs: [
       {
@@ -306,287 +240,6 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "DEXStageInitialized",
-    inputs: [
-      {
-        name: "safeMeme",
-        type: "address",
-        indexed: true,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "LogTotalTokenBReceived",
-    inputs: [
-      {
-        name: "total_tokenB_received",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "LogUnlockedSafeMeme",
-    inputs: [
-      {
-        name: "unlocked_safeMeme",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "BuyTokensStarted",
-    inputs: [
-      {
-        name: "buyer",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "tokenBAmount",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "CurrentStageStatus",
-    inputs: [
-      {
-        name: "stage",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "status",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "SafeMemeAmountCalculated",
-    inputs: [
-      {
-        name: "amount",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "CurrentSafeMemeRemaining",
-    inputs: [
-      {
-        name: "remaining",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "AmountsAdjusted",
-    inputs: [
-      {
-        name: "safeMemeAmount",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "tokenBAmount",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "MaxTransferLimit",
-    inputs: [
-      {
-        name: "limit",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "AttemptingTokenBTransfer",
-    inputs: [
-      {
-        name: "sender",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "receiver",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "amount",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "TokenBTransferSuccessful",
-    inputs: [
-      {
-        name: "amount",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "CurrentStageInfoBeforeUpdate",
-    inputs: [
-      {
-        name: "stage",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "safeMemeRemaining",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "tokenBReceived",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "safeMemesSoldThisStage",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "UpdatedStageInfo",
-    inputs: [
-      {
-        name: "stage",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "safeMemeRemaining",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "tokenBReceived",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "safeMemesSoldThisStage",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "AttemptingSafeMemeTransfer",
-    inputs: [
-      {
-        name: "receiver",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "amount",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "SafeMemeTransferSuccessful",
-    inputs: [
-      {
-        name: "amount",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "ExcessTokenBAmount",
-    inputs: [
-      {
-        name: "amount",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "AttemptingExcessTokenBReturn",
-    inputs: [
-      {
-        name: "receiver",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "amount",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
-    name: "ExcessTokenBReturnSuccessful",
-    inputs: [
-      {
-        name: "amount",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    anonymous: false,
-    type: "event",
-  },
-  {
     name: "CurrentStageCompleted",
     inputs: [
       {
@@ -599,10 +252,10 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "ProgressedToNextStage",
+    name: "HouseFeesWithdrawn",
     inputs: [
       {
-        name: "newStage",
+        name: "amount",
         type: "uint256",
         indexed: false,
       },
@@ -611,20 +264,10 @@ export const ExchangeABI = [
     type: "event",
   },
   {
-    name: "BuyTokensCompleted",
+    name: "OwnerFeesWithdrawn",
     inputs: [
       {
-        name: "buyer",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "safeMemeAmount",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "tokenBAmount",
+        name: "amount",
         type: "uint256",
         indexed: false,
       },
@@ -637,6 +280,18 @@ export const ExchangeABI = [
     inputs: [
       {
         name: "fee",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
+    name: "InsurancePoolFeesWithdrawn",
+    inputs: [
+      {
+        name: "amount",
         type: "uint256",
         indexed: false,
       },
@@ -677,6 +332,22 @@ export const ExchangeABI = [
         name: "_antiWhalePercentage",
         type: "uint256",
       },
+      {
+        name: "_safeMemeLabs",
+        type: "address",
+      },
+      {
+        name: "_insurancePoolAddress",
+        type: "address",
+      },
+      {
+        name: "_insurancePoolContract",
+        type: "address",
+      },
+      {
+        name: "_houseFeesContract",
+        type: "address",
+      },
     ],
     outputs: [],
   },
@@ -686,6 +357,14 @@ export const ExchangeABI = [
     name: "getAddresses",
     inputs: [],
     outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+      {
+        name: "",
+        type: "address",
+      },
       {
         name: "",
         type: "address",
@@ -906,6 +585,37 @@ export const ExchangeABI = [
         type: "uint256",
       },
     ],
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "withdrawHouseFees",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "withdrawInsurancePoolFees",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "withdrawOwnerFees",
+    inputs: [],
     outputs: [],
   },
   {
@@ -1490,6 +1200,18 @@ export const ExchangeABI = [
         name: "",
         type: "uint256",
       },
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
     ],
   },
   {
@@ -1503,6 +1225,38 @@ export const ExchangeABI = [
         type: "uint256[100]",
       },
     ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getFees",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setTransactionThreshold",
+    inputs: [
+      {
+        name: "newThreshold",
+        type: "uint256",
+      },
+    ],
+    outputs: [],
   },
   {
     stateMutability: "view",
@@ -1844,18 +1598,6 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "releasedTokens",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
     name: "stages",
     inputs: [
       {
@@ -1931,42 +1673,6 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "lpToken",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "ownerFeePercentage",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "dexActive",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
     name: "tokenBReserve",
     inputs: [],
     outputs: [
@@ -1985,18 +1691,6 @@ export const ExchangeABI = [
       {
         name: "",
         type: "address",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "lpTokenBalance",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
       },
     ],
   },
@@ -2062,18 +1756,6 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "totalSafeMemesSoldPercentage",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
     name: "safeMemeRemaining",
     inputs: [
       {
@@ -2092,30 +1774,6 @@ export const ExchangeABI = [
     stateMutability: "view",
     type: "function",
     name: "totalTokenBReceived",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "lockedSafeMemeLiquidity",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "lockedTokenBLiquidity",
     inputs: [],
     outputs: [
       {
@@ -2157,6 +1815,138 @@ export const ExchangeABI = [
     stateMutability: "view",
     type: "function",
     name: "feeCount",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "safeLaunchActive",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "accumulatedOwnerFees",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "accumulatedHouseFees",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "insurancePoolAddress",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "accumulatedInsurancePoolFees",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "safeMemeLabs",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "transactionCounter",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "insurancePoolContract",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "totalTransactions",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "houseFeesContract",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "transactionThreshold",
     inputs: [],
     outputs: [
       {

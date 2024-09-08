@@ -29,7 +29,7 @@ export const TokenFactoryABI = [
         type: "uint256",
       },
       {
-        name: "fee_recipient",
+        name: "_safeMemeLabs",
         type: "address",
       },
       {
@@ -203,6 +203,18 @@ export const TokenFactoryABI = [
     stateMutability: "view",
     type: "function",
     name: "tokenFactory",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "safeMemeLabs",
     inputs: [],
     outputs: [
       {

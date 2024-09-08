@@ -891,7 +891,7 @@ a .stage-actions input {
 }
 
 .dashboard.active .overview-item p {
-  color: var(--primary-light);
+  color: var(--text-dark);
   text-shadow: 0 0 5px rgba(4, 196, 78, 0.5);
 }
 
@@ -910,13 +910,13 @@ a .stage-actions input {
 }
 
 .dashboard.active .overview-item {
+  color: var(--text-dark);
   box-shadow: 0 0 10px var(--primary-dark-transparent);
 }
 
 .dashboard-section {
   padding: 15px 30px;
   margin: 0 15px;
-  background-color: var(--input-dark);
   color: var(--dashboardtext-dark);
   border: 3px solid var(--primary-dark-transparent);
   transition: all 0.3s ease, border-color 0.3s ease;
@@ -933,6 +933,8 @@ a .stage-actions input {
 
 .dashboard.active .dashboard-section {
   opacity: 1;
+  color: var(--text-dark);
+  background-color: var(--input-dark);
   border-color: var(--primary-dark);
   box-shadow: 0 0 10px rgba(223, 21, 132, 0.5);
 }
