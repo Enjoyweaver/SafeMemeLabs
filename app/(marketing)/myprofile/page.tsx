@@ -1480,7 +1480,7 @@ const MyProfile: React.FC = () => {
               activeSection === "CreateAirdrop" ? "selected" : ""
             }`}
           >
-            <h2>Create Airdrop</h2>
+            <h2>Airdrop</h2>
           </div>
         </div>
         {showMessage && (
@@ -1542,7 +1542,7 @@ const MyProfile: React.FC = () => {
           )}
           {activeSection === "CreateAirdrop" && (
             <div className="create-airdrop-container">
-              <h2 className="sectionTitle">Create Airdrop</h2>
+              <h2 className="sectionTitle">Airdrop</h2>
 
               <div className="airdrop-options">
                 <button
@@ -1572,7 +1572,7 @@ const MyProfile: React.FC = () => {
               </div>
 
               {airdropOption === "new" && (
-                <div className="airdrop-form">
+                <div className="edit-list-form">
                   <div className="input-group">
                     <input
                       type="text"
@@ -1739,7 +1739,7 @@ const MyProfile: React.FC = () => {
                       ? "Custom List"
                       : airdropRecipients.length}
                   </p>
-                  <div className="input-group">
+                  <div className="edit-list-form">
                     <select
                       value={airdropTokenAddress}
                       onChange={(e) => setAirdropTokenAddress(e.target.value)}
@@ -1753,7 +1753,7 @@ const MyProfile: React.FC = () => {
                       ))}
                     </select>
                   </div>
-                  <div className="input-group">
+                  <div className="edit-list-form">
                     <input
                       type="text"
                       placeholder="Amount per Address"
@@ -1772,7 +1772,7 @@ const MyProfile: React.FC = () => {
               )}
 
               {airdropOption === "custom" && (
-                <div className="custom-list-form">
+                <div className="edit-list-form">
                   <div className="input-group">
                     <input
                       type="text"
