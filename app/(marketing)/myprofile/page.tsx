@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from "react"
 import { AirdropABI } from "@/ABIs/Airdrop/Airdrop"
+import { AirdropFactoryABI } from "@/ABIs/Airdrop/AirdropFactory"
 import { CustomAirdropABI } from "@/ABIs/Airdrop/CustomAirdrop"
 import { ExchangeABI } from "@/ABIs/SafeLaunch/Exchange"
 import { ExchangeFactoryABI } from "@/ABIs/SafeLaunch/ExchangeFactory"
@@ -582,6 +583,16 @@ const MyProfile: React.FC = () => {
       return
     }
 
+    const addresses = customListAddresses
+      .split("\n")
+      .map((addr) => addr.trim())
+      .filter((addr) => ethers.utils.isAddress(addr))
+
+    if (addresses.length === 0) {
+      alert("Please provide valid Ethereum addresses")
+      return
+    }
+
     const contract = new ethers.Contract(
       customAirdropContractAddress,
       CustomAirdropABI,
@@ -589,10 +600,7 @@ const MyProfile: React.FC = () => {
     )
 
     try {
-      const tx = await contract.createList(
-        customListName,
-        customListAddresses.split("\n")
-      )
+      const tx = await contract.createList(customListName, addresses)
       await tx.wait()
       alert("Custom list created successfully!")
     } catch (error) {

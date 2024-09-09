@@ -1,14 +1,14 @@
-export const TokenFactoryABI = [
+export const AirdropFactoryABI = [
   {
-    name: "NewSafeMeme",
+    name: "NewCustomAirdrop",
     inputs: [
       {
-        name: "safeMeme",
+        name: "customAirdrop",
         type: "address",
         indexed: true,
       },
       {
-        name: "owner",
+        name: "creator",
         type: "address",
         indexed: true,
       },
@@ -21,50 +21,21 @@ export const TokenFactoryABI = [
     type: "constructor",
     inputs: [
       {
-        name: "safeMeme_template",
+        name: "_customAirdropTemplate",
         type: "address",
-      },
-      {
-        name: "creation_fee",
-        type: "uint256",
       },
       {
         name: "_safeMemeLabs",
-        type: "address",
-      },
-      {
-        name: "_exchangeFactory",
         type: "address",
       },
     ],
     outputs: [],
   },
   {
-    stateMutability: "payable",
+    stateMutability: "nonpayable",
     type: "function",
-    name: "deploySafeMeme",
-    inputs: [
-      {
-        name: "name",
-        type: "string",
-      },
-      {
-        name: "symbol",
-        type: "string",
-      },
-      {
-        name: "decimals",
-        type: "uint256",
-      },
-      {
-        name: "totalSupply",
-        type: "uint256",
-      },
-      {
-        name: "antiWhalePercentage",
-        type: "uint256",
-      },
-    ],
+    name: "createCustomAirdrop",
+    inputs: [],
     outputs: [
       {
         name: "",
@@ -75,7 +46,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getSafeMemesDeployedByUser",
+    name: "getCustomAirdropsDeployedByUser",
     inputs: [
       {
         name: "_user",
@@ -92,7 +63,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "getDeployedSafeMemeCount",
+    name: "getDeployedCustomAirdropCount",
     inputs: [],
     outputs: [
       {
@@ -102,9 +73,21 @@ export const TokenFactoryABI = [
     ],
   },
   {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "setCustomAirdropTemplate",
+    inputs: [
+      {
+        name: "_customAirdropTemplate",
+        type: "address",
+      },
+    ],
+    outputs: [],
+  },
+  {
     stateMutability: "view",
     type: "function",
-    name: "safeMemeTemplate",
+    name: "customAirdropTemplate",
     inputs: [],
     outputs: [
       {
@@ -116,7 +99,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "safeMemesDeployed",
+    name: "customAirdropsDeployed",
     inputs: [
       {
         name: "arg0",
@@ -133,7 +116,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "safeMemeDeployedCount",
+    name: "customAirdropDeployedCount",
     inputs: [],
     outputs: [
       {
@@ -145,7 +128,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "userSafeMemes",
+    name: "userCustomAirdrops",
     inputs: [
       {
         name: "arg0",
@@ -156,54 +139,6 @@ export const TokenFactoryABI = [
         type: "uint256",
       },
     ],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "creationFee",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "feeRecipient",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "exchangeFactory",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-      },
-    ],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    name: "tokenFactory",
-    inputs: [],
     outputs: [
       {
         name: "",
@@ -226,7 +161,7 @@ export const TokenFactoryABI = [
   {
     stateMutability: "view",
     type: "function",
-    name: "airdropFactory",
+    name: "owner",
     inputs: [],
     outputs: [
       {

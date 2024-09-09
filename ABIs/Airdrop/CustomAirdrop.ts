@@ -108,8 +108,14 @@ export const CustomAirdropABI = [
   },
   {
     stateMutability: "nonpayable",
-    type: "constructor",
-    inputs: [],
+    type: "function",
+    name: "initialize",
+    inputs: [
+      {
+        name: "_safeMemeLabs",
+        type: "address",
+      },
+    ],
     outputs: [],
   },
   {

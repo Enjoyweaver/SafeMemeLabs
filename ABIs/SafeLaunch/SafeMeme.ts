@@ -80,6 +80,10 @@ export const SafeMemeABI = [
         name: "_tokenFactory",
         type: "address",
       },
+      {
+        name: "_airdropFactory",
+        type: "address",
+      },
     ],
     outputs: [],
   },
@@ -297,6 +301,22 @@ export const SafeMemeABI = [
     ],
   },
   {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "updateHolderCount",
+    inputs: [
+      {
+        name: "recipient",
+        type: "address",
+      },
+      {
+        name: "airdropContract",
+        type: "address",
+      },
+    ],
+    outputs: [],
+  },
+  {
     stateMutability: "view",
     type: "function",
     name: "name",
@@ -509,6 +529,18 @@ export const SafeMemeABI = [
       {
         name: "",
         type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "airdropFactory",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
       },
     ],
   },

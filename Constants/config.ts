@@ -471,42 +471,42 @@ export const masterVyperTokenCopy: {
 export const safeMemeTemplate: {
   [key: string]: string
 } = {
-  "4002": "0x3441DdD397b9652253717a713CF9692E39dbf199",
+  "4002": "0x1747ED0B62884F7cC02C470fEE023eF4F498042e",
   // "64165": "0xe5355DB1838d2e56786cC7E66FF9a122F2bb3d1d",
 }
 
 export const safeLaunchFactory: {
   [key: string]: string
 } = {
-  "4002": "0xB8565a65E68808f67962FeC244aC03537DC22437",
+  "4002": "0x24dbBf8763eEBf0727Ec756747efA0C2bA99125D",
   //"64165": "0x0643e30ABfa871c5a22c602Cb2071c2B1230e0d9",
 }
 
 export const exchangeTemplate: {
   [key: string]: string
 } = {
-  "4002": "0x4043DD2774aA8f7Bcc0132Cd5Cd19fb302BCbde0",
+  "4002": "0x65a0edD52dc1505A85A5d5D664cc2489a2cd7671",
   // "64165": "0x8401eb679FBCc6522B6489C1a5E119532918f88a",
 }
 
 export const exchangeFactory: {
   [key: string]: string
 } = {
-  "4002": "0x7bd05110F8F0f1EA25A77a6B5F4B1816275dC6CA",
+  "4002": "0xa966eb68f1e6107F6a6FBd8FD934D7b256e01AFB",
   //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
 }
 
 export const houseFeesContract: {
   [key: string]: string
 } = {
-  "4002": "0x6D4482058679863E3190A697349Ef6deEf9eF9cF",
+  "4002": "0xc75178FBf8b4f8cB3cD6ed4B873ECb84E6caeC74",
   //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
 }
 
 export const insurancePoolContract: {
   [key: string]: string
 } = {
-  "4002": "0x4354e34713e66E409469f1C4a89A551B3Cf73533",
+  "4002": "0xCfB3D2bAD1B5974370B0483d599a00E763e1bBf9",
   //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
 }
 
@@ -527,6 +527,13 @@ export const airdropContract: {
 export const customAirdropContract: {
   [key: string]: string
 } = {
-  "4002": "0xcb40221d23151e44a588A62c95Bcf701e34f307d",
+  "4002": "0x921E4bF610087aB0248641467988C06678A22CDe",
+  //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
+}
+
+export const AirdropFactory: {
+  [key: string]: string
+} = {
+  "4002": "0x24888e2C178220f006C4DfA892d5DBEf07447832",
   //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
 }
