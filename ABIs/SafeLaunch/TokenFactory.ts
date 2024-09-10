@@ -36,6 +36,10 @@ export const TokenFactoryABI = [
         name: "_exchangeFactory",
         type: "address",
       },
+      {
+        name: "_airdropFactory",
+        type: "address",
+      },
     ],
     outputs: [],
   },

@@ -317,6 +317,39 @@ export const SafeMemeABI = [
     outputs: [],
   },
   {
+    stateMutability: "nonpayable",
+    type: "function",
+    name: "airdropTransfer",
+    inputs: [
+      {
+        name: "_from",
+        type: "address",
+      },
+      {
+        name: "recipients",
+        type: "address[]",
+      },
+      {
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        name: "list_id",
+        type: "uint256",
+      },
+      {
+        name: "owner",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+  },
+  {
     stateMutability: "view",
     type: "function",
     name: "name",

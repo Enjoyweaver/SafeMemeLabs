@@ -193,8 +193,8 @@ const MyProfile: React.FC = () => {
 
             await fetchTokens(web3Provider, address, network.chainId)
             await fetchTokenBOptions(web3Provider, address, network.chainId)
-            await fetchNFTs(address)
-            await fetchFrames(address)
+            // Call fetchTotalHolders after fetching tokens
+            await fetchTotalHolders(web3Provider, address, network.chainId)
           } else {
             console.log("No accounts found. Prompting user to connect.")
             const newAccounts = await window.ethereum.request({
@@ -208,8 +208,9 @@ const MyProfile: React.FC = () => {
 
               await fetchTokens(web3Provider, address, network.chainId)
               await fetchTokenBOptions(web3Provider, address, network.chainId)
-              await fetchNFTs(address)
-              await fetchFrames(address)
+
+              // Call fetchTotalHolders after fetching tokens
+              await fetchTotalHolders(web3Provider, address, network.chainId)
             } else {
               throw new Error("User denied account access")
             }
@@ -386,33 +387,43 @@ const MyProfile: React.FC = () => {
     address: string,
     currentChainId: number
   ) => {
+    // Check if the current chain ID has a factory address
     if (!safeLaunchFactory[currentChainId]) {
       console.error(`No factory address for chain ID ${currentChainId}`)
       return
     }
 
+    // Initialize the factory contract for fetching deployed SafeMemes
     const factoryContract = new ethers.Contract(
       safeLaunchFactory[currentChainId],
       TokenFactoryABI,
       provider
     )
 
+    // Get the list of SafeMemes deployed by the connected user
     const tokenAddresses = await factoryContract.getSafeMemesDeployedByUser(
       address
     )
 
+    // Map over each deployed token and get the holder count
     const holderPromises = tokenAddresses.map(async (tokenAddress: string) => {
       try {
+        // Initialize a contract instance for each SafeMeme token
         const tokenContract = new ethers.Contract(
           tokenAddress,
           SafeMemeABI,
           provider
         )
+
+        // Fetch the number of holders for each token
         const holdersCount = await tokenContract.holdersCount()
+
         console.log(
           `Holders count for token ${tokenAddress}:`,
           holdersCount.toNumber()
         )
+
+        // Return the number of holders as a number
         return holdersCount.toNumber()
       } catch (error) {
         console.error(
@@ -423,9 +434,15 @@ const MyProfile: React.FC = () => {
       }
     })
 
+    // Wait for all holder counts to resolve
     const holdersCounts = await Promise.all(holderPromises)
+
+    // Sum the holder counts to get the total number of holders across all deployed SafeMemes
     const totalHolders = holdersCounts.reduce((acc, count) => acc + count, 0)
+
     console.log(`Total holders across tokens:`, totalHolders)
+
+    // Update the state with the total holders count
     setTotalHolders(totalHolders)
   }
 

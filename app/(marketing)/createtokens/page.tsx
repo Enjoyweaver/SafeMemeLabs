@@ -112,7 +112,7 @@ export default function Factory(): JSX.Element {
       BigInt(Math.floor(Number(dAntiWhalePercentage) * 100)),
     ],
     value: deployFee,
-    enabled: isConnected && isFormFilled() && Boolean(deployFee),
+    enabled: isConnected && isFormFilled(), //  && Boolean(deployFee)
     cacheTime: 0,
     onError: (error) => {
       console.error("Error preparing contract write:", error)
