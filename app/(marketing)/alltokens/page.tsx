@@ -46,6 +46,8 @@ interface TokenInfo {
     safeLaunchActivated: boolean
     tokenBSet: boolean
     stageAmountSet: boolean
+    safeMemesSoldThisStage: string
+    safeMemeRemaining: string
   } | null
 }
 
@@ -86,6 +88,12 @@ const AllTokens = () => {
     },
     { value: "withDex", label: "SafeLaunched" },
   ]
+
+  useEffect(() => {
+    if (modalIsOpen && selectedToken) {
+      calculateEstimatedOutput(swapAmount) // Recalculate the output when modal opens or token is selected
+    }
+  }, [modalIsOpen, selectedToken, swapAmount])
 
   useEffect(() => {
     fetchAllTokens()
@@ -212,20 +220,47 @@ const AllTokens = () => {
       tokenContract.getMaxWalletAmount(),
     ])
 
-    let dexInfo = null
+    // Define dexInfo as a type that can be either null or the expected object type
+    let dexInfo: null | {
+      address: string
+      safeLaunchComplete: boolean
+      isInDEXMode: boolean
+      currentStage: number
+      safeLaunchActivated: boolean
+      tokenBAddress: string
+      tokenBName: string
+      tokenBSymbol: string
+      stageTokenBAmount: string
+      safeMemePrices: string
+      safeMemeAvailable: string
+      tokenBReceived: string
+      soldsafeMeme: string
+      safeMemesSold: string
+      stageRemainingSafeMeme: string
+      tokenBSet: boolean
+      stageAmountSet: boolean
+      stageStatus: number
+    } = null
+
     if (dexAddress !== ethers.constants.AddressZero) {
       const exchangeContract = new ethers.Contract(
         dexAddress,
         ExchangeABI,
         provider
       )
-      const [safeLaunchComplete, isInDEXMode, currentStage, stageDetails] =
-        await Promise.all([
-          exchangeContract.safeLaunchComplete(),
-          exchangeContract.isInDEXMode(),
-          exchangeContract.currentStage(),
-          exchangeContract.getStageDetails(),
-        ])
+      const [
+        safeLaunchComplete,
+        isInDEXMode,
+        currentStage,
+        safeLaunchActive, // Get the safeLaunchActive value from the contract
+        stageDetails,
+      ] = await Promise.all([
+        exchangeContract.safeLaunchComplete(),
+        exchangeContract.isInDEXMode(),
+        exchangeContract.currentStage(),
+        exchangeContract.safeLaunchActive(), // Reference the correct flag
+        exchangeContract.getStageDetails(),
+      ])
 
       const [
         stageStatuses,
@@ -248,8 +283,7 @@ const AllTokens = () => {
         safeLaunchComplete,
         isInDEXMode,
         currentStage: currentStageIndex,
-        safeLaunchActivated:
-          safeLaunchComplete || isInDEXMode || currentStageIndex > 0,
+        safeLaunchActivated: safeLaunchActive, // Use the correct flag here
         tokenBAddress: await exchangeContract.tokenBAddress(),
         tokenBName: await exchangeContract.tokenBName(),
         tokenBSymbol: await exchangeContract.tokenBSymbol(),
@@ -385,24 +419,31 @@ const AllTokens = () => {
 
     try {
       const tokenBAmount = ethers.utils.parseEther(amount)
-      const safeMemePrice = ethers.BigNumber.from(
-        ethers.utils.parseUnits(selectedToken.dexInfo.safeMemePrices, 18)
+      const safeMemePrice = ethers.utils.parseUnits(
+        selectedToken.dexInfo.safeMemePrices || "0",
+        18
       )
 
-      const safeMemeToReceive = tokenBAmount
-        .mul(safeMemePrice)
-        .div(ethers.constants.WeiPerEther)
+      if (safeMemePrice.isZero()) {
+        // Handle if the price is zero
+        setEstimatedOutput("0.00")
+        setExchangeRate("0")
+        return
+      }
 
+      // Calculate how many SafeMemes can be received for the input TokenB amount
+      const safeMemeToReceive = tokenBAmount
+        .mul(ethers.constants.WeiPerEther)
+        .div(safeMemePrice)
+
+      // Set the output value for the received SafeMemes
       setEstimatedOutput(
         Number(ethers.utils.formatEther(safeMemeToReceive)).toFixed(2)
       )
 
-      const exchangeRateValue = ethers.constants.WeiPerEther.mul(
-        safeMemePrice
-      ).div(ethers.constants.WeiPerEther)
-
+      // Optionally calculate and set the exchange rate
       setExchangeRate(
-        Number(ethers.utils.formatEther(exchangeRateValue)).toFixed(2)
+        Number(ethers.utils.formatEther(safeMemePrice)).toFixed(2)
       )
     } catch (error) {
       console.error("Error calculating estimated output:", error)
@@ -608,8 +649,9 @@ const AllTokens = () => {
 
   const handleAmountChange = (e) => {
     const value = e.target.value
-    const numericValue = value.replace(/,/g, "").match(/^\d*\.?\d{0,2}/)[0]
+    const numericValue = value.replace(/,/g, "").match(/^\d*\.?\d{0,18}/)[0] // Allows up to 18 decimals for crypto amounts
     setSwapAmount(numericValue)
+
     calculateEstimatedOutput(numericValue)
   }
 
@@ -790,10 +832,11 @@ const AllTokens = () => {
                     </p>
                     <p>
                       <strong>{token.symbol} Remaining:</strong>{" "}
-                      {formatAmount(
-                        parseFloat(token.dexInfo.safeMemeRemaining)
-                      )}
+                      {token.dexInfo
+                        ? formatAmount(token.dexInfo.stageRemainingSafeMeme)
+                        : "0"}
                     </p>
+
                     {token.dexInfo.pastTransactions &&
                     token.dexInfo.pastTransactions.length > 0 ? (
                       <>
@@ -987,7 +1030,7 @@ const AllTokens = () => {
                     <input
                       type="text"
                       id="estimatedOutput"
-                      value={estimatedOutput}
+                      value={Number(estimatedOutput).toFixed(6)}
                       disabled
                       className="input-field-with-price"
                       inputMode="decimal"
@@ -996,17 +1039,25 @@ const AllTokens = () => {
                 </div>
               </div>
             </div>
+
             <div className="swap-summary">
-              <p>Current Stage: {selectedToken?.dexInfo?.currentStage + 1}</p>
+              <p>
+                Current Stage:{" "}
+                {selectedToken?.dexInfo?.currentStage !== undefined
+                  ? selectedToken.dexInfo.currentStage + 1
+                  : "N/A"}
+              </p>
               <p>
                 {selectedToken?.symbol || ""} Remaining:{" "}
-                {selectedToken?.dexInfo
+                {selectedToken?.dexInfo &&
+                selectedToken.dexInfo.stageRemainingSafeMeme
                   ? formatAmount(
-                      parseFloat(selectedToken.dexInfo.safeMemeRemaining)
+                      parseFloat(selectedToken.dexInfo.stageRemainingSafeMeme)
                     )
                   : "0"}
               </p>
             </div>
+
             <button
               className="swap-button"
               onClick={handleSwap}

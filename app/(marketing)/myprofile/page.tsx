@@ -52,6 +52,8 @@ interface StageInfo {
   soldsafeMeme: string
   tokenBReceived: string
   availableSafeMeme: string
+  safeMemesSoldThisStage: string
+  safeMemeRemaining: string
   stageSet: boolean
   safeMemesSold: string
   status: "completed" | "open and set" | "open but not set" | "not open"
@@ -1854,31 +1856,6 @@ const MyProfile: React.FC = () => {
                         {parseFloat(token.maxTokens).toLocaleString()}
                       </p>
 
-                      {token.dexAddress && (
-                        <div className="fee-display">
-                          <h4>Past Transaction Fees</h4>
-                          <table>
-                            <thead>
-                              <tr>
-                                <th>Timestamp</th>
-                                <th>Swap Fee</th>
-                                <th>Owner Fee</th>
-                                <th>House Fee</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {fees.map((fee, index) => (
-                                <tr key={index}>
-                                  <td>{fee.timestamp}</td>
-                                  <td>{fee.swapFee} ETH</td>
-                                  <td>{fee.ownerFee} ETH</td>
-                                  <td>{fee.houseFee} ETH</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
                       {!token.safeLaunchInitialized && (
                         <p>
                           <strong>SafeLaunch Status:</strong> Not Started
