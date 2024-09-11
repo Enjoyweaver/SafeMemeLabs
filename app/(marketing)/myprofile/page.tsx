@@ -56,6 +56,7 @@ interface StageInfo {
   safeMemeRemaining: string
   stageSet: boolean
   safeMemesSold: string
+  safeMemePrice: string
   status: "completed" | "open and set" | "open but not set" | "not open"
 }
 
@@ -773,69 +774,64 @@ const MyProfile: React.FC = () => {
   }
 
   const fetchStageInfo = async (
-    exchangeContract: ethers.Contract,
-    currentStage: number
+    exchangeContract: ethers.Contract
   ): Promise<StageInfo[]> => {
     const stageInfo: StageInfo[] = []
     const SAFE_LAUNCH_STAGES = 5
 
-    for (let i = 0; i < SAFE_LAUNCH_STAGES; i++) {
-      try {
-        const [
-          status,
-          tokenBRequired,
-          safeMemePrice,
-          safeMemeAvailable,
-          tokenBReceived,
-          safeMemesSold,
-          soldsafeMeme,
-        ] = await exchangeContract.getStageInfo(i)
-        const [tokenBLiquidityReceived, safeMemesSoldInStage] =
-          await exchangeContract.getStageLiquidity(i)
+    try {
+      // Retrieve all the stage details in one call
+      const [
+        statuses,
+        tokenBRequireds,
+        safeMemePrice,
+        safeMemeRemainings,
+        tokenBReceiveds,
+        safeMemesSoldInStages,
+        soldsafeMemesThisTX,
+        isOpenStages,
+        tokenBRequiredSets,
+        tokenBReceivedMets,
+        stageCompleteds,
+      ] = await exchangeContract.getStageDetails()
 
+      // Loop over each stage and format the data
+      for (let i = 0; i < SAFE_LAUNCH_STAGES; i++) {
         let stageStatus:
           | "completed"
           | "open and set"
           | "open but not set"
           | "not open" = "not open"
 
-        if (
-          i === 0 ||
-          (stageInfo[i - 1] && stageInfo[i - 1].status === "completed")
-        ) {
-          if (ethers.BigNumber.from(safeMemeAvailable).gt(0)) {
-            if (ethers.BigNumber.from(tokenBRequired).gt(0)) {
-              if (
-                ethers.BigNumber.from(safeMemeAvailable).eq(0) &&
-                ethers.BigNumber.from(tokenBRequired).eq(
-                  ethers.BigNumber.from(tokenBLiquidityReceived)
-                )
-              ) {
-                stageStatus = "completed"
-              } else {
-                stageStatus = "open and set"
-              }
+        if (isOpenStages[i]) {
+          if (tokenBRequiredSets[i]) {
+            if (stageCompleteds[i]) {
+              stageStatus = "completed"
             } else {
-              stageStatus = "open but not set"
+              stageStatus = "open and set"
             }
           } else {
-            stageStatus = "completed"
+            stageStatus = "open but not set"
           }
         }
 
         stageInfo.push({
-          safeMemeForSale: ethers.utils.formatEther(safeMemeAvailable),
-          requiredTokenB: ethers.utils.formatEther(tokenBRequired),
-          price: ethers.utils.formatEther(safeMemePrice),
-          safeMemesSold: ethers.utils.formatEther(safeMemesSold),
-          tokenBReceived: ethers.utils.formatEther(tokenBReceived),
-          availableSafeMeme: ethers.utils.formatEther(safeMemeAvailable),
-          soldsafeMeme: ethers.utils.formatEther(soldsafeMeme),
+          safeMemeForSale: ethers.utils.formatEther(safeMemeRemainings[i]),
+          requiredTokenB: ethers.utils.formatEther(tokenBRequireds[i]),
+          price: ethers.utils.formatEther(safeMemePrice[i]),
+          safeMemesSold: ethers.utils.formatEther(safeMemesSoldInStages[i]),
+          tokenBReceived: ethers.utils.formatEther(tokenBReceiveds[i]),
+          availableSafeMeme: ethers.utils.formatEther(safeMemeRemainings[i]),
+          soldsafeMeme: ethers.utils.formatEther(soldsafeMemesThisTX[i]),
           stageSet: stageStatus === "open and set",
           status: stageStatus,
         })
-      } catch (error) {
-        console.error(`Error fetching stage ${i} info:`, error)
+      }
+    } catch (error) {
+      console.error("Error fetching stage info:", error)
+
+      // Populate the stage info with empty/default values in case of an error
+      for (let i = 0; i < SAFE_LAUNCH_STAGES; i++) {
         stageInfo.push({
           safeMemeForSale: "0",
           requiredTokenB: "0",
@@ -2057,13 +2053,9 @@ const MyProfile: React.FC = () => {
                                           <div className="stage-detail-item">
                                             <p>
                                               Price:{" "}
-                                              {(
-                                                1 /
+                                              {formatSignificantDigits(
                                                 parseFloat(stage.safeMemePrice)
-                                              ).toLocaleString(undefined, {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2,
-                                              })}{" "}
+                                              )}{" "}
                                               <span className="primary-dark-color">
                                                 {token.tokenBSymbol ||
                                                   token.tokenBName ||
