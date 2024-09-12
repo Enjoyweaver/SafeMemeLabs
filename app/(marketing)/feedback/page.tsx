@@ -51,11 +51,7 @@ const FeedbackPage = () => {
       completed: false,
       status: "open",
     },
-    {
-      text: "Create SafeLaunch frontend to interact with SafeLaunch backend",
-      completed: false,
-      status: "open",
-    },
+
     {
       text: "Create SafeLaunch backend functionality",
       completed: false,
@@ -142,6 +138,11 @@ const FeedbackPage = () => {
       text: "Add detailed logging and monitoring for trade activities",
       completed: false,
       status: "open",
+    },
+    {
+      text: "Create SafeLaunch frontend to interact with SafeLaunch backend",
+      completed: true,
+      status: "Completed",
     },
     {
       text: "Install harhat to deploy Vyper contracts",

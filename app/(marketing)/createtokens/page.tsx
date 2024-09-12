@@ -135,10 +135,6 @@ export default function Factory(): JSX.Element {
       toast.error("Configuration error: Missing factory address.")
       return
     }
-    setModalMessage(
-      "Depending on which blockchain you created a token on, it could take anywhere from 2 seconds to 20 seconds."
-    )
-    setShowModal(true)
 
     try {
       if (write) {
@@ -179,7 +175,6 @@ export default function Factory(): JSX.Element {
         }
       }
     } catch (error) {
-      setShowModal(true)
       console.error("Error during deployment:", error)
     }
   }
