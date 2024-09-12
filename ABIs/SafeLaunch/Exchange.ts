@@ -485,6 +485,10 @@ export const ExchangeABI = [
       },
       {
         name: "",
+        type: "uint256[5]",
+      },
+      {
+        name: "",
         type: "bool[5]",
       },
       {
@@ -536,52 +540,6 @@ export const ExchangeABI = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    name: "transfer",
-    inputs: [
-      {
-        name: "_to",
-        type: "address",
-      },
-      {
-        name: "_value",
-        type: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-      },
-    ],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
-    name: "transferFrom",
-    inputs: [
-      {
-        name: "_from",
-        type: "address",
-      },
-      {
-        name: "_to",
-        type: "address",
-      },
-      {
-        name: "_value",
-        type: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-      },
-    ],
-  },
-  {
-    stateMutability: "nonpayable",
-    type: "function",
     name: "buyTokens",
     inputs: [
       {
@@ -590,6 +548,18 @@ export const ExchangeABI = [
       },
     ],
     outputs: [],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "safeLaunchTXCount",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
   },
   {
     stateMutability: "nonpayable",
@@ -1265,6 +1235,18 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
+    name: "getWhitelist",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address[10]",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
     name: "name",
     inputs: [],
     outputs: [
@@ -1364,6 +1346,23 @@ export const ExchangeABI = [
     stateMutability: "view",
     type: "function",
     name: "stagetokenBAmounts",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "totalTransactionsPerStage",
     inputs: [
       {
         name: "arg0",
@@ -1566,6 +1565,35 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
+    name: "whitelistedAddresses",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "whitelistCount",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
     name: "safeMeme",
     inputs: [],
     outputs: [
@@ -1644,6 +1672,10 @@ export const ExchangeABI = [
           },
           {
             name: "soldsafeMemeThisTX",
+            type: "uint256",
+          },
+          {
+            name: "safeLaunchTransactions",
             type: "uint256",
           },
         ],
@@ -1920,6 +1952,18 @@ export const ExchangeABI = [
       {
         name: "",
         type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "safeLaunchTransactions",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
       },
     ],
   },
