@@ -73,6 +73,10 @@ export const ExchangeFactoryABI = [
         name: "antiWhalePercentage",
         type: "uint256",
       },
+      {
+        name: "maxWalletAmount",
+        type: "uint256",
+      },
     ],
     outputs: [
       {
@@ -364,6 +368,18 @@ export const ExchangeFactoryABI = [
       {
         name: "",
         type: "address",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "maxWalletAmount",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
       },
     ],
   },

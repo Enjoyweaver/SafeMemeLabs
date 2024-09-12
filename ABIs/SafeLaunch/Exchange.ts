@@ -348,6 +348,10 @@ export const ExchangeABI = [
         name: "_houseFeesContract",
         type: "address",
       },
+      {
+        name: "_maxWalletAmount",
+        type: "uint256",
+      },
     ],
     outputs: [],
   },
@@ -1947,6 +1951,18 @@ export const ExchangeABI = [
     stateMutability: "view",
     type: "function",
     name: "transactionThreshold",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "maxWalletAmount",
     inputs: [],
     outputs: [
       {

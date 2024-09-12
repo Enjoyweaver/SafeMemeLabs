@@ -1,9 +1,7 @@
 "use client"
 
 import React, { useCallback, useEffect, useState } from "react"
-import { AirdropABI } from "@/ABIs/Airdrop/Airdrop"
 import { AirdropFactoryABI } from "@/ABIs/Airdrop/AirdropFactory"
-import { CustomAirdropABI } from "@/ABIs/Airdrop/CustomAirdrop"
 import { ExchangeABI } from "@/ABIs/SafeLaunch/Exchange"
 import { ExchangeFactoryABI } from "@/ABIs/SafeLaunch/ExchangeFactory"
 import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
@@ -18,7 +16,6 @@ import {
   exchangeFactory,
   safeLaunchFactory,
 } from "@/Constants/config"
-import { Alchemy, Network } from "alchemy-sdk"
 import { ethers } from "ethers"
 import Modal from "react-modal"
 
@@ -158,6 +155,9 @@ const MyProfile: React.FC = () => {
           }))
 
           setFees(formattedFees)
+
+          // Set total transactions
+          setTotalTransactions(pastTransactions.length)
         } catch (error) {
           console.error("Error fetching fees:", error)
         }
@@ -478,8 +478,6 @@ const MyProfile: React.FC = () => {
 
             await fetchTokens(web3Provider, address, network.chainId)
             await fetchTokenBOptions(web3Provider, address, network.chainId)
-            await fetchNFTs(address)
-            await fetchFrames(address)
             await fetchTotalHolders(web3Provider, address, network.chainId)
           } else {
             console.log("No accounts found. Prompting user to connect.")
@@ -494,10 +492,9 @@ const MyProfile: React.FC = () => {
 
               await fetchTokens(web3Provider, address, network.chainId)
               await fetchTokenBOptions(web3Provider, address, network.chainId)
-              await fetchNFTs(address)
-              await fetchFrames(address)
               await fetchTotalHolders(web3Provider, address, network.chainId)
             } else {
+              setIsConnected(false)
               throw new Error("User denied account access")
             }
           }
@@ -520,45 +517,6 @@ const MyProfile: React.FC = () => {
     init()
   }, [])
 
-  const fetchNFTs = async (address: string) => {
-    console.log("Fetching NFTs for address:", address)
-    setIsLoadingNFTs(true)
-    const allNFTs: NFT[] = []
-
-    const supportedChains = chains.filter((chain) => chain.id !== 501)
-
-    for (const chain of supportedChains) {
-      console.log(`Fetching NFTs for chain: ${chain.name} (${chain.id})`)
-      const settings = {
-        apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
-        network: Network[chain.network as keyof typeof Network],
-      }
-      const alchemy = new Alchemy(settings)
-
-      try {
-        const nftsForOwner = await alchemy.nft.getNftsForOwner(address)
-        console.log(
-          `Found ${nftsForOwner.ownedNfts.length} NFTs on ${chain.name}`
-        )
-        const chainNFTs = nftsForOwner.ownedNfts.map((nft) => ({
-          id: nft.tokenId,
-          name: nft.title,
-          image: nft.media[0]?.gateway || "https://via.placeholder.com/150",
-          chainId: chain.id,
-          contractAddress: nft.contract.address,
-          tokenId: nft.tokenId,
-        }))
-        allNFTs.push(...chainNFTs)
-      } catch (error) {
-        console.error(`Error fetching NFTs for chain ${chain.id}:`, error)
-      }
-    }
-
-    console.log(`Total NFTs found across all chains: ${allNFTs.length}`)
-    setNfts(allNFTs)
-    setIsLoadingNFTs(false)
-  }
-
   const handleSectionClick = (section: string) => {
     setActiveSection(activeSection === section ? null : section)
   }
@@ -575,7 +533,7 @@ const MyProfile: React.FC = () => {
 
     const contract = new ethers.Contract(
       airdropContractAddress,
-      AirdropABI,
+      AirdropFactoryABI,
       signer
     )
 
@@ -615,7 +573,7 @@ const MyProfile: React.FC = () => {
 
     const contract = new ethers.Contract(
       customAirdropContractAddress,
-      CustomAirdropABI,
+      AirdropFactoryABI,
       signer
     )
 
@@ -641,7 +599,7 @@ const MyProfile: React.FC = () => {
 
     const contract = new ethers.Contract(
       customAirdropContractAddress,
-      CustomAirdropABI,
+      AirdropFactoryABI,
       signer
     )
 
@@ -736,7 +694,7 @@ const MyProfile: React.FC = () => {
     try {
       const contract = new ethers.Contract(
         customAirdropContractAddress,
-        CustomAirdropABI,
+        AirdropFactoryABI,
         signer
       )
 
@@ -771,82 +729,6 @@ const MyProfile: React.FC = () => {
     if (provider && chainId && userAddress) {
       await fetchTokens(provider, userAddress, chainId)
     }
-  }
-
-  const fetchStageInfo = async (
-    exchangeContract: ethers.Contract
-  ): Promise<StageInfo[]> => {
-    const stageInfo: StageInfo[] = []
-    const SAFE_LAUNCH_STAGES = 5
-
-    try {
-      // Retrieve all the stage details in one call
-      const [
-        statuses,
-        tokenBRequireds,
-        safeMemePrice,
-        safeMemeRemainings,
-        tokenBReceiveds,
-        safeMemesSoldInStages,
-        soldsafeMemesThisTX,
-        isOpenStages,
-        tokenBRequiredSets,
-        tokenBReceivedMets,
-        stageCompleteds,
-      ] = await exchangeContract.getStageDetails()
-
-      // Loop over each stage and format the data
-      for (let i = 0; i < SAFE_LAUNCH_STAGES; i++) {
-        let stageStatus:
-          | "completed"
-          | "open and set"
-          | "open but not set"
-          | "not open" = "not open"
-
-        if (isOpenStages[i]) {
-          if (tokenBRequiredSets[i]) {
-            if (stageCompleteds[i]) {
-              stageStatus = "completed"
-            } else {
-              stageStatus = "open and set"
-            }
-          } else {
-            stageStatus = "open but not set"
-          }
-        }
-
-        stageInfo.push({
-          safeMemeForSale: ethers.utils.formatEther(safeMemeRemainings[i]),
-          requiredTokenB: ethers.utils.formatEther(tokenBRequireds[i]),
-          price: ethers.utils.formatEther(safeMemePrice[i]),
-          safeMemesSold: ethers.utils.formatEther(safeMemesSoldInStages[i]),
-          tokenBReceived: ethers.utils.formatEther(tokenBReceiveds[i]),
-          availableSafeMeme: ethers.utils.formatEther(safeMemeRemainings[i]),
-          soldsafeMeme: ethers.utils.formatEther(soldsafeMemesThisTX[i]),
-          stageSet: stageStatus === "open and set",
-          status: stageStatus,
-        })
-      }
-    } catch (error) {
-      console.error("Error fetching stage info:", error)
-
-      // Populate the stage info with empty/default values in case of an error
-      for (let i = 0; i < SAFE_LAUNCH_STAGES; i++) {
-        stageInfo.push({
-          safeMemeForSale: "0",
-          requiredTokenB: "0",
-          price: "0",
-          safeMemesSold: "0",
-          tokenBReceived: "0",
-          availableSafeMeme: "0",
-          soldsafeMeme: "0",
-          stageSet: false,
-          status: "not open",
-        })
-      }
-    }
-
-    return stageInfo
   }
 
   const fetchTokenBOptions = async (
@@ -948,9 +830,11 @@ const MyProfile: React.FC = () => {
   useEffect(() => {
     const handleAccountsChanged = (accounts: string[]) => {
       if (accounts.length > 0) {
-        setIsConnected(true)
         setUserAddress(accounts[0])
-      } else {
+        if (!isConnected) {
+          setIsConnected(true)
+        }
+      } else if (isConnected) {
         setIsConnected(false)
         setUserAddress("")
       }
@@ -1093,7 +977,7 @@ const MyProfile: React.FC = () => {
 
     const contract = new ethers.Contract(
       customAirdropContractAddress,
-      CustomAirdropABI,
+      AirdropFactoryABI,
       provider
     )
 
@@ -1116,21 +1000,85 @@ const MyProfile: React.FC = () => {
     }
   }, [isConnected, provider, chainId, userAddress, fetchUserCustomLists])
 
-  const formatSignificantDigits = (number) => {
-    if (number === 0) return "0"
-    const parts = number.toExponential(2).split("e")
-    const coefficient = parseFloat(parts[0])
-    const exponent = parseInt(parts[1])
-    if (exponent < 0) {
-      return (
-        "0." +
-        "0".repeat(Math.abs(exponent) - 1) +
-        coefficient.toString().replace(".", "")
+  const fetchTotalTransactions = async (
+    provider: ethers.providers.Web3Provider,
+    address: string,
+    currentChainId: number
+  ) => {
+    // Check if the current chain ID has a factory address
+    if (!exchangeFactory[currentChainId]) {
+      console.error(`No factory address for chain ID ${currentChainId}`)
+      return
+    }
+
+    try {
+      // Initialize the ExchangeFactory contract
+      const factoryContract = new ethers.Contract(
+        exchangeFactory[currentChainId],
+        ExchangeFactoryABI,
+        provider
       )
-    } else {
-      return number.toFixed(2)
+
+      // Get all created DEXes by calling getAllCreatedDEXes
+      const exchangeAddresses = await factoryContract.getAllCreatedDEXes()
+
+      // Map over each DEX address to get the totalTransactions
+      const transactionPromises = exchangeAddresses.map(
+        async (exchangeAddress: string) => {
+          try {
+            // Initialize the Exchange contract for each DEX
+            const exchangeContract = new ethers.Contract(
+              exchangeAddress,
+              ExchangeABI,
+              provider
+            )
+
+            // Fetch the totalTransactions for each DEX
+            const transactionCount = await exchangeContract.totalTransactions()
+
+            console.log(
+              `Total transactions for exchange ${exchangeAddress}:`,
+              transactionCount.toNumber()
+            )
+
+            // Return the totalTransactions as a number
+            return transactionCount.toNumber()
+          } catch (error) {
+            console.error(
+              `Error fetching transactions for exchange ${exchangeAddress}:`,
+              error
+            )
+            return 0
+          }
+        }
+      )
+
+      // Wait for all transaction counts to resolve
+      const transactionsCounts = await Promise.all(transactionPromises)
+
+      // Sum the transaction counts to get the total number of transactions across all DEXes
+      const totalTransactions = transactionsCounts.reduce(
+        (acc, count) => acc + count,
+        0
+      )
+
+      console.log(`Total transactions across all DEXes:`, totalTransactions)
+
+      // Update the state with the total transactions count
+      setTotalTransactions(totalTransactions)
+    } catch (error) {
+      console.error("Error in fetchTotalTransactions:", error)
     }
   }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (provider && userAddress && chainId) {
+        await fetchTotalTransactions(provider, userAddress, chainId)
+      }
+    }
+    fetchData()
+  }, [provider, userAddress, chainId])
 
   const SwapModal: React.FC<SwapModalProps> = ({
     isOpen,
@@ -1664,7 +1612,7 @@ const MyProfile: React.FC = () => {
 
                               const contract = new ethers.Contract(
                                 customAirdropContractAddress,
-                                CustomAirdropABI,
+                                AirdropFactoryABI,
                                 signer
                               )
 
@@ -1970,16 +1918,6 @@ const MyProfile: React.FC = () => {
                                     {stage.status === 3 ? (
                                       <div className="stage-completed">
                                         <p>Stage Completed</p>
-                                        <p>
-                                          Price:{" "}
-                                          {parseFloat(
-                                            stage.safeMemePrice
-                                          ).toFixed(6)}{" "}
-                                          {selectedTokenBName} per{" "}
-                                          <span className="secondary-dark-color">
-                                            {token.symbol}
-                                          </span>
-                                        </p>
                                       </div>
                                     ) : (
                                       <>
@@ -2053,9 +1991,11 @@ const MyProfile: React.FC = () => {
                                           <div className="stage-detail-item">
                                             <p>
                                               Price:{" "}
-                                              {formatSignificantDigits(
-                                                parseFloat(stage.safeMemePrice)
-                                              )}{" "}
+                                              {(
+                                                parseFloat(
+                                                  stage.safeMemePrice
+                                                ) * Math.pow(10, 18)
+                                              ).toFixed(2)}{" "}
                                               <span className="primary-dark-color">
                                                 {token.tokenBSymbol ||
                                                   token.tokenBName ||
@@ -2066,16 +2006,22 @@ const MyProfile: React.FC = () => {
                                               <span className="secondary-dark-color">
                                                 {token.symbol}
                                               </span>
-                                              <br />
-                                              Or:{" "}
-                                              {formatSignificantDigits(
-                                                parseFloat(stage.safeMemePrice)
-                                              )}{" "}
-                                              <span className="secondary-dark-color">
+                                            </p>
+
+                                            <p>
+                                              Price:{" "}
+                                              {(
+                                                1 /
+                                                (parseFloat(
+                                                  stage.safeMemePrice
+                                                ) *
+                                                  Math.pow(10, 18))
+                                              ).toFixed(6)}{" "}
+                                              <span className="primary-dark-color">
                                                 {token.symbol}
                                               </span>{" "}
                                               per{" "}
-                                              <span className="primary-dark-color">
+                                              <span className="secondary-dark-color">
                                                 {token.tokenBSymbol ||
                                                   token.tokenBName ||
                                                   selectedTokenBName ||

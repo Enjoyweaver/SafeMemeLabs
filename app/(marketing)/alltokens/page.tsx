@@ -410,45 +410,35 @@ const AllTokens = () => {
     setEstimatedOutput("0")
   }
 
-  const calculateEstimatedOutput = (amount) => {
-    if (!selectedToken || !selectedToken.dexInfo || !amount || isNaN(amount)) {
+  const calculateEstimatedOutput = (tokenBAmount) => {
+    if (
+      !selectedToken ||
+      !selectedToken.dexInfo ||
+      !tokenBAmount ||
+      isNaN(tokenBAmount)
+    ) {
       setEstimatedOutput("0.00")
-      setExchangeRate("0")
       return
     }
 
     try {
-      const tokenBAmount = ethers.utils.parseEther(amount)
+      // Retrieve the safeMemePrice from the selected token's dexInfo
       const safeMemePrice = ethers.utils.parseUnits(
-        selectedToken.dexInfo.safeMemePrices || "0",
+        selectedToken.dexInfo.safeMemePrices,
         18
       )
 
-      if (safeMemePrice.isZero()) {
-        // Handle if the price is zero
-        setEstimatedOutput("0.00")
-        setExchangeRate("0")
-        return
-      }
+      // Convert tokenBAmount to BigNumber with 18 decimals
+      const tokenBAmountBigNumber = ethers.utils.parseUnits(tokenBAmount, 18)
 
-      // Calculate how many SafeMemes can be received for the input TokenB amount
-      const safeMemeToReceive = tokenBAmount
-        .mul(ethers.constants.WeiPerEther)
-        .div(safeMemePrice)
+      // Calculate the estimated SafeMeme amount by dividing tokenBAmount by safeMemePrice
+      const estimatedSafeMeme = tokenBAmountBigNumber.mul(safeMemePrice)
 
-      // Set the output value for the received SafeMemes
-      setEstimatedOutput(
-        Number(ethers.utils.formatEther(safeMemeToReceive)).toFixed(2)
-      )
-
-      // Optionally calculate and set the exchange rate
-      setExchangeRate(
-        Number(ethers.utils.formatEther(safeMemePrice)).toFixed(2)
-      )
+      // Set the estimated output in human-readable format
+      setEstimatedOutput(ethers.utils.formatUnits(estimatedSafeMeme, 18))
     } catch (error) {
       console.error("Error calculating estimated output:", error)
       setEstimatedOutput("0.00")
-      setExchangeRate("0")
     }
   }
 
@@ -990,7 +980,7 @@ const AllTokens = () => {
           <h1 className="page-title">Token Swap</h1>
           <div className="swap-card">
             <div className="token-sectionFrom">
-              <label htmlFor="tokenFrom">From (Token B)</label>
+              <label htmlFor="tokenFrom">From </label>
               <div className="token-amount-container">
                 <input
                   type="text"
@@ -1016,7 +1006,7 @@ const AllTokens = () => {
             </div>
 
             <div className="token-sectionTo">
-              <label htmlFor="tokenTo">To (SafeMeme)</label>
+              <label htmlFor="tokenTo">To</label>
               <div className="token-amount-container">
                 <input
                   type="text"
