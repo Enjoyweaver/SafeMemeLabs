@@ -129,6 +129,33 @@ export const AirdropFactoryABI = [
     type: "event",
   },
   {
+    name: "Transfer",
+    inputs: [
+      {
+        name: "safememe_address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "sender",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "to",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "value",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    anonymous: false,
+    type: "event",
+  },
+  {
     stateMutability: "nonpayable",
     type: "function",
     name: "initialize",
@@ -159,6 +186,23 @@ export const AirdropFactoryABI = [
       },
     ],
     outputs: [],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "getCustomAirdropsDeployedByUser",
+    inputs: [
+      {
+        name: "_user",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "address[]",
+      },
+    ],
   },
   {
     stateMutability: "nonpayable",

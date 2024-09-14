@@ -326,8 +326,8 @@ export const SafeMemeABI = [
         type: "address",
       },
       {
-        name: "recipients",
-        type: "address[]",
+        name: "_to",
+        type: "address",
       },
       {
         name: "amount",

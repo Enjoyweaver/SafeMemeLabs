@@ -221,7 +221,7 @@ body {
 .buy-token-button {
   display: inline-block;
   padding: 4px 6px;
-  margin: 5px auto; /* Change this line */
+  margin: 5px auto auto 25px;
   background-color: #000;
   color: #00ff00;
   border: 2px solid #00ff00;
@@ -234,6 +234,26 @@ body {
 }
 
 .buy-token-button:hover {
+  background-color: #00ff00;
+  color: #000;
+}
+
+.set-tokenB-button {
+  display: inline-block;
+  padding: 4px 6px;
+  background-color: #000;
+  color: #00ff00;
+  border: 2px solid #00ff00;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.7rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+  width: 50%;
+}
+
+.set-tokenB-button:hover {
   background-color: #00ff00;
   color: #000;
 }
@@ -252,6 +272,22 @@ body {
   border-radius: 5px;
   background-color: var(--input-dark);
   color: var(--foreground-light);
+}
+
+.tokenB-input-field {
+  width: 35%;
+  padding: 5px;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--input-dark);
+  color: var(--foreground-light);
+  margin-left: 10px;
+}
+
+.dark .tokenB-input-field {
+  border-color: var(--border-dark);
+  background-color: var(--input-dark);
+  color: var(--text-dark);
 }
 
 .token-swap {
@@ -330,10 +366,10 @@ body {
 
 .sectionTitle {
   text-align: center;
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: var(--primary-dark);
-  margin-bottom: 20px;
-  margin-top: 2rem;
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
 }
 
 .stages-container {
@@ -452,9 +488,16 @@ a .stage-actions input {
   background-color: var(--secondary-dark);
 }
 
-.stagetext p {
-  color: var(--primary-dark) !important;
+.stagetext {
+  color: var(--primary-dark);
   font-size: large;
+  margin-bottom: 0.5rem;
+  margin-left: 2rem;
+}
+
+.listtext {
+  color: var(--primary-light);
+  font-size: medium;
 }
 
 .swap-modal {
@@ -616,7 +659,8 @@ a .stage-actions input {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
+  margin-left: 3rem;
 }
 
 .list-option {
@@ -626,16 +670,6 @@ a .stage-actions input {
 
 .list-option input[type="checkbox"] {
   margin-right: 10px;
-}
-
-.selected-count {
-  margin-bottom: 15px;
-  font-weight: bold;
-  color: var(--secondary-dark);
-}
-
-.dark .selected-count {
-  color: var(--secondary-light);
 }
 
 @media (max-width: 768px) {
@@ -693,40 +727,6 @@ a .stage-actions input {
 
 .edit-list-form .buy-token-button {
   margin-top: 10px;
-}
-
-.edit-list-form {
-  padding: 20px;
-  background-color: var(--background-light);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.dark .edit-list-form {
-  background-color: var(--background-dark);
-}
-
-.edit-list-form h4 {
-  color: var(--secondary-dark);
-}
-
-.dark .edit-list-form h4 {
-  color: var(--secondary-light);
-}
-
-.edit-list-form .input-field {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid var(--border-light);
-  border-radius: 4px;
-  background-color: var(--input-light);
-  color: var(--text-light);
-}
-
-.dark .edit-list-form .input-field {
-  border-color: var(--border-dark);
-  background-color: var(--input-dark);
-  color: var(--text-dark);
 }
 
 .edit-list-form select.input-field {

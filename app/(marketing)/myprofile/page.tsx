@@ -7,12 +7,12 @@ import { ExchangeFactoryABI } from "@/ABIs/SafeLaunch/ExchangeFactory"
 import { SafeMemeABI } from "@/ABIs/SafeLaunch/SafeMeme"
 import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 import {
+  AirdropFactory,
   NativeTokens,
   airdropContract,
   blockExplorerAddress,
   blockExplorerToken,
   chains,
-  customAirdropContract,
   exchangeFactory,
   safeLaunchFactory,
 } from "@/Constants/config"
@@ -43,18 +43,22 @@ interface Token {
 }
 
 interface StageInfo {
-  safeMemeForSale: string
-  requiredTokenB: string
-  price: string
-  soldsafeMeme: string
-  tokenBReceived: string
-  availableSafeMeme: string
-  safeMemesSoldThisStage: string
-  safeMemeRemaining: string
-  stageSet: boolean
-  safeMemesSold: string
+  status: string
+  tokenBRequired: string
   safeMemePrice: string
-  status: "completed" | "open and set" | "open but not set" | "not open"
+  safeMemeInitialStageAmount: string
+  safeMemeRemaining: string
+  tokenBReceived: string
+  safeMemesSoldThisStage: string
+  soldsafeMemeThisTX: string
+  safeLaunchTransactions: string
+}
+
+interface StageStatus {
+  is_open: boolean
+  tokenBRequired_set: boolean
+  tokenBReceived_met: boolean
+  stage_completed: boolean
 }
 
 interface SwapModalProps {
@@ -307,6 +311,7 @@ const MyProfile: React.FC = () => {
           tokenB = await exchangeContract.tokenBAddress()
           lockedTokens = await exchangeContract.lockedsafeMeme()
           safeMemeForSale = await exchangeContract.salesafeMeme()
+
           if (tokenB !== ethers.constants.AddressZero) {
             const tokenBContract = new ethers.Contract(
               tokenB,
@@ -319,6 +324,7 @@ const MyProfile: React.FC = () => {
             tokenBName = "ETH"
             tokenBSymbol = "ETH"
           }
+
           // Process stage info
           stageInfo = stageDetails[0].map((status, index) => ({
             status: status.toNumber(),
@@ -332,10 +338,13 @@ const MyProfile: React.FC = () => {
             soldsafeMemeThisTX: ethers.utils.formatEther(
               stageDetails[6][index]
             ),
-            is_open: stageDetails[7][index],
-            tokenBRequired_set: stageDetails[8][index],
-            tokenBReceived_met: stageDetails[9][index],
-            stage_completed: stageDetails[10][index],
+            safeLaunchTransactions: ethers.utils.formatEther(
+              stageDetails[7][index]
+            ),
+            is_open: stageDetails[8][index],
+            tokenBRequired_set: stageDetails[9][index],
+            tokenBReceived_met: stageDetails[10][index],
+            stage_completed: stageDetails[11][index],
           }))
 
           stageStatus = stageInfo[currentStage.toNumber()].status
@@ -538,7 +547,7 @@ const MyProfile: React.FC = () => {
     )
 
     try {
-      const tx = await contract.airdropToken(
+      const tx = await contract.airdropSafeMeme(
         airdropTokenAddress,
         airdropRecipients,
         airdropRecipients.map(() => ethers.utils.parseEther(airdropAmount))
@@ -555,8 +564,8 @@ const MyProfile: React.FC = () => {
     if (!provider || !chainId) return
     const signer = provider.getSigner()
 
-    const customAirdropContractAddress = customAirdropContract[chainId]
-    if (!customAirdropContractAddress) {
+    const AirdropFactoryAddress = AirdropFactory[chainId]
+    if (!AirdropFactoryAddress) {
       alert("Custom Airdrop contract not available on this network")
       return
     }
@@ -572,7 +581,7 @@ const MyProfile: React.FC = () => {
     }
 
     const contract = new ethers.Contract(
-      customAirdropContractAddress,
+      AirdropFactoryAddress,
       AirdropFactoryABI,
       signer
     )
@@ -591,14 +600,14 @@ const MyProfile: React.FC = () => {
     if (!provider || !chainId || selectedListId === null) return
     const signer = provider.getSigner()
 
-    const customAirdropContractAddress = customAirdropContract[chainId]
-    if (!customAirdropContractAddress) {
+    const AirdropFactoryAddress = AirdropFactory[chainId]
+    if (!AirdropFactoryAddress) {
       alert("Custom Airdrop contract not available on this network")
       return
     }
 
     const contract = new ethers.Contract(
-      customAirdropContractAddress,
+      AirdropFactoryAddress,
       AirdropFactoryABI,
       signer
     )
@@ -611,24 +620,18 @@ const MyProfile: React.FC = () => {
         return
       }
 
-      const amounts = listRecipients.map(() =>
-        ethers.utils.parseEther(airdropAmount)
-      )
-      const totalAmount = amounts.reduce(
-        (a, b) => a.add(b),
-        ethers.BigNumber.from(0)
-      )
+      const amount = ethers.utils.parseEther(airdropAmount) // Single amount for the airdrop
+      const totalAmount = amount.mul(listRecipients.length)
 
       console.log("Airdrop parameters:", {
         tokenAddress: airdropTokenAddress,
         listId: selectedListId,
         recipients: listRecipients,
-        amounts: amounts,
+        amount: ethers.utils.formatEther(amount),
         totalAmount: ethers.utils.formatEther(totalAmount),
       })
 
       if (airdropTokenAddress !== ethers.constants.AddressZero) {
-        // ERC20 token airdrop
         const tokenContract = new ethers.Contract(
           airdropTokenAddress,
           [
@@ -639,29 +642,31 @@ const MyProfile: React.FC = () => {
         )
         const allowance = await tokenContract.allowance(
           await signer.getAddress(),
-          customAirdropContractAddress
+          AirdropFactoryAddress
         )
 
         if (allowance.lt(totalAmount)) {
           const approveTx = await tokenContract.approve(
-            customAirdropContractAddress,
+            AirdropFactoryAddress,
             totalAmount
           )
           await approveTx.wait()
         }
 
         // Let provider estimate gas limit
-        const tx = await contract.airdropToken(
+        const tx = await contract.airdropSafeMeme(
           airdropTokenAddress,
           selectedListId,
-          amounts
+          amount, // Passing single amount, not array
+          await signer.getAddress() // Owner address
         )
         await tx.wait()
       } else {
-        const tx = await contract.airdropToken(
+        const tx = await contract.airdropSafeMeme(
           ethers.constants.AddressZero,
           selectedListId,
-          amounts,
+          amount, // Passing single amount, not array
+          await signer.getAddress(), // Owner address
           {
             value: totalAmount,
           }
@@ -685,15 +690,15 @@ const MyProfile: React.FC = () => {
     if (!provider || !chainId || selectedListId === null) return
     const signer = provider.getSigner()
 
-    const customAirdropContractAddress = customAirdropContract[chainId]
-    if (!customAirdropContractAddress) {
+    const AirdropFactoryAddress = AirdropFactory[chainId]
+    if (!AirdropFactoryAddress) {
       alert("Custom Airdrop contract not available on this network")
       return
     }
 
     try {
       const contract = new ethers.Contract(
-        customAirdropContractAddress,
+        AirdropFactoryAddress,
         AirdropFactoryABI,
         signer
       )
@@ -969,14 +974,14 @@ const MyProfile: React.FC = () => {
   const fetchUserCustomLists = useCallback(async () => {
     if (!provider || !chainId || !userAddress) return
 
-    const customAirdropContractAddress = customAirdropContract[chainId]
-    if (!customAirdropContractAddress) {
+    const AirdropFactoryAddress = AirdropFactory[chainId]
+    if (!AirdropFactoryAddress) {
       console.error("Custom Airdrop contract not available on this network")
       return
     }
 
     const contract = new ethers.Contract(
-      customAirdropContractAddress,
+      AirdropFactoryAddress,
       AirdropFactoryABI,
       provider
     )
@@ -1006,46 +1011,70 @@ const MyProfile: React.FC = () => {
     currentChainId: number
   ) => {
     // Check if the current chain ID has a factory address
-    if (!exchangeFactory[currentChainId]) {
+    if (!safeLaunchFactory[currentChainId]) {
       console.error(`No factory address for chain ID ${currentChainId}`)
       return
     }
 
     try {
-      // Initialize the ExchangeFactory contract
+      // Initialize the TokenFactory contract
       const factoryContract = new ethers.Contract(
-        exchangeFactory[currentChainId],
-        ExchangeFactoryABI,
+        safeLaunchFactory[currentChainId],
+        TokenFactoryABI,
         provider
       )
 
-      // Get all created DEXes by calling getAllCreatedDEXes
-      const exchangeAddresses = await factoryContract.getAllCreatedDEXes()
+      // Fetch all SafeMeme token addresses deployed by the user
+      const tokenAddresses = await factoryContract.getSafeMemesDeployedByUser(
+        address
+      )
 
-      // Map over each DEX address to get the totalTransactions
-      const transactionPromises = exchangeAddresses.map(
-        async (exchangeAddress: string) => {
+      // Map over each SafeMeme token to get the associated DEX and fetch transactions
+      const transactionPromises = tokenAddresses.map(
+        async (tokenAddress: string) => {
           try {
-            // Initialize the Exchange contract for each DEX
+            // Initialize the SafeMeme token contract
+            const tokenContract = new ethers.Contract(
+              tokenAddress,
+              SafeMemeABI,
+              provider
+            )
+
+            // Get the associated dexAddress from the token contract
+            const dexAddress = await tokenContract.dexAddress()
+
+            // If dexAddress is not initialized, skip
+            if (dexAddress === ethers.constants.AddressZero) {
+              return 0
+            }
+
+            // Initialize the Exchange contract for each associated DEX
             const exchangeContract = new ethers.Contract(
-              exchangeAddress,
+              dexAddress,
               ExchangeABI,
               provider
             )
 
-            // Fetch the totalTransactions for each DEX
-            const transactionCount = await exchangeContract.totalTransactions()
+            // Fetch the safeLaunchTransactions for the current stage
+            const safeLaunchTransactions =
+              await exchangeContract.safeLaunchTXCount()
+
+            // Fetch the total transactions for each associated DEX
+            const totalTransactions = await exchangeContract.totalTransactions()
+
+            // Sum safeLaunchTransactions and totalTransactions
+            const totalForDEX =
+              safeLaunchTransactions.toNumber() + totalTransactions.toNumber()
 
             console.log(
-              `Total transactions for exchange ${exchangeAddress}:`,
-              transactionCount.toNumber()
+              `Total transactions (safeLaunch + normal) for exchange ${dexAddress}:`,
+              totalForDEX
             )
 
-            // Return the totalTransactions as a number
-            return transactionCount.toNumber()
+            return totalForDEX
           } catch (error) {
             console.error(
-              `Error fetching transactions for exchange ${exchangeAddress}:`,
+              `Error fetching transactions for SafeMeme token ${tokenAddress}:`,
               error
             )
             return 0
@@ -1057,15 +1086,18 @@ const MyProfile: React.FC = () => {
       const transactionsCounts = await Promise.all(transactionPromises)
 
       // Sum the transaction counts to get the total number of transactions across all DEXes
-      const totalTransactions = transactionsCounts.reduce(
+      const totalTransactionsSum = transactionsCounts.reduce(
         (acc, count) => acc + count,
         0
       )
 
-      console.log(`Total transactions across all DEXes:`, totalTransactions)
+      console.log(
+        `Total combined transactions (safeLaunch + normal) across all DEXes:`,
+        totalTransactionsSum
+      )
 
       // Update the state with the total transactions count
-      setTotalTransactions(totalTransactions)
+      setTotalTransactions(totalTransactionsSum)
     } catch (error) {
       console.error("Error in fetchTotalTransactions:", error)
     }
@@ -1110,6 +1142,7 @@ const MyProfile: React.FC = () => {
           ExchangeABI,
           provider
         )
+
         const [
           status,
           tokenBRequired,
@@ -1537,12 +1570,27 @@ const MyProfile: React.FC = () => {
               {airdropOption === "new" && (
                 <div className="edit-list-form">
                   <div className="input-group">
-                    <input
-                      type="text"
-                      placeholder="Token Address"
+                    <select
                       value={airdropTokenAddress}
                       onChange={(e) => setAirdropTokenAddress(e.target.value)}
                       className="input-field"
+                    >
+                      <option value="">Select a token from your wallet</option>
+                      {tokens.map((token) => (
+                        <option key={token.address} value={token.address}>
+                          {token.symbol} - {token.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="input-group">
+                    <textarea
+                      placeholder="Enter addresses (one per line)"
+                      value={customListAddresses}
+                      onChange={(e) => setCustomListAddresses(e.target.value)}
+                      className="input-field"
+                      rows={5}
                     />
                   </div>
                   <div className="input-group">
@@ -1554,15 +1602,6 @@ const MyProfile: React.FC = () => {
                       className="input-field"
                     />
                   </div>
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      placeholder="Duration (in days)"
-                      value={airdropDuration}
-                      onChange={(e) => setAirdropDuration(e.target.value)}
-                      className="input-field"
-                    />
-                  </div>
                   <button onClick={createAirdrop} className="buy-token-button">
                     Create Airdrop
                   </button>
@@ -1570,14 +1609,14 @@ const MyProfile: React.FC = () => {
               )}
 
               {airdropOption === "existing" && (
-                <div className="existing-lists">
+                <div>
                   <h3 className="stagetext">Select from Existing Lists</h3>
                   <div className="list-selection">
-                    <h4>Custom Lists</h4>
+                    <h4 className="listtext">Your Custom Lists</h4>
                     {userCustomLists.map((list) => (
                       <div key={list.id} className="list-option">
                         <input
-                          type="radio"
+                          type="checkbox"
                           id={`list-${list.id}`}
                           name="selectedList"
                           value={list.id}
@@ -1602,16 +1641,16 @@ const MyProfile: React.FC = () => {
                               }
 
                               const signer = provider.getSigner()
-                              const customAirdropContractAddress =
-                                customAirdropContract[chainId]
-                              if (!customAirdropContractAddress) {
+                              const AirdropFactoryAddress =
+                                AirdropFactory[chainId]
+                              if (!AirdropFactoryAddress) {
                                 throw new Error(
                                   "Custom Airdrop contract address is missing"
                                 )
                               }
 
                               const contract = new ethers.Contract(
-                                customAirdropContractAddress,
+                                AirdropFactoryAddress,
                                 AirdropFactoryABI,
                                 signer
                               )
@@ -1632,8 +1671,9 @@ const MyProfile: React.FC = () => {
                         <label htmlFor={`list-${list.id}`}>{list.name}</label>
                       </div>
                     ))}
-
-                    <h4>Token Holders</h4>
+                  </div>
+                  <div className="list-selection">
+                    <h4 className="listtext">List of Your Token Holders</h4>
                     {tokens.map((token) => (
                       <div key={token.address} className="list-option">
                         <input
@@ -1649,7 +1689,7 @@ const MyProfile: React.FC = () => {
                               setAirdropRecipients((prev) => [
                                 ...new Set([...prev, ...addresses]),
                               ])
-                              setSelectedListId(null) // Clear custom list selection
+                              setSelectedListId(null)
                             } else {
                               setAirdropRecipients((prev) =>
                                 prev.filter((addr) => !addresses.includes(addr))
@@ -1696,12 +1736,6 @@ const MyProfile: React.FC = () => {
                     </div>
                   )}
 
-                  <p className="selected-count">
-                    Selected Addresses:{" "}
-                    {selectedListId !== null
-                      ? "Custom List"
-                      : airdropRecipients.length}
-                  </p>
                   <div className="edit-list-form">
                     <select
                       value={airdropTokenAddress}
@@ -1915,7 +1949,7 @@ const MyProfile: React.FC = () => {
                                       Stage {index + 1}
                                     </h4>
 
-                                    {stage.status === 3 ? (
+                                    {stage.status === "3" ? (
                                       <div className="stage-completed">
                                         <p>Stage Completed</p>
                                       </div>
@@ -2036,8 +2070,12 @@ const MyProfile: React.FC = () => {
                                               {token.tokenB &&
                                               token.tokenB !==
                                                 "0x0000000000000000000000000000000000000000" &&
-                                              !stage.tokenBRequired_set ? (
+                                              !stage.status
+                                                .tokenBRequired_set ? (
                                                 <>
+                                                  {console.log(
+                                                    `Stage status: ${stage.status}`
+                                                  )}
                                                   {stage.status === 1 && (
                                                     <>
                                                       <input
@@ -2054,11 +2092,11 @@ const MyProfile: React.FC = () => {
                                                             e.target.value
                                                           )
                                                         }
-                                                        placeholder={`Amount `}
-                                                        className="input-field"
+                                                        placeholder={`Amount`}
+                                                        className="tokenB-input-field"
                                                       />
                                                       <button
-                                                        className="buy-token-button"
+                                                        className="set-tokenB-button"
                                                         onClick={() =>
                                                           setTokenBAmount(
                                                             token.address,
@@ -2095,7 +2133,6 @@ const MyProfile: React.FC = () => {
                                     50% of locked SafeMemes and all received
                                     Token B are paired in the DEX.
                                   </p>
-                                  {/* Add more DEX-specific information here */}
                                 </div>
                               )}
                             </div>

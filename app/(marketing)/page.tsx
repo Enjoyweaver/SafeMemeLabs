@@ -70,11 +70,12 @@ export default async function IndexPage() {
             Intro
           </h2>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-            At SafeMeme Labs, our goal is to empower creators by providing tools
-            to build rugproof tokens, fund projects through SafeLaunch, create
-            customizable airdrops, launch NFTs, and build Frames on Warpcast.
-            With SafeMeme Labs, you can easily customize your profile, engage
-            with your followers, and build your brand with confidence.
+            Our goal is to empower creators by providing tools to build rugproof
+            tokens, fund them through a SafeLaunch, create customizable
+            airdrops, launch and sell NFTs, create and deploy Frames on
+            Warpcast, all while earning transaction fees, and possibly gas fees
+            too. With SafeMeme Labs, you can easily customize your profile,
+            engage with your followers, and build your brand with confidence.
           </p>
           <br></br>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
