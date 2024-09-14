@@ -1167,9 +1167,58 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
+    name: "getTransactionByIndex",
+    inputs: [
+      {
+        name: "index",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
+      {
+        name: "",
+        type: "address",
+      },
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
     name: "getLastFee",
     inputs: [],
     outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
       {
         name: "",
         type: "uint256",
@@ -1946,6 +1995,18 @@ export const ExchangeABI = [
   {
     stateMutability: "view",
     type: "function",
+    name: "transactionCount",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
     name: "insurancePoolContract",
     inputs: [],
     outputs: [
@@ -2012,6 +2073,57 @@ export const ExchangeABI = [
       {
         name: "",
         type: "uint256",
+      },
+    ],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    name: "pastTransactions",
+    inputs: [
+      {
+        name: "arg0",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "tuple",
+        components: [
+          {
+            name: "safememeAmount",
+            type: "uint256",
+          },
+          {
+            name: "tokenBAmount",
+            type: "uint256",
+          },
+          {
+            name: "gasUsed",
+            type: "uint256",
+          },
+          {
+            name: "swapFee",
+            type: "uint256",
+          },
+          {
+            name: "ownerFee",
+            type: "uint256",
+          },
+          {
+            name: "houseFee",
+            type: "uint256",
+          },
+          {
+            name: "wallet",
+            type: "address",
+          },
+          {
+            name: "txtimestamp",
+            type: "uint256",
+          },
+        ],
       },
     ],
   },

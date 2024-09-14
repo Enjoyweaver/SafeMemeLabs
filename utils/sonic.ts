@@ -1,22 +1,22 @@
 import { defineChain } from "viem"
 
 export const sonicTestnet = defineChain({
-  id: 31,
-  network: "sonictestnet",
-  name: "sonictestnet",
+  id: 64165,
+  network: "Sonic Testnet",
+  name: "Sonic Testnet",
   nativeCurrency: {
-    name: "Sonic Builders Testnet",
-    symbol: "FTM",
+    name: "Sonic Testnet",
+    symbol: "S",
     decimals: 18,
   },
   rpcUrls: {
-    default: { http: ["https://rpc.sonic.fantom.network/"] },
-    public: { http: ["https://rpc.sonic.fantom.network/"] },
+    default: { http: ["https://rpc.testnet.soniclabs.com"] },
+    public: { http: ["https://rpc.testnet.soniclabs.com"] },
   },
   blockExplorers: {
     default: {
       name: "Sonic Testnet Explorer",
-      url: "https://public-sonic.fantom.network",
+      url: "https://testnet.soniclabs.com/",
     },
   },
 })

@@ -306,7 +306,7 @@ export default function Dashboard(): JSX.Element {
                 ))}
               </select>
             </div>
-            <SafeBasePriceComponent selectedChainId={selectedChainId} />
+
             <div className="table-container">
               <table className="data-table">
                 <thead>

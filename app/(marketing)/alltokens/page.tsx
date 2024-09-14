@@ -20,6 +20,17 @@ import { Navbar } from "@/components/walletconnect/walletconnect"
 import "./swap.css"
 import "@/styles/allTokens.css"
 
+interface TransactionDetails {
+  safeMemeAmount: string
+  tokenBAmount: string
+  gasUsed: string
+  swapFee: string
+  ownerFee: string
+  houseFee: string
+  buyer: string
+  txtimestamp: string
+}
+
 interface TokenInfo {
   address: string
   name: string
@@ -48,6 +59,7 @@ interface TokenInfo {
     stageAmountSet: boolean
     safeMemesSoldThisStage: string
     safeMemeRemaining: string
+    pastTransactions: TransactionDetails[]
   } | null
 }
 
@@ -121,6 +133,13 @@ const AllTokens = () => {
       for (const chainId of Object.keys(safeLaunchFactory)) {
         try {
           const rpcUrl = rpcUrls[chainId]
+
+          // Check if the RPC URL is valid
+          if (!rpcUrl) {
+            console.error(`No RPC URL for chain ID ${chainId}`)
+            continue
+          }
+
           const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
 
           const factoryContract = new ethers.Contract(
@@ -220,7 +239,6 @@ const AllTokens = () => {
       tokenContract.getMaxWalletAmount(),
     ])
 
-    // Define dexInfo as a type that can be either null or the expected object type
     let dexInfo: null | {
       address: string
       safeLaunchComplete: boolean
@@ -240,77 +258,88 @@ const AllTokens = () => {
       tokenBSet: boolean
       stageAmountSet: boolean
       stageStatus: number
+      pastTransactions: TransactionDetails[]
     } = null
 
-    if (dexAddress !== ethers.constants.AddressZero) {
-      const exchangeContract = new ethers.Contract(
-        dexAddress,
-        ExchangeABI,
-        provider
-      )
-      const [
-        safeLaunchComplete,
-        isInDEXMode,
-        currentStage,
-        safeLaunchActive, // Get the safeLaunchActive value from the contract
-        stageDetails,
-      ] = await Promise.all([
-        exchangeContract.safeLaunchComplete(),
-        exchangeContract.isInDEXMode(),
-        exchangeContract.currentStage(),
-        exchangeContract.safeLaunchActive(), // Reference the correct flag
-        exchangeContract.getStageDetails(),
-      ])
+    // Check if dexAddress exists and is not the zero address
+    if (dexAddress && dexAddress !== ethers.constants.AddressZero) {
+      try {
+        const exchangeContract = new ethers.Contract(
+          dexAddress,
+          ExchangeABI,
+          provider
+        )
+        const [
+          safeLaunchComplete,
+          isInDEXMode,
+          currentStage,
+          safeLaunchActive,
+          stageDetails,
+        ] = await Promise.all([
+          exchangeContract.safeLaunchComplete(),
+          exchangeContract.isInDEXMode(),
+          exchangeContract.currentStage(),
+          exchangeContract.safeLaunchActive(),
+          exchangeContract.getStageDetails(),
+        ])
 
-      const [
-        stageStatuses,
-        tokenBRequired,
-        safeMemePrices,
-        safeMemeRemaining,
-        tokenBReceived,
-        safeMemesSoldThisStage,
-        soldsafeMemeThisTX,
-        is_open,
-        tokenBRequired_set,
-        tokenBReceived_met,
-        stage_completed,
-      ] = stageDetails
+        const [
+          stageStatuses,
+          tokenBRequired,
+          safeMemePrices,
+          safeMemeRemaining,
+          tokenBReceived,
+          safeMemesSoldThisStage,
+          soldsafeMemeThisTX,
+          is_open,
+          tokenBRequired_set,
+          tokenBReceived_met,
+          stage_completed,
+        ] = stageDetails
 
-      const currentStageIndex = currentStage.toNumber()
+        const currentStageIndex = currentStage.toNumber()
+        const pastTransactions = await getPastTransactions(dexAddress, provider)
 
-      dexInfo = {
-        address: dexAddress,
-        safeLaunchComplete,
-        isInDEXMode,
-        currentStage: currentStageIndex,
-        safeLaunchActivated: safeLaunchActive, // Use the correct flag here
-        tokenBAddress: await exchangeContract.tokenBAddress(),
-        tokenBName: await exchangeContract.tokenBName(),
-        tokenBSymbol: await exchangeContract.tokenBSymbol(),
-        stageTokenBAmount: ethers.utils.formatEther(
-          tokenBRequired[currentStageIndex]
-        ),
-        safeMemePrices: ethers.utils.formatEther(
-          safeMemePrices[currentStageIndex]
-        ),
-        safeMemeAvailable: ethers.utils.formatEther(
-          safeMemeRemaining[currentStageIndex]
-        ),
-        tokenBReceived: ethers.utils.formatEther(
-          tokenBReceived[currentStageIndex]
-        ),
-        soldsafeMeme: ethers.utils.formatEther(
-          soldsafeMemeThisTX[currentStageIndex]
-        ),
-        safeMemesSold: ethers.utils.formatEther(
-          safeMemesSoldThisStage[currentStageIndex]
-        ),
-        stageRemainingSafeMeme: ethers.utils.formatEther(
-          safeMemeRemaining[currentStageIndex]
-        ),
-        tokenBSet: tokenBRequired_set[currentStageIndex],
-        stageAmountSet: tokenBRequired_set[currentStageIndex],
-        stageStatus: stageStatuses[currentStageIndex].toNumber(),
+        dexInfo = {
+          address: dexAddress,
+          safeLaunchComplete,
+          isInDEXMode,
+          currentStage: currentStageIndex,
+          safeLaunchActivated: safeLaunchActive,
+          tokenBAddress: await exchangeContract.tokenBAddress(),
+          tokenBName: await exchangeContract.tokenBName(),
+          tokenBSymbol: await exchangeContract.tokenBSymbol(),
+          stageTokenBAmount: ethers.utils.formatEther(
+            tokenBRequired[currentStageIndex]
+          ),
+          safeMemePrices: ethers.utils.formatEther(
+            safeMemePrices[currentStageIndex]
+          ),
+          safeMemeAvailable: ethers.utils.formatEther(
+            safeMemeRemaining[currentStageIndex]
+          ),
+          tokenBReceived: ethers.utils.formatEther(
+            tokenBReceived[currentStageIndex]
+          ),
+          soldsafeMeme: ethers.utils.formatEther(
+            soldsafeMemeThisTX[currentStageIndex]
+          ),
+          safeMemesSold: ethers.utils.formatEther(
+            safeMemesSoldThisStage[currentStageIndex]
+          ),
+          stageRemainingSafeMeme: ethers.utils.formatEther(
+            safeMemeRemaining[currentStageIndex]
+          ),
+          tokenBSet: tokenBRequired_set[currentStageIndex],
+          stageAmountSet: tokenBRequired_set[currentStageIndex],
+          stageStatus: stageStatuses[currentStageIndex].toNumber(),
+          pastTransactions,
+        }
+      } catch (error) {
+        console.error(
+          `Error fetching dex info for token: ${tokenAddress}`,
+          error
+        )
       }
     }
 
@@ -326,6 +355,36 @@ const AllTokens = () => {
       maxWalletAmount: ethers.utils.formatUnits(maxWalletAmount, decimals),
       dexInfo: dexInfo,
     }
+  }
+
+  async function getPastTransactions(
+    dexContractAddress: string,
+    provider: ethers.providers.Web3Provider
+  ): Promise<TransactionDetails[]> {
+    const dex = new ethers.Contract(dexContractAddress, ExchangeABI, provider)
+
+    const transactions: TransactionDetails[] = []
+
+    for (let i = 0; i < 5; i++) {
+      try {
+        const transaction = await dex.getPastTransactions(i)
+        transactions.push({
+          safeMemeAmount: ethers.utils.formatUnits(transaction[0], 18),
+          tokenBAmount: ethers.utils.formatUnits(transaction[1], 18),
+          gasUsed: transaction[2].toString(),
+          swapFee: ethers.utils.formatUnits(transaction[3], 18),
+          ownerFee: ethers.utils.formatUnits(transaction[4], 18),
+          houseFee: ethers.utils.formatUnits(transaction[5], 18),
+          buyer: transaction[6],
+          txtimestamp: new Date(transaction[7] * 1000).toLocaleString(),
+        })
+      } catch (error) {
+        console.error(`Error retrieving transaction at index ${i}:`, error)
+        break
+      }
+    }
+
+    return transactions
   }
 
   useEffect(() => {

@@ -37,23 +37,22 @@ const FeedbackPage = () => {
   const [feedback, setFeedback] = useState(feedbackInitialState)
   const [checklistItems, setChecklistItems] = useState([
     {
-      text: "Start airdrop and custom airdrop list ability",
-      completed: false,
-      status: "open",
-    },
-    {
       text: "Integrate HNDL into the users profile",
       completed: false,
       status: "open",
     },
     {
-      text: "stage numbers, connect button, stage layout and colors during stages, update creation page messages",
+      text: "Udpdate token creation messages",
       completed: false,
       status: "open",
     },
-
     {
-      text: "Create SafeLaunch backend functionality",
+      text: "Create About page and update menu links",
+      completed: false,
+      status: "open",
+    },
+    {
+      text: "Create marketing videos and publish",
       completed: false,
       status: "open",
     },
@@ -84,7 +83,7 @@ const FeedbackPage = () => {
       status: "open",
     },
     {
-      text: "Display the users earnings, when they were received, and their current worth on the profile page",
+      text: "Display the users earnings, when they were received, and their current value on the profile page",
       completed: false,
       status: "open",
     },
@@ -100,44 +99,29 @@ const FeedbackPage = () => {
     },
     { text: "Touch grass every day", completed: false, status: "open" },
     {
+      text: "Buy SafeMemes.fun and SafeMemes.com and update website links",
+      completed: true,
+      status: "Completed",
+    },
+    {
+      text: "stage numbers, connect button, stage layout and colors during stages, update creation page messages",
+      completed: true,
+      status: "Completed",
+    },
+    {
+      text: "Create SafeLaunch backend functionality",
+      completed: true,
+      status: "Completed",
+    },
+    {
       text: "Update the token generation contracts to Vyper",
-      completed: false,
-      status: "open",
+      completed: true,
+      status: "Completed",
     },
     {
-      text: "Implement a secure method for storing private keys",
-      completed: false,
-      status: "open",
-    },
-    {
-      text: "Integrate automated tests for smart contracts",
-      completed: false,
-      status: "open",
-    },
-    {
-      text: "Conduct a comprehensive security audit",
-      completed: false,
-      status: "open",
-    },
-    {
-      text: "Implement rate limiting to prevent abuse of the DEX",
-      completed: false,
-      status: "open",
-    },
-    {
-      text: "Ensure proper handling of failed transactions",
-      completed: false,
-      status: "open",
-    },
-    {
-      text: "Monitor gas prices and optimize contract calls",
-      completed: false,
-      status: "open",
-    },
-    {
-      text: "Add detailed logging and monitoring for trade activities",
-      completed: false,
-      status: "open",
+      text: "Start airdrop and custom airdrop list ability",
+      completed: true,
+      status: "Completed",
     },
     {
       text: "Create SafeLaunch frontend to interact with SafeLaunch backend",

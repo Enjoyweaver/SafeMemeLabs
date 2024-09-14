@@ -52,8 +52,8 @@ export const config = createConfig({
         projectId: "7d2cdf0341b6bef24d9efae208f93467",
         metadata: {
           name: "SafeMeme Labs",
-          description: "Safe Meme Economy",
-          url: "https://safememe.vercel.app",
+          description: "Creating the Safe Meme Economy",
+          url: "https://SafeMemes.fun",
           icons: ["tbd"],
         },
       },
@@ -70,85 +70,6 @@ export const config = createConfig({
   webSocketPublicClient,
 })
 
-export const tokenDeployerDetails: {
-  [key: string]: string
-} = {
-  "666666666": "0xe92163f8038843091c1df18f726cf04526ef9676",
-  "250": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d6",
-  "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EE",
-  "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ee",
-  "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb5",
-  "4002": "0x79b206abd08adc1b1c5d72ba7bd38d04511e985e",
-  "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d6",
-  "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228430",
-  "30": "0xe92163f8038843091c1df18f726cf04526ef9676",
-  "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25e",
-  "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25e",
-  "501": "YourTokenAddressForSolanaTestnet",
-}
-
-export const tokenLauncherDetails: {
-  [key: string]: string
-} = {
-  "666666666": "0xe92163f8038843091c1df18f726cf04526ef9677",
-  "250": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
-  "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
-  "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
-  "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
-  "4002": "0xc88FfCd4f80DE8E20a09Fd8632b77f19035F9De4",
-  "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
-  "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
-  "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
-  "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
-  "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
-  "501": "YourTokenAddressForSolanaTestnetLaunched",
-}
-
-export const multisendDetails: {
-  [key: string]: { safeMemeToken: string; safeMemeTokenLaunched: string }
-} = {
-  "137": {
-    safeMemeToken: "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
-    safeMemeTokenLaunched: "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE2",
-  },
-  "250": {
-    safeMemeToken: "0xe1B8Fc8e02b9b2C8152dEB18c5D1f6C2b23f8a94",
-    safeMemeTokenLaunched: "0xe1B8Fc8e02b9b2C8152dEB18c5D1f6C2b23f8a95",
-  },
-  "4002": {
-    safeMemeToken: "0xeC4993Ab1a113A15e94c33748344954E15451d4e",
-    safeMemeTokenLaunched: "0xeC4993Ab1a113A15e94c33748344954E15451d4f",
-  },
-  "64165": {
-    safeMemeToken: "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE1",
-    safeMemeTokenLaunched: "0x8264289EA0D12c3DB03b79a56f4961Ff91612aE2",
-  },
-  "666666666": {
-    safeMemeToken: "0x29c4e664e50aa222a0f10de5233e0e1fd0bd9cc6",
-    safeMemeTokenLaunched: "0x29c4e664e50aa222a0f10de5233e0e1fd0bd9cc7",
-  },
-  "8453": {
-    safeMemeToken: "0x29c4e664e50aa222a0f10de5233e0e1fd0bd9cc6",
-    safeMemeTokenLaunched: "0x29c4e664e50aa222a0f10de5233e0e1fd0bd9cc7",
-  },
-  "43114": {
-    safeMemeToken: "0x8c175417787c4beea7211d143423c8624c230b9b",
-    safeMemeTokenLaunched: "0x8c175417787c4beea7211d143423c8624c230b9c",
-  },
-  "30": {
-    safeMemeToken: "0x8c175417787c4beea7211d143423c8624c230b9b",
-    safeMemeTokenLaunched: "0x8c175417787c4beea7211d143423c8624c230b9c",
-  },
-  "31": {
-    safeMemeToken: "0x8c175417787c4beea7211d143423c8624c230b9b",
-    safeMemeTokenLaunched: "0x8c175417787c4beea7211d143423c8624c230b9c",
-  },
-  "501": {
-    safeMemeToken: "YourMultisendAddressForSolanaTestnet",
-    safeMemeTokenLaunched: "YourMultisendAddressForSolanaTestnetLaunched",
-  },
-}
-
 export const blockExplorerUrls: { [key: string]: string } = {
   "31": "https://explorer.testnet.rootstock.io/tx/",
   "250": "https://ftmscan.com/tx/",
@@ -159,6 +80,7 @@ export const blockExplorerUrls: { [key: string]: string } = {
   "666666666": "https://degenscan.io/tx/",
   "501": "https://explorer.solana.com/tx/",
   "84532": "https://sepolia-explorer.base.org",
+  "64165": "https://rpc.testnet.soniclabs.com",
 }
 
 export const blockExplorerAddress: { [key: string]: string } = {
@@ -171,6 +93,7 @@ export const blockExplorerAddress: { [key: string]: string } = {
   "666666666": "https://degenscan.io/address/",
   "501": "https://explorer.solana.com/address/",
   "84532": "https://sepolia-explorer.base.org/address/",
+  "64165": "https://testnet.soniclabs.com/",
 }
 
 export const blockExplorerToken: { [key: string]: string } = {
@@ -205,82 +128,6 @@ export const chainIdToCovalentChainId: { [key: string]: string } = {
   43114: "avalanche-mainnet",
   30: "rsk-mainnet",
   501: "solana-mainnet",
-}
-
-export const lockerDetails: {
-  [key: string]: string
-} = {
-  "137": "YourLockerAddressForPolygonLaunched",
-  "250": "YourLockerAddressForFantomLaunched",
-  "4002": "0x2bb471e62097f1579742f90e35158077d13221be",
-  "64165": "YourLockerAddressForFantomTestnet2Launched",
-  "666666666": "YourLockerAddressForDegenLaunched",
-  "8453": "YourLockerAddressForDegen2Launched",
-  "43114": "YourLockerAddressForAvalancheLaunched",
-  "30": "YourLockerAddressForRootstockLaunched",
-  "31": "YourLockerAddressForRootstockTestnetLaunched",
-  "148": "YourLockerAddressForAnotherChainLaunched",
-  "501": "YourLockerAddressForSolanaTestnetLaunched",
-}
-
-export const managerDetails: {
-  [key: string]: string
-} = {
-  "137": "YourManagerAddressForPolygonLaunched",
-  "250": "YourManagerAddressForFantomLaunched",
-  "4002": "0x907aeec9cc50b7c3dcf1858901c1f2a672c59c99",
-  "64165": "YourManagerAddressForFantomTestnet2Launched",
-  "666666666": "YourManagerAddressForDegenLaunched",
-  "8453": "YourManagerAddressForDegen2Launched",
-  "43114": "YourManagerAddressForAvalancheLaunched",
-  "30": "YourManagerAddressForRootstockLaunched",
-  "31": "YourManagerAddressForRootstockTestnetLaunched",
-  "148": "YourManagerAddressForAnotherChainLaunched",
-  "501": "YourManagerAddressForSolanaTestnetLaunched",
-}
-
-export const routerDetails: {
-  [key: string]: string
-} = {
-  "137": "YourRouterAddressForPolygonLaunched",
-  "250": "YourRouterAddressForFantomLaunched",
-  "4002": "0x575b62e0064b377afe6317b4432c681959815f24",
-  "64165": "YourRouterAddressForFantomTestnet2Launched",
-  "666666666": "YourRouterAddressForDegenLaunched",
-  "8453": "YourRouterAddressForDegen2Launched",
-  "43114": "YourRouterAddressForAvalancheLaunched",
-  "30": "YourRouterAddressForRootstockLaunched",
-  "31": "YourRouterAddressForRootstockTestnetLaunched",
-  "148": "YourRouterAddressForAnotherChainLaunched",
-  "501": "YourRouterAddressForSolanaTestnetLaunched",
-}
-
-export const senderDetails: { [key: string]: string } = {
-  "137": "YourOracleAddressForPolygon",
-  "250": "YourOracleAddressForFantom",
-  "4002": "0x2620762c2ae51b3c6bb8b18e9b371b3db1458dd5",
-  "64165": "YourOracleAddressForFantomTestnet2",
-  "666666666": "YourOracleAddressForDegen",
-  "8453": "YourOracleAddressForDegen2",
-  "43114": "YourOracleAddressForAvalanche",
-  "30": "YourOracleAddressForRootstock",
-  "31": "YourOracleAddressForRootstockTestnet",
-  "148": "YourOracleAddressForAnotherChain",
-  "501": "YourOracleAddressForSolanaTestnet",
-}
-
-export const oracleDetails: { [key: string]: string } = {
-  "137": "YourOracleAddressForPolygon",
-  "250": "YourOracleAddressForFantom",
-  "4002": "0xc21765271ddc445ccffa71fac875d5c20cc25fd5",
-  "64165": "YourOracleAddressForFantomTestnet2",
-  "666666666": "YourOracleAddressForDegen",
-  "8453": "YourOracleAddressForDegen2",
-  "43114": "YourOracleAddressForAvalanche",
-  "30": "YourOracleAddressForRootstock",
-  "31": "YourOracleAddressForRootstockTestnet",
-  "148": "YourOracleAddressForAnotherChain",
-  "501": "YourOracleAddressForSolanaTestnet",
 }
 
 export const NativeTokens: {
@@ -344,7 +191,7 @@ export const priceFeedAddresses: {
     "ETH/USD": "0x86d67c3d38d2bce8da5a2d8e032e2001fa8ec7ea",
   },
   "1337": {
-    "BTC/USD": "0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43", // Sepolia testnet price feed for BTC
+    "BTC/USD": "0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43",
   },
 }
 
@@ -356,6 +203,7 @@ export const rpcUrls: { [key: string]: string } = {
   "30": "https://public-node.rsk.co",
   "31": "https://public-node.testnet.rsk.co",
   "1337": "https://rpc.ankr.com/eth_sepolia",
+  "64165": "https://rpc.testnet.soniclabs.com",
 }
 
 export const tokenSaleDetails: { [key: string]: string } = {
@@ -388,65 +236,6 @@ export const tokenClaimDetails: { [key: string]: string } = {
   "501": "YourTokenAddressForSolanaTestnetLaunched",
 }
 
-export const poolAddressDetails: { [key: string]: string } = {
-  "666666666": "0xe92163f8038843091c1df18f726cf04526ef9677",
-  "250": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
-  "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
-  "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
-  "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
-  "4002": "0x1889c363Ea9a0f2b1505F05716BA62DCF889b4d7",
-  "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
-  "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
-  "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
-  "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
-  "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
-  "501": "YourTokenAddressForSolanaTestnetLaunched",
-}
-
-export const vyperExchangeDetails: { [key: string]: string } = {
-  "666666666": "0xe92163f8038843091c1df18f726cf04526ef9677",
-  "250": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
-  "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
-  "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
-  "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
-  "4002": "0x88a005d9c0Fb4607210124f14031A73590899647",
-  "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
-  "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
-  "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
-  "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
-  "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
-  "501": "YourTokenAddressForSolanaTestnetLaunched",
-}
-
-export const vyperExchangeFactoryDetails: { [key: string]: string } = {
-  "666666666": "0xe92163f8038843091c1df18f726cf04526ef9677",
-  "250": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
-  "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
-  "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
-  "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
-  "4002": "0xb10650f1957dcCf7f16b01AB24D825d70A5B9A85",
-  "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
-  "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
-  "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
-  "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
-  "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
-  "501": "YourTokenAddressForSolanaTestnetLaunched",
-}
-export const tokenExchangeTemplateDetails: { [key: string]: string } = {
-  "666666666": "0xe92163f8038843091c1df18f726cf04526ef9677",
-  "250": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
-  "137": "0x5746A1ec97d91c594e6042a7A42c8285C4c3A0EF",
-  "64165": "0x5746a1ec97d91c594e6042a7a42c8285c4c3a0ef",
-  "64240": "0x676e3fd472f437b86ee5203f5adf21b7687fddb6",
-  "4002": "0x3A14373cCA55429a4F2A8F3970DAa0406c31EE91",
-  "8453": "0x396652c3fc3273b5946bdfe7b558a00a57ed27d7",
-  "43114": "0xeaa2465a90803f6e26bfb65c5c0fa6efbc228431",
-  "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
-  "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
-  "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
-  "501": "YourTokenAddressForSolanaTestnetLaunched",
-}
-
 export const frameFactoryDetails: {
   [key: string]: string
 } = {
@@ -456,84 +245,65 @@ export const frameFactoryDetails: {
   "84532": "0x04Acaf5ECED5f0E6f82d8dD361185e38B41CF34E",
 }
 
-export const tokenVyperDetails: {
-  [key: string]: string
-} = {
-  "4002": "0xc1776D66954DB46B32173154AD4Ed05390807689",
-}
-
-export const masterVyperTokenCopy: {
-  [key: string]: string
-} = {
-  "4002": "0x8586F0c6AE085902663DfBE67A7BE83d4CBA2948",
-}
-
 export const safeMemeTemplate: {
   [key: string]: string
 } = {
   "4002": "0x8e48A0E6849179D24f7De46121b7268116F00d0C",
-  // "64165": "0xe5355DB1838d2e56786cC7E66FF9a122F2bb3d1d",
+  "64165": "0x99Caf2D3EbE03B6671fc8ec7D3e6160e88359FA0",
 }
 
 export const safeLaunchFactory: {
   [key: string]: string
 } = {
   "4002": "0x3EC3eF1C4B882a85F7962c6AC22Bf8433990bAbb",
-  //"64165": "0x0643e30ABfa871c5a22c602Cb2071c2B1230e0d9",
+  "64165": "0xA0db964a0393AB56b14D9bcEdf756aA00f2e0361",
 }
 
 export const exchangeTemplate: {
   [key: string]: string
 } = {
   "4002": "0x841C50f907A52cD9D9CDB06695deB6A3d8803EfE",
-  // "64165": "0x8401eb679FBCc6522B6489C1a5E119532918f88a",
+  "64165": "0x7e17CA6532Cf7Db5324644EadDefB1cC5B71433D",
 }
 
 export const exchangeFactory: {
   [key: string]: string
 } = {
   "4002": "0x605B3015025d3cCA4D32aa38f8a698A65C127352",
-  //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
+  "64165": "0xD4B1Cb9456d51829af3e0181E82E2F7f81B551D0",
 }
 
 export const houseFeesContract: {
   [key: string]: string
 } = {
   "4002": "0x32A7D38a7f3FdEFf2d7fF362Bcff212A4f91E2cB",
-  //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
+  "64165": "0xe51540C284990B255bb0e07c0bc3dfb41e06c864",
 }
 
 export const insurancePoolContract: {
   [key: string]: string
 } = {
   "4002": "0xe0D8ed59bb130cf60143b14E798E11D0148a3Be2",
-  //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
+  "64165": "0xdD8F3fFd7B73c687Af45DF1F37596baB4c85C1A1",
 }
 
 export const safeBaseToken: {
   [key: string]: string
 } = {
   "4002": "0x64f96f5c95d9a2a4DD40d35d5fADb69D17dAF122",
-  //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
+  "64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
 }
 
 export const airdropContract: {
   [key: string]: string
 } = {
   "4002": "0x43b0f21F50CEB0942584a54a95c6d20BD18cF058",
-  //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
-}
-
-export const customAirdropContract: {
-  [key: string]: string
-} = {
-  "4002": "0x921E4bF610087aB0248641467988C06678A22CDe",
-  //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
+  "64165": "0xA59eBfe75d467e2d26875030FE03563B8E42c250",
 }
 
 export const AirdropFactory: {
   [key: string]: string
 } = {
   "4002": "0x441F549F386bdD45c33954A2CC6a96b30329a585",
-  //"64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
+  "64165": "0x1Aaf941fD48D3A267F56471E9a517E053Cad8F06",
 }
