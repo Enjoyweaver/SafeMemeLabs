@@ -42,7 +42,27 @@ const FeedbackPage = () => {
       status: "open",
     },
     {
+      text: "Update disconnect message",
+      completed: false,
+      status: "open",
+    },
+    {
       text: "Udpdate token creation messages",
+      completed: false,
+      status: "open",
+    },
+    {
+      text: "Add dashboard stats for all blockchains at once",
+      completed: false,
+      status: "open",
+    },
+    {
+      text: "Add images to tokens",
+      completed: false,
+      status: "open",
+    },
+    {
+      text: "Move Token Spec page to All Tokens page",
       completed: false,
       status: "open",
     },
