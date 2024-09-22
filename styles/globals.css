@@ -90,7 +90,7 @@
     --radius: 0.5rem;
     --hover-text: #a8b2bb;
     --hover-subtext: #80b3c2;
-    --wallet-connect-text-color-dark: #bcc4cf; /* Text color for wallet connect button in dark mode */
+    --wallet-connect-text-color-dark: #bcc4cf;
     --blockchain-text-color-dark: #96a3b6;
   }
 }

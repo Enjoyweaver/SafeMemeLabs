@@ -1,0 +1,581 @@
+/* styles.css */
+
+:root {
+  --background-light: #1e1e2f;
+  --foreground-light: #ffffff;
+  --primary-light: #04c44e;
+  --secondary-light: #b80f5e;
+  --accent-light: #04c44e;
+  --border-light: #04c44e;
+  --text-light: #ffffff;
+
+  --input-light: #2a2a3d;
+  --input-dark: #1a1a2e;
+
+  --background-dark: #000000;
+  --foreground-dark: #cccccc;
+  --primary-dark: #df1584;
+  --secondary-dark: #41b80a;
+  --accent-dark: #41b80a;
+  --border-dark: #41b80a;
+  --text-dark: #ffffff;
+}
+
+body {
+  background-color: var(--background-light);
+  color: var(--text-light);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body.dark {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
+
+.profile-page {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--background-light);
+  color: var(--text-light);
+}
+
+.dark .profile-page {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
+
+.login-section {
+  flex: none;
+  padding: 40px;
+}
+
+.profile-section {
+  flex: none;
+  width: 900px;
+  margin: 0 auto;
+}
+
+h2 {
+  color: var(--primary-light);
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+button {
+  background-color: var(--primary-light);
+  color: var(--text-light);
+  border: none;
+  padding: 12px 24px;
+  margin: 10px 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+
+button:hover {
+  background-color: var(--secondary-light);
+}
+
+.dark button {
+  background-color: var(--primary-dark);
+}
+
+.dark button:hover {
+  background-color: var(--secondary-dark);
+}
+
+input[type="text"],
+input[type="email"],
+textarea,
+select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  background-color: var(--input-light);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  color: var(--text-light);
+  font-size: 1rem;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.dark input[type="text"],
+.dark input[type="email"],
+.dark textarea,
+.dark select {
+  background-color: var(--input-dark);
+  color: var(--text-dark);
+  border: 1px solid var(--border-dark);
+}
+
+textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+.intro {
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.profile-image {
+  position: absolute;
+  bottom: 0px;
+  right: 220px;
+  max-width: 220px;
+  max-height: 220px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  transition: border 0.3s ease;
+}
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .profile-image {
+    right: 50px;
+    max-width: 150px;
+    max-height: 150px;
+  }
+}
+
+.profile-banner {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  display: inline-block;
+  cursor: pointer;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 160px;
+  background-color: var(--background-light);
+}
+
+.dark .profile-banner {
+  background-color: var(--background-dark);
+}
+
+.banner-image,
+.profile-picture {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 3px solid var(--border-light);
+  transition: border 0.3s ease;
+  border-radius: 10px;
+}
+
+.dark .banner-image,
+.dark .profile-picture {
+  border: 3px solid var(--border-dark);
+}
+
+.file-input {
+  display: none;
+}
+
+.placeholder-banner {
+  width: 100%;
+  height: 100%;
+  background-color: var(--input-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  font-size: 1.2rem;
+}
+
+.dark .placeholder-banner {
+  background-color: var(--input-dark);
+  color: var(--text-dark);
+}
+
+.placeholder-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5%;
+  background-color: var(--input-light);
+}
+
+.dark .placeholder-image {
+  background-color: var(--input-dark);
+}
+
+.profile-banner:hover .hover-upload,
+.profile-image:hover .hover-upload {
+  opacity: 1;
+}
+
+.image-upload-label {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.file-input {
+  display: none;
+}
+
+.profile-banner img,
+.placeholder-banner,
+.placeholder-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 5px;
+}
+
+.image-upload-label:hover .overlay {
+  opacity: 1;
+}
+
+.submit-button {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #4caf50; /* Green */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background-color: #45a049;
+}
+
+.social-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.social-links input[type="text"] {
+  background-color: var(--input-light);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 10px;
+  color: var(--text-light);
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.dark .social-links input[type="text"] {
+  background-color: var(--input-dark);
+  border: 1px solid var(--border-dark);
+  color: var(--text-dark);
+}
+
+.profile-description textarea {
+  font-size: 0.9rem;
+  height: 100px;
+}
+
+.profile-wallets {
+  margin-top: 20px;
+}
+
+.profile-wallets h3 {
+  color: var(--primary-light);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.profile-wallets ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.profile-wallets li {
+  background-color: var(--input-light);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.profile-wallets li strong {
+  font-size: 1rem;
+}
+
+.dark .profile-wallets li {
+  background-color: var(--input-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.add-wallet {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.add-wallet input[type="text"] {
+  background-color: var(--input-light);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  color: var(--text-light);
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.dark .add-wallet input[type="text"] {
+  background-color: var(--input-dark);
+  border: 1px solid var(--border-dark);
+  color: var(--text-dark);
+}
+
+.add-wallet button {
+  background-color: var(--accent-light);
+  color: var(--text-light);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 25%;
+  margin-right: 0px;
+}
+
+.add-wallet button:hover {
+  background-color: var(--secondary-light);
+}
+
+.dark .add-wallet button {
+  background-color: var(--accent-dark);
+}
+
+.dark .add-wallet button:hover {
+  background-color: var(--secondary-dark);
+}
+
+.add-wallet input[type="text"] {
+  width: 50%;
+  padding: 12px;
+  margin: 10px 0;
+  background-color: var(--input-light);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  color: var(--text-light);
+  font-size: 1rem;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.add-wallet select {
+  width: 25%;
+  padding: 12px;
+  margin: 10px 0;
+  background-color: var(--input-light);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  color: var(--text-light);
+  font-size: 1rem;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.dark .add-wallet select,
+.dark .add-wallet input[type="text"] {
+  background-color: var(--input-dark);
+  color: var(--text-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.login-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-section h2 {
+  color: var(--primary-light);
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.login-section button {
+  background-color: var(--primary-light);
+  color: var(--text-light);
+  border: none;
+  padding: 12px 24px;
+  margin: 10px 0;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+
+.login-section button:hover {
+  background-color: var(--secondary-light);
+}
+
+.dark .login-section button {
+  background-color: var(--primary-dark);
+}
+
+.dark .login-section button:hover {
+  background-color: var(--secondary-dark);
+}
+
+@media (max-width: 768px) {
+  .profile-page {
+    flex-direction: column;
+  }
+
+  .profile-section,
+  .login-section {
+    padding: 20px;
+  }
+
+  .social-links {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .profile-picture,
+  .banner-image,
+  .placeholder-image,
+  .placeholder-banner {
+    width: 150px;
+    height: 150px;
+  }
+
+  .add-wallet {
+    flex-direction: column;
+  }
+}
+
+.action-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 20px; /* Adjust spacing as needed */
+}
+
+/* Button Section Styling */
+.button-section {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.button-section button {
+  padding: 10px 20px;
+  background-color: var(--primary-light);
+  color: var(--text-light);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+
+.button-section button:hover {
+  background-color: var(--secondary-light);
+}
+
+.dark .button-section button {
+  background-color: var(--primary-dark);
+}
+
+.dark .button-section button:hover {
+  background-color: var(--secondary-dark);
+}
+
+/* Profile Link Styling */
+.profile-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-link p {
+  margin: 0;
+  font-weight: bold;
+  color: var(--primary-light);
+}
+
+.profile-link a {
+  color: var(--primary-light);
+  text-decoration: none;
+  word-break: break-all; /* Prevents long URLs from overflowing */
+}
+
+.profile-link a:hover {
+  text-decoration: underline;
+}
+
+.profile-link button {
+  padding: 8px 12px;
+  background-color: var(--primary-light);
+  color: var(--text-light);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.profile-link button:hover {
+  background-color: var(--secondary-light);
+}
+
+.dark .profile-link button {
+  background-color: var(--primary-dark);
+}
+
+.dark .profile-link button:hover {
+  background-color: var(--secondary-dark);
+}
+
+@media (max-width: 768px) {
+  .action-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .button-section {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .profile-link {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .profile-link a {
+    margin-right: 10px;
+  }
+}

@@ -1404,7 +1404,7 @@ const MyProfile: React.FC = () => {
               activeSection === "NFTs" ? "selected" : ""
             }`}
           >
-            <h2>NFTs</h2>
+            <h5>NFTs</h5>
           </div>
 
           <div
@@ -1422,7 +1422,7 @@ const MyProfile: React.FC = () => {
               activeSection === "Frames" ? "selected" : ""
             }`}
           >
-            <h2>Frames</h2>
+            <h5>Frames</h5>
           </div>
 
           <div
@@ -1440,7 +1440,7 @@ const MyProfile: React.FC = () => {
               activeSection === "SafeMemes" ? "selected" : ""
             }`}
           >
-            <h2>SafeMemes</h2>
+            <h5>SafeMemes</h5>
           </div>
 
           <div
@@ -1458,7 +1458,7 @@ const MyProfile: React.FC = () => {
               activeSection === "Rewards" ? "selected" : ""
             }`}
           >
-            <h2>Rewards</h2>
+            <h5>Rewards</h5>
           </div>
 
           <div
@@ -1476,7 +1476,7 @@ const MyProfile: React.FC = () => {
               activeSection === "CreateAirdrop" ? "selected" : ""
             }`}
           >
-            <h2>Airdrop</h2>
+            <h5>Airdrop</h5>
           </div>
         </div>
         {showMessage && (

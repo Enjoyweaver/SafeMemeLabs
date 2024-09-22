@@ -1,19 +1,16 @@
 "use client"
 
-import { degen } from "@/utils/degenChain"
 import { rootstockTestnet } from "@/utils/rootstockTestnet"
 import { solana } from "@/utils/solana"
 import { sonicTestnet } from "@/utils/sonic"
 import {
   avalanche,
-  base,
   fantom,
   fantomTestnet,
   polygon,
   rootstock,
 } from "@wagmi/core/chains"
 import { configureChains, createConfig } from "wagmi"
-import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { MetaMaskConnector } from "wagmi/connectors/metaMask"
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
@@ -24,8 +21,6 @@ export const { chains, publicClient, webSocketPublicClient } = configureChains(
     fantom,
     polygon,
     fantomTestnet,
-    degen,
-    base,
     rootstock,
     rootstockTestnet,
     solana,
@@ -39,13 +34,6 @@ export const config = createConfig({
   autoConnect: true,
   connectors: [
     new MetaMaskConnector({ chains }),
-    new CoinbaseWalletConnector({
-      chains,
-      options: {
-        appName: "SafeMeme Labs",
-        appLogoUrl: "tbd",
-      },
-    }),
     new WalletConnectConnector({
       chains,
       options: {
@@ -61,7 +49,7 @@ export const config = createConfig({
     new InjectedConnector({
       chains,
       options: {
-        name: "Injected",
+        name: "Rabby",
         shimDisconnect: true,
       },
     }),

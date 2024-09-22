@@ -110,7 +110,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/site.webmanifest" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/images/SafeMemeLogo.png" />
         <meta name="theme-color" content="#000000" />
       </head>
       <body

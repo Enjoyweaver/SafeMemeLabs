@@ -27,9 +27,13 @@ export const marketingConfig: MarketingConfig = {
       href: "/createtokens",
     },
     {
-      title: "My Profile",
-      href: "myprofile",
+      title: "Profile",
+      href: "/profile",
     },
+    //{
+    //  title: "My Profile",
+    //  href: "myprofile",
+    // },
     //{
     //  title: "Our Memes",
     //  href: "/ourmemes",

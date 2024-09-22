@@ -1,0 +1,399 @@
+/* styles.css */
+
+:root {
+  --background-light: #1e1e2f;
+  --foreground-light: #ffffff;
+  --primary-light: #04c44e;
+  --secondary-light: #b80f5e;
+  --accent-light: #04c44e;
+  --border-light: #04c44e;
+  --text-light: #ffffff;
+
+  --input-light: #2a2a3d;
+  --input-dark: #1a1a2e;
+
+  --background-dark: #000000;
+  --foreground-dark: #cccccc;
+  --primary-dark: #df1584;
+  --secondary-dark: #41b80a;
+  --accent-dark: #41b80a;
+  --border-dark: #41b80a;
+  --text-dark: #ffffff;
+}
+
+body {
+  background-color: var(--background-light);
+  color: var(--text-light);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body.dark {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
+
+.profile-page {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--background-light);
+  color: var(--text-light);
+}
+
+.dark .profile-page {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
+
+.login-section {
+  flex: none;
+  padding: 40px;
+}
+
+.profile-section {
+  flex: none;
+  width: 900px;
+  margin: 0 auto;
+}
+
+h2 {
+  color: var(--primary-light);
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+h3 {
+  color: var(--foreground-light);
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+h4 {
+  color: var(--primary-light);
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+button {
+  background-color: var(--primary-light);
+  color: var(--text-light);
+  border: none;
+  padding: 12px 24px;
+  margin: 10px 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+
+button:hover {
+  background-color: var(--secondary-light);
+}
+
+.dark button {
+  background-color: var(--primary-dark);
+}
+
+.dark button:hover {
+  background-color: var(--secondary-dark);
+}
+
+input[type="text"],
+input[type="email"],
+textarea,
+select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  background-color: var(--input-light);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  color: var(--text-light);
+  font-size: 1rem;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.dark input[type="text"],
+.dark input[type="email"],
+.dark textarea,
+.dark select {
+  background-color: var(--input-dark);
+  color: var(--text-dark);
+  border: 1px solid var(--border-dark);
+}
+
+textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+.profile-banner {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 60px;
+  background-color: var(--background-light);
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.dark .profile-banner {
+  background-color: var(--background-dark);
+}
+
+.banner-image,
+.placeholder-banner {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.profile-image {
+  position: absolute;
+  margin-top: 40px;
+  bottom: -100px;
+  right: 20px;
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 15%;
+  transition: border 0.3s ease;
+  border-radius: 10px;
+}
+
+.profile-picture {
+  border-radius: 10px;
+}
+
+.dark .profile-image {
+  border: 4px solid var(--border-dark);
+  background-color: var(--background-dark);
+}
+
+.placeholder-image {
+  position: absolute;
+  bottom: -100px; /* Adjust to match the updated profile-image */
+  right: 20px;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background-color: var(--input-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  font-size: 1.2rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark .placeholder-image {
+  background-color: var(--input-dark);
+  color: var(--text-dark);
+}
+
+.social-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+  justify-items: center;
+}
+
+.social-links a {
+  color: var(--primary-light);
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+  color: var(--secondary-light);
+}
+
+.dark .social-links a {
+  color: var(--primary-dark);
+}
+
+.dark .social-links a:hover {
+  color: var(--secondary-dark);
+}
+
+.wallets {
+  margin-top: 20px;
+}
+
+.wallets ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.wallets li {
+  background-color: var(--input-light);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.dark .wallets li {
+  background-color: var(--input-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.wallets li strong {
+  font-size: 1rem;
+}
+
+.add-wallet {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.add-wallet input[type="text"] {
+  background-color: var(--input-light);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 10px;
+  color: var(--text-light);
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.dark .add-wallet input[type="text"] {
+  background-color: var(--input-dark);
+  border: 1px solid var(--border-dark);
+  color: var(--text-dark);
+}
+
+.add-wallet button {
+  background-color: var(--accent-light);
+  color: var(--text-light);
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 30%;
+}
+
+.add-wallet button:hover {
+  background-color: var(--secondary-light);
+}
+
+.dark .add-wallet button {
+  background-color: var(--accent-dark);
+}
+
+.dark .add-wallet button:hover {
+  background-color: var(--secondary-dark);
+}
+
+.add-wallet select,
+.add-wallet input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  background-color: var(--input-light);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  color: var(--text-light);
+  font-size: 1rem;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.dark .add-wallet select,
+.dark .add-wallet input[type="text"] {
+  background-color: var(--input-dark);
+  color: var(--text-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.login-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-section h2 {
+  color: var(--primary-light);
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.login-section button {
+  background-color: var(--primary-light);
+  color: var(--text-light);
+  border: none;
+  padding: 12px 24px;
+  margin: 10px 0;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+
+.login-section button:hover {
+  background-color: var(--secondary-light);
+}
+
+.dark .login-section button {
+  background-color: var(--primary-dark);
+}
+
+.dark .login-section button:hover {
+  background-color: var(--secondary-dark);
+}
+
+@media (max-width: 768px) {
+  .profile-page {
+    flex-direction: column;
+  }
+
+  .profile-section,
+  .login-section {
+    padding: 20px;
+  }
+
+  .social-links {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .profile-banner {
+    height: 300px; /* Reduced height for smaller screens */
+    margin-bottom: 40px;
+  }
+
+  .profile-image {
+    width: 120px;
+    height: 120px;
+    bottom: -60px; /* Adjusted for smaller screens */
+    right: 10px;
+  }
+
+  .banner-image,
+  .placeholder-banner {
+    height: 100%;
+    width: 100%;
+  }
+}
