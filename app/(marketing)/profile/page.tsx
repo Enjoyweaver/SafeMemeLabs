@@ -534,7 +534,7 @@ const ProfilePage: React.FC = () => {
     <div>
       <div className="profile-page">
         <div className="profile-section">
-          <h2>Your Profile</h2>
+          <h2 className="profile-title">Your Profile</h2>
           {isConnected && selectedProfile ? (
             <>
               <div className="profile-banner">
@@ -879,14 +879,16 @@ const ProfilePage: React.FC = () => {
             </>
           ) : (
             <div className="intro">
-              Please connect your wallet to create or view your profile.
+              Please connect your Arweave.app wallet to view or create your
+              profile.
             </div>
           )}
           <div className="intro">
             {!isConnected && (
               <>
-                <h2>Login</h2>
-                <button onClick={handleConnectWallet}>Create Profile</button>
+                <button onClick={handleConnectWallet}>
+                  Log In or Create Profile
+                </button>
               </>
             )}
           </div>
