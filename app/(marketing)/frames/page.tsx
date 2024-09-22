@@ -1,6 +1,4 @@
-import type { Metadata } from "next"
 import Image from "next/image"
-import { getFrameMetadata } from "@coinbase/onchainkit"
 
 import styles from "./page.module.css"
 
@@ -21,58 +19,6 @@ const images = [
   "Swirly.jpg",
   "Straw.jpg",
 ]
-
-const currentIndex = 0 // Default index for the frame
-
-// Frame metadata
-const frameMetadata = getFrameMetadata({
-  buttons: [
-    {
-      label: "Previous",
-      action: "post",
-      target: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint/prev`,
-    },
-    {
-      label: "Next",
-      action: "post",
-      target: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint/next`,
-    },
-    {
-      label: "Mint Selected NFT",
-      action: "post",
-      target: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint`,
-    },
-    {
-      label: "Back to SafeMeme",
-      action: "link",
-      target: "https://safememe.vercel.app/frames",
-    },
-  ],
-  image: {
-    src: `${process.env.NEXT_PUBLIC_SITE_URL}/images/luckyducks/${images[currentIndex]}`,
-    aspectRatio: "1:1",
-  },
-  postUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/mint`,
-  input: {
-    text: "Your Wallet Address",
-  },
-})
-
-// Page metadata
-export const metadata: Metadata = {
-  title: "SafeFrames",
-  description: "Mint one of the 777 unique NFTs",
-  openGraph: {
-    title: "SafeFrames",
-    description: "Mint one of the 777 unique NFTs",
-    images: [
-      `${process.env.NEXT_PUBLIC_SITE_URL}/images/luckyducks/Adam_G.jpg`,
-    ],
-  },
-  other: {
-    ...frameMetadata,
-  },
-}
 
 // Page component
 export default function Page() {
