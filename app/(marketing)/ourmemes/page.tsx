@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import { TokenFactoryABI } from "@/ABIs/SafeLaunch/TokenFactory"
 import { erc20ABI } from "@/ABIs/erc20"
-import { tokenDeployerABI } from "@/ABIs/tokenDeployer"
 import {
   useAccount,
   useContractRead,
@@ -11,7 +11,7 @@ import {
   useNetwork,
 } from "wagmi"
 
-import { tokenDeployerDetails } from "../../../Constants/config"
+import { safeLaunchFactory } from "../../../Constants/config"
 import "@/styles/dashboard.css"
 import TokenHoldersList from "@/APIs/tokeninfo"
 
@@ -31,11 +31,11 @@ const Dashboard = () => {
 
   const chainId: string | number = chain
     ? chain.id
-    : Object.keys(tokenDeployerDetails)[0]
+    : Object.keys(safeLaunchFactory)[0]
 
   const { data: contracts, error: contractsError } = useContractRead({
-    address: tokenDeployerDetails[chainId] as `0x${string}`,
-    abi: tokenDeployerABI,
+    address: safeLaunchFactory[chainId] as `0x${string}`,
+    abi: TokenFactoryABI,
     functionName: "getTokensDeployedByUser",
     args: [address as `0x${string}`],
     enabled: !!address,
