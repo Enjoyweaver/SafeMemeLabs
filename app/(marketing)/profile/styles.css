@@ -560,10 +560,6 @@ textarea {
   background-color: var(--secondary-dark);
 }
 
-.profile-title {
-  margin-top: -12rem;
-}
-
 @media (max-width: 768px) {
   .action-row {
     flex-direction: column;

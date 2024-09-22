@@ -148,16 +148,16 @@ export default async function IndexPage() {
               Profile
             </h2>
             <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-              The profile feature allows creators to organize and present their
-              projects. It provides a space where you can display tokens, NFTs,
-              and other assets you have created or launched. The profile can be
-              customized to reflect your work and your brand, making it easier
-              to share with others. In addition, followers can view your
-              activity and engage with your projects directly through your
-              profile.
+              To create tokens, NFTs, or Frames on Warpcast, you need to set up
+              a profile on our app. This profile acts as your crypto wallet on
+              Arweave, ensuring your presence is stored securely on the
+              blockchain. Your on-chain profile is designed to last forever and
+              can be updated as needed. Plus, if your updates are small (under
+              100kb), they are free!
             </p>
           </div>
         </section>
+
         <section id="frames" className="container py-8 md:py-12 lg:py-20">
           <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-1 text-center">
             <h2 className="text-3xl leading-[1.1] sm:text-3xl md:text-6xl">

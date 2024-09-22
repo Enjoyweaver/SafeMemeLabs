@@ -534,7 +534,7 @@ const ProfilePage: React.FC = () => {
     <div>
       <div className="profile-page">
         <div className="profile-section">
-          <h2 className="profile-title">Your Profile</h2>
+          <h2>Your Profile</h2>
           {isConnected && selectedProfile ? (
             <>
               <div className="profile-banner">
@@ -879,8 +879,29 @@ const ProfilePage: React.FC = () => {
             </>
           ) : (
             <div className="intro">
-              Please connect your Arweave.app wallet to view or create your
-              profile.
+              <p className="mb-4">
+                Creating a profile on our app also sets up a secure digital
+                wallet for you. Think of this wallet as a safe place to store
+                your information and digital creations. It's stored on Arweave,
+                a reliable storage system that keeps your profile accessible and
+                safe forever.
+              </p>
+              <p className="mb-4">
+                With your profile, you can easily create and manage tokens,
+                NFTs, and Frames on Warpcast. Your profile can be updated
+                whenever you need to, and if your updates are small enough
+                (under 100kb), there are no fees involved.
+              </p>
+              <p className="mb-4">
+                Start building your brand and engaging with your community with
+                confidence and ease.
+              </p>
+              <p>
+                Please log in to connect your Arweave.app wallet and get
+                started. Dont worry if you dont have an Arweave wallet already,
+                as it will automatically install and walk you through the setup
+                process.
+              </p>
             </div>
           )}
           <div className="intro">
