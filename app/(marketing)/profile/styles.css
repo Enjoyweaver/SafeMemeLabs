@@ -145,14 +145,6 @@ textarea {
   object-fit: contain;
 }
 
-@media (max-width: 768px) {
-  .profile-image {
-    right: 50px;
-    max-width: 150px;
-    max-height: 150px;
-  }
-}
-
 .profile-banner {
   position: relative;
   width: 100%;
@@ -447,33 +439,6 @@ textarea {
   background-color: var(--secondary-dark);
 }
 
-@media (max-width: 768px) {
-  .profile-page {
-    flex-direction: column;
-  }
-
-  .profile-section,
-  .login-section {
-    padding: 20px;
-  }
-
-  .social-links {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  }
-
-  .profile-picture,
-  .banner-image,
-  .placeholder-image,
-  .placeholder-banner {
-    width: 150px;
-    height: 150px;
-  }
-
-  .add-wallet {
-    flex-direction: column;
-  }
-}
-
 .action-row {
   display: flex;
   flex-direction: row;
@@ -561,22 +526,111 @@ textarea {
 }
 
 @media (max-width: 768px) {
+  .profile-page {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .profile-section {
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    margin: 8px 0;
+    width: 100%;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  textarea,
+  select {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .profile-banner {
+    height: 200px;
+    margin-bottom: 100px;
+  }
+
+  .profile-image {
+    position: static;
+    max-width: 150px;
+    max-height: 150px;
+    margin: 0 auto 20px auto;
+  }
+
+  .social-links {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .profile-description textarea {
+    height: 80px;
+    font-size: 0.85rem;
+  }
+
+  .profile-wallets h3 {
+    text-align: center;
+  }
+
+  .profile-wallets ul {
+    padding: 0 10px;
+  }
+
+  .profile-wallets li {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .add-wallet {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .add-wallet select,
+  .add-wallet input[type="text"],
+  .add-wallet button {
+    width: 100%;
+  }
+
   .action-row {
     flex-direction: column;
-    align-items: flex-start;
+    gap: 15px;
   }
 
   .button-section {
-    width: 100%;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .profile-link {
-    width: 100%;
-    justify-content: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
   }
 
   .profile-link a {
-    margin-right: 10px;
+    word-break: break-word;
+  }
+
+  .submit-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .intro {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
   }
 }
