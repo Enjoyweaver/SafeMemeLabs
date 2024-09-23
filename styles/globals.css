@@ -181,6 +181,10 @@
   --outline-color: #a2b2c7;
 }
 
+h2 {
+  color: var(--primary-light);
+}
+
 .page-container {
   display: flex;
   flex-direction: column;
