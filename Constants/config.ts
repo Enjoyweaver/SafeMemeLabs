@@ -4,11 +4,17 @@ import { rootstockTestnet } from "@/utils/rootstockTestnet"
 import { solana } from "@/utils/solana"
 import { sonicTestnet } from "@/utils/sonic"
 import {
+  arbitrumGoerli,
   avalanche,
+  avalancheFuji,
+  cronosTestnet,
   fantom,
   fantomTestnet,
+  optimismGoerli,
   polygon,
-  rootstock,
+  polygonMumbai,
+  polygonZkEvmTestnet,
+  sepolia,
 } from "@wagmi/core/chains"
 import { configureChains, createConfig } from "wagmi"
 import { InjectedConnector } from "wagmi/connectors/injected"
@@ -19,13 +25,19 @@ import { publicProvider } from "wagmi/providers/public"
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
     fantom,
+    arbitrumGoerli,
+    cronosTestnet,
     polygon,
+    polygonMumbai,
+    polygonZkEvmTestnet,
     fantomTestnet,
-    rootstock,
     rootstockTestnet,
+    optimismGoerli,
     solana,
     avalanche,
+    avalancheFuji,
     sonicTestnet,
+    sepolia,
   ],
   [publicProvider()]
 )

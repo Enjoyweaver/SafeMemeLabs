@@ -458,13 +458,13 @@ body {
 
 @media (max-width: 600px) {
   .profiles-container {
-    width: 100%;
+    width: 60%;
     padding: 10px;
     margin: 20px auto;
   }
 
   .table-container {
-    max-width: 60%;
+    max-width: 600px;
     overflow-x: none;
     padding: 10px;
   }
@@ -499,10 +499,11 @@ body {
 @media (max-width: 480px) {
   .profiles-container {
     padding: 8px;
+    width: 60%;
   }
 
   .table-container {
-    max-width: 60%;
+    max-width: 600px;
     overflow-x: none;
     padding: 10px;
   }
@@ -535,10 +536,11 @@ body {
 @media (max-width: 360px) {
   .profiles-container {
     padding: 5px;
+    width: 60%;
   }
 
   .table-container {
-    max-width: 60%;
+    max-width: 600px;
     overflow-x: none;
     padding: 10px;
   }
