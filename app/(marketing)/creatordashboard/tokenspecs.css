@@ -455,3 +455,67 @@ body {
 .dark .profile-count {
   color: var(--foreground-dark);
 }
+
+@media (max-width: 600px) {
+  .profiles-container {
+    width: 90%;
+    margin: 20px auto;
+    padding: 15px;
+  }
+
+  .profiles-table th,
+  .profiles-table td {
+    padding: 8px;
+    text-align: center;
+  }
+
+  .form {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .data-table {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .profiles-container {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .profiles-table th,
+  .profiles-table td {
+    padding: 6px;
+    font-size: 0.9em;
+  }
+
+  .title {
+    font-size: 1.3em;
+  }
+
+  .profile-count {
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 360px) {
+  .profiles-container {
+    padding: 8px;
+  }
+
+  .profiles-table th,
+  .profiles-table td {
+    padding: 4px;
+    font-size: 0.8em;
+  }
+
+  .title {
+    font-size: 1.2em;
+  }
+
+  .profile-count {
+    font-size: 0.8em;
+  }
+}

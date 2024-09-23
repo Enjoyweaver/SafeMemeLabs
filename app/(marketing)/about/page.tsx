@@ -297,7 +297,7 @@ const SafeMeme = () => {
                 <h3 className="chart-title">Your Tokens Price</h3>
                 <div style={{ width: "100%", height: "350px" }}>
                   {loadingPrices ? (
-                    <p>Loading chart...</p> // Show this message until prices are loaded
+                    <p>Loading chart...</p>
                   ) : (
                     <Line
                       data={chartData}

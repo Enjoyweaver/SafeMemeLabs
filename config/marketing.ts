@@ -4,7 +4,7 @@ export const marketingConfig: MarketingConfig = {
   mainNav: [
     {
       title: "About",
-      href: "/#about",
+      href: "/about",
     },
     {
       title: "Laboratory",
@@ -15,9 +15,10 @@ export const marketingConfig: MarketingConfig = {
       href: "/blog",
     },
     {
-      title: "SafeMeme",
-      href: "/safememe",
+      title: "Profile",
+      href: "/profile",
     },
+
     {
       title: "All Tokens",
       href: "/alltokens",
@@ -26,10 +27,7 @@ export const marketingConfig: MarketingConfig = {
       title: "Create Tokens",
       href: "/createtokens",
     },
-    {
-      title: "Profile",
-      href: "/profile",
-    },
+
     //{
     //  title: "My Profile",
     //  href: "myprofile",
@@ -47,14 +45,9 @@ export const marketingConfig: MarketingConfig = {
     //   title: "Provide LP",
     //   href: "/lp",
     //},
-    {
-      title: "Swap",
-      href: "/swap",
-    },
-
     // {
-    //   title: "Profile",
-    //   href: "/profile",
+    //   title: "Swap",
+    //   href: "/swap",
     // },
     {
       title: "Feedback",
@@ -73,23 +66,7 @@ export const marketingConfig: MarketingConfig = {
     //  title: "claim",
     //  href: "/claim",
     //},
-    //{
-    //  title: "Manager",
-    //  href: "/deploy",
-    // },
 
-    //{
-    //  title: "fiveLaunch",
-    //  href: "/fivelaunch",
-    // },
-    // {
-    //   title: "startfive",
-    //   href: "/startfive",
-    // },
-    //{
-    //  title: "SafeSwap",
-    //   href: "/safeswap",
-    //},
     {
       title: "Dashboard",
       href: "/creatordashboard",
