@@ -51,7 +51,7 @@ body.dark {
 .profile-banner {
   position: relative;
   width: 100%;
-  max-width: 800px;
+  max-width: 1000px;
   height: 300px;
   display: flex;
   align-items: center;
@@ -101,9 +101,9 @@ body.dark {
 .profile-fields-row {
   display: flex;
   flex-direction: row;
-  gap: 80px;
+  gap: 150px;
   margin-bottom: 15px;
-  margin-right: 320px;
+  margin-right: 460px;
   color: var(--primary-dark);
 }
 

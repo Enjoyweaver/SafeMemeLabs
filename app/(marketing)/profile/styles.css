@@ -560,15 +560,14 @@ textarea {
   .profile-banner {
     height: 200px;
     position: relative;
-    margin-bottom: 100px;
   }
 
   .profile-image {
     position: absolute;
     bottom: 10px;
     right: 10px;
-    max-width: 100px;
-    max-height: 100px;
+    max-width: 150px;
+    max-height: 150px;
     margin: 0;
   }
 
