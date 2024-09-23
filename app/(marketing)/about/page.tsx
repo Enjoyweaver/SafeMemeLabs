@@ -247,6 +247,13 @@ const SafeMeme = () => {
       <div className="flex min-h-screen flex-col">
         <main className="flex-1">
           <div className="blog-container">
+            <h1 className="page-title">About</h1>
+            <p className="blog-content">
+              SafeMemes.fun was created because we are tired of of rugpulls and
+              for innocent people to lose their money. So we wanted to create a
+              platform where anyone can create and launch tokens that reduced
+              the chance of a rugpull significanlty.
+            </p>
             <h1 className="page-title">What is the SafeMeme Token?</h1>
             <p className="blog-content">
               Written in the Vyper programming language, the SafeMeme token is
