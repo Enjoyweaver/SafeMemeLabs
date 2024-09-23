@@ -6,6 +6,9 @@ module.exports = {
   images: {
     domains: ["avatars.githubusercontent.com", "localhost"],
   },
+  images: {
+    domains: ["arweave.net"],
+  },
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
   async headers() {
     return [

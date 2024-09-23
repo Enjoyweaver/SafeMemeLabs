@@ -67,7 +67,8 @@ body {
   font-size: 2em;
   font-weight: bold;
   color: var(--foreground-light);
-  margin-bottom: 10px;
+  margin-bottom: 10px auto 20px;
+  text-align: center;
 }
 
 .dark .title {
@@ -93,6 +94,7 @@ body {
 .inputGroup {
   width: 100%;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .inputTitle {
@@ -137,6 +139,7 @@ body {
 
 .table-header {
   text-align: center;
+  max-width: 100px;
 }
 
 .data-table {
@@ -176,6 +179,7 @@ body {
 .dark .data-table td {
   background-color: var(--background-dark);
   color: var (--text-dark);
+  text-align: center;
 }
 
 .error {
@@ -242,6 +246,11 @@ body {
 
 .narrow-column {
   width: 100px;
+}
+
+.flex {
+  justify-content: center;
+  align-items: center;
 }
 
 @media (max-width: 600px) {
@@ -361,4 +370,88 @@ body {
 
 .dark .token-name-link:hover {
   color: var(--secondary-dark);
+}
+
+.profiles-container {
+  margin: 40px auto 50px;
+  padding: 20px;
+  background-color: var(--background-light);
+  border: 2px solid var(--border-light);
+  border-radius: 15px;
+  width: 60%;
+  justify-content: center;
+}
+
+.dark .profiles-container {
+  background-color: var(--background-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.profiles-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.profiles-table th,
+.profiles-table td {
+  border: 1px solid var(--border-light);
+  padding: 10px;
+  text-align: left;
+}
+
+.dark .profiles-table th,
+.dark .profiles-table td {
+  border: 1px solid var(--border-dark);
+}
+
+.profiles-table th {
+  background-color: var(--input-light);
+  color: var(--text-light);
+}
+
+.dark .profiles-table th {
+  background-color: var(--input-dark);
+  color: var(--text-dark);
+}
+
+.profiles-table tr:nth-child(even) {
+  background-color: var(--background-light);
+}
+
+.dark .profiles-table tr:nth-child(even) {
+  background-color: var(--background-dark);
+}
+
+.profiles-table tr:hover {
+  background-color: var(--accent-light);
+}
+
+.dark .profiles-table tr:hover {
+  background-color: var(--accent-dark);
+}
+
+.profiles-table a {
+  color: var(--primary-light);
+  text-decoration: none;
+}
+
+.dark .profiles-table a {
+  color: var(--primary-dark);
+}
+
+.profiles-table a:hover {
+  color: var(--secondary-light);
+}
+
+.dark .profiles-table a:hover {
+  color: var(--secondary-dark);
+}
+
+.profile-count {
+  text-align: center;
+  color: var(--foreground-light);
+}
+
+.dark .profile-count {
+  color: var(--foreground-dark);
 }

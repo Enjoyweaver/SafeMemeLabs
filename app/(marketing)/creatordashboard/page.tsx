@@ -13,23 +13,22 @@ import {
   safeLaunchFactory,
 } from "@/Constants/config"
 import { ethers } from "ethers"
-import { toast } from "react-toastify"
 
-import { Navbar } from "@/components/walletconnect/walletconnect"
-
-import SafeBasePriceComponent from "./safebase"
 import "./tokenspecs.css"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
-import { useDebounce } from "usehooks-ts"
-import {
-  useAccount,
-  useContractRead,
-  useContractWrite,
-  useNetwork,
-  usePrepareContractWrite,
-  useWaitForTransaction,
-} from "wagmi"
+import ArDB from "ardb"
+import Arweave from "arweave"
+import { useAccount, useNetwork } from "wagmi"
+
+type Profile = {
+  handle: string
+  name: string
+  avatarURL: string
+  links: {
+    [key: string]: string
+  }
+}
 
 type TokenInfo = {
   tokenAddress: string
@@ -74,6 +73,19 @@ export default function Dashboard(): JSX.Element {
   const [provider, setProvider] =
     useState<ethers.providers.Web3Provider | null>(null)
   const [signer, setSigner] = useState<ethers.Signer | null>(null)
+  const [profiles, setProfiles] = useState<Profile[]>([])
+  const [profileCount, setProfileCount] = useState<number>(0)
+
+  const chainNames: { [key: string]: string } = {
+    "4002": "Fantom Testnet",
+    "250": "Fantom",
+    "137": "Polygon",
+    "43114": "Avalanche",
+    "30": "RSK Mainnet",
+    "31": "RSK Testnet",
+    "1337": "Ethereum Sepolia",
+    "64165": "Sonic Testnet",
+  }
 
   useEffect(() => {
     setIsClient(true)
@@ -95,6 +107,75 @@ export default function Dashboard(): JSX.Element {
       })
     }
   }, [selectedChainId])
+
+  const arweave = Arweave.init({
+    host: "arweave.net",
+    port: 443,
+    protocol: "https",
+  })
+
+  useEffect(() => {
+    fetchAllProfiles()
+    fetchProfileCount()
+  }, [])
+
+  const fetchAllProfiles = async () => {
+    try {
+      const ardb = new ArDB(arweave)
+      const transactions = await ardb
+        .search("transactions")
+        .tag("App-Name", "SafeMemes.fun")
+        .find()
+
+      const profilesData: Profile[] = []
+
+      for (const tx of transactions) {
+        try {
+          const dataString = await arweave.transactions.getData(tx.id, {
+            decode: true,
+            string: true,
+          })
+          const data = JSON.parse(dataString)
+
+          if (data.handleName && data.name && data.avatar) {
+            profilesData.push({
+              handle: data.handleName,
+              name: data.name,
+              avatarURL: `https://arweave.net/${data.avatar}`,
+              links: data.links || {},
+            })
+          } else {
+            console.warn(
+              `Transaction ${tx.id} is missing required fields. HandleName: ${data.handleName}, Name: ${data.name}, Avatar: ${data.avatar}`
+            )
+          }
+        } catch (parseError) {
+          console.warn(`Failed to parse transaction ${tx.id}:`, parseError)
+          continue
+        }
+      }
+
+      setProfiles(profilesData)
+      console.log("Fetched profiles:", profilesData)
+    } catch (error) {
+      console.error("Error fetching profiles:", error)
+    }
+  }
+
+  const fetchProfileCount = async () => {
+    try {
+      const ardb = new ArDB(arweave)
+      const transactions = await ardb
+        .search("transactions")
+        .tag("App-Name", "SafeMemes.fun")
+        .find()
+
+      setProfileCount(transactions.length)
+      console.log(`Total Profiles: ${transactions.length}`)
+    } catch (error) {
+      console.error("Error fetching profile count:", error)
+    }
+  }
 
   const fetchTokens = async () => {
     try {
@@ -288,8 +369,54 @@ export default function Dashboard(): JSX.Element {
     <>
       <div className="flex min-h-screen flex-col">
         <div>
-          <Navbar />
-          <h1 className="title">Token Specs Dashboard</h1>
+          <h1 className="title">Creator Dashboard</h1>
+          <div className="profile-count">
+            <p className="profile-count">
+              Total Profiles Created: {profileCount}
+            </p>
+          </div>
+          <div className="profiles-container">
+            <h2>All Profiles</h2>
+            {profiles.length > 0 ? (
+              <table className="profiles-table">
+                <thead>
+                  <tr>
+                    <th>Handle</th>
+                    <th>Name</th>
+                    <th>Avatar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {profiles.map((profile, index) => (
+                    <tr key={index}>
+                      <td>
+                        <Link href={`/${profile.handle}`}>
+                          {profile.handle}
+                        </Link>
+                      </td>
+                      <td>{profile.name}</td>
+                      <td>
+                        {profile.avatarURL ? (
+                          <Link href={`/${profile.handle}`}>
+                            <Image
+                              src={profile.avatarURL}
+                              alt={profile.name}
+                              width={50}
+                              height={50}
+                            />
+                          </Link>
+                        ) : (
+                          "No Avatar"
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No profiles available.</p>
+            )}
+          </div>
           <div className="form">
             <div className="inputGroup">
               <label className="inputTitle">Select Blockchain:</label>
@@ -301,7 +428,7 @@ export default function Dashboard(): JSX.Element {
               >
                 {Object.keys(rpcUrls).map((chainId) => (
                   <option key={chainId} value={chainId}>
-                    {chainId}
+                    {chainNames[chainId] || chainId}
                   </option>
                 ))}
               </select>
@@ -312,11 +439,11 @@ export default function Dashboard(): JSX.Element {
                 <thead>
                   <tr>
                     <th className="table-header">Total Tokens Created</th>
-                    <th className="table-header">Stage 1 Contracts</th>
-                    <th className="table-header">Stage 2 Contracts</th>
-                    <th className="table-header">Stage 3 Contracts</th>
-                    <th className="table-header">Stage 4 Contracts</th>
-                    <th className="table-header">Stage 5 Contracts</th>
+                    <th className="table-header">Stage 1 Tokens</th>
+                    <th className="table-header">Stage 2 Tokens</th>
+                    <th className="table-header">Stage 3 Tokens</th>
+                    <th className="table-header">Stage 4 Tokens</th>
+                    <th className="table-header">Stage 5 Tokens</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -369,15 +496,13 @@ export default function Dashboard(): JSX.Element {
                     <th className="table-header">Total Supply</th>
                     <th className="table-header narrow-column">
                       SafeLaunch Initialized
-                    </th>{" "}
+                    </th>
                     <th className="table-header">Token B Pairing</th>
                     <th className="table-header narrow-column">Stage</th>
-                    <th className="table-header narrow-column">
-                      DEX Address
-                    </th>{" "}
+                    <th className="table-header narrow-column">DEX Address</th>
                     <th className="table-header narrow-column">
                       DEX SafeMeme Balance
-                    </th>{" "}
+                    </th>
                     <th className="table-header narrow-column">
                       Total Token A Sold
                     </th>

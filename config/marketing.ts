@@ -91,8 +91,8 @@ export const marketingConfig: MarketingConfig = {
     //   href: "/safeswap",
     //},
     {
-      title: "Token Specs",
-      href: "/tokenspecs",
+      title: "Dashboard",
+      href: "/creatordashboard",
     },
   ],
 }

@@ -77,7 +77,7 @@ const ProfilePage: React.FC = () => {
   const [uniqueLink, setUniqueLink] = useState<string>("")
   const [newBlockchain, setNewBlockchain] = useState<string>("")
   const [newWalletAddress, setNewWalletAddress] = useState<string>("")
-  const [profileCount, setProfileCount] = useState<number>(0) // New state
+  const [profileCount, setProfileCount] = useState<number>(0)
 
   const arweave = Arweave.init({
     host: "arweave.net",
