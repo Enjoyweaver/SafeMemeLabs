@@ -1,3 +1,5 @@
+// [handle].tsx
+
 import React, { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 import Arweave from "arweave"
@@ -28,7 +30,7 @@ interface ProfileData {
   }
 }
 
-const ProfilePage: React.FC = () => {
+const SharedProfilePage: React.FC = () => {
   const router = useRouter()
   const { handle } = router.query
   const [profileData, setProfileData] = useState<ProfileData | null>(null)
@@ -83,111 +85,192 @@ const ProfilePage: React.FC = () => {
   if (!profileData) return null
 
   return (
-    <div className="profile-page">
-      <div className="profile-section">
-        <div className="profile-banner">
-          {profileData.bannerURL ? (
+    <div className="shared-profile-page">
+      <div className="profile-banner">
+        {profileData.bannerURL ? (
+          <img
+            src={profileData.bannerURL}
+            alt="Banner"
+            className="banner-image"
+          />
+        ) : (
+          <div className="placeholder-banner">No Banner</div>
+        )}
+        <div className="profile-image">
+          {profileData.avatarURL ? (
             <img
-              src={profileData.bannerURL}
-              alt="Banner"
-              className="banner-image"
+              src={profileData.avatarURL}
+              alt="Profile"
+              className="profile-picture"
             />
           ) : (
-            <div className="placeholder-banner">No Banner</div>
+            <div className="placeholder-image">No Image</div>
           )}
-          <div className="profile-image">
-            {profileData.avatarURL ? (
-              <img
-                src={profileData.avatarURL}
-                alt="Profile"
-                className="profile-picture"
-              />
-            ) : (
-              <div className="placeholder-image">No Image</div>
-            )}
+        </div>
+      </div>
+      <div className="profile-info">
+        <div className="profile-fields-row">
+          <div className="profile-field">
+            <label htmlFor="handle">Handle:</label>
+            <span id="handle" className="profile-handle">
+              @{profileData.handleName}
+            </span>
+          </div>
+          <div className="profile-field">
+            <label htmlFor="name">Name:</label>
+            <span id="name" className="profile-name">
+              {profileData.name}
+            </span>
           </div>
         </div>
-        <div className="profile-info">
-          <h2>@{profileData.handleName}</h2>
-          <h3>{profileData.name}</h3>
-          <p>{profileData.bio}</p>
+        {/* Bio Below */}
+        <div className="profile-field">
+          <label htmlFor="bio">Bio:</label>
+          <span id="bio" className="profile-bio">
+            {profileData.bio}
+          </span>
         </div>
-        <div className="social-links">
-          {profileData.links?.twitter && (
-            <a href={`https://twitter.com/${profileData.links.twitter}`}>
-              Twitter
+      </div>
+      <div className="social-links">
+        {profileData.links?.twitter && (
+          <div className="profile-field">
+            <label>Twitter:</label>
+            <a
+              href={`https://twitter.com/${profileData.links.twitter}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              @{profileData.links.twitter}
             </a>
-          )}
-          {profileData.links?.instagram && (
-            <a href={`https://instagram.com/${profileData.links.instagram}`}>
-              Instagram
+          </div>
+        )}
+        {profileData.links?.instagram && (
+          <div className="profile-field">
+            <label>Instagram:</label>
+            <a
+              href={`https://instagram.com/${profileData.links.instagram}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              @{profileData.links.instagram}
             </a>
-          )}
-          {profileData.links?.tiktok && (
-            <a href={`https://tiktok.com/@${profileData.links.tiktok}`}>
-              TikTok
+          </div>
+        )}
+        {profileData.links?.tiktok && (
+          <div className="profile-field">
+            <label>TikTok:</label>
+            <a
+              href={`https://tiktok.com/@${profileData.links.tiktok}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              @{profileData.links.tiktok}
             </a>
-          )}
-          {profileData.links?.website && (
+          </div>
+        )}
+        {profileData.links?.website && (
+          <div className="profile-field">
+            <label>Website:</label>
             <a
               href={profileData.links.website}
               target="_blank"
               rel="noopener noreferrer"
             >
-              Website
+              {profileData.links.website}
             </a>
-          )}
-          {profileData.links?.github && (
-            <a href={`https://github.com/${profileData.links.github}`}>
-              GitHub
+          </div>
+        )}
+        {profileData.links?.github && (
+          <div className="profile-field">
+            <label>GitHub:</label>
+            <a
+              href={`https://github.com/${profileData.links.github}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {profileData.links.github}
             </a>
-          )}
-          {profileData.links?.discord && (
-            <a href={`https://discord.com/users/${profileData.links.discord}`}>
-              Discord
+          </div>
+        )}
+        {profileData.links?.discord && (
+          <div className="profile-field">
+            <label>Discord:</label>
+            <a
+              href={`https://discord.com/users/${profileData.links.discord}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {profileData.links.discord}
             </a>
-          )}
-          {profileData.links?.linkedin && (
-            <a href={`https://linkedin.com/in/${profileData.links.linkedin}`}>
-              LinkedIn
+          </div>
+        )}
+        {profileData.links?.linkedin && (
+          <div className="profile-field">
+            <label>LinkedIn:</label>
+            <a
+              href={`https://linkedin.com/in/${profileData.links.linkedin}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {profileData.links.linkedin}
             </a>
-          )}
-          {profileData.links?.facebook && (
-            <a href={`https://facebook.com/${profileData.links.facebook}`}>
-              Facebook
+          </div>
+        )}
+        {profileData.links?.facebook && (
+          <div className="profile-field">
+            <label>Facebook:</label>
+            <a
+              href={`https://facebook.com/${profileData.links.facebook}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {profileData.links.facebook}
             </a>
-          )}
-          {profileData.links?.youtube && (
-            <a href={`https://youtube.com/${profileData.links.youtube}`}>
-              YouTube
+          </div>
+        )}
+        {profileData.links?.youtube && (
+          <div className="profile-field">
+            <label>YouTube:</label>
+            <a
+              href={`https://youtube.com/${profileData.links.youtube}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {profileData.links.youtube}
             </a>
-          )}
-          {profileData.links?.twitch && (
-            <a href={`https://twitch.tv/${profileData.links.twitch}`}>Twitch</a>
-          )}
-        </div>
-
-        {/* Wallet Addresses */}
-        <div className="wallets">
-          <h4>Wallet Addresses:</h4>
-          {profileData.wallets &&
-          Object.keys(profileData.wallets).length > 0 ? (
-            <ul>
-              {Object.entries(profileData.wallets).map(([type, address]) => (
-                <li key={type}>
-                  <strong>{type.toUpperCase()}:</strong> {address}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No wallet addresses added.</p>
-          )}
-        </div>
+          </div>
+        )}
+        {profileData.links?.twitch && (
+          <div className="profile-field">
+            <label>Twitch:</label>
+            <a
+              href={`https://twitch.tv/${profileData.links.twitch}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {profileData.links.twitch}
+            </a>
+          </div>
+        )}
       </div>
 
-      <div className="login-section"></div>
+      {/* Wallet Addresses */}
+      <div className="wallets">
+        <h4>Wallet Addresses:</h4>
+        {profileData.wallets && Object.keys(profileData.wallets).length > 0 ? (
+          <ul>
+            {Object.entries(profileData.wallets).map(([type, address]) => (
+              <li key={type}>
+                <strong>{type.toUpperCase()}:</strong> {address}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No wallet addresses added.</p>
+        )}
+      </div>
     </div>
   )
 }
 
-export default ProfilePage
+export default SharedProfilePage

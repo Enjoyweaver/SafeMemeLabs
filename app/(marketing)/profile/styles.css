@@ -128,7 +128,7 @@ textarea {
 
 .profile-image {
   position: absolute;
-  bottom: 0px;
+  bottom: -40px;
   right: 220px;
   max-width: 220px;
   max-height: 220px;
