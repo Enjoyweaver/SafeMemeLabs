@@ -244,6 +244,12 @@ body {
   padding: 20px;
 }
 
+.token-table-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
 .narrow-column {
   width: 100px;
 }
@@ -470,7 +476,7 @@ body {
   }
 
   .data-table {
-    width: 100%;
+    width: 60%;
     table-layout: auto;
   }
 
@@ -482,7 +488,6 @@ body {
   }
 
   .profiles-table {
-    width: 60%;
     border-collapse: collapse;
   }
 
@@ -508,6 +513,11 @@ body {
     padding: 10px;
   }
 
+  .data-table {
+    width: 60%;
+    table-layout: auto;
+  }
+
   .profiles-table th,
   .profiles-table td {
     padding: 6px;
@@ -516,7 +526,6 @@ body {
   }
 
   .profiles-table {
-    width: 60%;
     border-collapse: collapse;
   }
 
@@ -545,6 +554,11 @@ body {
     padding: 10px;
   }
 
+  .data-table {
+    width: 60%;
+    table-layout: auto;
+  }
+
   .profiles-table th,
   .profiles-table td {
     padding: 4px;
@@ -553,7 +567,6 @@ body {
   }
 
   .profiles-table {
-    width: 60%;
     border-collapse: collapse;
   }
 
