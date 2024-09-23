@@ -10,6 +10,7 @@ import { useAccount, useConnect, useSignMessage } from "wagmi"
 
 import MyProfile from "../myprofile/page"
 import "./styles.css"
+import ArDB from "ardb"
 
 interface ProfileData {
   handleName?: string
@@ -76,6 +77,7 @@ const ProfilePage: React.FC = () => {
   const [uniqueLink, setUniqueLink] = useState<string>("")
   const [newBlockchain, setNewBlockchain] = useState<string>("")
   const [newWalletAddress, setNewWalletAddress] = useState<string>("")
+  const [profileCount, setProfileCount] = useState<number>(0) // New state
 
   const arweave = Arweave.init({
     host: "arweave.net",
@@ -127,6 +129,94 @@ const ProfilePage: React.FC = () => {
     }
   }, [walletInfo, isConnected])
 
+  useEffect(() => {
+    fetchProfileCount()
+  }, [])
+
+  const fetchProfileCount = async () => {
+    try {
+      const ardb = new ArDB(arweave)
+      const transactions = await ardb
+        .search("transactions")
+        .tag("App-Name", "SafeMemes.fun")
+        .find()
+
+      setProfileCount(transactions.length)
+      console.log(`Total Profiles: ${transactions.length}`)
+    } catch (error) {
+      console.error("Error fetching profile count:", error)
+    }
+  }
+
+  const handleSaveProfile = async () => {
+    try {
+      if (!profileData.handleName) {
+        alert("Handle Name is required.")
+        console.log("Handle Name is missing.")
+        return
+      }
+
+      const wallets = profileData.wallets || {}
+
+      const activeAddress = selectedProfile?.address
+      if (!activeAddress) {
+        alert("No wallet address found.")
+        console.log("No active wallet address found.")
+        return
+      }
+
+      const user: ArAccount = await account.get(activeAddress)
+      user.profile.handleName = profileData.handleName
+      user.profile.bio = profileData.bio
+      user.profile.name = profileData.name
+      user.profile.email = profileData.email
+      user.profile.website = profileData.website
+      user.profile.links = profileData.links
+      user.profile.wallets = wallets
+      user.profile.avatar = profileData.avatar
+      user.profile.avatarURL = profileData.avatarURL
+      user.profile.banner = profileData.banner
+      user.profile.bannerURL = profileData.bannerURL
+
+      if (selectedProfile?.jwk) {
+        await account.connect(selectedProfile.jwk)
+      } else {
+        await account.connect()
+      }
+
+      const tx = selectedProfile?.jwk
+        ? await arweave.createTransaction(
+            { data: JSON.stringify(user.profile) },
+            selectedProfile.jwk
+          )
+        : await arweave.createTransaction({
+            data: JSON.stringify(user.profile),
+          })
+      tx.addTag("App-Name", "SafeMemes.fun")
+      if (selectedProfile?.jwk) {
+        await arweave.transactions.sign(tx, selectedProfile.jwk)
+      } else {
+        await arweave.transactions.sign(tx)
+      }
+      await arweave.transactions.post(tx)
+      console.log("Profile updated successfully.")
+
+      alert("Profile updated successfully!")
+
+      const domain = process.env.NEXT_PUBLIC_DOMAIN || "http://localhost:3000"
+      setUniqueLink(`${domain}/${user.profile.handleName}`)
+      console.log(
+        "Unique profile link set:",
+        `${domain}/${user.profile.handleName}`
+      )
+
+      fetchProfileCount()
+    } catch (error) {
+      console.error("Error updating profile:", error)
+      alert("Error updating profile.")
+    }
+  }
+
   const handleAddWallet = async () => {
     if (!newBlockchain || !newWalletAddress) {
       alert("Please select a blockchain and enter a wallet address.")
@@ -170,7 +260,7 @@ const ProfilePage: React.FC = () => {
         wallets: updatedWallets,
       }))
 
-      await handleSaveProfile(updatedWallets)
+      await handleSaveProfile()
 
       alert("Wallet address added and verified successfully.")
       setNewBlockchain("")
@@ -178,66 +268,6 @@ const ProfilePage: React.FC = () => {
     } catch (error) {
       console.error("Error verifying wallet address:", error)
       alert("Failed to verify wallet address.")
-    }
-  }
-
-  const handleSaveProfile = async () => {
-    try {
-      // Ensure Handle Name is provided
-      if (!profileData.handleName) {
-        alert("Handle Name is required.")
-        console.log("Handle Name is missing.")
-        return
-      }
-
-      // Use wallets from state
-      const wallets = profileData.wallets || {}
-
-      // Ensure there is an active wallet address
-      const activeAddress = selectedProfile?.address
-      if (!activeAddress) {
-        alert("No wallet address found.")
-        console.log("No active wallet address found.")
-        return
-      }
-
-      // Fetch the user account from Arweave
-      const user: ArAccount = await account.get(activeAddress)
-      user.profile.handleName = profileData.handleName
-      user.profile.bio = profileData.bio
-      user.profile.name = profileData.name
-      user.profile.email = profileData.email
-      user.profile.website = profileData.website
-      user.profile.links = profileData.links
-      user.profile.wallets = wallets
-      user.profile.avatar = profileData.avatar
-      user.profile.avatarURL = profileData.avatarURL
-      user.profile.banner = profileData.banner
-      user.profile.bannerURL = profileData.bannerURL
-
-      // Connect to Arweave account
-      if (selectedProfile?.jwk) {
-        await account.connect(selectedProfile.jwk)
-      } else {
-        await account.connect()
-      }
-
-      // Update the profile on Arweave
-      await account.updateProfile(user.profile)
-      console.log("Profile updated successfully.")
-
-      alert("Profile updated successfully!")
-
-      // Set the unique profile link
-      const domain = process.env.NEXT_PUBLIC_DOMAIN || "http://localhost:3000"
-      setUniqueLink(`${domain}/${user.profile.handleName}`)
-      console.log(
-        "Unique profile link set:",
-        `${domain}/${user.profile.handleName}`
-      )
-    } catch (error) {
-      console.error("Error updating profile:", error)
-      alert("Error updating profile.")
     }
   }
 
@@ -372,7 +402,6 @@ const ProfilePage: React.FC = () => {
             return
           }
 
-          // **Use Backticks for Template Literals**
           const avatarURL = `https://arweave.net/${txId}`
           const activeAddress = selectedProfile.address
 
@@ -925,6 +954,11 @@ const ProfilePage: React.FC = () => {
                 private key, so get a pen and paper ready to write them down and
                 securely save them.
               </p>
+              <div className="profile-count">
+                <p className="profile-count">
+                  Total Profiles Created: {profileCount}
+                </p>{" "}
+              </div>
             </div>
           )}
           <div className="intro">

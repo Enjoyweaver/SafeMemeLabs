@@ -185,6 +185,9 @@ dependencies:
   alchemy-sdk:
     specifier: ^3.3.1
     version: 3.3.1
+  ardb:
+    specifier: ^1.1.10
+    version: 1.1.10
   arlocal:
     specifier: ^1.1.66
     version: 1.1.66(@solana/web3.js@1.95.3)(typescript@4.7.4)
@@ -616,7 +619,7 @@ packages:
     resolution: {integrity: sha512-kJsoy4fAPTOhzVr7Vwq8s/AUg6BQiJDa7WOqRzev4zsuIS3+JCuIZ6vUd7UBsjnxtmguJJulMRs9qWCzVBt2XA==}
     engines: {node: '>=15.10.0'}
     dependencies:
-      axios: 1.7.4
+      axios: 1.7.4(debug@4.3.5)
       got: 11.8.6
     transitivePeerDependencies:
       - debug
@@ -2111,7 +2114,7 @@ packages:
     dependencies:
       asn1.js: 5.4.1
       async-retry: 1.3.3
-      axios: 1.7.2(debug@4.3.5)
+      axios: 1.7.4(debug@4.3.5)
       base64-js: 1.5.1
       bignumber.js: 9.1.2
     transitivePeerDependencies:
@@ -3312,7 +3315,7 @@ packages:
     resolution: {integrity: sha512-P4lxJDySrekWNuPa7FeyW/UmuxnuIXIAGYr5gZnmnMHRsYNaw+XfgkiCDfoGtjEyJbXYxXttYF6iAZhWQPdf1g==}
     dependencies:
       '@openzeppelin/defender-base-client': 1.54.6(debug@4.3.5)
-      axios: 1.7.2(debug@4.3.5)
+      axios: 1.7.4(debug@4.3.5)
       ethers: 5.7.2
       lodash: 4.17.21
       node-fetch: 2.7.0
@@ -3328,7 +3331,7 @@ packages:
     dependencies:
       amazon-cognito-identity-js: 6.3.12
       async-retry: 1.3.3
-      axios: 1.7.2(debug@4.3.5)
+      axios: 1.7.4(debug@4.3.5)
       lodash: 4.17.21
       node-fetch: 2.7.0
     transitivePeerDependencies:
@@ -3349,7 +3352,7 @@ packages:
     resolution: {integrity: sha512-1SbdImpjCYmjpDgK7Bff4vak29r/aECabVuQi5TB+7TdbOuRdVxDHu7vFhEpt3yrcPKW1joaNiUNDEc/noUsNQ==}
     dependencies:
       '@openzeppelin/defender-sdk-base-client': 1.13.4
-      axios: 1.7.2(debug@4.3.5)
+      axios: 1.7.4(debug@4.3.5)
       lodash: 4.17.21
     transitivePeerDependencies:
       - debug
@@ -3360,7 +3363,7 @@ packages:
     resolution: {integrity: sha512-m76WQzqFET4jtFgA74V6Ui4czRoTvBy7leS+BbsIxoKX+NGODhs78y5zq7jSxsLu3c2iY69rujRkzj0Z+sCiiQ==}
     dependencies:
       '@openzeppelin/defender-sdk-base-client': 1.13.4
-      axios: 1.7.2(debug@4.3.5)
+      axios: 1.7.4(debug@4.3.5)
       lodash: 4.17.21
     transitivePeerDependencies:
       - debug
@@ -7467,7 +7470,7 @@ packages:
       '@ethersproject/units': 5.7.0
       '@ethersproject/wallet': 5.7.0
       '@ethersproject/web': 5.7.1
-      axios: 1.7.2(debug@4.3.5)
+      axios: 1.7.2
       sturdy-websocket: 0.2.1
       websocket: 1.0.35
     transitivePeerDependencies:
@@ -8351,7 +8354,7 @@ packages:
       - debug
     dev: false
 
-  /axios@1.7.2(debug@4.3.5):
+  /axios@1.7.2:
     resolution: {integrity: sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==}
     dependencies:
       follow-redirects: 1.15.6(debug@4.3.5)
@@ -8359,8 +8362,9 @@ packages:
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
+    dev: false
 
-  /axios@1.7.4:
+  /axios@1.7.4(debug@4.3.5):
     resolution: {integrity: sha512-DukmaFRnY6AzAALSH4J2M3k6PkaC+MfaAGdEERRWcC9q3/TWQwLpHR8ZRLKTdQ3aBDL64EdluRDjJqKw+BPZEw==}
     dependencies:
       follow-redirects: 1.15.6(debug@4.3.5)
@@ -8368,7 +8372,6 @@ packages:
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
-    dev: false
 
   /axobject-query@3.2.1:
     resolution: {integrity: sha512-jsyHu61e6N4Vbz/v18DHwWYKK0bSWLqn47eeDSKPB7m8tqMHF9YJ+mhIk2lVteyZrY8tnSj/jHOv4YiTCuCJgg==}
@@ -10802,7 +10805,7 @@ packages:
         optional: true
     dependencies:
       '@solidity-parser/parser': 0.14.5
-      axios: 1.7.2(debug@4.3.5)
+      axios: 1.7.4(debug@4.3.5)
       cli-table3: 0.5.1
       colors: 1.4.0
       ethereum-cryptography: 1.2.0

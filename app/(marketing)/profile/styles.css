@@ -126,6 +126,20 @@ textarea {
   margin-bottom: 2rem;
 }
 
+.profile-count p {
+  font-size: 1.1rem;
+  text-align: center;
+  color: var(--text-dark);
+  margin-top: 2rem;
+}
+
+.dark .profile-count p {
+  font-size: 1.1rem;
+  text-align: center;
+  color: var(--accent-dark);
+  margin-top: 2rem;
+}
+
 .profile-image {
   position: absolute;
   bottom: -40px;
