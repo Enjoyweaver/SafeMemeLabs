@@ -149,11 +149,19 @@ export default async function IndexPage() {
             </h2>
             <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
               To create tokens, NFTs, or Frames on Warpcast, you need to set up
-              a profile on our app. This profile acts as your crypto wallet on
-              Arweave, ensuring your presence is stored securely on the
-              blockchain. Your on-chain profile is designed to last forever and
-              can be updated as needed. Plus, if your updates are small (under
-              100kb), they are free!
+              a profile on our app. This profile acts as your crypto wallet on{" "}
+              <a
+                href="https://www.arweave.org"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Arweave
+              </a>
+              , ensuring your presence is stored securely on the blockchain.
+              Your on-chain profile is designed to last forever and can be
+              updated as needed. Plus, if your updates are small (under 100kb),
+              they are free! Additionally, leveraging Arweave's decentralized
+              storage guarantees the immutability and longevity of your data.
             </p>
           </div>
         </section>

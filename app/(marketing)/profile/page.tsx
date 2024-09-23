@@ -889,11 +889,20 @@ const ProfilePage: React.FC = () => {
           ) : (
             <div className="intro">
               <p className="mb-4">
-                Creating a profile on our app also sets up a secure digital
-                wallet for you. Think of this wallet as a safe place to store
-                your information and digital creations. It's stored on Arweave,
-                a reliable storage system that keeps your profile accessible and
-                safe forever.
+                Your profile is the start of your onchain brand and identity.
+                You'll need a profile to be a creator here, though it's simple
+                to create, requires no installation or information from you, and
+                is free to do so. And besides, once you do, you'll have created
+                a wallet on the{" "}
+                <a
+                  href="https://www.arweave.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Arweave
+                </a>{" "}
+                blockchain, a reliable storage system that keeps your profile
+                accessible and safe forever.
               </p>
               <p className="mb-4">
                 With your profile, you can easily create and manage tokens,
@@ -901,15 +910,20 @@ const ProfilePage: React.FC = () => {
                 whenever you need to, and if your updates are small enough
                 (under 100kb), there are no fees involved.
               </p>
-              <p className="mb-4">
-                Start building your brand and engaging with your community with
-                confidence and ease.
-              </p>
               <p>
-                Please log in to connect your Arweave.app wallet and get
-                started. Dont worry if you dont have an Arweave wallet already,
-                as it will automatically install and walk you through the setup
-                process.
+                Please log in to create or connect your{" "}
+                <a
+                  href="https://arweave.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Arweave.app
+                </a>{" "}
+                wallet and get started. Don't worry if you don't have an Arweave
+                wallet already, as it will automatically install and walk you
+                through the setup process. You will be receiving your wallet's
+                private key, so get a pen and paper ready to write them down and
+                securely save them.
               </p>
             </div>
           )}
@@ -917,7 +931,7 @@ const ProfilePage: React.FC = () => {
             {!isConnected && (
               <>
                 <button onClick={handleConnectWallet}>
-                  Log In or Create Profile
+                  Log In or Create Your Profile
                 </button>
               </>
             )}

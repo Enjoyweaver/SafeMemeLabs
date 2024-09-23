@@ -559,13 +559,12 @@ textarea {
 
   .profile-banner {
     height: 200px;
-    margin-bottom: 100px;
   }
 
   .profile-image {
     position: static;
-    max-width: 150px;
-    max-height: 150px;
+    max-width: 220px;
+    max-height: 220px;
     margin: 0 auto 20px auto;
   }
 
