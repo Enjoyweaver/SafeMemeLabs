@@ -181,14 +181,19 @@ const ProfilePage: React.FC = () => {
     }
   }
 
-  const handleSaveProfile = async (wallets: { [key: string]: string }) => {
+  const handleSaveProfile = async () => {
     try {
+      // Ensure Handle Name is provided
       if (!profileData.handleName) {
         alert("Handle Name is required.")
         console.log("Handle Name is missing.")
         return
       }
 
+      // Use wallets from state
+      const wallets = profileData.wallets || {}
+
+      // Ensure there is an active wallet address
       const activeAddress = selectedProfile?.address
       if (!activeAddress) {
         alert("No wallet address found.")
@@ -196,6 +201,7 @@ const ProfilePage: React.FC = () => {
         return
       }
 
+      // Fetch the user account from Arweave
       const user: ArAccount = await account.get(activeAddress)
       user.profile.handleName = profileData.handleName
       user.profile.bio = profileData.bio
@@ -209,17 +215,20 @@ const ProfilePage: React.FC = () => {
       user.profile.banner = profileData.banner
       user.profile.bannerURL = profileData.bannerURL
 
+      // Connect to Arweave account
       if (selectedProfile?.jwk) {
         await account.connect(selectedProfile.jwk)
       } else {
         await account.connect()
       }
 
+      // Update the profile on Arweave
       await account.updateProfile(user.profile)
       console.log("Profile updated successfully.")
 
       alert("Profile updated successfully!")
 
+      // Set the unique profile link
       const domain = process.env.NEXT_PUBLIC_DOMAIN || "http://localhost:3000"
       setUniqueLink(`${domain}/${user.profile.handleName}`)
       console.log(

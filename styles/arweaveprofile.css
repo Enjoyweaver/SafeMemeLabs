@@ -75,9 +75,9 @@ body.dark {
 .profile-image {
   position: absolute;
   bottom: -60px;
-  right: 10px;
-  width: 180px;
-  height: 120px;
+  right: 50px;
+  width: 220px;
+  height: 140px;
   border-radius: 15px;
   border: 3px solid var(--border-light);
   background-color: var(--background-light);
@@ -101,15 +101,17 @@ body.dark {
 .profile-fields-row {
   display: flex;
   flex-direction: row;
-  gap: 100px;
+  gap: 80px;
   margin-bottom: 15px;
-  margin-right: 250px;
+  margin-right: 320px;
+  color: var(--primary-dark);
 }
 
 .profile-field {
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
+  color: var(--primary-dark);
 }
 
 .profile-field label {
@@ -134,6 +136,10 @@ body.dark {
   color: var(--text-dark);
 }
 
+.social-handle {
+  color: var(--primary-dark);
+}
+
 .profile-bio {
   font-size: 1rem;
   color: var(--text-light);
@@ -150,10 +156,12 @@ body.dark {
   background-color: var(--input-light);
   border-radius: 10px;
   margin-top: 20px;
+  color: var(--accent-dark);
 }
 
 .dark .social-links {
   background-color: var(--input-dark);
+  color: var(--primary-dark);
 }
 
 .social-links .profile-field {

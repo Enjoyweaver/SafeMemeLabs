@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import { useRouter } from "next/router"
+import { chains } from "@/Constants/config"
 import Arweave from "arweave"
 import Account, { ArAccount } from "arweave-account"
 
@@ -139,6 +140,7 @@ const SharedProfilePage: React.FC = () => {
               href={`https://twitter.com/${profileData.links.twitter}`}
               target="_blank"
               rel="noopener noreferrer"
+              className="social-handle"
             >
               @{profileData.links.twitter}
             </a>
@@ -254,14 +256,18 @@ const SharedProfilePage: React.FC = () => {
         )}
       </div>
 
-      {/* Wallet Addresses */}
       <div className="wallets">
         <h4>Wallet Addresses:</h4>
         {profileData.wallets && Object.keys(profileData.wallets).length > 0 ? (
           <ul>
-            {Object.entries(profileData.wallets).map(([type, address]) => (
-              <li key={type}>
-                <strong>{type.toUpperCase()}:</strong> {address}
+            {Object.entries(profileData.wallets).map(([chainId, address]) => (
+              <li key={chainId}>
+                <strong>
+                  {chains.find((chain) => chain.id.toString() === chainId)
+                    ?.name || "Unknown Blockchain"}
+                  :
+                </strong>{" "}
+                {address} (Verified)
               </li>
             ))}
           </ul>
