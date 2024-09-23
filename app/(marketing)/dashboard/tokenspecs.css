@@ -458,37 +458,53 @@ body {
 
 @media (max-width: 600px) {
   .profiles-container {
-    width: 90%;
+    width: 100%;
+    padding: 10px;
     margin: 20px auto;
-    padding: 15px;
+  }
+
+  .table-container {
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 10px;
+  }
+
+  .data-table {
+    width: 100%;
+    table-layout: auto;
   }
 
   .profiles-table th,
   .profiles-table td {
     padding: 8px;
     text-align: center;
+    word-break: break-word;
+  }
+
+  .narrow-column {
+    width: auto;
   }
 
   .form {
     width: 100%;
     padding: 10px;
   }
-
-  .data-table {
-    overflow-x: auto;
-  }
 }
 
 @media (max-width: 480px) {
   .profiles-container {
-    width: 100%;
-    padding: 10px;
+    padding: 8px;
   }
 
   .profiles-table th,
   .profiles-table td {
     padding: 6px;
     font-size: 0.9em;
+    word-break: break-word;
+  }
+
+  .narrow-column {
+    width: auto;
   }
 
   .title {
@@ -502,13 +518,18 @@ body {
 
 @media (max-width: 360px) {
   .profiles-container {
-    padding: 8px;
+    padding: 5px;
   }
 
   .profiles-table th,
   .profiles-table td {
     padding: 4px;
     font-size: 0.8em;
+    word-break: break-word;
+  }
+
+  .narrow-column {
+    width: auto;
   }
 
   .title {

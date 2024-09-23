@@ -69,7 +69,7 @@ export const marketingConfig: MarketingConfig = {
 
     {
       title: "Dashboard",
-      href: "/creatordashboard",
+      href: "/dashboard",
     },
   ],
 }
