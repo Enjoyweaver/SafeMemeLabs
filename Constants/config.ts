@@ -91,7 +91,7 @@ export const rpcUrls: { [key: string]: string } = {
   "338": "https://evm-t3.cronos.org/",
   "1442": "https://rpc.zkevm-test.net/",
   "11155111": "https://rpc.sepolia.org/",
-  "43113": "https://rpc.ankr.com/avalanche_fuji",
+  "43113": "https://api.avax-test.network/ext/bc/C/rpc",
   "421614": "https://arbitrum-sepolia.blockpi.network/v1/rpc/public ",
 }
 
@@ -112,6 +112,7 @@ export const blockExplorerUrls: { [key: string]: string } = {
   "1442": "https://zk-evm-testnet.polygonscan.com/tx/",
   "11155111": "https://sepolia.etherscan.io/tx/",
   "421614": "https://sepolia-explorer.arbitrum.io",
+  "43113": "https://testnet.snowtrace.io",
 }
 
 export const blockExplorerAddress: { [key: string]: string } = {
@@ -182,6 +183,7 @@ export const chainIdToCovalentChainId: { [key: string]: string } = {
   1442: "polygon-zkevm-testnet",
   11155111: "sepolia",
   64165: "sonic-testnet",
+  43113: "avalancheFuji-testnet",
 }
 
 export const NativeTokens: {
@@ -338,11 +340,7 @@ export const safeMemeTemplate: {
   "4002": "0x8e48A0E6849179D24f7De46121b7268116F00d0C",
   "64165": "0x99Caf2D3EbE03B6671fc8ec7D3e6160e88359FA0",
   "421614": "0xA03C94Ec86fa9697b76E2ce17F95951e6207e2E0",
-  "338": "0xYourCronosTestnetSafeMemeTemplateAddress",
-  "80001": "0xYourPolygonMumbaiSafeMemeTemplateAddress",
-  "1442": "0xYourPolygonZkEvmTestnetSafeMemeTemplateAddress",
-  "11155111": "0xYourSepoliaSafeMemeTemplateAddress",
-  "501": "0xYourSolanaMainnetSafeMemeTemplateAddress",
+  "43113": "",
 }
 
 export const safeLaunchFactory: {
@@ -351,11 +349,6 @@ export const safeLaunchFactory: {
   "4002": "0x3EC3eF1C4B882a85F7962c6AC22Bf8433990bAbb",
   "64165": "0xA0db964a0393AB56b14D9bcEdf756aA00f2e0361",
   "421614": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
-  "338": "0xYourCronosTestnetSafeLaunchFactoryAddress",
-  "80001": "0xYourPolygonMumbaiSafeLaunchFactoryAddress",
-  "1442": "0xYourPolygonZkEvmTestnetSafeLaunchFactoryAddress",
-  "11155111": "0xYourSepoliaSafeLaunchFactoryAddress",
-  "501": "0xYourSolanaMainnetSafeLaunchFactoryAddress",
 }
 
 export const exchangeTemplate: {
@@ -364,11 +357,6 @@ export const exchangeTemplate: {
   "4002": "0x841C50f907A52cD9D9CDB06695deB6A3d8803EfE",
   "64165": "0x7e17CA6532Cf7Db5324644EadDefB1cC5B71433D",
   "421614": "0xYourArbitrumGoerliExchangeTemplateAddress",
-  "338": "0xYourCronosTestnetExchangeTemplateAddress",
-  "80001": "0xYourPolygonMumbaiExchangeTemplateAddress",
-  "1442": "0xYourPolygonZkEvmTestnetExchangeTemplateAddress",
-  "11155111": "0xYourSepoliaExchangeTemplateAddress",
-  "501": "0xYourSolanaMainnetExchangeTemplateAddress",
 }
 
 export const exchangeFactory: {
@@ -377,11 +365,6 @@ export const exchangeFactory: {
   "4002": "0x605B3015025d3cCA4D32aa38f8a698A65C127352",
   "64165": "0xD4B1Cb9456d51829af3e0181E82E2F7f81B551D0",
   "421614": "0xeAA2465A90803f6E26BFB65C5c0Fa6EFBc228430",
-  "338": "0xYourCronosTestnetExchangeFactoryAddress",
-  "80001": "0xYourPolygonMumbaiExchangeFactoryAddress",
-  "1442": "0xYourPolygonZkEvmTestnetExchangeFactoryAddress",
-  "11155111": "0xYourSepoliaExchangeFactoryAddress",
-  "501": "0xYourSolanaMainnetExchangeFactoryAddress",
 }
 
 export const houseFeesContract: {
@@ -390,11 +373,6 @@ export const houseFeesContract: {
   "4002": "0x32A7D38a7f3FdEFf2d7fF362Bcff212A4f91E2cB",
   "64165": "0xe51540C284990B255bb0e07c0bc3dfb41e06c864",
   "421614": "0x60DEbe92Ddbf4187EdA4dbd73C8bf64a38d4c25E",
-  "338": "0xYourCronosTestnetHouseFeesContractAddress",
-  "80001": "0xYourPolygonMumbaiHouseFeesContractAddress",
-  "1442": "0xYourPolygonZkEvmTestnetHouseFeesContractAddress",
-  "11155111": "0xYourSepoliaHouseFeesContractAddress",
-  "501": "0xYourSolanaMainnetHouseFeesContractAddress",
 }
 
 export const insurancePoolContract: {
@@ -403,11 +381,6 @@ export const insurancePoolContract: {
   "4002": "0xe0D8ed59bb130cf60143b14E798E11D0148a3Be2",
   "64165": "0xdD8F3fFd7B73c687Af45DF1F37596baB4c85C1A1",
   "421614": "0x9f6c73b65cfD186a425a44D92429D1A533dF21FA",
-  "338": "0xYourCronosTestnetInsurancePoolContractAddress",
-  "80001": "0xYourPolygonMumbaiInsurancePoolContractAddress",
-  "1442": "0xYourPolygonZkEvmTestnetInsurancePoolContractAddress",
-  "11155111": "0xYourSepoliaInsurancePoolContractAddress",
-  "501": "0xYourSolanaMainnetInsurancePoolContractAddress",
 }
 
 export const safeBaseToken: {
@@ -416,11 +389,6 @@ export const safeBaseToken: {
   "4002": "0x64f96f5c95d9a2a4DD40d35d5fADb69D17dAF122",
   "64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
   "421614": "0xYourArbitrumGoerliSafeBaseTokenAddress",
-  "338": "0xYourCronosTestnetSafeBaseTokenAddress",
-  "80001": "0xYourPolygonMumbaiSafeBaseTokenAddress",
-  "1442": "0xYourPolygonZkEvmTestnetSafeBaseTokenAddress",
-  "11155111": "0xYourSepoliaSafeBaseTokenAddress",
-  "501": "0xYourSolanaMainnetSafeBaseTokenAddress",
 }
 
 export const airdropContract: {
@@ -429,11 +397,6 @@ export const airdropContract: {
   "4002": "0x43b0f21F50CEB0942584a54a95c6d20BD18cF058",
   "64165": "0xA59eBfe75d467e2d26875030FE03563B8E42c250",
   "421614": "0xe5355DB1838d2e56786cC7E66FF9a122F2bb3d1d",
-  "338": "0xYourCronosTestnetAirdropContractAddress",
-  "80001": "0xYourPolygonMumbaiAirdropContractAddress",
-  "1442": "0xYourPolygonZkEvmTestnetAirdropContractAddress",
-  "11155111": "0xYourSepoliaAirdropContractAddress",
-  "501": "0xYourSolanaMainnetAirdropContractAddress",
 }
 
 export const AirdropFactory: {
@@ -442,9 +405,4 @@ export const AirdropFactory: {
   "4002": "0x441F549F386bdD45c33954A2CC6a96b30329a585",
   "64165": "0x1Aaf941fD48D3A267F56471E9a517E053Cad8F06",
   "421614": "0x8401eb679FBCc6522B6489C1a5E119532918f88a",
-  "338": "0xYourCronosTestnetAirdropFactoryAddress",
-  "80001": "0xYourPolygonMumbaiAirdropFactoryAddress",
-  "1442": "0xYourPolygonZkEvmTestnetAirdropFactoryAddress",
-  "11155111": "0xYourSepoliaAirdropFactoryAddress",
-  "501": "0xYourSolanaMainnetAirdropFactoryAddress",
 }
