@@ -508,8 +508,7 @@ h2 {
   }
 
   .profiles-table {
-    max-width: 600px;
-    min-width: 500px;
+    max-width: 500px;
   }
 
   .profiles-table th,
@@ -557,6 +556,10 @@ h2 {
     font-size: 0.8em;
   }
 
+  .profiles-table {
+    max-width: 400px;
+  }
+
   .profiles-table th,
   .profiles-table td {
     padding: 6px;
@@ -598,6 +601,10 @@ h2 {
   .data-table td {
     padding: 4px;
     font-size: 0.7em;
+  }
+
+  .profiles-table {
+    max-width: 300px;
   }
 
   .profiles-table th,

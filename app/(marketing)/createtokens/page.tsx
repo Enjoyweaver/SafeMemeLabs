@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useEffect, useState } from "react"
 import Link from "next/link"
+import ArDB from "ardb"
 import Arweave from "arweave"
 import Account, { ArAccount, ArProfile } from "arweave-account"
 import { ArweaveWebWallet } from "arweave-wallet-connector"
@@ -88,20 +89,32 @@ export default function Factory(): JSX.Element {
     try {
       const account = new Account(arweave)
       const userProfile: ArAccount = await account.get(address)
+
       if (
         userProfile &&
         userProfile.profile &&
-        userProfile.profile.handleName &&
-        userProfile.profile.appName === "SafeMemes.fun" // Example additional check
+        userProfile.profile.handleName
       ) {
-        setArProfile(userProfile.profile)
-        setIsProfileVerified(true)
-        console.log("Arweave Profile fetched and verified successfully.")
+        const ardb = new ArDB(arweave)
+        const transactions = await ardb
+          .search("transactions")
+          .from(address)
+          .tag("App-Name", "SafeMemes.fun")
+          .findAll()
+
+        if (transactions.length > 0) {
+          setArProfile(userProfile.profile)
+          setIsProfileVerified(true)
+          console.log("Arweave Profile fetched and verified successfully.")
+        } else {
+          setIsProfileVerified(false)
+          alert(
+            "Your Arweave profile exists but hasn't been created or updated on SafeMemes.fun. Please update your profile on our platform."
+          )
+        }
       } else {
         setIsProfileVerified(false)
-        alert(
-          "No verified Arweave profile found. Please create one on SafeMemes.fun."
-        )
+        alert("No Arweave profile found. Please create one on SafeMemes.fun.")
       }
     } catch (error) {
       console.error("Error fetching Arweave profile:", error)
