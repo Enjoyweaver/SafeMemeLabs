@@ -469,15 +469,8 @@ body {
     margin: 20px auto;
   }
 
-  .table-container {
-    max-width: 600px;
-    overflow-x: none;
-    padding: 10px;
-  }
-
   .table-container,
   .token-table-container {
-    max-width: 100%;
     width: 100%;
     overflow-x: auto;
     padding: 10px;
@@ -485,12 +478,20 @@ body {
 
   .data-table {
     width: 100%;
+    min-width: 600px;
     table-layout: auto;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 8px;
+    font-size: 0.9em;
+    word-wrap: break-word;
   }
 
   .narrow-column {
     width: auto;
-    white-space: nowrap;
+    white-space: normal;
   }
 
   .data-table th,
@@ -528,20 +529,17 @@ body {
 
   .table-container,
   .token-table-container {
-    max-width: 100%;
-    width: 100%;
-    overflow-x: auto;
     padding: 8px;
   }
 
   .data-table {
-    width: 100%;
-    table-layout: auto;
+    min-width: 480px;
   }
 
-  .narrow-column {
-    width: auto;
-    white-space: nowrap;
+  .data-table th,
+  .data-table td {
+    padding: 6px;
+    font-size: 0.8em;
   }
 
   .data-table th,
@@ -578,20 +576,17 @@ body {
 
   .table-container,
   .token-table-container {
-    max-width: 100%;
-    width: 100%;
-    overflow-x: auto;
     padding: 5px;
   }
 
   .data-table {
-    width: 100%;
-    table-layout: auto;
+    min-width: 360px;
   }
 
-  .narrow-column {
-    width: auto;
-    white-space: nowrap;
+  .data-table th,
+  .data-table td {
+    padding: 4px;
+    font-size: 0.7em;
   }
 
   .data-table th,

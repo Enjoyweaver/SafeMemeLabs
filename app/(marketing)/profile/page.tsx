@@ -141,10 +141,32 @@ const ProfilePage: React.FC = () => {
         .tag("App-Name", "SafeMemes.fun")
         .find()
 
-      setProfileCount(transactions.length)
-      console.log(`Total Profiles: ${transactions.length}`)
+      const handleNames: string[] = []
+
+      for (const tx of transactions) {
+        try {
+          const txData = await arweave.transactions.getData(tx.id, {
+            decode: true,
+            string: true,
+          })
+
+          const profile = JSON.parse(txData)
+
+          if (profile.handleName) {
+            handleNames.push(profile.handleName)
+          }
+        } catch (parseError) {
+          console.error(`Error parsing transaction ${tx.id}:`, parseError)
+          continue
+        }
+      }
+
+      const uniqueHandleNames = new Set(handleNames)
+
+      setProfileCount(uniqueHandleNames.size)
+      console.log(`Unique Profiles: ${uniqueHandleNames.size}`)
     } catch (error) {
-      console.error("Error fetching profile count:", error)
+      console.error("Error fetching unique profile count:", error)
     }
   }
 

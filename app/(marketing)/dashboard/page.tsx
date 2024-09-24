@@ -132,9 +132,13 @@ export default function Dashboard(): JSX.Element {
         .tag("App-Name", "SafeMemes.fun")
         .find()
 
-      const profilesData: Profile[] = []
+      const sortedTransactions = transactions.sort(
+        (a, b) => b.block.height - a.block.height
+      )
 
-      for (const tx of transactions) {
+      const profilesMap: Map<string, Profile> = new Map()
+
+      for (const tx of sortedTransactions) {
         try {
           const dataString = await arweave.transactions.getData(tx.id, {
             decode: true,
@@ -142,17 +146,18 @@ export default function Dashboard(): JSX.Element {
           })
           const data = JSON.parse(dataString)
 
-          if (data.handleName && data.name && data.avatar) {
-            profilesData.push({
+          if (
+            data.handleName &&
+            data.name &&
+            data.avatar &&
+            !profilesMap.has(data.handleName)
+          ) {
+            profilesMap.set(data.handleName, {
               handle: data.handleName,
               name: data.name,
               avatarURL: `https://arweave.net/${data.avatar}`,
               links: data.links || {},
             })
-          } else {
-            console.warn(
-              `Transaction ${tx.id} is missing required fields. HandleName: ${data.handleName}, Name: ${data.name}, Avatar: ${data.avatar}`
-            )
           }
         } catch (parseError) {
           console.warn(`Failed to parse transaction ${tx.id}:`, parseError)
@@ -160,8 +165,8 @@ export default function Dashboard(): JSX.Element {
         }
       }
 
-      setProfiles(profilesData)
-      console.log("Fetched profiles:", profilesData)
+      setProfiles(Array.from(profilesMap.values()))
+      console.log("Fetched profiles:", Array.from(profilesMap.values()))
     } catch (error) {
       console.error("Error fetching profiles:", error)
     }
@@ -175,10 +180,31 @@ export default function Dashboard(): JSX.Element {
         .tag("App-Name", "SafeMemes.fun")
         .find()
 
-      setProfileCount(transactions.length)
-      console.log(`Total Profiles: ${transactions.length}`)
+      const handleNames: string[] = []
+
+      for (const tx of transactions) {
+        try {
+          const txData = await arweave.transactions.getData(tx.id, {
+            decode: true,
+            string: true,
+          })
+
+          const profile = JSON.parse(txData)
+
+          if (profile.handleName) {
+            handleNames.push(profile.handleName)
+          }
+        } catch (parseError) {
+          console.error(`Error parsing transaction ${tx.id}:`, parseError)
+          continue
+        }
+      }
+
+      const uniqueHandleNames = new Set(handleNames)
+      setProfileCount(uniqueHandleNames.size)
+      console.log(`Unique Profiles: ${uniqueHandleNames.size}`)
     } catch (error) {
-      console.error("Error fetching profile count:", error)
+      console.error("Error fetching unique profile count:", error)
     }
   }
 
