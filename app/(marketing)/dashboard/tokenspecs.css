@@ -382,11 +382,11 @@ body {
 
 .profiles-container {
   margin: 40px auto 50px;
-  padding: 20px;
+  padding: 10px;
   background-color: var(--background-light);
   border: 2px solid var(--border-light);
   border-radius: 15px;
-  width: 60%;
+  width: 100%;
   justify-content: center;
 }
 
@@ -466,7 +466,7 @@ body {
 
 @media (max-width: 600px) {
   .profiles-container {
-    width: 60%;
+    width: 100%;
     padding: 10px;
     margin: 20px auto;
   }
@@ -532,7 +532,7 @@ body {
 @media (max-width: 480px) {
   .profiles-container {
     padding: 8px;
-    width: 60%;
+    width: 100%;
   }
 
   .table-container {
@@ -580,7 +580,7 @@ body {
 @media (max-width: 360px) {
   .profiles-container {
     padding: 5px;
-    width: 60%;
+    width: 100%;
   }
 
   .table-container {
