@@ -264,7 +264,6 @@ body.dark {
     color: var(--primary-dark);
   }
 
-  .profile-info,
   .social-links,
   .wallets {
     padding: 15px;

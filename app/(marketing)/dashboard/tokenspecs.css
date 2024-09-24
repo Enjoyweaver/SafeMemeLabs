@@ -135,11 +135,14 @@ body {
 
 .data-table .table-header {
   color: var(--secondary-light);
+  text-align: center;
+  max-width: 100px;
 }
 
 .table-header {
   text-align: center;
   max-width: 100px;
+  font-size: 3rem;
 }
 
 .data-table {
@@ -151,6 +154,7 @@ body {
 
 .data-table th,
 .data-table td {
+  text-align: center;
   border: 1px solid var(--border-light);
   padding: 8px;
 }
@@ -158,7 +162,7 @@ body {
 .data-table th {
   background-color: var(--input-light);
   color: var(--text-light);
-  text-align: ;
+  text-align: center;
 }
 
 .data-table td {
@@ -180,6 +184,15 @@ body {
   background-color: var(--background-dark);
   color: var (--text-dark);
   text-align: center;
+}
+
+.profiles-container {
+  margin: 40px auto;
+}
+
+h2 {
+  text-align: center;
+  font-size: 1.5rem;
 }
 
 .error {
@@ -380,31 +393,23 @@ body {
   color: var(--secondary-dark);
 }
 
-.profiles-container {
-  margin: 40px auto 50px;
-  padding: 10px;
-  background-color: var(--background-light);
-  border: 2px solid var(--border-light);
-  border-radius: 15px;
-  width: 100%;
-  justify-content: center;
-}
-
-.dark .profiles-container {
-  background-color: var(--background-dark);
-  border: 1px solid var(--border-dark);
-}
-
 .profiles-table {
   width: 100%;
+  max-width: 1000px;
+  min-width: 600px;
   border-collapse: collapse;
 }
 
-.profiles-table th,
 .profiles-table td {
   border: 1px solid var(--border-light);
   padding: 10px;
   text-align: left;
+}
+
+.profiles-table th {
+  border: 1px solid var(--border-light);
+  padding: 10px;
+  text-align: center;
 }
 
 .dark .profiles-table th,
@@ -452,7 +457,7 @@ body {
 }
 
 .dark .profiles-table a:hover {
-  color: var(--secondary-dark);
+  color: var(--input-dark);
 }
 
 .profile-count {
@@ -465,12 +470,6 @@ body {
 }
 
 @media (max-width: 600px) {
-  .profiles-container {
-    width: 100%;
-    padding: 10px;
-    margin: 20px auto;
-  }
-
   .table-container {
     width: 60%;
     overflow-x: auto;
@@ -530,11 +529,6 @@ body {
 }
 
 @media (max-width: 480px) {
-  .profiles-container {
-    padding: 8px;
-    width: 100%;
-  }
-
   .table-container {
     width: 60%;
     overflow-x: auto;
@@ -578,11 +572,6 @@ body {
 }
 
 @media (max-width: 360px) {
-  .profiles-container {
-    padding: 5px;
-    width: 100%;
-  }
-
   .table-container {
     width: 40%;
     overflow-x: auto;
