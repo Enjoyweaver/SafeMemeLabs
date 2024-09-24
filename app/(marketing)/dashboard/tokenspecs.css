@@ -507,6 +507,10 @@ h2 {
     font-size: 0.9em;
   }
 
+  .profiles-container {
+    max-width: fit-content;
+  }
+
   .profiles-table {
     max-width: 500px;
   }
