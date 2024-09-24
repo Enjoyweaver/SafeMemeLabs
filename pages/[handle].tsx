@@ -115,6 +115,8 @@ const SharedProfilePage: React.FC = () => {
               @{profileData.handleName}
             </span>
           </div>
+        </div>
+        <div className="secondprofile-fields-row">
           <div className="profile-field">
             <label htmlFor="name">Name:</label>
             <span id="name" className="profile-name">
