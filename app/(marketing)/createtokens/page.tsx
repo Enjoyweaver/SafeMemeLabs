@@ -2,6 +2,9 @@
 
 import { ChangeEvent, useEffect, useState } from "react"
 import Link from "next/link"
+import Arweave from "arweave"
+import Account, { ArAccount, ArProfile } from "arweave-account"
+import { ArweaveWebWallet } from "arweave-wallet-connector"
 import { ethers } from "ethers"
 import { toast } from "react-toastify"
 
@@ -46,6 +49,71 @@ export default function Factory(): JSX.Element {
   const [showModal, setShowModal] = useState(false)
   const [modalMessage, setModalMessage] = useState("")
   const [transactionHash, setTransactionHash] = useState<string>("")
+  const [arweaveWallet, setArweaveWallet] = useState<ArweaveWebWallet | null>(
+    null
+  )
+  const [isArweaveConnected, setIsArweaveConnected] = useState(false)
+  const [arProfile, setArProfile] = useState<ArProfile | null>(null)
+  const [isProfileVerified, setIsProfileVerified] = useState(false)
+
+  const arweave = Arweave.init({
+    host: "arweave.net",
+    port: 443,
+    protocol: "https",
+  })
+
+  const handleConnectArweave = async () => {
+    try {
+      const wallet = new ArweaveWebWallet({
+        name: "SafeMeme Labs",
+        logo: "URL to your app logo",
+      })
+      wallet.setUrl("https://arweave.app")
+      await wallet.connect()
+      setArweaveWallet(wallet)
+      const address = wallet.address
+      if (!address) {
+        throw new Error("Arweave wallet address not found.")
+      }
+      setIsArweaveConnected(true)
+      console.log("Arweave Wallet connected. Address:", address)
+      fetchArProfile(address)
+    } catch (error) {
+      console.error("Error connecting Arweave wallet:", error)
+      alert("Failed to connect Arweave Wallet.")
+    }
+  }
+
+  const fetchArProfile = async (address: string) => {
+    try {
+      const account = new Account(arweave)
+      const userProfile: ArAccount = await account.get(address)
+      if (
+        userProfile &&
+        userProfile.profile &&
+        userProfile.profile.handleName
+      ) {
+        setArProfile(userProfile.profile)
+        setIsProfileVerified(true)
+        console.log("Arweave Profile fetched successfully.")
+      } else {
+        setIsProfileVerified(false)
+        alert("No Arweave profile found. Please create one first.")
+      }
+    } catch (error) {
+      console.error("Error fetching Arweave profile:", error)
+      alert("Failed to fetch Arweave profile.")
+    }
+  }
+
+  const isMintingWalletVerified = (): boolean => {
+    if (!arProfile || !arProfile.wallets) return false
+    const currentWallet = account.address // Replace with your Ethereum wallet address retrieval
+    return Object.values(arProfile.wallets).some(
+      (walletAddress) =>
+        walletAddress.toLowerCase() === currentWallet.toLowerCase()
+    )
+  }
 
   useEffect(() => {
     setIsClient(true)
@@ -131,6 +199,18 @@ export default function Factory(): JSX.Element {
   } = useContractWrite(config)
 
   const handleDeployClick = async () => {
+    if (!isArweaveConnected || !isProfileVerified) {
+      alert(
+        "Please connect your Arweave wallet and ensure your profile is verified before minting."
+      )
+      return
+    }
+
+    if (!isMintingWalletVerified()) {
+      alert("The connected wallet is not verified in your Arweave profile.")
+      return
+    }
+
     if (!safeLaunchFactory[chainId] || !exchangeFactory[chainId]) {
       toast.error("Configuration error: Missing factory address.")
       return
@@ -144,7 +224,6 @@ export default function Factory(): JSX.Element {
         console.log("Token deployed at address:", tokenAddress)
 
         if (tokenAddress) {
-          // Verify the state of the exchangeFactory and tokenFactory addresses
           const provider = new ethers.providers.Web3Provider(window.ethereum)
           const signer = provider.getSigner()
           const tokenContract = new ethers.Contract(
@@ -153,7 +232,6 @@ export default function Factory(): JSX.Element {
             signer
           )
 
-          // Fetch and log the exchangeFactory and tokenFactory addresses
           const fetchedExchangeFactory = await tokenContract.exchangeFactory()
           const fetchedTokenFactory = await tokenContract.tokenFactory()
           console.log(
@@ -205,6 +283,23 @@ export default function Factory(): JSX.Element {
 
   return (
     <>
+      <div className="arweave-connection-section">
+        {!isArweaveConnected ? (
+          <button
+            onClick={handleConnectArweave}
+            className="connect-arweave-button"
+          >
+            Connect Arweave Wallet
+          </button>
+        ) : isProfileVerified ? (
+          <p className="profile-status success">Arweave Profile Verified</p>
+        ) : (
+          <p className="profile-status error">
+            No Arweave Profile Found. Please create one.
+          </p>
+        )}
+      </div>
+
       <Navbar />
       <Modal
         show={showModal}
@@ -307,6 +402,8 @@ export default function Factory(): JSX.Element {
                 onClick={handleDeployClick}
                 className={`deployButton ${
                   isConnected &&
+                  isArweaveConnected &&
+                  isProfileVerified &&
                   isFormFilled() &&
                   Number(decimals) >= 0 &&
                   Number(decimals) <= 18 &&
@@ -320,6 +417,8 @@ export default function Factory(): JSX.Element {
                 disabled={
                   !(
                     isConnected &&
+                    isArweaveConnected &&
+                    isProfileVerified &&
                     isFormFilled() &&
                     Number(decimals) >= 0 &&
                     Number(decimals) <= 18 &&
@@ -340,6 +439,7 @@ export default function Factory(): JSX.Element {
                     : "Not Connected"
                   : "Loading..."}
               </button>
+
               <p className="inputDescription">(*) is a required field</p>
               {transactionHash &&
                 toast.success(

@@ -466,24 +466,24 @@ body {
 
 @media (max-width: 600px) {
   .profiles-container {
-    width: 100%;
+    width: 60%;
     padding: 10px;
     margin: 20px auto;
   }
 
   .table-container {
-    width: 40%;
+    width: 60%;
     overflow-x: auto;
     padding: 10px;
   }
 
   .token-table-container {
-    width: 100%;
-    max-width: 100%;
+    width: 60%;
     margin: 0 auto;
     padding: 10px;
     overflow-x: auto;
   }
+
   .data-table {
     width: 40%;
     min-width: 300px;
@@ -532,11 +532,11 @@ body {
 @media (max-width: 480px) {
   .profiles-container {
     padding: 8px;
-    width: 100%;
+    width: 60%;
   }
 
   .table-container {
-    width: 40%;
+    width: 60%;
     overflow-x: auto;
     padding: 10px;
   }
@@ -580,7 +580,7 @@ body {
 @media (max-width: 360px) {
   .profiles-container {
     padding: 5px;
-    width: 100%;
+    width: 60%;
   }
 
   .table-container {
