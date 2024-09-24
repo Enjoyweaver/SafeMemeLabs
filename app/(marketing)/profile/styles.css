@@ -205,10 +205,6 @@ textarea {
   cursor: pointer;
 }
 
-.file-input {
-  display: none;
-}
-
 .overlay {
   position: absolute;
   top: 0;
@@ -540,10 +536,10 @@ textarea {
 
   .profile-image {
     position: absolute;
-    bottom: 10px;
+    bottom: -140px;
     right: 10px;
-    width: 180px;
-    height: 150px;
+    width: 240px;
+    height: 160px;
   }
 
   .profile-image img {
