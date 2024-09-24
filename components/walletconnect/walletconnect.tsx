@@ -49,6 +49,16 @@ const chainDetails = [
     logo: "/assets/icons/logos/avalanche.png",
   },
   {
+    name: "Base Testnet",
+    chainId: 84532,
+    logo: "/assets/icons/logos/base.png",
+  },
+  {
+    name: "Blast Testnet",
+    chainId: 168587773,
+    logo: "/assets/icons/logos/blast.jpg",
+  },
+  {
     name: "Cronos Testnet",
     chainId: 338,
     logo: "/assets/icons/logos/cronos.png",

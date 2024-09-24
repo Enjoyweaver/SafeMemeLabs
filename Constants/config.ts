@@ -1,6 +1,7 @@
 "use client"
 
 import { arbitrumSepolia } from "@/utils/arbitrumSepolia"
+import { baseSepolia } from "@/utils/base"
 import { polygonZkEvmCardona } from "@/utils/polygonCardona"
 import { rootstockTestnet } from "@/utils/rootstockTestnet"
 import { solana } from "@/utils/solana"
@@ -8,6 +9,7 @@ import { sonicTestnet } from "@/utils/sonic"
 import {
   avalanche,
   avalancheFuji,
+  base,
   cronosTestnet,
   fantom,
   fantomTestnet,
@@ -28,6 +30,8 @@ export const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
     fantom,
     arbitrumSepolia,
+    base,
+    baseSepolia,
     cronosTestnet,
     polygon,
     polygonZkEvmTestnet,
