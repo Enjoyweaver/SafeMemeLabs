@@ -276,107 +276,6 @@ h2 {
   align-items: center;
 }
 
-@media (max-width: 600px) {
-  .tokenDeployer,
-  .tokenFactory {
-    width: calc(100% - 40px);
-    padding: 20px;
-    margin: 50px auto;
-  }
-
-  .disclaimer {
-    text-align: center;
-    font-size: 1rem;
-    color: var(--primary-light);
-    margin-top: 20px;
-    width: 100%;
-    margin: 0 auto;
-  }
-
-  .title {
-    font-size: 1.5em;
-    margin-bottom: 8px;
-  }
-
-  .subtitle {
-    font-size: 1em;
-    margin-bottom: 15px;
-  }
-
-  .inputGroup {
-    margin-bottom: 15px;
-  }
-
-  .inputTitle {
-    font-size: 0.9em;
-    margin-bottom: 3px;
-  }
-
-  .tokenInput {
-    font-size: 0.9em;
-    padding: 10px;
-  }
-
-  .data-table th,
-  .data-table td {
-    padding: 6px;
-  }
-}
-
-@media (max-width: 480px) {
-  .title {
-    font-size: 1.3em;
-    margin-bottom: 6px;
-  }
-
-  .subtitle {
-    font-size: 0.9em;
-    margin-bottom: 12px;
-  }
-
-  .inputTitle {
-    font-size: 0.8em;
-    margin-bottom: 2px;
-  }
-
-  .tokenInput {
-    font-size: 0.8em;
-    padding: 8px;
-  }
-
-  .data-table th,
-  .data-table td {
-    padding: 5px;
-  }
-}
-
-@media (max-width: 360px) {
-  .title {
-    font-size: 1.2em;
-    margin-bottom: 5px;
-  }
-
-  .subtitle {
-    font-size: 0.8em;
-    margin-bottom: 10px;
-  }
-
-  .inputTitle {
-    font-size: 0.7em;
-    margin-bottom: 1px;
-  }
-
-  .tokenInput {
-    font-size: 0.7em;
-    padding: 7px;
-  }
-
-  .data-table th,
-  .data-table td {
-    padding: 4px;
-  }
-}
-
 .token-name-link {
   color: var(--primary-light);
   text-decoration: underline;
@@ -469,147 +368,85 @@ h2 {
   color: var(--foreground-dark);
 }
 
-@media (max-width: 600px) {
-  .table-container {
-    width: 60%;
-    overflow-x: auto;
-    padding: 10px;
-  }
-
-  .token-table-container {
-    width: 60%;
-    margin: 0 auto;
-    padding: 10px;
-    overflow-x: auto;
-  }
-
-  .data-table {
-    width: 40%;
-    min-width: 300px;
-    table-layout: auto;
-  }
-
-  .data-table th,
-  .data-table td {
-    padding: 8px;
-    font-size: 0.9em;
-    word-wrap: break-word;
-  }
-
-  .narrow-column {
-    width: auto;
-    white-space: normal;
-  }
-
-  .data-table th,
-  .data-table td {
-    padding: 8px;
-    font-size: 0.9em;
-  }
-
-  .profiles-table {
-    max-width: 450px;
-  }
-
-  .profiles-table th,
-  .profiles-table td {
-    padding: 8px;
+@media screen and (max-width: 768px) {
+  .title {
+    font-size: 24px;
     text-align: center;
-    word-break: break-word;
   }
 
-  .narrow-column {
-    width: auto;
+  .profile-count {
+    text-align: center;
+    font-size: 16px;
   }
 
-  .form {
+  .profiles-container {
+    padding: 0 10px;
+  }
+
+  .profiles-container h2 {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .profiles-table {
     width: 100%;
-    padding: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .table-container {
-    width: 60%;
-    overflow-x: auto;
-    padding: 10px;
+    max-width: 100%;
+    border-collapse: collapse;
   }
 
-  .token-table-container {
-    padding: 8px;
+  .profiles-table thead {
+    display: none;
   }
 
-  .data-table th,
-  .data-table td {
-    padding: 6px;
-    font-size: 0.8em;
-  }
-
-  .data-table th,
-  .data-table td {
-    padding: 6px;
-    font-size: 0.8em;
-  }
-
-  .profiles-table {
-    max-width: 400px;
-  }
-
-  .profiles-table th,
+  .profiles-table,
+  .profiles-table tbody,
+  .profiles-table tr,
   .profiles-table td {
-    padding: 6px;
-    font-size: 0.9em;
-    word-break: break-word;
+    display: block;
+    width: 100%;
   }
 
-  .title {
-    font-size: 1.3em;
+  .profiles-table tr {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
   }
 
-  .profile-count {
-    font-size: 0.9em;
-  }
-}
-
-@media (max-width: 360px) {
-  .table-container {
-    width: 40%;
-    overflow-x: auto;
-    padding: 10px;
-  }
-
-  .token-table-container {
-    padding: 5px;
-  }
-
-  .data-table th,
-  .data-table td {
-    padding: 4px;
-    font-size: 0.7em;
-  }
-
-  .data-table th,
-  .data-table td {
-    padding: 4px;
-    font-size: 0.7em;
-  }
-
-  .profiles-table {
-    max-width: 300px;
-  }
-
-  .profiles-table th,
   .profiles-table td {
-    padding: 4px;
-    font-size: 0.8em;
-    word-break: break-word;
+    text-align: right;
+    padding: 10px;
+    position: relative;
+    border-bottom: 1px solid #eee;
   }
 
-  .title {
-    font-size: 1.2em;
+  .profiles-table td:last-child {
+    border-bottom: none;
   }
 
-  .profile-count {
-    font-size: 0.8em;
+  .profiles-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: bold;
+  }
+
+  .profiles-table td:nth-of-type(1):before {
+    content: "Handle";
+  }
+  .profiles-table td:nth-of-type(2):before {
+    content: "Name";
+  }
+  .profiles-table td:nth-of-type(3):before {
+    content: "Avatar";
+  }
+
+  .profiles-table img {
+    display: block;
+    margin: 0 0 0 auto;
   }
 }
