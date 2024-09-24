@@ -187,7 +187,12 @@ body {
 }
 
 .profiles-container {
-  margin: 40px auto;
+  padding: 10px;
+  background-color: var(--background-light);
+  border: 2px solid var(--border-light);
+  border-radius: 15px;
+  width: 70%;
+  justify-content: center;
 }
 
 h2 {
@@ -508,7 +513,9 @@ h2 {
   }
 
   .profiles-container {
-    max-width: fit-content;
+    width: 70%;
+    padding: 10px;
+    margin: 20px auto;
   }
 
   .profiles-table {
