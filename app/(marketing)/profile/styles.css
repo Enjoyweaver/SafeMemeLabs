@@ -500,18 +500,19 @@ textarea {
 @media (max-width: 768px) {
   .profile-page {
     flex-direction: column;
-    padding: 20px;
+    padding: 0;
   }
 
   .profile-section {
     width: 100%;
     margin: 0;
-    padding: 20px;
+    padding: 0;
   }
 
   .profile-banner {
-    height: 300px;
-    margin-bottom: 160px;
+    width: 100%;
+    height: 200px;
+    margin-bottom: 80px;
     position: relative;
   }
 
@@ -519,20 +520,17 @@ textarea {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: 0;
   }
 
   .profile-image {
     position: absolute;
-    bottom: -140px;
+    bottom: -60px;
     right: 20px;
-    width: 220px;
-    height: 180px;
-    border-radius: 15px;
+    width: 120px;
+    height: 120px;
+    border-radius: 60px;
     overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 
   .profile-image img {
@@ -542,12 +540,12 @@ textarea {
   }
 
   .submit-button {
-    width: auto;
-    padding: 10px;
-    font-size: 0.9rem;
     position: absolute;
-    bottom: -180px;
+    bottom: -30px;
     right: 20px;
+    width: auto;
+    padding: 8px 12px;
+    font-size: 0.8rem;
   }
 
   .profile-image .submit-button {
@@ -555,16 +553,20 @@ textarea {
     right: 0;
   }
 
+  .social-links {
+    padding: 0 20px;
+    margin-top: 20px;
+  }
+
   h2 {
-    font-size: 2rem;
-    text-align: center;
+    font-size: 1.8rem;
+    margin-top: 20px;
   }
 
   button {
-    padding: 10px 20px;
+    padding: 10px 15px;
     font-size: 0.9rem;
-    margin: 8px 0;
-    width: 100%;
+    margin: 5px 0;
   }
 
   input[type="text"],
@@ -573,11 +575,11 @@ textarea {
   select {
     padding: 10px;
     font-size: 0.9rem;
+    margin: 5px 0;
   }
 
-  .social-links {
-    grid-template-columns: 1fr;
-    gap: 8px;
+  .profile-description {
+    padding: 0 20px;
   }
 
   .profile-description textarea {
@@ -585,17 +587,8 @@ textarea {
     font-size: 0.85rem;
   }
 
-  .profile-wallets h3 {
-    text-align: center;
-  }
-
-  .profile-wallets ul {
-    padding: 0 10px;
-  }
-
-  .profile-wallets li {
-    padding: 8px;
-    font-size: 0.9rem;
+  .profile-wallets {
+    padding: 0 20px;
   }
 
   .add-wallet {
@@ -612,6 +605,7 @@ textarea {
   .action-row {
     flex-direction: column;
     gap: 15px;
+    padding: 0 20px;
   }
 
   .button-section {
@@ -625,18 +619,9 @@ textarea {
     gap: 5px;
   }
 
-  .profile-link a {
-    word-break: break-word;
-  }
-
-  .submit-button {
-    width: 100%;
-    padding: 10px;
-    font-size: 0.9rem;
-  }
-
   .intro {
-    font-size: 1rem;
+    font-size: 0.9rem;
     margin-bottom: 1.5rem;
+    padding: 0 20px;
   }
 }
