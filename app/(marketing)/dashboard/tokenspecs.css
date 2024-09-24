@@ -391,7 +391,7 @@ h2 {
 
   .profiles-table {
     width: 100%;
-    min-width: 300px; /* Ensures minimum readability */
+    min-width: 300px;
     border-collapse: collapse;
     font-size: 14px;
   }
