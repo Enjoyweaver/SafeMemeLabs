@@ -498,6 +498,17 @@ textarea {
 }
 
 @media (max-width: 768px) {
+  .profile-page {
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .profile-section {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
   .submit-button {
     position: absolute;
     bottom: -30px;
@@ -505,6 +516,11 @@ textarea {
     width: auto;
     padding: 8px 12px;
     font-size: 0.8rem;
+  }
+
+  .submit-button {
+    bottom: -40px;
+    right: 0;
   }
 
   .social-links {
