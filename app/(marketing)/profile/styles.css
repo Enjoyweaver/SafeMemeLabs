@@ -536,7 +536,7 @@ textarea {
 
   .profile-image {
     position: absolute;
-    bottom: -10px;
+    bottom: 40px;
     right: 10px;
     width: 240px;
     height: 160px;

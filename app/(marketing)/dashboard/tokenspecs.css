@@ -516,6 +516,7 @@ h2 {
 
   .profiles-table {
     border-collapse: collapse;
+    width: 60%;
   }
 
   .narrow-column {
