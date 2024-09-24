@@ -536,10 +536,16 @@ textarea {
 
   .profile-image {
     position: absolute;
-    bottom: 40px;
-    right: 10px;
-    width: 240px;
-    height: 160px;
+    bottom: -40px;
+    right: 220px;
+    width: 220px;
+    height: 180px;
+    border-radius: 15px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: border 0.3s ease;
   }
 
   .profile-image img {
