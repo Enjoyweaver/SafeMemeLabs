@@ -100,34 +100,23 @@ const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     const connectAccount = async () => {
-      if (walletInfo?.jwk) {
-        try {
-          await account.connect(walletInfo.jwk)
-          console.log("Account connected with JWK.")
-        } catch (error) {
-          console.error("Error connecting account with JWK:", error)
-          alert("Failed to connect account with the selected wallet.")
-        }
-      } else {
-        try {
-          await account.connect()
-          console.log("Account connected via Arweave Web Wallet.")
-        } catch (error) {
-          console.error(
-            "Error connecting account with Arweave Web Wallet:",
-            error
-          )
-          alert("Failed to connect account with Arweave Web Wallet.")
-        }
+      try {
+        await account.connect()
+        console.log("Account connected via Arweave Web Wallet.")
+        fetchAllArProfiles(walletInfo?.address || "")
+      } catch (error) {
+        console.error(
+          "Error connecting account with Arweave Web Wallet:",
+          error
+        )
+        alert("Failed to connect account with Arweave Web Wallet.")
       }
     }
 
-    if (walletInfo && isConnected) {
-      connectAccount().then(() => {
-        fetchAllArProfiles(walletInfo.address)
-      })
+    if (isConnected) {
+      connectAccount()
     }
-  }, [walletInfo, isConnected])
+  }, [isConnected])
 
   useEffect(() => {
     fetchProfileCount()
@@ -200,27 +189,21 @@ const ProfilePage: React.FC = () => {
       user.profile.banner = profileData.banner
       user.profile.bannerURL = profileData.bannerURL
 
-      if (selectedProfile?.jwk) {
-        await account.connect(selectedProfile.jwk)
-      } else {
-        await account.connect()
+      await account.connect() // Ensure the account is connected via Arweave Web Wallet
+
+      const tx = await arweave.createTransaction({
+        data: JSON.stringify(user.profile),
+      })
+      tx.addTag("App-Name", "SafeMemes.fun")
+
+      // Dispatch the transaction through Arweave Web Wallet
+      const result = await window.arweaveWallet.dispatch(tx)
+      if (!result || !result.id) {
+        throw new Error(
+          "Failed to dispatch transaction through Arweave Web Wallet."
+        )
       }
 
-      const tx = selectedProfile?.jwk
-        ? await arweave.createTransaction(
-            { data: JSON.stringify(user.profile) },
-            selectedProfile.jwk
-          )
-        : await arweave.createTransaction({
-            data: JSON.stringify(user.profile),
-          })
-      tx.addTag("App-Name", "SafeMemes.fun")
-      if (selectedProfile?.jwk) {
-        await arweave.transactions.sign(tx, selectedProfile.jwk)
-      } else {
-        await arweave.transactions.sign(tx)
-      }
-      await arweave.transactions.post(tx)
       console.log("Profile updated successfully.")
 
       alert("Profile updated successfully!")
@@ -397,32 +380,17 @@ const ProfilePage: React.FC = () => {
           const dataArray = new Uint8Array(data as ArrayBuffer)
           let txId: string
 
-          if (arweaveWallet && selectedProfile.jwk === null) {
-            const tx = await arweave.createTransaction({ data: dataArray })
-            tx.addTag("Content-Type", selectedImage.type)
-            const result = await window.arweaveWallet.dispatch(tx)
-            if (result && result.id) {
-              txId = result.id
-            } else {
-              alert("Failed to upload image.")
-              return
-            }
-          } else if (selectedProfile.jwk) {
-            const tx = await arweave.createTransaction(
-              { data: dataArray },
-              selectedProfile.jwk
-            )
-            tx.addTag("Content-Type", selectedImage.type)
-            await arweave.transactions.sign(tx, selectedProfile.jwk)
-            const uploader = await arweave.transactions.getUploader(tx)
-            while (!uploader.isComplete) {
-              await uploader.uploadChunk()
-            }
-            txId = tx.id
-          } else {
-            alert("Wallet not connected or addresses do not match.")
+          // Create transaction
+          const tx = await arweave.createTransaction({ data: dataArray })
+          tx.addTag("Content-Type", selectedImage.type)
+
+          // Dispatch the transaction through Arweave Web Wallet
+          const result = await window.arweaveWallet.dispatch(tx)
+          if (!result || !result.id) {
+            alert("Failed to upload image.")
             return
           }
+          txId = result.id
 
           const avatarURL = `https://arweave.net/${txId}`
           const activeAddress = selectedProfile.address
@@ -433,11 +401,7 @@ const ProfilePage: React.FC = () => {
           }
 
           const user: ArAccount = await account.get(activeAddress)
-          if (selectedProfile.jwk) {
-            await account.connect(selectedProfile.jwk)
-          } else {
-            await account.connect()
-          }
+          await account.connect()
           user.profile.avatar = txId
           user.profile.avatarURL = avatarURL
           await account.updateProfile(user.profile)
@@ -476,32 +440,17 @@ const ProfilePage: React.FC = () => {
           const dataArray = new Uint8Array(data as ArrayBuffer)
           let txId: string
 
-          if (arweaveWallet && selectedProfile.jwk === null) {
-            const tx = await arweave.createTransaction({ data: dataArray })
-            tx.addTag("Content-Type", selectedBanner.type)
-            const result = await window.arweaveWallet.dispatch(tx)
-            if (result && result.id) {
-              txId = result.id
-            } else {
-              alert("Failed to upload banner.")
-              return
-            }
-          } else if (selectedProfile.jwk) {
-            const tx = await arweave.createTransaction(
-              { data: dataArray },
-              selectedProfile.jwk
-            )
-            tx.addTag("Content-Type", selectedBanner.type)
-            await arweave.transactions.sign(tx, selectedProfile.jwk)
-            const uploader = await arweave.transactions.getUploader(tx)
-            while (!uploader.isComplete) {
-              await uploader.uploadChunk()
-            }
-            txId = tx.id
-          } else {
-            alert("Wallet not connected or addresses do not match.")
+          // Create transaction
+          const tx = await arweave.createTransaction({ data: dataArray })
+          tx.addTag("Content-Type", selectedBanner.type)
+
+          // Dispatch the transaction through Arweave Web Wallet
+          const result = await window.arweaveWallet.dispatch(tx)
+          if (!result || !result.id) {
+            alert("Failed to upload banner.")
             return
           }
+          txId = result.id
 
           const bannerURL = `https://arweave.net/${txId}`
           const activeAddress = selectedProfile.address
@@ -512,11 +461,7 @@ const ProfilePage: React.FC = () => {
           }
 
           const user: ArAccount = await account.get(activeAddress)
-          if (selectedProfile.jwk) {
-            await account.connect(selectedProfile.jwk)
-          } else {
-            await account.connect()
-          }
+          await account.connect()
           user.profile.banner = txId
           user.profile.bannerURL = bannerURL
           await account.updateProfile(user.profile)

@@ -132,13 +132,18 @@ export default function Dashboard(): JSX.Element {
         .tag("App-Name", "SafeMemes.fun")
         .find()
 
-      const sortedTransactions = transactions.sort(
-        (a, b) => b.block.height - a.block.height
-      )
+      console.log(`Fetched ${transactions.length} transactions.`)
 
-      const profilesMap: Map<string, Profile> = new Map()
+      if (transactions.length === 0) {
+        console.warn(
+          "No transactions found with the tag 'App-Name: SafeMemes.fun'."
+        )
+        return
+      }
 
-      for (const tx of sortedTransactions) {
+      const profilesMap = new Map()
+
+      for (const tx of transactions) {
         try {
           const dataString = await arweave.transactions.getData(tx.id, {
             decode: true,
@@ -146,27 +151,29 @@ export default function Dashboard(): JSX.Element {
           })
           const data = JSON.parse(dataString)
 
-          if (
-            data.handleName &&
-            data.name &&
-            data.avatar &&
-            !profilesMap.has(data.handleName)
-          ) {
-            profilesMap.set(data.handleName, {
-              handle: data.handleName,
-              name: data.name,
-              avatarURL: `https://arweave.net/${data.avatar}`,
-              links: data.links || {},
-            })
+          console.log(`Transaction ID: ${tx.id}`, data)
+
+          if (data.handleName && data.name) {
+            if (!profilesMap.has(data.handleName)) {
+              profilesMap.set(data.handleName, {
+                handle: data.handleName,
+                name: data.name,
+                avatarURL: data.avatar
+                  ? `https://arweave.net/${data.avatar}`
+                  : "",
+                links: data.links || {},
+              })
+              console.log(`Added profile: ${data.handleName}`)
+            }
           }
         } catch (parseError) {
           console.warn(`Failed to parse transaction ${tx.id}:`, parseError)
-          continue
         }
       }
 
-      setProfiles(Array.from(profilesMap.values()))
-      console.log("Fetched profiles:", Array.from(profilesMap.values()))
+      const fetchedProfiles = Array.from(profilesMap.values())
+      setProfiles(fetchedProfiles)
+      console.log("Fetched profiles:", fetchedProfiles)
     } catch (error) {
       console.error("Error fetching profiles:", error)
     }
@@ -448,7 +455,7 @@ export default function Dashboard(): JSX.Element {
               <p>No profiles available.</p>
             )}
           </div>
-          <div className="form">
+          <div>
             <div className="inputGroup">
               <label className="inputTitle">Select Blockchain:</label>
               <select

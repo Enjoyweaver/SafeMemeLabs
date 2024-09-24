@@ -239,15 +239,17 @@ body {
 }
 
 .table-container {
-  max-width: 1200px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 20px;
+  border-radius: 15px;
 }
 
 .token-table-container {
   max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
+  border-radius: 15px;
 }
 
 .narrow-column {
@@ -471,14 +473,14 @@ body {
 
   .table-container,
   .token-table-container {
-    width: 100%;
-    overflow-x: auto;
+    width: 60%;
+    overflow-x: none;
     padding: 10px;
   }
 
   .data-table {
     width: 100%;
-    min-width: 600px;
+    min-width: 300px;
     table-layout: auto;
   }
 
@@ -529,7 +531,9 @@ body {
 
   .table-container,
   .token-table-container {
-    padding: 8px;
+    width: 60%;
+    overflow-x: none;
+    padding: 10px;
   }
 
   .data-table {
@@ -576,7 +580,9 @@ body {
 
   .table-container,
   .token-table-container {
-    padding: 5px;
+    width: 60%;
+    overflow-x: none;
+    padding: 10px;
   }
 
   .data-table {
