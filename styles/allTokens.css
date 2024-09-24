@@ -33,7 +33,7 @@ body {
 
 .dashboard {
   padding: 20px !important;
-  max-width: 100% !important; /* Adjusted max-width */
+  max-width: 100% !important;
   margin: 0 auto !important;
   text-align: center !important;
   background-color: var(--background-light) !important;

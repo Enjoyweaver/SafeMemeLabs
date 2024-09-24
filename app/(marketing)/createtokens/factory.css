@@ -458,3 +458,33 @@ body {
 .hidethisButton {
   display: none;
 }
+
+.arweave-connection-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+}
+
+.connect-arweave-button {
+  padding: 10px 20px;
+  background-color: var(--border-dark);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 16px;
+}
+
+.profile-status {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.profile-status.success {
+  color: var(--background-dark);
+}
+
+.profile-status.error {
+  color: red;
+}

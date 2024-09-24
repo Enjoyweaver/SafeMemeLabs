@@ -260,7 +260,7 @@ body.dark {
     flex-direction: row;
     margin-top: 20px;
     margin-bottom: 15px;
-    margin-right: 15px;
+    margin-right: 35px;
     color: var(--primary-dark);
   }
 

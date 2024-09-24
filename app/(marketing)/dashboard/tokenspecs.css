@@ -507,6 +507,11 @@ h2 {
     font-size: 0.9em;
   }
 
+  .profiles-table {
+    max-width: 600px;
+    min-width: 500px;
+  }
+
   .profiles-table th,
   .profiles-table td {
     padding: 8px;
