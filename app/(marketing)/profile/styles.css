@@ -509,6 +509,52 @@ textarea {
     padding: 20px;
   }
 
+  .profile-banner {
+    height: 300px;
+    margin-bottom: 160px;
+    position: relative;
+  }
+
+  .banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .profile-image {
+    position: absolute;
+    bottom: -140px;
+    right: 20px;
+    width: 220px;
+    height: 180px;
+    border-radius: 15px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .submit-button {
+    width: auto;
+    padding: 10px;
+    font-size: 0.9rem;
+    position: absolute;
+    bottom: -180px;
+    right: 20px;
+  }
+
+  .profile-image .submit-button {
+    bottom: -40px;
+    right: 0;
+  }
+
   h2 {
     font-size: 2rem;
     text-align: center;
@@ -527,31 +573,6 @@ textarea {
   select {
     padding: 10px;
     font-size: 0.9rem;
-  }
-
-  .profile-banner {
-    height: 200px;
-    position: relative;
-  }
-
-  .profile-image {
-    position: absolute;
-    bottom: -40px;
-    right: 220px;
-    width: 220px;
-    height: 180px;
-    border-radius: 15px;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: border 0.3s ease;
-  }
-
-  .profile-image img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: cover;
   }
 
   .social-links {
