@@ -91,14 +91,17 @@ export default function Factory(): JSX.Element {
       if (
         userProfile &&
         userProfile.profile &&
-        userProfile.profile.handleName
+        userProfile.profile.handleName &&
+        userProfile.profile.appName === "SafeMemes.fun" // Example additional check
       ) {
         setArProfile(userProfile.profile)
         setIsProfileVerified(true)
-        console.log("Arweave Profile fetched successfully.")
+        console.log("Arweave Profile fetched and verified successfully.")
       } else {
         setIsProfileVerified(false)
-        alert("No Arweave profile found. Please create one first.")
+        alert(
+          "No verified Arweave profile found. Please create one on SafeMemes.fun."
+        )
       }
     } catch (error) {
       console.error("Error fetching Arweave profile:", error)
@@ -107,11 +110,10 @@ export default function Factory(): JSX.Element {
   }
 
   const isMintingWalletVerified = (): boolean => {
-    if (!arProfile || !arProfile.wallets) return false
-    const currentWallet = account.address // Replace with your Ethereum wallet address retrieval
+    if (!arProfile || !arProfile.wallets || !ethAddress) return false
     return Object.values(arProfile.wallets).some(
       (walletAddress) =>
-        walletAddress.toLowerCase() === currentWallet.toLowerCase()
+        walletAddress.toLowerCase() === ethAddress.toLowerCase()
     )
   }
 
@@ -300,7 +302,7 @@ export default function Factory(): JSX.Element {
         )}
       </div>
 
-      <Navbar />
+      {isArweaveConnected && isProfileVerified && <Navbar />}
       <Modal
         show={showModal}
         message={modalMessage}

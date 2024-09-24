@@ -251,7 +251,7 @@ body.dark {
     gap: 20px;
     margin-top: 80px;
     margin-bottom: 15px;
-    padding-right: 25px;
+    margin-right: 5px;
     color: var(--primary-dark);
   }
 
@@ -260,7 +260,7 @@ body.dark {
     flex-direction: row;
     margin-top: 20px;
     margin-bottom: 15px;
-    padding-right: 25px;
+    margin-right: 5px;
     color: var(--primary-dark);
   }
 

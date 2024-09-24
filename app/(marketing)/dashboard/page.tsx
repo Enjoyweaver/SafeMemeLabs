@@ -406,213 +406,51 @@ export default function Dashboard(): JSX.Element {
   return (
     <>
       <div>
-        <div>
-          <h1 className="title">Creator Dashboard</h1>
-          <div className="profile-count">
-            <p className="profile-count">
-              Total Profiles Created: {profileCount}
-            </p>
-          </div>
-          <div className="profiles-container">
-            <h2>All Profiles</h2>
-            {profiles.length > 0 ? (
-              <table className="profiles-table">
-                <thead>
-                  <tr>
-                    <th>Handle</th>
-                    <th>Name</th>
-                    <th>Avatar</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {profiles.map((profile, index) => (
-                    <tr key={index}>
-                      <td>
+        <h1 className="title">Creator Dashboard</h1>
+        <div className="profile-count">
+          <p className="profile-count">
+            Total Profiles Created: {profileCount}
+          </p>
+        </div>
+        <div className="profiles-container">
+          <h2>All Profiles</h2>
+          {profiles.length > 0 ? (
+            <table className="profiles-table">
+              <thead>
+                <tr>
+                  <th>Handle</th>
+                  <th>Name</th>
+                  <th>Avatar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {profiles.map((profile, index) => (
+                  <tr key={index}>
+                    <td>
+                      <Link href={`/${profile.handle}`}>{profile.handle}</Link>
+                    </td>
+                    <td>{profile.name}</td>
+                    <td>
+                      {profile.avatarURL ? (
                         <Link href={`/${profile.handle}`}>
-                          {profile.handle}
+                          <Image
+                            src={profile.avatarURL}
+                            alt={profile.name}
+                            width={50}
+                            height={50}
+                          />
                         </Link>
-                      </td>
-                      <td>{profile.name}</td>
-                      <td>
-                        {profile.avatarURL ? (
-                          <Link href={`/${profile.handle}`}>
-                            <Image
-                              src={profile.avatarURL}
-                              alt={profile.name}
-                              width={50}
-                              height={50}
-                            />
-                          </Link>
-                        ) : (
-                          "No Avatar"
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p>No profiles available.</p>
-            )}
-          </div>
-          <div>
-            <div className="inputGroup">
-              <label className="inputTitle">Select Blockchain:</label>
-              <select
-                id="chain-select"
-                value={selectedChainId}
-                onChange={(e) => setSelectedChainId(e.target.value)}
-                className="tokenInput"
-              >
-                {Object.keys(rpcUrls).map((chainId) => (
-                  <option key={chainId} value={chainId}>
-                    {chainNames[chainId] || chainId}
-                  </option>
+                      ) : (
+                        "No Avatar"
+                      )}
+                    </td>
+                  </tr>
                 ))}
-              </select>
-            </div>
-
-            <div className="table-container">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th className="table-header">Total Tokens Created</th>
-                    <th className="table-header">Stage 1 Tokens</th>
-                    <th className="table-header">Stage 2 Tokens</th>
-                    <th className="table-header">Stage 3 Tokens</th>
-                    <th className="table-header">Stage 4 Tokens</th>
-                    <th className="table-header">Stage 5 Tokens</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{totalTokens}</td>
-                    <td>{stageCounts[1]}</td>
-                    <td>{stageCounts[2]}</td>
-                    <td>{stageCounts[3]}</td>
-                    <td>{stageCounts[4]}</td>
-                    <td>{stageCounts[5]}</td>
-                  </tr>
-                  <tr>
-                    <td colSpan={6}>
-                      <strong>TokenFactory Address:</strong>{" "}
-                      <Link
-                        href={getExplorerLink(
-                          factoryDetails.tokenFactoryAddress
-                        )}
-                        target="_blank"
-                      >
-                        {factoryDetails.tokenFactoryAddress.slice(0, 6)}...
-                        {factoryDetails.tokenFactoryAddress.slice(-4)}
-                      </Link>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colSpan={6}>
-                      <strong>ExchangeFactory Address:</strong>{" "}
-                      <Link
-                        href={getExplorerLink(
-                          factoryDetails.exchangeFactoryAddress
-                        )}
-                        target="_blank"
-                      >
-                        {factoryDetails.exchangeFactoryAddress.slice(0, 6)}...
-                        {factoryDetails.exchangeFactoryAddress.slice(-4)}
-                      </Link>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="token-table-container">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th className="table-header">Token Name</th>
-                    <th className="table-header">Token Symbol</th>
-                    <th className="table-header">Token Address</th>
-                    <th className="table-header">Total Supply</th>
-                    <th className="table-header narrow-column">
-                      SafeLaunch Initialized
-                    </th>
-                    <th className="table-header">Token B Pairing</th>
-                    <th className="table-header narrow-column">Stage</th>
-                    <th className="table-header narrow-column">DEX Address</th>
-                    <th className="table-header narrow-column">
-                      DEX SafeMeme Balance
-                    </th>
-                    <th className="table-header narrow-column">
-                      Total Token A Sold
-                    </th>
-                    <th className="table-header narrow-column">
-                      Total Token B Received
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tokens.map((token, index) => (
-                    <tr key={index}>
-                      <td>
-                        <Link
-                          href={`/tokendata?tokenAddress=${token.tokenAddress}`}
-                        >
-                          <span className="token-name-link">
-                            {token.tokenName}
-                          </span>
-                        </Link>
-                      </td>
-                      <td>{token.tokenSymbol}</td>
-                      <td>
-                        <Link
-                          href={getExplorerLink(token.tokenAddress)}
-                          target="_blank"
-                        >
-                          {token.tokenAddress.slice(0, 6)}...
-                          {token.tokenAddress.slice(-4)}
-                        </Link>
-                      </td>
-                      <td>{token.totalSupply.toString()}</td>
-                      <td className="narrow-column">
-                        {token.isInitialized ? "Yes" : "No"}
-                      </td>
-                      <td>
-                        {token.tokenBPairing ? (
-                          <Link
-                            href={getExplorerLink(token.tokenBPairing)}
-                            target="_blank"
-                          >
-                            {token.tokenBPairing.slice(0, 6)}...
-                            {token.tokenBPairing.slice(-4)}
-                          </Link>
-                        ) : (
-                          "N/A"
-                        )}
-                      </td>
-                      <td className="narrow-column">{token.stage}</td>
-                      <td className="narrow-column">
-                        <Link
-                          href={getExplorerLink(token.dexAddress)}
-                          target="_blank"
-                        >
-                          {token.dexAddress.slice(0, 6)}...
-                          {token.dexAddress.slice(-4)}
-                        </Link>
-                      </td>
-                      <td className="narrow-column">
-                        {parseFloat(token.exchangeBalance).toFixed(2)}
-                      </td>
-                      <td className="narrow-column">
-                        {parseFloat(token.totalSafeMemeSold).toFixed(2)}
-                      </td>
-                      <td className="narrow-column">
-                        {parseFloat(token.totalTokenBReceived).toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+              </tbody>
+            </table>
+          ) : (
+            <p>No profiles available.</p>
+          )}
         </div>
       </div>
     </>
