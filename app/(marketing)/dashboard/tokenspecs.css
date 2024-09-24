@@ -188,11 +188,8 @@ body {
 
 .profiles-container {
   padding: 10px;
-  background-color: var(--background-light);
-  border: 2px solid var(--border-light);
-  border-radius: 15px;
-  width: 70%;
   justify-content: center;
+  margin: 20px auto;
 }
 
 h2 {
@@ -399,9 +396,7 @@ h2 {
 }
 
 .profiles-table {
-  width: 100%;
-  max-width: 1000px;
-  min-width: 600px;
+  width: 700px;
   border-collapse: collapse;
 }
 
@@ -512,14 +507,8 @@ h2 {
     font-size: 0.9em;
   }
 
-  .profiles-container {
-    width: 70%;
-    padding: 10px;
-    margin: 20px auto;
-  }
-
   .profiles-table {
-    max-width: 500px;
+    max-width: 450px;
   }
 
   .profiles-table th,
@@ -527,11 +516,6 @@ h2 {
     padding: 8px;
     text-align: center;
     word-break: break-word;
-  }
-
-  .profiles-table {
-    border-collapse: collapse;
-    width: 60%;
   }
 
   .narrow-column {
@@ -578,10 +562,6 @@ h2 {
     word-break: break-word;
   }
 
-  .profiles-table {
-    border-collapse: collapse;
-  }
-
   .title {
     font-size: 1.3em;
   }
@@ -623,10 +603,6 @@ h2 {
     padding: 4px;
     font-size: 0.8em;
     word-break: break-word;
-  }
-
-  .profiles-table {
-    border-collapse: collapse;
   }
 
   .title {
