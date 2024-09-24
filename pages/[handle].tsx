@@ -153,6 +153,7 @@ const SharedProfilePage: React.FC = () => {
               href={`https://instagram.com/${profileData.links.instagram}`}
               target="_blank"
               rel="noopener noreferrer"
+              className="social-handle"
             >
               @{profileData.links.instagram}
             </a>
@@ -165,6 +166,7 @@ const SharedProfilePage: React.FC = () => {
               href={`https://tiktok.com/@${profileData.links.tiktok}`}
               target="_blank"
               rel="noopener noreferrer"
+              className="social-handle"
             >
               @{profileData.links.tiktok}
             </a>
@@ -177,6 +179,7 @@ const SharedProfilePage: React.FC = () => {
               href={profileData.links.website}
               target="_blank"
               rel="noopener noreferrer"
+              className="social-handle"
             >
               {profileData.links.website}
             </a>
@@ -189,6 +192,7 @@ const SharedProfilePage: React.FC = () => {
               href={`https://github.com/${profileData.links.github}`}
               target="_blank"
               rel="noopener noreferrer"
+              className="social-handle"
             >
               {profileData.links.github}
             </a>
@@ -201,6 +205,7 @@ const SharedProfilePage: React.FC = () => {
               href={`https://discord.com/users/${profileData.links.discord}`}
               target="_blank"
               rel="noopener noreferrer"
+              className="social-handle"
             >
               {profileData.links.discord}
             </a>
@@ -213,6 +218,7 @@ const SharedProfilePage: React.FC = () => {
               href={`https://linkedin.com/in/${profileData.links.linkedin}`}
               target="_blank"
               rel="noopener noreferrer"
+              className="social-handle"
             >
               {profileData.links.linkedin}
             </a>
@@ -225,6 +231,7 @@ const SharedProfilePage: React.FC = () => {
               href={`https://facebook.com/${profileData.links.facebook}`}
               target="_blank"
               rel="noopener noreferrer"
+              className="social-handle"
             >
               {profileData.links.facebook}
             </a>
@@ -237,6 +244,7 @@ const SharedProfilePage: React.FC = () => {
               href={`https://youtube.com/${profileData.links.youtube}`}
               target="_blank"
               rel="noopener noreferrer"
+              className="social-handle"
             >
               {profileData.links.youtube}
             </a>
@@ -249,6 +257,7 @@ const SharedProfilePage: React.FC = () => {
               href={`https://twitch.tv/${profileData.links.twitch}`}
               target="_blank"
               rel="noopener noreferrer"
+              className="social-handle"
             >
               {profileData.links.twitch}
             </a>
@@ -267,7 +276,7 @@ const SharedProfilePage: React.FC = () => {
                     ?.name || "Unknown Blockchain"}
                   :
                 </strong>{" "}
-                {address} (Verified)
+                {address.slice(0, 6)}...{address.slice(-6)} (Verified)
               </li>
             ))}
           </ul>
