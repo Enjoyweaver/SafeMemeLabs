@@ -229,7 +229,7 @@ body.dark {
   .profile-image {
     position: absolute;
     bottom: -100px;
-    right: 40px;
+    right: 20px;
     width: 180px;
     height: 120px;
   }
@@ -243,9 +243,10 @@ body.dark {
   .profile-fields-row {
     display: flex;
     flex-direction: row;
-    gap: 75px;
+    gap: 50px;
+    margin-top: 100px;
     margin-bottom: 15px;
-    margin-right: 260px;
+    margin-right: 100px;
     color: var(--primary-dark);
   }
 

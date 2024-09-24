@@ -1,8 +1,6 @@
-// [handle].tsx
-
 import React, { useEffect, useState } from "react"
 import { useRouter } from "next/router"
-import { chains } from "@/Constants/config"
+import { blockExplorerAddress, chains } from "@/Constants/config"
 import Arweave from "arweave"
 import Account, { ArAccount } from "arweave-account"
 
@@ -124,7 +122,6 @@ const SharedProfilePage: React.FC = () => {
             </span>
           </div>
         </div>
-        {/* Bio Below */}
         <div className="profile-field">
           <label htmlFor="bio">Bio:</label>
           <span id="bio" className="profile-bio">
@@ -276,7 +273,14 @@ const SharedProfilePage: React.FC = () => {
                     ?.name || "Unknown Blockchain"}
                   :
                 </strong>{" "}
-                {address.slice(0, 6)}...{address.slice(-6)} (Verified)
+                <a
+                  href={`${blockExplorerAddress[chainId]}${address}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {address.slice(0, 6)}...{address.slice(-6)}
+                </a>{" "}
+                (Verified)
               </li>
             ))}
           </ul>
