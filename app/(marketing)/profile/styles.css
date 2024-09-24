@@ -497,9 +497,7 @@ textarea {
   background-color: var(--secondary-dark);
 }
 
-@media (max-width: 768px) 
-
-
+@media (max-width: 768px) {
   .submit-button {
     position: absolute;
     bottom: -30px;
@@ -508,7 +506,6 @@ textarea {
     padding: 8px 12px;
     font-size: 0.8rem;
   }
-
 
   .social-links {
     padding: 0 20px;
