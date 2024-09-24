@@ -1,19 +1,21 @@
 "use client"
 
+import { arbitrumSepolia } from "@/utils/arbitrumSepolia"
+import { polygonZkEvmCardona } from "@/utils/polygonCardona"
 import { rootstockTestnet } from "@/utils/rootstockTestnet"
 import { solana } from "@/utils/solana"
 import { sonicTestnet } from "@/utils/sonic"
 import {
-  arbitrumGoerli,
   avalanche,
   avalancheFuji,
   cronosTestnet,
   fantom,
   fantomTestnet,
+  lineaTestnet,
   optimismGoerli,
   polygon,
-  polygonMumbai,
   polygonZkEvmTestnet,
+  scrollTestnet,
   sepolia,
 } from "@wagmi/core/chains"
 import { configureChains, createConfig } from "wagmi"
@@ -25,18 +27,20 @@ import { publicProvider } from "wagmi/providers/public"
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
     fantom,
-    arbitrumGoerli,
+    arbitrumSepolia,
     cronosTestnet,
     polygon,
-    polygonMumbai,
     polygonZkEvmTestnet,
+    polygonZkEvmCardona,
     fantomTestnet,
     rootstockTestnet,
+    lineaTestnet,
     optimismGoerli,
     solana,
     avalanche,
     avalancheFuji,
     sonicTestnet,
+    scrollTestnet,
     sepolia,
   ],
   [publicProvider()]
@@ -70,6 +74,22 @@ export const config = createConfig({
   webSocketPublicClient,
 })
 
+export const rpcUrls: { [key: string]: string } = {
+  "4002": "https://rpc.testnet.fantom.network/",
+  "250": "https://rpc.ankr.com/fantom/",
+  "137": "https://polygon-rpc.com/",
+  "43114": "https://api.avax.network/ext/bc/C/rpc",
+  "30": "https://public-node.rsk.co",
+  "31": "https://public-node.testnet.rsk.co",
+  "1337": "https://rpc.ankr.com/eth_sepolia",
+  "64165": "https://rpc.testnet.soniclabs.com",
+  "421613": "https://goerli.arbitrum.io/rpc",
+  "338": "https://evm-t3.cronos.org/",
+  "1442": "https://rpc.zkevm-test.net/",
+  "11155111": "https://rpc.sepolia.org/",
+  "43113": "https://rpc.ankr.com/avalanche_fuji",
+}
+
 export const blockExplorerUrls: { [key: string]: string } = {
   "31": "https://explorer.testnet.rootstock.io/tx/",
   "250": "https://ftmscan.com/tx/",
@@ -79,8 +99,13 @@ export const blockExplorerUrls: { [key: string]: string } = {
   "30": "https://explorer.rsk.co/tx/",
   "666666666": "https://degenscan.io/tx/",
   "501": "https://explorer.solana.com/tx/",
-  "84532": "https://sepolia-explorer.base.org",
-  "64165": "https://rpc.testnet.soniclabs.com",
+  "84532": "https://sepolia-explorer.base.org/tx/",
+  "64165": "https://rpc.testnet.soniclabs.com/tx/",
+  "421613": "https://goerli.arbiscan.io/tx/",
+  "338": "https://cronos.org/explorer/testnet3/tx/",
+  "80001": "https://mumbai.polygonscan.com/tx/",
+  "1442": "https://zk-evm-testnet.polygonscan.com/tx/",
+  "11155111": "https://sepolia.etherscan.io/tx/",
 }
 
 export const blockExplorerAddress: { [key: string]: string } = {
@@ -93,7 +118,12 @@ export const blockExplorerAddress: { [key: string]: string } = {
   "666666666": "https://degenscan.io/address/",
   "501": "https://explorer.solana.com/address/",
   "84532": "https://sepolia-explorer.base.org/address/",
-  "64165": "https://testnet.soniclabs.com/",
+  "64165": "https://rpc.testnet.soniclabs.com/address/",
+  "421613": "https://goerli.arbiscan.io/address/",
+  "338": "https://cronos.org/explorer/testnet3/address/",
+  "80001": "https://mumbai.polygonscan.com/address/",
+  "1442": "https://zk-evm-testnet.polygonscan.com/address/",
+  "11155111": "https://sepolia.etherscan.io/address/",
 }
 
 export const blockExplorerToken: { [key: string]: string } = {
@@ -106,6 +136,12 @@ export const blockExplorerToken: { [key: string]: string } = {
   "666666666": "https://degenscan.io/token/",
   "501": "https://explorer.solana.com/token/",
   "84532": "https://sepolia-explorer.base.org/token/",
+  "64165": "https://rpc.testnet.soniclabs.com/token/",
+  "421613": "https://goerli.arbiscan.io/token/",
+  "338": "https://cronos.org/explorer/testnet3/token/",
+  "80001": "https://mumbai.polygonscan.com/token/",
+  "1442": "https://zk-evm-testnet.polygonscan.com/token/",
+  "11155111": "https://sepolia.etherscan.io/token/",
 }
 
 export const blockExplorers: { [key: string]: string } = {
@@ -117,7 +153,13 @@ export const blockExplorers: { [key: string]: string } = {
   "30": "https://explorer.rsk.co/",
   "666666666": "https://degenscan.io/",
   "501": "https://explorer.solana.com/",
-  "84532": "https://sepolia.base.org",
+  "84532": "https://sepolia.base.org/",
+  "64165": "https://rpc.testnet.soniclabs.com/",
+  "421613": "https://goerli.arbiscan.io/",
+  "338": "https://cronos.org/explorer/testnet3/",
+  "80001": "https://mumbai.polygonscan.com/",
+  "1442": "https://zk-evm-testnet.polygonscan.com/",
+  "11155111": "https://sepolia.etherscan.io/",
 }
 
 export const chainIdToCovalentChainId: { [key: string]: string } = {
@@ -128,6 +170,12 @@ export const chainIdToCovalentChainId: { [key: string]: string } = {
   43114: "avalanche-mainnet",
   30: "rsk-mainnet",
   501: "solana-mainnet",
+  421613: "arbitrum-goerli",
+  338: "cronos-testnet",
+  80001: "polygon-mumbai",
+  1442: "polygon-zkevm-testnet",
+  11155111: "sepolia",
+  64165: "sonic-testnet",
 }
 
 export const NativeTokens: {
@@ -148,15 +196,18 @@ export const NativeTokens: {
       symbol: "AVAX",
     },
   ],
-  //"30": [
-  //  { address: "0x542fDA317318eBF1d3DEAf76E0b632741A7e677d", symbol: "RBTC" },
-  //],
-  //"31": [
-  //  { address: "0x542fDA317318eBF1d3DEAf76E0b632741A7e677d", symbol: "tRBTC" },
-  //],
-  "1337": [
-    { address: "0x0000000000000000000000000000000000000000", symbol: "BTC" },
+  "501": [
+    { address: "So11111111111111111111111111111111111111112", symbol: "SOL" },
   ],
+  "84532": [{ address: "0xYourAddressHere", symbol: "YOUR_SYMBOL" }],
+  "64165": [{ address: "0xYourSonicTestnetTokenAddress", symbol: "SONIC" }],
+  "421613": [{ address: "0xYourArbitrumGoerliTokenAddress", symbol: "ARB" }],
+  "338": [{ address: "0xYourCronosTestnetTokenAddress", symbol: "CRO" }],
+  "80001": [{ address: "0xYourPolygonMumbaiTokenAddress", symbol: "MATIC" }],
+  "1442": [
+    { address: "0xYourPolygonZkEvmTestnetTokenAddress", symbol: "ZKETH" },
+  ],
+  "11155111": [{ address: "0xYourSepoliaTokenAddress", symbol: "ETH" }],
 }
 
 export const priceFeedAddresses: {
@@ -193,17 +244,30 @@ export const priceFeedAddresses: {
   "1337": {
     "BTC/USD": "0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43",
   },
-}
-
-export const rpcUrls: { [key: string]: string } = {
-  "4002": "https://rpc.testnet.fantom.network/",
-  "250": "https://rpc.ankr.com/fantom/",
-  "137": "https://polygon-rpc.com/",
-  "43114": "https://api.avax.network/ext/bc/C/rpc",
-  "30": "https://public-node.rsk.co",
-  "31": "https://public-node.testnet.rsk.co",
-  "1337": "https://rpc.ankr.com/eth_sepolia",
-  "64165": "https://rpc.testnet.soniclabs.com",
+  "421613": {
+    "ARB/USD": "0xYourArbitrumGoerliPriceFeedAddress",
+    "ETH/USD": "0xYourArbitrumGoerliETHPriceFeedAddress",
+  },
+  "338": {
+    "CRO/USD": "0xYourCronosTestnetPriceFeedAddress",
+    "ETH/USD": "0xYourCronosTestnetETHPriceFeedAddress",
+  },
+  "80001": {
+    "MATIC/USD": "0xYourPolygonMumbaiPriceFeedAddress",
+    "ETH/USD": "0xYourPolygonMumbaiETHPriceFeedAddress",
+  },
+  "1442": {
+    "ZKETH/USD": "0xYourPolygonZkEvmTestnetPriceFeedAddress",
+    "ETH/USD": "0xYourPolygonZkEvmTestnetETHPriceFeedAddress",
+  },
+  "11155111": {
+    "ETH/USD": "0xYourSepoliaETHPriceFeedAddress",
+    "BTC/USD": "0xYourSepoliaBTCPriceFeedAddress",
+  },
+  "64165": {
+    "SONIC/USD": "0xYourSonicTestnetPriceFeedAddress",
+    "ETH/USD": "0xYourSonicTestnetETHPriceFeedAddress",
+  },
 }
 
 export const tokenSaleDetails: { [key: string]: string } = {
@@ -218,7 +282,12 @@ export const tokenSaleDetails: { [key: string]: string } = {
   "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
   "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
   "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
-  "501": "YourTokenAddressForSolanaTestnetLaunched",
+  "501": "YourTokenAddressForSolanaMainnet",
+  "421613": "0xYourArbitrumGoerliTokenSaleAddress",
+  "338": "0xYourCronosTestnetTokenSaleAddress",
+  "80001": "0xYourPolygonMumbaiTokenSaleAddress",
+  "1442": "0xYourPolygonZkEvmTestnetTokenSaleAddress",
+  "11155111": "0xYourSepoliaTokenSaleAddress",
 }
 
 export const tokenClaimDetails: { [key: string]: string } = {
@@ -233,7 +302,12 @@ export const tokenClaimDetails: { [key: string]: string } = {
   "30": "0xe92163f8038843091c1df18f726cf04526ef9677",
   "31": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
   "148": "0x60debe92ddbf4187eda4dbd73c8bf64a38d4c25f",
-  "501": "YourTokenAddressForSolanaTestnetLaunched",
+  "501": "YourTokenAddressForSolanaMainnet",
+  "421613": "0xYourArbitrumGoerliTokenClaimAddress",
+  "338": "0xYourCronosTestnetTokenClaimAddress",
+  "80001": "0xYourPolygonMumbaiTokenClaimAddress",
+  "1442": "0xYourPolygonZkEvmTestnetTokenClaimAddress",
+  "11155111": "0xYourSepoliaTokenClaimAddress",
 }
 
 export const frameFactoryDetails: {
@@ -243,6 +317,13 @@ export const frameFactoryDetails: {
   "250": "0xYourVyperTokenAddressForFantom",
   "4002": "0x04Acaf5ECED5f0E6f82d8dD361185e38B41CF34E",
   "84532": "0x04Acaf5ECED5f0E6f82d8dD361185e38B41CF34E",
+  "421613": "0xYourArbitrumGoerliFrameFactoryAddress",
+  "338": "0xYourCronosTestnetFrameFactoryAddress",
+  "80001": "0xYourPolygonMumbaiFrameFactoryAddress",
+  "1442": "0xYourPolygonZkEvmTestnetFrameFactoryAddress",
+  "11155111": "0xYourSepoliaFrameFactoryAddress",
+  "501": "0xYourSolanaMainnetFrameFactoryAddress",
+  "64165": "0xYourSonicTestnetFrameFactoryAddress",
 }
 
 export const safeMemeTemplate: {
@@ -250,6 +331,12 @@ export const safeMemeTemplate: {
 } = {
   "4002": "0x8e48A0E6849179D24f7De46121b7268116F00d0C",
   "64165": "0x99Caf2D3EbE03B6671fc8ec7D3e6160e88359FA0",
+  "421613": "0xYourArbitrumGoerliSafeMemeTemplateAddress",
+  "338": "0xYourCronosTestnetSafeMemeTemplateAddress",
+  "80001": "0xYourPolygonMumbaiSafeMemeTemplateAddress",
+  "1442": "0xYourPolygonZkEvmTestnetSafeMemeTemplateAddress",
+  "11155111": "0xYourSepoliaSafeMemeTemplateAddress",
+  "501": "0xYourSolanaMainnetSafeMemeTemplateAddress",
 }
 
 export const safeLaunchFactory: {
@@ -257,6 +344,12 @@ export const safeLaunchFactory: {
 } = {
   "4002": "0x3EC3eF1C4B882a85F7962c6AC22Bf8433990bAbb",
   "64165": "0xA0db964a0393AB56b14D9bcEdf756aA00f2e0361",
+  "421613": "0xYourArbitrumGoerliSafeLaunchFactoryAddress",
+  "338": "0xYourCronosTestnetSafeLaunchFactoryAddress",
+  "80001": "0xYourPolygonMumbaiSafeLaunchFactoryAddress",
+  "1442": "0xYourPolygonZkEvmTestnetSafeLaunchFactoryAddress",
+  "11155111": "0xYourSepoliaSafeLaunchFactoryAddress",
+  "501": "0xYourSolanaMainnetSafeLaunchFactoryAddress",
 }
 
 export const exchangeTemplate: {
@@ -264,6 +357,12 @@ export const exchangeTemplate: {
 } = {
   "4002": "0x841C50f907A52cD9D9CDB06695deB6A3d8803EfE",
   "64165": "0x7e17CA6532Cf7Db5324644EadDefB1cC5B71433D",
+  "421613": "0xYourArbitrumGoerliExchangeTemplateAddress",
+  "338": "0xYourCronosTestnetExchangeTemplateAddress",
+  "80001": "0xYourPolygonMumbaiExchangeTemplateAddress",
+  "1442": "0xYourPolygonZkEvmTestnetExchangeTemplateAddress",
+  "11155111": "0xYourSepoliaExchangeTemplateAddress",
+  "501": "0xYourSolanaMainnetExchangeTemplateAddress",
 }
 
 export const exchangeFactory: {
@@ -271,6 +370,12 @@ export const exchangeFactory: {
 } = {
   "4002": "0x605B3015025d3cCA4D32aa38f8a698A65C127352",
   "64165": "0xD4B1Cb9456d51829af3e0181E82E2F7f81B551D0",
+  "421613": "0xYourArbitrumGoerliExchangeFactoryAddress",
+  "338": "0xYourCronosTestnetExchangeFactoryAddress",
+  "80001": "0xYourPolygonMumbaiExchangeFactoryAddress",
+  "1442": "0xYourPolygonZkEvmTestnetExchangeFactoryAddress",
+  "11155111": "0xYourSepoliaExchangeFactoryAddress",
+  "501": "0xYourSolanaMainnetExchangeFactoryAddress",
 }
 
 export const houseFeesContract: {
@@ -278,6 +383,12 @@ export const houseFeesContract: {
 } = {
   "4002": "0x32A7D38a7f3FdEFf2d7fF362Bcff212A4f91E2cB",
   "64165": "0xe51540C284990B255bb0e07c0bc3dfb41e06c864",
+  "421613": "0xYourArbitrumGoerliHouseFeesContractAddress",
+  "338": "0xYourCronosTestnetHouseFeesContractAddress",
+  "80001": "0xYourPolygonMumbaiHouseFeesContractAddress",
+  "1442": "0xYourPolygonZkEvmTestnetHouseFeesContractAddress",
+  "11155111": "0xYourSepoliaHouseFeesContractAddress",
+  "501": "0xYourSolanaMainnetHouseFeesContractAddress",
 }
 
 export const insurancePoolContract: {
@@ -285,6 +396,12 @@ export const insurancePoolContract: {
 } = {
   "4002": "0xe0D8ed59bb130cf60143b14E798E11D0148a3Be2",
   "64165": "0xdD8F3fFd7B73c687Af45DF1F37596baB4c85C1A1",
+  "421613": "0xYourArbitrumGoerliInsurancePoolContractAddress",
+  "338": "0xYourCronosTestnetInsurancePoolContractAddress",
+  "80001": "0xYourPolygonMumbaiInsurancePoolContractAddress",
+  "1442": "0xYourPolygonZkEvmTestnetInsurancePoolContractAddress",
+  "11155111": "0xYourSepoliaInsurancePoolContractAddress",
+  "501": "0xYourSolanaMainnetInsurancePoolContractAddress",
 }
 
 export const safeBaseToken: {
@@ -292,6 +409,12 @@ export const safeBaseToken: {
 } = {
   "4002": "0x64f96f5c95d9a2a4DD40d35d5fADb69D17dAF122",
   "64165": "0xb3f9EA258fEC06a1522824E9edADBDFbAEEfe477",
+  "421613": "0xYourArbitrumGoerliSafeBaseTokenAddress",
+  "338": "0xYourCronosTestnetSafeBaseTokenAddress",
+  "80001": "0xYourPolygonMumbaiSafeBaseTokenAddress",
+  "1442": "0xYourPolygonZkEvmTestnetSafeBaseTokenAddress",
+  "11155111": "0xYourSepoliaSafeBaseTokenAddress",
+  "501": "0xYourSolanaMainnetSafeBaseTokenAddress",
 }
 
 export const airdropContract: {
@@ -299,6 +422,12 @@ export const airdropContract: {
 } = {
   "4002": "0x43b0f21F50CEB0942584a54a95c6d20BD18cF058",
   "64165": "0xA59eBfe75d467e2d26875030FE03563B8E42c250",
+  "421613": "0xYourArbitrumGoerliAirdropContractAddress",
+  "338": "0xYourCronosTestnetAirdropContractAddress",
+  "80001": "0xYourPolygonMumbaiAirdropContractAddress",
+  "1442": "0xYourPolygonZkEvmTestnetAirdropContractAddress",
+  "11155111": "0xYourSepoliaAirdropContractAddress",
+  "501": "0xYourSolanaMainnetAirdropContractAddress",
 }
 
 export const AirdropFactory: {
@@ -306,4 +435,10 @@ export const AirdropFactory: {
 } = {
   "4002": "0x441F549F386bdD45c33954A2CC6a96b30329a585",
   "64165": "0x1Aaf941fD48D3A267F56471E9a517E053Cad8F06",
+  "421613": "0xYourArbitrumGoerliAirdropFactoryAddress",
+  "338": "0xYourCronosTestnetAirdropFactoryAddress",
+  "80001": "0xYourPolygonMumbaiAirdropFactoryAddress",
+  "1442": "0xYourPolygonZkEvmTestnetAirdropFactoryAddress",
+  "11155111": "0xYourSepoliaAirdropFactoryAddress",
+  "501": "0xYourSolanaMainnetAirdropFactoryAddress",
 }

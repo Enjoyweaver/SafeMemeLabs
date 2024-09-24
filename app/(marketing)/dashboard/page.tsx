@@ -85,6 +85,11 @@ export default function Dashboard(): JSX.Element {
     "31": "RSK Testnet",
     "1337": "Ethereum Sepolia",
     "64165": "Sonic Testnet",
+    "421613": "Arbitrum Goerli",
+    "338": "Cronos Testnet",
+    "80001": "Polygon Mumbai",
+    "1442": "Polygon ZkEVM Testnet",
+    "11155111": "Sepolia",
   }
 
   useEffect(() => {
@@ -486,7 +491,7 @@ export default function Dashboard(): JSX.Element {
                 </tbody>
               </table>
             </div>
-            <div className="table-container">
+            <div className="token-table-container">
               <table className="data-table">
                 <thead>
                   <tr>

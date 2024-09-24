@@ -39,27 +39,61 @@ export default MinidenticonImg
 
 const chainDetails = [
   {
-    name: "Avalanche",
-    chainId: 43114,
+    name: "Arbitrum Testnet",
+    chainId: 421614,
+    logo: "/assets/icons/logos/arbitrum.png",
+  },
+  {
+    name: "Avalanche Testnet",
+    chainId: 43113,
     logo: "/assets/icons/logos/avalanche.png",
   },
-
-  { name: "Fantom", chainId: 250, logo: "/assets/icons/logos/fantom.png" },
+  {
+    name: "Cronos Testnet",
+    chainId: 338,
+    logo: "/assets/icons/logos/cronos.png",
+  },
+  {
+    name: "Ethereum Testnet",
+    chainId: 11155111,
+    logo: "/assets/icons/logos/ethereum.jpg",
+  },
+  // { name: "Fantom", chainId: 250, logo: "/assets/icons/logos/fantom.png" },
   {
     name: "Fantom Testnet",
     chainId: 4002,
     logo: "/assets/icons/logos/fantom.png",
   },
   {
-    name: "Sonic Testnet",
-    chainId: 64165,
-    logo: "/assets/icons/logos/fantom.png",
+    name: "Linea Testnet",
+    chainId: 59141,
+    logo: "/assets/icons/logos/linea.jpg",
   },
-  { name: "Rootstock", chainId: 30, logo: "/assets/icons/logos/rootstock.png" },
+  {
+    name: "Optimism Testnet",
+    chainId: 420,
+    logo: "/assets/icons/logos/optimism.jpg",
+  },
+  {
+    name: "Polygon zkEVM Testnet",
+    chainId: 1442,
+    logo: "/assets/icons/logos/polygon.png",
+  },
+  //{ name: "Rootstock", chainId: 30, logo: "/assets/icons/logos/rootstock.png" },
   {
     name: "Rootstock Testnet",
     chainId: 31,
     logo: "/assets/icons/logos/rootstock.png",
+  },
+  {
+    name: "Sonic Testnet",
+    chainId: 64165,
+    logo: "/assets/icons/logos/sonic.jpg",
+  },
+  {
+    name: "Scroll Testnet",
+    chainId: 534353,
+    logo: "/assets/icons/logos/scroll.jpg",
   },
 ]
 
