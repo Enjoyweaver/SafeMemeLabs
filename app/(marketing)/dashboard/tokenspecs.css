@@ -471,13 +471,19 @@ body {
     margin: 20px auto;
   }
 
-  .table-container,
-  .token-table-container {
+  .table-container {
     width: 40%;
     overflow-x: none;
     padding: 10px;
   }
 
+  .token-table-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+    overflow-x: auto;
+  }
   .data-table {
     width: 40%;
     min-width: 300px;
@@ -529,11 +535,14 @@ body {
     width: 60%;
   }
 
-  .table-container,
-  .token-table-container {
+  .table-container {
     width: 40%;
     overflow-x: none;
     padding: 10px;
+  }
+
+  .token-table-container {
+    padding: 8px;
   }
 
   .data-table th,
@@ -574,11 +583,14 @@ body {
     width: 60%;
   }
 
-  .table-container,
-  .token-table-container {
+  .table-container {
     width: 40%;
     overflow-x: none;
     padding: 10px;
+  }
+
+  .token-table-container {
+    padding: 5px;
   }
 
   .data-table th,

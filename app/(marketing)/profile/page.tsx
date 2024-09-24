@@ -151,7 +151,6 @@ const ProfilePage: React.FC = () => {
       }
 
       const uniqueHandleNames = new Set(handleNames)
-
       setProfileCount(uniqueHandleNames.size)
       console.log(`Unique Profiles: ${uniqueHandleNames.size}`)
     } catch (error) {

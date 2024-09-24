@@ -405,7 +405,7 @@ export default function Dashboard(): JSX.Element {
 
   return (
     <>
-      <div className="flex min-h-screen flex-col">
+      <div>
         <div>
           <h1 className="title">Creator Dashboard</h1>
           <div className="profile-count">
