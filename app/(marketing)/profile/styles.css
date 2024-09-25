@@ -520,8 +520,10 @@ textarea {
 
   .profile-image {
     position: absolute;
-    bottom: -80px;
+    bottom: -60px;
     right: 20px;
+    width: 180px;
+    height: 120px;
   }
 
   .profile-image img {
