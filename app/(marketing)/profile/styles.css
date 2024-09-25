@@ -573,7 +573,10 @@ textarea {
   .profile-image .submit-button {
     bottom: -40px;
     right: 0;
-    width: 120px;
+    width: auto;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    z-index: 20;
   }
 
   .social-links {
