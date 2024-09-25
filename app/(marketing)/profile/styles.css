@@ -498,28 +498,6 @@ textarea {
 }
 
 @media (max-width: 768px) {
-  .profile-page {
-    flex-direction: column;
-    padding: 0;
-  }
-
-  .profile-section {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-  }
-
-  .profile-banner {
-    margin-bottom: 10px;
-  }
-
-  .profile-image {
-    bottom: -100px;
-    right: 100px;
-    width: 220px;
-    height: 180px;
-  }
-
   .social-links {
     padding: 0 20px;
     margin-top: 20px;
