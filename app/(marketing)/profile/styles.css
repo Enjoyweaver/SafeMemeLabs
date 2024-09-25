@@ -509,10 +509,8 @@ textarea {
   }
 
   .profile-image {
-    bottom: -1px;
-    right: 30px;
-    width: 220px;
-    height: 180px;
+    bottom: -100px;
+    right: 10px;
   }
 
   .social-links {
