@@ -225,16 +225,6 @@ textarea {
   opacity: 1;
 }
 
-.banner-submit-button {
-  position: absolute;
-  bottom: -50px;
-  left: 20px;
-  width: auto;
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  z-index: 20;
-}
-
 .profile-submit-button {
   position: absolute;
   bottom: -50px;
@@ -568,16 +558,6 @@ textarea {
 
   .image-upload-label:hover .overlay {
     opacity: 1;
-  }
-
-  .submit-button {
-    position: absolute;
-    bottom: -50px;
-    left: 20px;
-    width: auto;
-    padding: 8px 12px;
-    font-size: 0.8rem;
-    z-index: 20;
   }
 
   .social-links {
