@@ -142,8 +142,8 @@ textarea {
 
 .profile-image {
   position: absolute;
-  bottom: -40px;
-  right: 220px;
+  bottom: -120px;
+  right: 60px;
   width: 220px;
   height: 180px;
   border-radius: 15px;
@@ -505,12 +505,69 @@ textarea {
   }
 
   .profile-banner {
-    margin-bottom: 10px;
+    position: relative;
+    width: 100%;
+    height: 200px;
+    margin-bottom: 80px;
+  }
+
+  .banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
   }
 
   .profile-image {
-    bottom: -100px;
-    right: 10px;
+    position: absolute;
+    bottom: -80px;
+    right: 20px;
+  }
+
+  .profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .image-upload-label {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .image-upload-label:hover .overlay {
+    opacity: 1;
+  }
+
+  .submit-button {
+    position: absolute;
+    bottom: -30px;
+    right: 20px;
+    width: auto;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    z-index: 20;
+  }
+
+  .profile-image .submit-button {
+    bottom: -40px;
+    right: 0;
   }
 
   .social-links {

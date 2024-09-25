@@ -542,74 +542,63 @@ const ProfilePage: React.FC = () => {
           {isConnected && selectedProfile ? (
             <>
               <div className="profile-banner">
-                {profileData.bannerURL ? (
-                  <label className="image-upload-label">
+                <label className="image-upload-label">
+                  {profileData.bannerURL ? (
                     <img
                       src={profileData.bannerURL}
                       alt="Banner"
                       className="banner-image"
                     />
-                    <input
-                      type="file"
-                      className="file-input"
-                      onChange={handleBannerSelection}
-                      accept="image/*"
-                    />
-                    <div className="overlay">Click to Upload</div>
-                  </label>
-                ) : (
-                  <label className="image-upload-label">
-                    <input
-                      type="file"
-                      className="file-input"
-                      onChange={handleBannerSelection}
-                      accept="image/*"
-                    />
-                    <div className="overlay">Click to Upload</div>
-                  </label>
-                )}
+                  ) : (
+                    <div className="banner-placeholder"></div>
+                  )}
+                  <input
+                    type="file"
+                    className="file-input"
+                    onChange={handleBannerSelection}
+                    accept="image/*"
+                  />
+                  <div className="overlay">Click to Upload Banner</div>
+                </label>
                 {selectedBanner && (
                   <button
                     onClick={handleBannerUpload}
                     className="submit-button"
                   >
-                    Submit Banner to Arweave
+                    Submit Banner
                   </button>
                 )}
-              </div>
 
-              <div className="profile-image">
-                {profileData.avatarURL ? (
+                <div className="profile-image">
                   <label className="image-upload-label">
-                    <img
-                      src={profileData.avatarURL}
-                      alt="Profile"
-                      className="profile-picture"
-                    />
+                    {profileData.avatarURL ? (
+                      <img
+                        src={profileData.avatarURL}
+                        alt="Profile"
+                        className="profile-picture"
+                      />
+                    ) : (
+                      <div className="profile-placeholder"></div>
+                    )}
                     <input
                       type="file"
                       className="file-input"
                       onChange={handleImageSelection}
                       accept="image/*"
                     />
-                    <div className="overlay">Click to Upload</div>
+                    <div className="overlay">
+                      Click to Upload Profile Picture
+                    </div>
                   </label>
-                ) : (
-                  <label className="image-upload-label">
-                    <input
-                      type="file"
-                      className="file-input"
-                      onChange={handleImageSelection}
-                      accept="image/*"
-                    />
-                    <div className="overlay">Click to Upload</div>
-                  </label>
-                )}
-                {selectedImage && (
-                  <button onClick={handleImageUpload} className="submit-button">
-                    Submit Image to Arweave
-                  </button>
-                )}
+                  {selectedImage && (
+                    <button
+                      onClick={handleImageUpload}
+                      className="submit-button"
+                    >
+                      Submit Image
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="social-links">
