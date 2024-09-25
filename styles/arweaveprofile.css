@@ -272,15 +272,3 @@ body.dark {
     padding: 15px;
   }
 }
-
-@media (max-width: 768px) {
-  .social-links {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .social-links {
-    grid-template-columns: 1fr;
-  }
-}
