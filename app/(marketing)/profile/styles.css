@@ -503,9 +503,11 @@ textarea {
 
 @media (max-width: 768px) {
   .profile-submit-button {
-    bottom: -40px;
-    font-size: 0.8rem;
-    padding: 8px 12px;
+    position: relative;
+    margin-top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
   }
 
   .profile-section {
