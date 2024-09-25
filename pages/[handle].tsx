@@ -1,9 +1,11 @@
+"use client"
+
 import React, { useEffect, useState } from "react"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import { blockExplorerAddress, chains } from "@/Constants/config"
+import ArDB from "ardb"
 import Arweave from "arweave"
-import Account, { ArAccount } from "arweave-account"
 
 import "../styles/arweaveprofile.css"
 
@@ -13,6 +15,8 @@ interface ProfileData {
   bio?: string
   avatarURL?: string
   bannerURL?: string
+  email?: string
+  website?: string
   links?: {
     twitter?: string
     instagram?: string
@@ -42,35 +46,73 @@ const SharedProfilePage: React.FC = () => {
 
     const fetchProfile = async () => {
       try {
-        const arweave = Arweave.init({})
-        const account = new Account(arweave)
-
+        const arweave = Arweave.init({
+          host: "arweave.net",
+          port: 443,
+          protocol: "https",
+        })
+        const ardb = new ArDB(arweave)
         const userHandle = typeof handle === "string" ? handle : handle[0]
-        const users = await account.search(userHandle)
-
-        if (users && users.length > 0) {
-          const matchedUser = users.find(
-            (user) => user.profile.handleName === userHandle
-          )
-
-          if (matchedUser) {
-            setProfileData({
-              handleName: matchedUser.profile.handleName,
-              name: matchedUser.profile.name,
-              bio: matchedUser.profile.bio,
-              avatarURL: matchedUser.profile.avatarURL,
-              bannerURL: matchedUser.profile.bannerURL,
-              links: matchedUser.profile.links,
-              wallets: matchedUser.profile.wallets,
-            })
-          } else {
-            setError("Profile not found.")
-          }
-        } else {
+        const transactions = await ardb
+          .search("transactions")
+          .tag("App-Name", "SafeMemes.fun")
+          .find()
+        if (transactions.length === 0) {
           setError("Profile not found.")
+          setLoading(false)
+          return
         }
-      } catch (err) {
-        console.error("Error fetching profile:", err)
+        const matchingTransactions = []
+        for (const tx of transactions) {
+          try {
+            const dataString = await arweave.transactions.getData(tx.id, {
+              decode: true,
+              string: true,
+            })
+            const data = JSON.parse(dataString)
+            if (data.handleName === userHandle) {
+              matchingTransactions.push(tx)
+            }
+          } catch (parseError) {
+            console.warn(`Failed to parse transaction ${tx.id}:`, parseError)
+          }
+        }
+        if (matchingTransactions.length === 0) {
+          setError("Profile not found.")
+          setLoading(false)
+          return
+        }
+        matchingTransactions.sort((a, b) => {
+          const aHeight = a.block_height || 0
+          const bHeight = b.block_height || 0
+          return bHeight - aHeight
+        })
+        const latestTx = matchingTransactions[0]
+        const latestDataString = await arweave.transactions.getData(
+          latestTx.id,
+          {
+            decode: true,
+            string: true,
+          }
+        )
+        const latestData = JSON.parse(latestDataString)
+        setProfileData({
+          handleName: latestData.handleName || "",
+          name: latestData.name || "",
+          bio: latestData.bio || "",
+          avatarURL: latestData.avatar
+            ? `https://arweave.net/${latestData.avatar}`
+            : "",
+          bannerURL: latestData.banner
+            ? `https://arweave.net/${latestData.banner}`
+            : "",
+          email: latestData.email || "",
+          website: latestData.website || "",
+          links: latestData.links || {},
+          wallets: latestData.wallets || {},
+        })
+      } catch (error) {
+        console.error("Error fetching profile:", error)
         setError("An error occurred while fetching the profile.")
       } finally {
         setLoading(false)
@@ -110,6 +152,8 @@ const SharedProfilePage: React.FC = () => {
           property="og:url"
           content={`https://safememes.fun/${profileData.handleName}`}
         />
+        <meta property="og:type" content="profile" />
+        <meta property="profile:username" content={profileData.handleName} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:title"
@@ -124,6 +168,20 @@ const SharedProfilePage: React.FC = () => {
         <meta
           name="twitter:image"
           content={profileData.avatarURL || "/images/SafeMemeLogo.png"}
+        />
+        <meta name="twitter:creator" content="@SafeMemeLabs" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: profileData.name || profileData.handleName,
+              url: `https://safememes.fun/${profileData.handleName}`,
+              image: profileData.avatarURL || "/images/SafeMemeLogo.png",
+              description: profileData.bio || "User Profile",
+            }),
+          }}
         />
       </Head>
 
@@ -173,6 +231,27 @@ const SharedProfilePage: React.FC = () => {
               {profileData.bio}
             </span>
           </div>
+          {profileData.email && (
+            <div className="profile-field">
+              <label htmlFor="email">Email:</label>
+              <span id="email" className="profile-email">
+                {profileData.email}
+              </span>
+            </div>
+          )}
+          {profileData.website && (
+            <div className="profile-field">
+              <label htmlFor="website">Website:</label>
+              <a
+                href={profileData.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="profile-website"
+              >
+                {profileData.website}
+              </a>
+            </div>
+          )}
         </div>
         <div className="social-links">
           {profileData.links?.twitter && (
