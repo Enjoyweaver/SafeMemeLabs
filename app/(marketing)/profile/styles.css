@@ -570,15 +570,6 @@ textarea {
     z-index: 20;
   }
 
-  .profile-image .submit-button {
-    bottom: -40px;
-    left: 20px;
-    width: auto;
-    padding: 8px 12px;
-    font-size: 0.8rem;
-    z-index: 20;
-  }
-
   .social-links {
     padding: 0 20px;
     margin-top: 20px;
