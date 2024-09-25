@@ -509,8 +509,8 @@ textarea {
   }
 
   .profile-image {
-    bottom: -100px;
-    right: 100px;
+    bottom: -1px;
+    right: 30px;
     width: 220px;
     height: 180px;
   }
