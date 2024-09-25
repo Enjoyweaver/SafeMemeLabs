@@ -58,7 +58,7 @@ body.dark {
   justify-content: center;
   margin-bottom: 20px;
   background-color: var(--input-light);
-  border-radius: 10px;
+  border-radius: 15px;
 }
 
 .dark .profile-banner {
@@ -78,13 +78,12 @@ body.dark {
   right: 50px;
   width: 240px;
   height: 160px;
-  border-radius: 10px;
+  border-radius: 15px;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
   transition: border 0.3s ease;
-  border-radius: 15px;
   border: 3px solid var(--border-light);
 }
 
@@ -117,6 +116,13 @@ body.dark {
 }
 
 .profile-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  color: var(--primary-dark);
+}
+
+.social-profile-field {
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
@@ -271,6 +277,9 @@ body.dark {
   .wallets {
     padding: 15px;
   }
+
+  .social-profile-field {
+    margin-bottom: 5px;
 }
 
 @media (max-width: 768px) {
