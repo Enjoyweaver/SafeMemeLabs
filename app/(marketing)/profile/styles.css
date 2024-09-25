@@ -143,7 +143,7 @@ textarea {
 .profile-image-container {
   position: relative;
   width: 220px;
-  margin-top: -90px;
+  margin-top: -190px;
   margin-left: auto;
   margin-right: 60px;
 }
@@ -232,7 +232,7 @@ textarea {
   justify-content: center;
   opacity: 0;
   transition: opacity 0.3s ease;
-  border-radius: 5px;
+  border-radius: 15px;
 }
 
 .image-upload-label:hover .overlay {
@@ -502,12 +502,13 @@ textarea {
 }
 
 @media (max-width: 768px) {
+  .submit-button,
   .profile-submit-button {
-    position: relative;
-    margin-top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 0;
+    display: block;
+    margin: 10px auto 0;
+    width: fit-content;
+    padding: 10px 20px;
+    font-size: 1rem;
   }
 
   .profile-section {
@@ -536,6 +537,7 @@ textarea {
     margin-top: 20px;
     margin-left: 0;
     margin-right: 0;
+    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;

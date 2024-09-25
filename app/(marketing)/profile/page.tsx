@@ -349,19 +349,21 @@ const ProfilePage: React.FC = () => {
     console.log("User disconnected and profile reset.")
   }
 
-  const handleImageSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setSelectedImage(file)
-      console.log("Image selected:", file.name)
-    }
-  }
-
   const handleBannerSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       setSelectedBanner(file)
+      setSelectedImage(null)
       console.log("Banner selected:", file.name)
+    }
+  }
+
+  const handleImageSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setSelectedImage(file)
+      setSelectedBanner(null)
+      console.log("Image selected:", file.name)
     }
   }
 
@@ -568,7 +570,9 @@ const ProfilePage: React.FC = () => {
                     Submit Banner
                   </button>
                 )}
+              </div>
 
+              <div className="profile-image-container">
                 <div className="profile-image">
                   <label className="image-upload-label">
                     {profileData.avatarURL ? (
@@ -590,15 +594,15 @@ const ProfilePage: React.FC = () => {
                       Click to Upload Profile Picture
                     </div>
                   </label>
-                  {selectedImage && (
-                    <button
-                      onClick={handleImageUpload}
-                      className="profile-submit-button"
-                    >
-                      Submit Image
-                    </button>
-                  )}
                 </div>
+                {selectedImage && (
+                  <button
+                    onClick={handleImageUpload}
+                    className="profile-submit-button"
+                  >
+                    Submit Image
+                  </button>
+                )}
               </div>
 
               <div className="social-links">
