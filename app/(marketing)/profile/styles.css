@@ -225,8 +225,7 @@ textarea {
   opacity: 1;
 }
 
-.banner-submit-button,
-.profile-submit-button {
+.banner-submit-button {
   position: absolute;
   bottom: -50px;
   left: 20px;
@@ -237,11 +236,13 @@ textarea {
 }
 
 .profile-submit-button {
-  bottom: -40px; /* Adjust as needed */
-  left: 0;
-  right: 0;
-  margin: auto;
-  width: fit-content;
+  position: absolute;
+  bottom: -50px;
+  left: 20px;
+  width: auto;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  z-index: 20;
 }
 
 .submit-button:hover {
@@ -577,10 +578,6 @@ textarea {
     padding: 8px 12px;
     font-size: 0.8rem;
     z-index: 20;
-  }
-
-  .profile-submit-button {
-    bottom: -30px;
   }
 
   .social-links {
