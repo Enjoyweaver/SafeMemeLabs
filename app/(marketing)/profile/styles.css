@@ -79,6 +79,24 @@ button {
   font-size: 1rem;
 }
 
+.banner-submit-button,
+.profile-submit-button {
+  position: absolute;
+  bottom: -50px;
+  left: 20px;
+  width: auto;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  z-index: 20;
+}
+
+.profile-submit-button {
+  bottom: -40px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: fit-content;
+}
 button:hover {
   background-color: var(--secondary-light);
 }
@@ -223,16 +241,6 @@ textarea {
 
 .image-upload-label:hover .overlay {
   opacity: 1;
-}
-
-.profile-submit-button {
-  position: absolute;
-  bottom: -50px;
-  left: 20px;
-  width: auto;
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  z-index: 20;
 }
 
 .submit-button:hover {
@@ -498,6 +506,10 @@ textarea {
 }
 
 @media (max-width: 768px) {
+  .profile-submit-button {
+    bottom: -30px;
+  }
+
   .profile-section {
     width: 100%;
     margin: 0;

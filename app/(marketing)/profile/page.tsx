@@ -593,7 +593,7 @@ const ProfilePage: React.FC = () => {
                   {selectedImage && (
                     <button
                       onClick={handleImageUpload}
-                      className="profile-submit-button"
+                      className="submit-button profile-submit-button"
                     >
                       Submit Image
                     </button>
