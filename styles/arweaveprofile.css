@@ -19,6 +19,9 @@
   --accent-dark: #41b80a;
   --border-dark: #41b80a;
   --text-dark: #ffffff;
+
+  --wallet-link-light-blue: #1e90ff;
+  --wallet-link-light-blue-dark: #63b3ed;
 }
 
 body {
@@ -140,6 +143,17 @@ body.dark {
   color: var(--primary-dark);
 }
 
+.social-profile-field label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: var(--primary-light);
+  font-size: 1rem;
+}
+
+.dark .social-profile-field label {
+  color: var(--primary-dark);
+}
+
 .profile-handle,
 .profile-name {
   font-size: 1.5rem;
@@ -185,6 +199,43 @@ body.dark {
 
 .social-links .profile-field {
   margin-bottom: 10px;
+}
+
+.arweave-wallet-link {
+  color: var(--wallet-link-light-blue);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.arweave-wallet-link:hover {
+  color: #104e8b;
+}
+
+.dark .arweave-wallet-link {
+  color: var(--wallet-link-light-blue-dark);
+}
+
+.dark .arweave-wallet-link:hover {
+  color: #3a8ac9;
+}
+
+.wallets a {
+  color: var(--accent-dark);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.wallets a:hover {
+  color: var(--primary-dark);
+}
+
+.dark .wallets a {
+  color: var(--primary-dark);
+}
+
+.dark .wallets a:hover {
+  color: var(--accent-dark);
 }
 
 .wallets {

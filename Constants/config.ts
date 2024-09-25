@@ -131,6 +131,7 @@ export const blockExplorerAddress: { [key: string]: string } = {
   "80001": "https://mumbai.polygonscan.com/address/",
   "1442": "https://zk-evm-testnet.polygonscan.com/address/",
   "11155111": "https://sepolia.etherscan.io/address/",
+  arweave: "https://viewblock.io/arweave/address/",
 }
 
 export const blockExplorerToken: { [key: string]: string } = {

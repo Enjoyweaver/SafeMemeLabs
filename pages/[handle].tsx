@@ -247,7 +247,7 @@ const SharedProfilePage: React.FC = () => {
         </div>
         <div className="social-links">
           {profileData.links?.twitter && (
-            <div className="profile-field">
+            <div className="social-profile-field">
               <label>Twitter:</label>
               <a
                 href={`https://twitter.com/${profileData.links.twitter}`}
@@ -260,7 +260,7 @@ const SharedProfilePage: React.FC = () => {
             </div>
           )}
           {profileData.links?.instagram && (
-            <div className="profile-field">
+            <div className="social-profile-field">
               <label>Instagram:</label>
               <a
                 href={`https://instagram.com/${profileData.links.instagram}`}
@@ -273,7 +273,7 @@ const SharedProfilePage: React.FC = () => {
             </div>
           )}
           {profileData.links?.tiktok && (
-            <div className="profile-field">
+            <div className="social-profile-field">
               <label>TikTok:</label>
               <a
                 href={`https://tiktok.com/@${profileData.links.tiktok}`}
@@ -286,7 +286,7 @@ const SharedProfilePage: React.FC = () => {
             </div>
           )}
           {profileData.links?.website && (
-            <div className="profile-field">
+            <div className="social-profile-field">
               <label>Website:</label>
               <a
                 href={profileData.links.website}
@@ -299,7 +299,7 @@ const SharedProfilePage: React.FC = () => {
             </div>
           )}
           {profileData.links?.github && (
-            <div className="profile-field">
+            <div className="social-profile-field">
               <label>GitHub:</label>
               <a
                 href={`https://github.com/${profileData.links.github}`}
@@ -312,7 +312,7 @@ const SharedProfilePage: React.FC = () => {
             </div>
           )}
           {profileData.links?.discord && (
-            <div className="profile-field">
+            <div className="social-profile-field">
               <label>Discord:</label>
               <a
                 href={`https://discord.com/users/${profileData.links.discord}`}
@@ -325,7 +325,7 @@ const SharedProfilePage: React.FC = () => {
             </div>
           )}
           {profileData.links?.linkedin && (
-            <div className="profile-field">
+            <div className="social-profile-field">
               <label>LinkedIn:</label>
               <a
                 href={`https://linkedin.com/in/${profileData.links.linkedin}`}
@@ -338,7 +338,7 @@ const SharedProfilePage: React.FC = () => {
             </div>
           )}
           {profileData.links?.facebook && (
-            <div className="profile-field">
+            <div className="social-profile-field">
               <label>Facebook:</label>
               <a
                 href={`https://facebook.com/${profileData.links.facebook}`}
@@ -351,7 +351,7 @@ const SharedProfilePage: React.FC = () => {
             </div>
           )}
           {profileData.links?.youtube && (
-            <div className="profile-field">
+            <div className="social-profile-field">
               <label>YouTube:</label>
               <a
                 href={`https://youtube.com/${profileData.links.youtube}`}
@@ -364,7 +364,7 @@ const SharedProfilePage: React.FC = () => {
             </div>
           )}
           {profileData.links?.twitch && (
-            <div className="profile-field">
+            <div className="social-profile-field">
               <label>Twitch:</label>
               <a
                 href={`https://twitch.tv/${profileData.links.twitch}`}
@@ -383,23 +383,36 @@ const SharedProfilePage: React.FC = () => {
           {profileData.wallets &&
           Object.keys(profileData.wallets).length > 0 ? (
             <ul>
-              {Object.entries(profileData.wallets).map(([chainId, address]) => (
-                <li key={chainId}>
-                  <strong>
-                    {chains.find((chain) => chain.id.toString() === chainId)
-                      ?.name || "Unknown Blockchain"}
-                    :
-                  </strong>{" "}
-                  <a
-                    href={`${blockExplorerAddress[chainId]}${address}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {address.slice(0, 6)}...{address.slice(-6)}
-                  </a>{" "}
-                  (Verified)
-                </li>
-              ))}
+              {Object.entries(profileData.wallets).map(([chainId, address]) => {
+                const chain = chains.find(
+                  (chain) => chain.id.toString() === chainId
+                )
+                const chainName = chain?.name || "Unknown Blockchain"
+                const blockExplorer = blockExplorerAddress[chainId]
+
+                const isArweave =
+                  chainName.toLowerCase() === "arweave" ||
+                  chainId.toLowerCase() === "arweave"
+
+                return (
+                  <li key={chainId}>
+                    <strong>{chainName}:</strong>{" "}
+                    <a
+                      href={
+                        isArweave
+                          ? `https://viewblock.io/arweave/address/${address}`
+                          : `${blockExplorer}${address}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={isArweave ? "arweave-wallet-link" : ""}
+                    >
+                      {address.slice(0, 6)}...{address.slice(-6)}
+                    </a>{" "}
+                    (Verified)
+                  </li>
+                )
+              })}
             </ul>
           ) : (
             <p>No wallet addresses added.</p>

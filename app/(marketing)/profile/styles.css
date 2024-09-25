@@ -19,6 +19,77 @@
   --accent-dark: #41b80a;
   --border-dark: #41b80a;
   --text-dark: #ffffff;
+  --wallet-link-light-blue: #1e90ff;
+  --wallet-link-light-blue-dark: #63b3ed;
+}
+
+.arweave-wallet-link {
+  color: var(--wallet-link-light-blue);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.arweave-wallet-link:hover {
+  color: #104e8b; /* Darker Blue on Hover */
+}
+
+/* Dark Mode Styling */
+.dark .arweave-wallet-link {
+  color: var(--wallet-link-light-blue-dark);
+}
+
+.dark .arweave-wallet-link:hover {
+  color: #3a8ac9; /* Darker Light Blue on Hover in Dark Mode */
+}
+
+/* Optional: Ensure All Wallet Links Have Consistent Styling */
+.profile-wallets a {
+  color: var(--accent-dark); /* Existing Accent Color for Other Wallets */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.profile-wallets a:hover {
+  color: var(--primary-dark);
+}
+
+.dark .profile-wallets a {
+  color: var(--primary-dark);
+}
+
+.dark .profile-wallets a:hover {
+  color: var(--accent-dark);
+}
+
+/* Responsive Styling for Wallets Section */
+.profile-wallets ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.profile-wallets li {
+  background-color: var(--input-light);
+  padding: 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dark .profile-wallets li {
+  background-color: var(--input-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.profile-wallets li strong {
+  color: var(--primary-light);
+}
+
+.dark .profile-wallets li strong {
+  color: var(--primary-dark);
 }
 
 body {
