@@ -187,25 +187,17 @@ const SharedProfilePage: React.FC = () => {
 
       <div className="shared-profile-page">
         <div className="profile-banner">
-          {profileData.bannerURL ? (
-            <img
-              src={profileData.bannerURL}
-              alt="Banner"
-              className="banner-image"
-            />
-          ) : (
-            <div className="placeholder-banner">No Banner</div>
-          )}
+          <img
+            src={profileData.bannerURL}
+            alt="Banner"
+            className="banner-image"
+          />
           <div className="profile-image">
-            {profileData.avatarURL ? (
-              <img
-                src={profileData.avatarURL}
-                alt="Profile"
-                className="profile-picture"
-              />
-            ) : (
-              <div className="placeholder-image">No Image</div>
-            )}
+            <img
+              src={profileData.avatarURL}
+              alt="Profile"
+              className="profile-picture"
+            />
           </div>
         </div>
         <div className="profile-info">
