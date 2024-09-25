@@ -188,14 +188,13 @@ const ProfilePage: React.FC = () => {
       user.profile.banner = profileData.banner
       user.profile.bannerURL = profileData.bannerURL
 
-      await account.connect() // Ensure the account is connected via Arweave Web Wallet
+      await account.connect()
 
       const tx = await arweave.createTransaction({
-        data: JSON.stringify(user.profile),
+        data: JSON.stringify({ profile: user.profile }),
       })
       tx.addTag("App-Name", "SafeMemes.fun")
 
-      // Dispatch the transaction through Arweave Web Wallet
       const result = await window.arweaveWallet.dispatch(tx)
       if (!result || !result.id) {
         throw new Error(
@@ -490,28 +489,30 @@ const ProfilePage: React.FC = () => {
   const fetchProfileData = async (address: string, jwk: any | null) => {
     try {
       const profile = await account.get(address)
-      if (profile && profile.profile) {
+      if (profile) {
+        const profileDataFromChain = profile.profile || profile
+
         setProfileData({
-          handleName: profile.profile.handleName || "",
-          name: profile.profile.name || "",
-          bio: profile.profile.bio || "",
-          avatar: profile.profile.avatar || "",
-          avatarURL: profile.profile.avatarURL || "",
-          banner: profile.profile.banner || "",
-          bannerURL: profile.profile.bannerURL || "",
-          email: profile.profile.email || "",
-          website: profile.profile.website || "",
-          links: profile.profile.links || {},
-          wallets: profile.profile.wallets || {},
+          handleName: profileDataFromChain.handleName || "",
+          name: profileDataFromChain.name || "",
+          bio: profileDataFromChain.bio || "",
+          avatar: profileDataFromChain.avatar || "",
+          avatarURL: profileDataFromChain.avatarURL || "",
+          banner: profileDataFromChain.banner || "",
+          bannerURL: profileDataFromChain.bannerURL || "",
+          email: profileDataFromChain.email || "",
+          website: profileDataFromChain.website || "",
+          links: profileDataFromChain.links || {},
+          wallets: profileDataFromChain.wallets || {},
         })
 
-        if (profile.profile.handleName) {
+        if (profileDataFromChain.handleName) {
           const domain =
             process.env.NEXT_PUBLIC_DOMAIN || "http://localhost:3000"
-          setUniqueLink(`${domain}/${profile.profile.handleName}`)
+          setUniqueLink(`${domain}/${profileDataFromChain.handleName}`)
           console.log(
             "Unique profile link fetched:",
-            `${domain}/${profile.profile.handleName}`
+            `${domain}/${profileDataFromChain.handleName}`
           )
         }
       } else {

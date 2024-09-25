@@ -36,7 +36,7 @@ export const metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description:
-    "Building the safe meme economy tools you need to create rugproof tokens, safe Frames, and send airdrops.",
+    "Building the safe meme economy tools for you create the safe meme economy",
   keywords: [
     "safe meme",
     "meme",
@@ -61,6 +61,11 @@ export const metadata = {
     "crypto meme",
     "crypto token",
     "safe token",
+    "crypto",
+    "token",
+    "erc20",
+    "safememes",
+    "safe memes",
   ],
   authors: [
     {
@@ -79,7 +84,7 @@ export const metadata = {
     url: siteConfig.url,
     title: siteConfig.name,
     description:
-      "Developing the safe meme economy tools you need to create rugproof tokens, build safe Frames, and share airdrops.",
+      "Building the safe meme economy tools for you create the safe meme economy",
     siteName: siteConfig.name,
     images: [
       {
