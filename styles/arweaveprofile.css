@@ -166,6 +166,9 @@ body.dark {
   border-radius: 10px;
   margin-top: 20px;
   color: var(--accent-dark);
+  flex-direction: row;
+  display: flex;
+  gap: 3rem;
 }
 
 .dark .social-links {
