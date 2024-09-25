@@ -79,24 +79,6 @@ button {
   font-size: 1rem;
 }
 
-.banner-submit-button,
-.profile-submit-button {
-  position: absolute;
-  bottom: -50px;
-  left: 20px;
-  width: auto;
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  z-index: 20;
-}
-
-.profile-submit-button {
-  bottom: -40px;
-  left: 0;
-  right: 0;
-  margin: auto;
-  width: fit-content;
-}
 button:hover {
   background-color: var(--secondary-light);
 }
@@ -158,10 +140,15 @@ textarea {
   margin-top: 2rem;
 }
 
+.profile-image-container {
+  position: relative;
+  width: 220px;
+  margin-top: -90px;
+  margin-left: auto;
+  margin-right: 60px;
+}
+
 .profile-image {
-  position: absolute;
-  bottom: -120px;
-  right: 60px;
   width: 220px;
   height: 180px;
   border-radius: 15px;
@@ -170,6 +157,15 @@ textarea {
   justify-content: center;
   align-items: center;
   transition: border 0.3s ease;
+}
+
+.profile-submit-button {
+  position: absolute;
+  bottom: -45px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: fit-content;
 }
 
 .profile-image img {
@@ -507,7 +503,9 @@ textarea {
 
 @media (max-width: 768px) {
   .profile-submit-button {
-    bottom: -3px;
+    bottom: -40px;
+    font-size: 0.8rem;
+    padding: 8px 12px;
   }
 
   .profile-section {
