@@ -524,6 +524,9 @@ textarea {
     right: 20px;
     width: 180px;
     height: 120px;
+    border-radius: 60px;
+    overflow: hidden;
+    z-index: 10;
   }
 
   .profile-image img {
@@ -559,7 +562,7 @@ textarea {
 
   .submit-button {
     position: absolute;
-    bottom: -30px;
+    bottom: -50px;
     right: 20px;
     width: auto;
     padding: 8px 12px;
@@ -570,6 +573,7 @@ textarea {
   .profile-image .submit-button {
     bottom: -40px;
     right: 0;
+    width: 120px;
   }
 
   .social-links {
