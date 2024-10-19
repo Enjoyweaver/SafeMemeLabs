@@ -68,10 +68,7 @@ const components = {
     />
   ),
   p: ({ className, ...props }) => (
-    <p
-      className={cn("leading-7 [&:not(:first-child)]:mt-6", className)}
-      {...props}
-    />
+    <p className={cn("mt-6", className)} {...props} />
   ),
   ul: ({ className, ...props }) => (
     <ul className={cn("my-6 ml-6 list-disc", className)} {...props} />

@@ -33,6 +33,16 @@ const FeedbackPage = () => {
     address: "0x34B4C11DF80599C315dCe3F7aaC816d1e1F26496",
     status: "approved",
   }
+  feedbackInitialState[1] = {
+    text: "Be able to connect with phatom wallet!",
+    address: "0x1Fcf30706866B33e8720912eFEDe0a899d3648f1",
+    status: "approved",
+  }
+  feedbackInitialState[2] = {
+    text: "Let's add Solana!",
+    address: "0x1Fcf30706866B33e8720912eFEDe0a899d3648f1",
+    status: "approved",
+  }
 
   const [feedback, setFeedback] = useState(feedbackInitialState)
   const [checklistItems, setChecklistItems] = useState([

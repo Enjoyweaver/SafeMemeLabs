@@ -1,0 +1,408 @@
+---
+title: "What are the risks associated with deploying a token?"
+image: /images/blog/risk.png
+date: "2024-10-12"
+authors:
+  - SafeMeme Labs
+---
+
+#### How do you know what the risks are when creating a new token and how to mitigate them?
+
+Most of the risks below can be mitigated with the SafeMeme token and SafeLaunch mechanisms, though we will elaborate
+on how we address all of the risks further below.
+
+When you want to deploy a token, how do you know which blockchain to deploy it on and how do you know
+if you can you create a token that is compatible with the blockchain?
+
+For example, if you chose to deploy a token on the Solana blockchain, you would have to learn the
+progamming language Rust (unless you already knew it) and would have to learn the process of
+deploying a token on Solana, which is not simple or easily done
+
+## Risk Categories
+
+<div
+  style={{
+    fontSize: "1.7em",
+    borderBottom: "3px solid #ccc",
+    marginBottom: "1.5em",
+    textAlign: "left",
+    paddingBottom: "0.5em",
+  }}
+>
+  Blockchain Risk
+</div>
+
+<div
+  style={{
+    padding: "1em",
+    marginBottom: "1.5em",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+  }}
+>
+  <h3 style={{ marginBottom: "0.5em", fontWeight: "bold" }}>Risk Exposures:</h3>
+  <ul style={{ paddingLeft: "1.5em" }}>
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Blockchain choice</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Knowing how to deploy a token on a blockchain.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Which blockchain to use.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> You can choose from multiple blockchains to deploy
+        a token on.
+      </div>
+    </li>
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Blockchain Downtime</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Blockchain forking can lead to a "false downtime" if your transaction are on the fork.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Having a leader-based blockchain validator implementation.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> We'll provide live blockchain data to give you more
+        decision power.
+      </div>
+    </li>
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Transaction Fees</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Blockchain or DAG-style architecture.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Block size and number of transactions
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+      <em><u>Our Risk Control:</u></em> We choose the blockchains that allow for future scaling to keep
+        the transaction fees as minimal as possible. 
+      </div>
+    </li>
+  </ul>
+
+</div>
+<div
+  style={{
+    fontSize: "1.7em",
+    borderBottom: "3px solid #ccc",
+    marginBottom: "1.5em",
+    textAlign: "left",
+    paddingBottom: "0.5em",
+  }}
+>
+  Asset Layer Risk
+</div>
+
+<div
+  style={{
+    padding: "1em",
+    marginBottom: "1.5em",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+  }}
+>
+  <h3 style={{ marginBottom: "0.5em", fontWeight: "bold" }}>Risk Exposures:</h3>
+  <ul style={{ paddingLeft: "1.5em" }}>
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Token Design and Creation</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Designing a token with improper parameters or code vulnerabilities can lead to exploits and inefficiencies.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Inability to scale or adapt to future requirements, making tokens obsolete.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> Our SafeMeme token is built to protect against known smart contract vulnerabilities.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Internal Rugpull</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Founders or project owners withdrawing liquidity suddenly.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Lack of transparency in liquidity pool governance.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> The SafeLaunch mechanism prevents liquidity from being withdrawn by the token creator.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>External Rugpull</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Large token holders selling tokens in a pump-n-dump style.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> The SafeMeme tokens have a max token allowance percentage that is no more than 3% of the token supply, though it could be lower
+        depending on the token creator.
+      </div>
+    </li>
+
+  </ul>
+</div>
+
+<div
+  style={{
+    fontSize: "1.7em",
+    borderBottom: "3px solid #ccc",
+    marginBottom: "1.5em",
+    textAlign: "left",
+    paddingBottom: "0.5em",
+  }}
+>
+  Exchange Risk
+</div>
+
+<div
+  style={{
+    padding: "1em",
+    marginBottom: "1.5em",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+  }}
+>
+  <h3 style={{ marginBottom: "0.5em", fontWeight: "bold" }}>Risk Exposures:</h3>
+  <ul style={{ paddingLeft: "1.5em" }}>
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Sniper Bots</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Automated bots can quickly buy tokens during launch, causing unfair advantages and price manipulation.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Bots may create artificial price hikes or dumps.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> We implement bot protection measures such as rate-limiting and transaction validation mechanisms to prevent bots from dominating exchanges during launches.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Interoperability</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Most exchanges are not compatible with an ERC-20 token with enhanced features, such as a max token allowance.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> Our SafeLaunch mechanism creates a DEX specifically for your token.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Functionality and Features</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> The exchange’s inability to support key features such as locking liquidity to prevent rugpulls.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> Our SafeLaunch mechanism is designed to prevent liquidity from being withdrawn and each exchange is created custom for
+        each token.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Future Uptime</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Unexpected downtime due to technical failures or external attacks can disrupt token trading and reduce user trust.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> What if the exchange decides to stop operating and close down?
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> Our smart contracts will deployed onchain, though our dApp will be deployed on Arweave, so it will be
+        permanently available after it goes live. If there is an internet connection, you and future generations will be able to interact with your
+        token and our dApp.
+      </div>
+    </li>
+
+  </ul>
+</div>
+
+<div
+  style={{
+    fontSize: "1.7em",
+    borderBottom: "3px solid #ccc",
+    marginBottom: "1.5em",
+    textAlign: "left",
+    paddingBottom: "0.5em",
+  }}
+>
+  Financial Risk
+</div>
+
+<div
+  style={{
+    padding: "1em",
+    marginBottom: "1.5em",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+  }}
+>
+  <h3 style={{ marginBottom: "0.5em", fontWeight: "bold" }}>Risk Exposures:</h3>
+  <ul style={{ paddingLeft: "1.5em" }}>
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Liquidity Pairing</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Lack of sufficient liquidity may deter users from participating in token trading reducing overall market activity.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Insufficient liquidity can result in volatile token prices, making it difficult for users to buy or sell tokens without significant slippage.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> Our SafeLaunch mechanism allows for you to build liquidity over five-stages of token sales and will automatically lock 
+        all of the liquidity earned with the remaining tokens you created. 
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Not Earning Transaction / Swap Fees</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Poor liquidity pairing or low trading volumes can result in missed opportunities for earning transaction or swap fees, reducing the project's revenue stream.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> A lack of consistent fee income may make it difficult to maintain project sustainability over time.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> Token creators earn fees on every transaction forever.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Not Earning Gas Fees</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Not all blockchains return a portion of the gas fees that their dApp generated back to the dApp.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> Token creators will earn gas fees on every transaction forever when deployed on the Sonic blockchain.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Not having insurance in case of a loss</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> If your token loses value for any reason related to the exchange, will they reimburse you the lost value?
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> We have created an insurance fund that receives a transaction fee from every transaction and will be used
+        to in case of an loss of funds for our token creators to make them and their token holders whole.
+      </div>
+    </li>
+
+  </ul>
+</div>
+
+<div
+  style={{
+    fontSize: "1.7em",
+    borderBottom: "3px solid #ccc",
+    marginBottom: "1.5em",
+    textAlign: "left",
+    paddingBottom: "0.5em",
+  }}
+>
+  Societal Risk
+</div>
+
+<div
+  style={{
+    padding: "1em",
+    marginBottom: "1.5em",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+  }}
+>
+  <h3 style={{ marginBottom: "0.5em", fontWeight: "bold" }}>Risk Exposures:</h3>
+  <ul style={{ paddingLeft: "1.5em" }}>
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Concentrated Holders</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> A small group of large token holders may have the power to manipulate the market price.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> The centralization of token ownership can deter new users from joining the ecosystem due to fear of market manipulation.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> Anti-whale mechanisms are implemented to limit the number of tokens any single holder can possess to be between %0.01 and 3% of the token supply.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Brand Creation and Recognition</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> A weak or poorly developed brand identity can reduce user trust and engagement, limiting the long-term success of the token.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Failure to create a strong community and positive brand association may result in reduced adoption and interest in the token.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> SafeMemes.fun is designed for the creator and built to allow you to build a brand and to share it with others.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Data Integrity</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Loss, corruption, or unauthorized modification of user data can lead to a lack of trust and potential legal issues.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Factor:</em> Without proper data storage solutions, maintaining long-term integrity and availability of user data can become a challenge.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em><u>Our Risk Control:</u></em> All user-profile data is stored on the Arweave blockchain to ensure immutable, decentralized storage with 100% data integrity and long-term availability.
+         This provides users with confidence that their data will always remain secure and accessible, and that it can be passed on to future generations.
+      </div>
+    </li>
+
+  </ul>
+</div>
+
+<div
+  style={{
+    fontSize: "1.7em",
+    borderBottom: "3px solid #ccc",
+    marginBottom: "1.5em",
+    textAlign: "left",
+    paddingBottom: "0.5em",
+  }}
+>
+  Security Risk
+</div>
+
+<div
+  style={{
+    padding: "1em",
+    marginBottom: "1.5em",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+  }}
+>
+  <h3 style={{ marginBottom: "0.5em", fontWeight: "bold" }}>Risks:</h3>
+  <ul style={{ paddingLeft: "1.5em" }}>
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Programming language</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk:</em> Vulnerabilities or bugs in the programming language used.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Control:</em> All smart contracts are written in Vyper which is
+        designed to reduce errors and exploits.
+      </div>
+    </li>
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong>Exploit</strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk:</em> Possible security exploits in smart contracts.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em>Risk Control:</em> Our SafeMeme and SafeLaunch contracts are built
+        to prevent exploits by using a non-Turing complete programming languagea
+        and by reducing the complexity of the functions and features used
+        throughout the smart contracts. We have also built our contracts around
+        the exploit data provided by inDemniFi which provides insight into
+        historical exploits and how they were later fixed.
+      </div>
+    </li>
+  </ul>
+</div>
