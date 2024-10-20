@@ -1,22 +1,20 @@
 ---
-title: "What are the risks associated with deploying a token?"
+title: "What is rugpull risk and how do we mitigate it?"
 image: /images/blog/risk.png
 date: "2024-10-12"
 authors:
   - SafeMeme Labs
 ---
 
-#### How do you know what the risks are when creating a new token and how to mitigate them?
+#### Understanding Rugpulls and How SafeMemes Mitigates Risks
 
-Most of the risks below can be mitigated with the SafeMeme token and SafeLaunch mechanisms, though we will elaborate
-on how we address all of the risks further below.
-
-When you want to deploy a token, how do you know which blockchain to deploy it on and how do you know
-if you can you create a token that is compatible with the blockchain?
-
-For example, if you chose to deploy a token on the Solana blockchain, you would have to learn the
-progamming language Rust (unless you already knew it) and would have to learn the process of
-deploying a token on Solana, which is not simple or easily done
+In the world of cryptocurrency, a "rugpull" refers to a malicious tactic where liquidity is suddenly withdrawn,
+leaving token holders with worthless assets. Rugpulls can be committed by anyone, not just token creators—large token
+holders can also manipulate the market by selling off large quantities of tokens, causing a sudden collapse in value.
+These vulnerabilities can occur at various levels within the blockchain stack, from the token's creation to its exchange interactions.
+At SafeMemes, we are dedicated to mitigating these risks by providing tools and mechanisms that ensure transparency, security,
+and long-term trust in the tokens launched on our platform. Below, we outline key risk categories associated with token creation
+and how SafeMemes mitigates them for users.
 
 ## Risk Categories
 
@@ -397,11 +395,10 @@ deploying a token on Solana, which is not simple or easily done
       </div>
       <div style={{ marginTop: "0.25em" }}>
         <em>Risk Control:</em> Our SafeMeme and SafeLaunch contracts are built
-        to prevent exploits by using a non-Turing complete programming languagea
-        and by reducing the complexity of the functions and features used
-        throughout the smart contracts. We have also built our contracts around
-        the exploit data provided by inDemniFi which provides insight into
-        historical exploits and how they were later fixed.
+        to prevent exploits by using a non-Turing complete programming language,
+        by reducing the complexity of the functions and features used throughout
+        the smart contracts, and by using historical exploit data and how they
+        were mitigated.
       </div>
     </li>
   </ul>
