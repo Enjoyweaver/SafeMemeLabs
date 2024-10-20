@@ -29,7 +29,7 @@
 
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
-
+    --primary-light: #04c44e;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
@@ -78,7 +78,7 @@
 
     --primary: #1e2a78;
     --primary-foreground: 222.2 47.4% 1.2%;
-
+    --primary-light: #04c44e;
     --secondary: 222.2 47.4% 11.2%;
     --secondary-foreground: 210 40% 98%;
 
@@ -142,7 +142,7 @@
   --button-background: #f0f5f9; /* Similar to the background for subtlety */
   --hover-text: #234f88; /* Contrast against the hover background */
   --hover-subtext: #29285c; /* Subtle hover effect */
-
+  --primary-light: #04c44e;
   --outline-color: #1e2a78;
 }
 
@@ -177,8 +177,16 @@
   --button-background: #3d3d3d;
   --hover-text: #a8b2bb;
   --hover-subtext: #80b3c2;
-
+  --primary-light: #04c44e;
   --outline-color: #a2b2c7;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  @apply dark;
 }
 
 h2 {
