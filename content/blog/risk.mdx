@@ -101,39 +101,89 @@ and long-term trust in the tokens launched on our platform. Below, we outline ke
   <h3 style={{ marginBottom: "1em", fontWeight: "bold" }}>Risk Exposures:</h3>
   <ul style={{ paddingLeft: "1.5em" }}>
     <li style={{ marginBottom: "2.5em" }}>
-        <strong><u>Token Design and Creation</u></strong>
-    <div style={{ marginTop: "0.25em" }}>
-      <em style={{ color: "#d11673" }}>Risk Factor:</em> Designing a token with improper parameters or code vulnerabilities can lead to exploits and inefficiencies.
-    </div>
-    <div style={{ marginTop: "0.25em" }}>
-      <em style={{ color: "#d11673" }}>Risk Factor:</em> Inability to scale or adapt to future requirements, making tokens obsolete.
-    </div>
-    <div style={{ marginTop: "0.25em" }}>
-      <em style={{ color: "#04c44e" }}><u>Our Risk Control:</u></em> Our SafeMeme token is built to protect against known smart contract vulnerabilities.
-    </div>
+      <strong><u>Token Design and Creation</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk Factor:</em> Designing a token with improper parameters or code vulnerabilities can lead to exploits and inefficiencies.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk Factor:</em> Inability to scale or adapt to future requirements, making tokens obsolete.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Our Risk Control:</u></em> Our SafeMeme token is built to protect against known smart contract vulnerabilities.
+      </div>
     </li>
 
     <li style={{ marginBottom: "2.5em" }}>
-    <strong><u>Internal Rugpull</u></strong>
-    <div style={{ marginTop: "0.25em" }}>
-      <em style={{ color: "#d11673" }}>Risk Factor:</em> Founders or project owners withdrawing liquidity suddenly.
-    </div>
-    <div style={{ marginTop: "0.25em" }}>
-      <em style={{ color: "#d11673" }}>Risk Factor:</em> Lack of transparency in liquidity pool governance.
-    </div>
-    <div style={{ marginTop: "0.25em" }}>
-      <em style={{ color: "#04c44e" }}><u>Our Risk Control:</u></em> The SafeLaunch mechanism prevents liquidity from being withdrawn by the token creator.
-    </div>
+      <strong><u>Rugpull via Disabled Transfer Function</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk Factor:</em> Token creators may disable the transfer function, preventing token holders from selling or transferring their tokens.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Our Risk Control:</u></em> Our smart contracts do not allow disabling of the transfer function, ensuring token holders can always transfer or sell their tokens.
+      </div>
     </li>
 
     <li style={{ marginBottom: "2.5em" }}>
-    <strong><u>External Rugpull</u></strong>
-    <div style={{ marginTop: "0.25em" }}>
-      <em style={{ color: "#d11673" }}>Risk Factor:</em> Large token holders selling tokens in a pump-n-dump style.
-    </div>
-    <div style={{ marginTop: "0.25em" }}>
-      <em style={{ color: "#04c44e" }}><u>Our Risk Control:</u></em> The SafeMeme tokens have a max token allowance percentage that is no more than 3% of the token supply, though it could be lower depending on the token creator.
-    </div>
+      <strong><u>Rugpull via Protocol Contract Mint/Admin</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk Factor:</em> Malicious actors may use admin privileges to mint excessive tokens, diluting the value of existing tokens.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Our Risk Control:</u></em> Our contracts are immutable and do not have functions that allow minting additional tokens after deployment.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Rugpull via Presale</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk Factor:</em> Project owners may collect funds during a presale and then abandon the project without delivering tokens or utility.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Our Risk Control:</u></em> Our SafeLaunch mechanism ensures that funds collected during presale stages are automatically locked into liquidity pools, and tokens are distributed according to smart contract rules.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Rugpull via User Tokens</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk Factor:</em> Malicious contracts may contain hidden code that can drain tokens from users' wallets.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Our Risk Control:</u></em> Our contracts are transparent and audited, with no hidden functions that can access users' wallets without permission.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Rugpull via Liquidity Removal from DEX/CEX</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk Factor:</em> Liquidity providers or project owners may withdraw liquidity from exchanges, collapsing the market.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Our Risk Control:</u></em> Liquidity added through our SafeLaunch mechanism is locked and cannot be withdrawn by the token creator, ensuring market stability.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Internal Rugpull</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk Factor:</em> Founders or project owners withdrawing liquidity suddenly.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk Factor:</em> Lack of transparency in liquidity pool governance.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Our Risk Control:</u></em> The SafeLaunch mechanism prevents liquidity from being withdrawn by the token creator.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>External Rugpull</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk Factor:</em> Large token holders selling tokens in a pump-and-dump style.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Our Risk Control:</u></em> SafeMeme tokens have a max token allowance percentage that is no more than 3% of the token supply, though it could be lower depending on the token creator.
+      </div>
     </li>
 
   </ul>
