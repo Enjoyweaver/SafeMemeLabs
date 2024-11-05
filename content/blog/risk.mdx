@@ -438,6 +438,157 @@ and long-term trust in the tokens launched on our platform. Below, we outline ke
       <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> Our SafeMeme and SafeLaunch contracts are built to prevent exploits by using a non-Turing complete programming language, by reducing the complexity of the functions and features used throughout the smart contracts, and by using historical exploit data and how they were mitigated.
     </div>
   </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Vyper's Security Features</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Even with a secure language, improper use can still lead to vulnerabilities.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> Vyper offers features like bounds and overflow checking on array accesses and arithmetic, strong typing with unit support, decidability for gas consumption, and limited pure functions. We leverage these to write secure and efficient smart contracts.
+      </div>
+    </li>
+
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Integer Overflow and Underflow</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Arithmetic operations exceeding variable limits can cause unexpected behavior.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> Vyper includes built-in checks for integer overflows and underflows, preventing these vulnerabilities.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Reentrancy Attacks</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Attackers can exploit recursive calls to re-enter functions, leading to inconsistent contract states.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> Our contracts are designed to be non-reentrant by following best practices and using Vyper's limitations on recursive calls.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Denial of Service with Unbounded Operations</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Unbounded loops or operations can consume excessive gas, causing transaction failures.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> Vyper restricts infinite loops and unbounded operations, mitigating DoS risks.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Unchecked Call Return Values</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Failing to handle errors from external calls can lead to unexpected contract behavior.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> Our contracts explicitly check and handle return values from external calls to ensure reliability.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Exact Balance Dependency</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Relying on exact balances can be problematic due to gas costs or unforeseen state changes.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> We design our contracts to avoid dependencies on exact balances, using safer methods to track and validate funds.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Improper Data Validation</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Inadequate input validation can lead to security breaches and exploits.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> Our contracts enforce strict data validation and sanitization to prevent malicious inputs.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Bad Coding Practices</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Coding errors, bad patterns, deprecated features, misleading code, and missing logic can introduce vulnerabilities.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> We adhere to best coding practices, regularly review code, and avoid deprecated or risky language features.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Gas Costly Operations</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Expensive loops and patterns can lead to failed transactions due to gas limits.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> We optimize our code to minimize gas consumption and avoid costly operations.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Authentication & Access Control Issues</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Using tx.origin for authorization, wrong visibility settings, unprotected self-destruction, and off-chain access control can lead to unauthorized actions.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> We implement robust access controls, avoid using tx.origin, and protect all sensitive functions and state variables appropriately.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Arithmetic Bugs</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Integer division errors, improper token handling, outdated compiler versions, and self-destruct issues can compromise contract integrity.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> By using up-to-date compilers, careful arithmetic operations, and avoiding unnecessary self-destruct calls, we mitigate these risks.
+      </div>
+    </li>
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Missing or Incorrect Variables</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Missing checks, callable initialization variables, and using wrong variables can lead to unintended behavior.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> Rigorous testing and code reviews help ensure all variables and checks are correctly implemented.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Upgradability Attacks</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Improperly designed proxy patterns can be exploited, leading to loss of control over the contract.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> Our contracts are immutable once deployed, removing risks associated with upgradability exploits.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>External Dependencies</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Dependencies on external libraries like OpenZeppelin can introduce vulnerabilities if those libraries have flaws.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> We minimize external dependencies and thoroughly audit any third-party code used in our contracts.
+      </div>
+    </li>
+
+    <li style={{ marginBottom: "2.5em" }}>
+      <strong><u>Architectural Logic Flaws</u></strong>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#d11673" }}>Risk:</em> Lack of validation and improper architectural design can lead to systemic vulnerabilities.
+      </div>
+      <div style={{ marginTop: "0.25em" }}>
+        <em style={{ color: "#04c44e" }}><u>Risk Control:</u></em> We employ best practices in contract architecture, ensuring comprehensive validation and logical consistency throughout.
+      </div>
+    </li>
+
 </ul>
 
 </div>
