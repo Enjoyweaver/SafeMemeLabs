@@ -8,7 +8,7 @@ import { ArweaveWebWallet } from "arweave-wallet-connector"
 import { ethers } from "ethers"
 import { useAccount, useConnect, useSignMessage } from "wagmi"
 
-import MyProfile from "../myprofile/page"
+import MyDashboard from "../mydashboard/page"
 import "./styles.css"
 import ArDB from "ardb"
 
@@ -934,7 +934,7 @@ const ProfilePage: React.FC = () => {
       </div>
       {isConnected && selectedProfile ? (
         <>
-          <MyProfile />
+          <MyDashboard />
         </>
       ) : (
         <p></p>

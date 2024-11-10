@@ -1,13 +1,13 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { useSelectedLayoutSegment } from "next/navigation"
 
 import { MainNavItem } from "types"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import { Icons } from "@/components/icons"
 import { MobileNav } from "@/components/mobile-nav"
 
 interface MainNavProps {
@@ -23,7 +23,13 @@ export function MainNav({ items, children }: MainNavProps) {
     <div className="flex items-center gap-6 md:gap-10">
       {/* Logo and Site Name */}
       <Link href="/" className="hidden items-center space-x-2 md:flex">
-        <Icons.logo />
+        <Image
+          src="/images/SafeMemeLogo.png"
+          alt="SafeMeme Logo"
+          width={40} // Set width of the logo
+          height={40} // Set height of the logo
+          className="h-10 w-10" // Adjust to match your design
+        />
         <span className="hidden font-bold sm:inline-block">
           {siteConfig.name}
         </span>
@@ -66,7 +72,23 @@ export function MainNav({ items, children }: MainNavProps) {
         className="flex items-center space-x-2 md:hidden"
         onClick={() => setShowMobileMenu(!showMobileMenu)}
       >
-        {showMobileMenu ? <Icons.close /> : <Icons.logo />}
+        {showMobileMenu ? (
+          <Image
+            src="/images/SafeMemeLogo.png"
+            alt="SafeMeme Logo"
+            width={40}
+            height={40}
+            className="h-8 w-8"
+          />
+        ) : (
+          <Image
+            src="/images/SafeMemeLogo.png"
+            alt="SafeMeme Logo"
+            width={40}
+            height={40}
+            className="h-8 w-8"
+          />
+        )}
         <span className="font-bold">Menu</span>
       </button>
 

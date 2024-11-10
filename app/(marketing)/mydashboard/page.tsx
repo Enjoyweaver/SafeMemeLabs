@@ -87,7 +87,7 @@ interface NFT {
   chainId: number
 }
 
-const MyProfile: React.FC = () => {
+const MyDashboard: React.FC = () => {
   const [tokens, setTokens] = useState<Token[]>([])
   const [userAddress, setUserAddress] = useState<string>("")
   const [provider, setProvider] =
@@ -1289,6 +1289,46 @@ const MyProfile: React.FC = () => {
       }
     }
 
+    const initializeBasicSafeLaunch = async (tokenAddress: string) => {
+      if (!provider || !chainId) return
+      const signer = provider.getSigner()
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        signer
+      )
+
+      try {
+        const tx = await tokenContract.initializeBasicSafeLaunch()
+        await tx.wait()
+        await fetchTokens(provider, userAddress, chainId)
+        alert("Basic SafeLaunch initialized successfully!")
+      } catch (error) {
+        console.error("Error initializing Basic SafeLaunch:", error)
+        alert("Failed to initialize Basic SafeLaunch. Please try again.")
+      }
+    }
+
+    const startBasicSafeLaunch = async (tokenAddress: string) => {
+      if (!provider || !chainId) return
+      const signer = provider.getSigner()
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        SafeMemeABI,
+        signer
+      )
+
+      try {
+        const tx = await tokenContract.startBasicSafeLaunch()
+        await tx.wait()
+        await fetchTokens(provider, userAddress, chainId)
+        alert("Basic SafeLaunch started successfully!")
+      } catch (error) {
+        console.error("Error starting Basic SafeLaunch:", error)
+        alert("Failed to start Basic SafeLaunch. Please try again.")
+      }
+    }
+
     return (
       <Modal
         isOpen={isOpen}
@@ -1834,6 +1874,25 @@ const MyProfile: React.FC = () => {
                         {parseFloat(token.maxTokens).toLocaleString()}
                       </p>
 
+                      <div className="safeLaunch-selection">
+                        <label htmlFor={`safeLaunchOption-${token.address}`}>
+                          Choose SafeLaunch Option:
+                        </label>
+                        <select
+                          id={`safeLaunchOption-${token.address}`}
+                          onChange={(e) =>
+                            setSelectedSafeLaunchOption(
+                              token.address,
+                              e.target.value
+                            )
+                          }
+                          defaultValue="advanced"
+                        >
+                          <option value="basic">Basic SafeLaunch</option>
+                          <option value="advanced">Advanced SafeLaunch</option>
+                        </select>
+                      </div>
+
                       {!token.safeLaunchInitialized && (
                         <p>
                           <strong>SafeLaunch Status:</strong> Not Started
@@ -1869,15 +1928,13 @@ const MyProfile: React.FC = () => {
                             </a>
                           </p>
                           <p>
-                            <strong>Available {token.symbol}</strong>
-                            <a>
-                              {(
-                                parseFloat(token.totalSupply) * 0.1
-                              ).toLocaleString(undefined, {
-                                minimumFractionDigits: 0,
-                                maximumFractionDigits: 2,
-                              })}
-                            </a>
+                            <strong>Available {token.symbol}</strong>{" "}
+                            {(
+                              parseFloat(token.totalSupply) * 0.1
+                            ).toLocaleString(undefined, {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 2,
+                            })}
                           </p>
 
                           {token.tokenB &&
@@ -1949,7 +2006,7 @@ const MyProfile: React.FC = () => {
                                       Stage {index + 1}
                                     </h4>
 
-                                    {stage.status === "3" ? (
+                                    {stage.status === 3 ? (
                                       <div className="stage-completed">
                                         <p>Stage Completed</p>
                                       </div>
@@ -2041,7 +2098,6 @@ const MyProfile: React.FC = () => {
                                                 {token.symbol}
                                               </span>
                                             </p>
-
                                             <p>
                                               Price:{" "}
                                               {(
@@ -2070,12 +2126,8 @@ const MyProfile: React.FC = () => {
                                               {token.tokenB &&
                                               token.tokenB !==
                                                 "0x0000000000000000000000000000000000000000" &&
-                                              !stage.status
-                                                .tokenBRequired_set ? (
+                                              !stage.tokenBRequired_set ? (
                                                 <>
-                                                  {console.log(
-                                                    `Stage status: ${stage.status}`
-                                                  )}
                                                   {stage.status === 1 && (
                                                     <>
                                                       <input
@@ -2143,7 +2195,11 @@ const MyProfile: React.FC = () => {
                     {!token.safeLaunchInitialized && (
                       <button
                         className="buy-token-button"
-                        onClick={() => initializeSafeLaunch(token.address)}
+                        onClick={() =>
+                          selectedSafeLaunchOptions[token.address] === "basic"
+                            ? initializeBasicSafeLaunch(token.address)
+                            : initializeSafeLaunch(token.address)
+                        }
                       >
                         Initialize SafeLaunch
                       </button>
@@ -2152,7 +2208,11 @@ const MyProfile: React.FC = () => {
                       !token.safeLaunchStarted && (
                         <button
                           className="buy-token-button"
-                          onClick={() => startSafeLaunch(token.address)}
+                          onClick={() =>
+                            selectedSafeLaunchOptions[token.address] === "basic"
+                              ? startBasicSafeLaunch(token.address)
+                              : startSafeLaunch(token.address)
+                          }
                         >
                           Start SafeLaunch
                         </button>
@@ -2178,4 +2238,4 @@ const MyProfile: React.FC = () => {
   )
 }
 
-export default MyProfile
+export default MyDashboard
