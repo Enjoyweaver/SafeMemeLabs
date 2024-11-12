@@ -29,13 +29,10 @@ Here, tokens are allocated to specialized contracts (Locker and Manager) and dep
 ## App Features
 
 - Authentication using **NextAuth.js**
-- ORM using **Prisma**
 - Database on **Supabase**
 - UI Components built using **Radix UI**
 - Documentation and blog using **MDX** and **Contentlayer**
-- Subscriptions using **Stripe**
 - Styled using **Tailwind CSS**
-- Validations using **Zod**
 - Written in **TypeScript**
 
 $$\      $$\                                    
