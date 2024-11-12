@@ -59,6 +59,14 @@ export function MainNav({ items, children }: MainNavProps) {
       {/* Flex Spacer */}
       <div className="grow" />
 
+      {/* How to Get Started Link */}
+      <Link
+        href="/getstarted"
+        className="hidden items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm md:flex"
+      >
+        How to Get Started
+      </Link>
+
       {/* Profile Link */}
       <Link
         href="/profile"
