@@ -8,6 +8,7 @@ import { ArweaveWebWallet } from "arweave-wallet-connector"
 import { ethers } from "ethers"
 import { useAccount, useConnect, useSignMessage } from "wagmi"
 
+import Factory from "../create/page"
 import MyDashboard from "../mydashboard/page"
 import "./styles.css"
 import ArDB from "ardb"
@@ -313,7 +314,15 @@ const ProfilePage: React.FC = () => {
       }
       setWalletInfo({ address, jwk: null })
       setIsConnected(true)
+      localStorage.setItem("arweaveAddress", address) // Store in localStorage
       console.log("Arweave Wallet connected. Address:", address)
+
+      // Connect the account after the wallet is connected
+      await account.connect()
+      console.log("Account connected via Arweave Web Wallet.")
+
+      // Fetch profiles after connecting the account
+      fetchAllArProfiles(address)
     } catch (error) {
       console.error("Error connecting wallet:", error)
       alert("Failed to connect Arweave.app Wallet.")
@@ -934,6 +943,7 @@ const ProfilePage: React.FC = () => {
       </div>
       {isConnected && selectedProfile ? (
         <>
+          <Factory />
           <MyDashboard />
         </>
       ) : (

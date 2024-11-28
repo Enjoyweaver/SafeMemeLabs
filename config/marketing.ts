@@ -19,10 +19,10 @@ export const marketingConfig: MarketingConfig = {
       title: "All Tokens",
       href: "/alltokens",
     },
-    {
-      title: "Create Tokens",
-      href: "/create",
-    },
+    //{
+    //  title: "Create Tokens",
+    //   href: "/create",
+    // },
 
     //{
     //  title: "My Profile",

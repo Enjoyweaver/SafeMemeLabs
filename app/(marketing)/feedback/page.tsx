@@ -47,6 +47,16 @@ const FeedbackPage = () => {
   const [feedback, setFeedback] = useState(feedbackInitialState)
   const [checklistItems, setChecklistItems] = useState([
     {
+      text: "Update persistent Arweave wallet login state",
+      completed: false,
+      status: "open",
+    },
+    {
+      text: "Implement basic and advanced SafeLaunch functionality",
+      completed: false,
+      status: "open",
+    },
+    {
       text: "Integrate HNDL into the users profile",
       completed: false,
       status: "open",
