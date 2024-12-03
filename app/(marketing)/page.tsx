@@ -1,9 +1,13 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 
 import { env } from "@/env.mjs"
 import { siteConfig } from "@/config/site"
 import Sidebar from "@/components/sidebar"
+
+import WalletClient from "./walletclient"
 
 async function getGitHubStars(): Promise<string | null> {
   try {
@@ -89,6 +93,7 @@ export default async function IndexPage() {
             </a>
             , as we continue to evolve our tools and best practices.
           </p>
+          <WalletClient />
         </div>
       </section>
       <section className="quando-regular container py-8 md:py-12 lg:py-2">
