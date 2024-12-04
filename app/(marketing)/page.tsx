@@ -93,7 +93,6 @@ export default async function IndexPage() {
             </a>
             , as we continue to evolve our tools and best practices.
           </p>
-          <WalletClient />
         </div>
       </section>
       <section className="quando-regular container py-8 md:py-12 lg:py-2">
@@ -168,6 +167,7 @@ export default async function IndexPage() {
               they are free! Additionally, leveraging Arweave's decentralized
               storage guarantees the immutability and longevity of your data.
             </p>
+            <WalletClient />
           </div>
         </section>
 

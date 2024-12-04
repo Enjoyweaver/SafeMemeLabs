@@ -11,7 +11,7 @@ export default function WalletClient() {
   return (
     <>
       {!address ? (
-        <button onClick={connect}>Connect Wallet</button>
+        <button onClick={connect}>Connect or Create Your Arweave Wallet</button>
       ) : (
         <div>
           <p>Connected Address: {address}</p>
