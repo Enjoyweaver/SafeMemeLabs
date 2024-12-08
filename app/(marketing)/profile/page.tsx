@@ -128,6 +128,7 @@ const ProfilePage: React.FC = () => {
       const transactions = await ardb
         .search("transactions")
         .tag("App-Name", "SafeMemes.fun")
+        .limit(100000)
         .find()
 
       const handleNames: string[] = []
@@ -139,10 +140,11 @@ const ProfilePage: React.FC = () => {
             string: true,
           })
 
-          const profile = JSON.parse(txData)
+          const parsedData = JSON.parse(txData)
+          const profileData = parsedData.profile || parsedData
 
-          if (profile.handleName) {
-            handleNames.push(profile.handleName)
+          if (profileData.handleName) {
+            handleNames.push(profileData.handleName)
           }
         } catch (parseError) {
           console.error(`Error parsing transaction ${tx.id}:`, parseError)
@@ -191,8 +193,9 @@ const ProfilePage: React.FC = () => {
       await account.connect()
 
       const tx = await arweave.createTransaction({
-        data: JSON.stringify({ profile: user.profile }),
+        data: JSON.stringify(user.profile),
       })
+
       tx.addTag("App-Name", "SafeMemes.fun")
 
       const result = await window.arweaveWallet.dispatch(tx)

@@ -25,9 +25,7 @@ type Profile = {
   handle: string
   name: string
   avatarURL: string
-  links: {
-    [key: string]: string
-  }
+  links: { [key: string]: string }
 }
 
 type TokenInfo = {
@@ -92,6 +90,12 @@ export default function Dashboard(): JSX.Element {
     "11155111": "Sepolia",
   }
 
+  const arweave = Arweave.init({
+    host: "arweave.net",
+    port: 443,
+    protocol: "https",
+  })
+
   useEffect(() => {
     setIsClient(true)
 
@@ -113,12 +117,6 @@ export default function Dashboard(): JSX.Element {
     }
   }, [selectedChainId])
 
-  const arweave = Arweave.init({
-    host: "arweave.net",
-    port: 443,
-    protocol: "https",
-  })
-
   useEffect(() => {
     fetchAllProfiles()
     fetchProfileCount()
@@ -127,51 +125,105 @@ export default function Dashboard(): JSX.Element {
   const fetchAllProfiles = async () => {
     try {
       const ardb = new ArDB(arweave)
-      const transactions = await ardb
+      // Increase limit to try to get all transactions in one go if small enough
+      // Otherwise, we'll implement pagination
+      let allTxs: any[] = []
+      let res = await ardb
         .search("transactions")
         .tag("App-Name", "SafeMemes.fun")
+        .limit(1000)
         .find()
 
-      console.log(`Fetched ${transactions.length} transactions.`)
+      allTxs = allTxs.concat(res)
 
-      if (transactions.length === 0) {
+      // Check if there's pagination needed
+      while (res && res.length === 1000) {
+        // Attempt to paginate
+        ardb.cursor(res[res.length - 1].id)
+        res = await ardb.next()
+        if (res && res.length > 0) {
+          allTxs = allTxs.concat(res)
+        }
+      }
+
+      console.log(
+        `Fetched ${allTxs.length} transactions (potentially paginated).`
+      )
+
+      if (allTxs.length === 0) {
         console.warn(
           "No transactions found with the tag 'App-Name: SafeMemes.fun'."
         )
         return
       }
 
-      const profilesMap = new Map()
+      const profilesMap = new Map<string, Profile>()
 
-      for (const tx of transactions) {
+      // To handle troublesome transactions, we might try multiple attempts
+      for (const tx of allTxs) {
+        let txData: string | null = null
         try {
-          const dataString = await arweave.transactions.getData(tx.id, {
-            decode: true,
-            string: true,
-          })
-          const data = JSON.parse(dataString)
-
-          console.log(`Transaction ID: ${tx.id}`, data)
-
-          if (data.handleName && data.name) {
-            if (!profilesMap.has(data.handleName)) {
-              profilesMap.set(data.handleName, {
-                handle: data.handleName,
-                name: data.name,
-                avatarURL: data.avatar
-                  ? `https://arweave.net/${data.avatar}`
-                  : "",
-                links: data.links || {},
-              })
-              console.log(`Added profile: ${data.handleName}`)
-            }
+          txData = await loadTransactionData(arweave, tx.id)
+        } catch (err) {
+          console.warn(
+            `Failed to load data for transaction ${tx.id} on first attempt:`,
+            err
+          )
+          // Optional: Retry logic if desired
+          try {
+            txData = await loadTransactionData(arweave, tx.id)
+          } catch (retryErr) {
+            console.warn(`Second attempt failed for ${tx.id}:`, retryErr)
           }
+        }
+
+        if (!txData) {
+          console.warn(`Skipping transaction ${tx.id} due to no data.`)
+          continue
+        }
+
+        let data: any
+        try {
+          data = JSON.parse(txData)
         } catch (parseError) {
-          console.warn(`Failed to parse transaction ${tx.id}:`, parseError)
+          console.warn(`Failed to parse JSON for ${tx.id}:`, parseError)
+          continue
+        }
+
+        const profileData = data.profile || data
+        const handleName = profileData.handleName
+        const name = profileData.name
+
+        // If handleName is missing, we skip, but log it for debugging
+        if (!handleName) {
+          console.log(`Transaction ${tx.id} has no handleName, skipping.`)
+          continue
+        }
+
+        // If name is missing, we can still display the profile by just using the handle
+        const displayName = name || "Unnamed"
+
+        // If we already have this handleName, we won't overwrite it,
+        // assuming the first found is the original creation.
+        // If you want to update profiles with the latest transaction, change logic here.
+        if (!profilesMap.has(handleName)) {
+          profilesMap.set(handleName, {
+            handle: handleName,
+            name: displayName,
+            avatarURL: profileData.avatar
+              ? `https://arweave.net/${profileData.avatar}`
+              : "",
+            links: profileData.links || {},
+          })
+          console.log(`Added/Updated profile: ${handleName}`)
         }
       }
 
       const fetchedProfiles = Array.from(profilesMap.values())
+
+      // Sort by handle for consistent display
+      fetchedProfiles.sort((a, b) => a.handle.localeCompare(b.handle))
+
       setProfiles(fetchedProfiles)
       console.log("Fetched profiles:", fetchedProfiles)
     } catch (error) {
@@ -179,31 +231,73 @@ export default function Dashboard(): JSX.Element {
     }
   }
 
+  // A helper function to load transaction data robustly
+  async function loadTransactionData(
+    arweave: Arweave,
+    txId: string
+  ): Promise<string> {
+    try {
+      // Attempt direct fetch
+      return await arweave.transactions.getData(txId, {
+        decode: true,
+        string: true,
+      })
+    } catch (err) {
+      console.warn(
+        `Error fetching data from ${txId} directly, trying gateway fallback:`,
+        err
+      )
+      // We can implement other gateways or strategies here if needed
+      throw err
+    }
+  }
+
   const fetchProfileCount = async () => {
     try {
       const ardb = new ArDB(arweave)
-      const transactions = await ardb
+      let allTxs: any[] = []
+      let res = await ardb
         .search("transactions")
         .tag("App-Name", "SafeMemes.fun")
+        .limit(1000)
         .find()
+
+      allTxs = allTxs.concat(res)
+
+      while (res && res.length === 1000) {
+        ardb.cursor(res[res.length - 1].id)
+        res = await ardb.next()
+        if (res && res.length > 0) {
+          allTxs = allTxs.concat(res)
+        }
+      }
+
+      console.log(`Fetched ${allTxs.length} transactions for counting.`)
 
       const handleNames: string[] = []
 
-      for (const tx of transactions) {
+      for (const tx of allTxs) {
+        let txData: string | null = null
         try {
-          const txData = await arweave.transactions.getData(tx.id, {
-            decode: true,
-            string: true,
-          })
-
-          const profile = JSON.parse(txData)
-
-          if (profile.handleName) {
-            handleNames.push(profile.handleName)
-          }
-        } catch (parseError) {
-          console.error(`Error parsing transaction ${tx.id}:`, parseError)
+          txData = await loadTransactionData(arweave, tx.id)
+        } catch (err) {
+          console.warn(`Failed to load data for counting from ${tx.id}:`, err)
           continue
+        }
+
+        if (!txData) continue
+
+        let parsedData: any
+        try {
+          parsedData = JSON.parse(txData)
+        } catch (parseErr) {
+          console.error(`Error parsing transaction ${tx.id}:`, parseErr)
+          continue
+        }
+
+        const profileData = parsedData.profile || parsedData
+        if (profileData.handleName) {
+          handleNames.push(profileData.handleName)
         }
       }
 
@@ -284,7 +378,8 @@ export default function Dashboard(): JSX.Element {
           }
         } catch (exchangeError) {
           console.warn(
-            `Exchange not yet created or initialized for token ${tokenAddress}`
+            `Exchange not initialized for token ${tokenAddress}:`,
+            exchangeError
           )
         }
 
@@ -343,8 +438,8 @@ export default function Dashboard(): JSX.Element {
 
         const tokenSymbol = await tokenContract.symbol()
         const tokenName = await tokenContract.name()
-        const ethBalance = await provider.getBalance(dexAddress) // get ETH balance
-        const tokenBalance = await tokenContract.balanceOf(dexAddress) // get Token balance
+        const ethBalance = await provider.getBalance(dexAddress)
+        const tokenBalance = await tokenContract.balanceOf(dexAddress)
 
         exchangeList.push({
           tokenAddress,
@@ -370,7 +465,6 @@ export default function Dashboard(): JSX.Element {
     return `${blockExplorerAddress[selectedChainId]}${address}`
   }
 
-  // Calculate totals
   const totalTokens = tokens.length
   const totalTransactions = exchanges.length
   const stageCounts = {
@@ -394,7 +488,7 @@ export default function Dashboard(): JSX.Element {
       )
 
       const exchangeFactoryAddress = await factoryContract.exchangeFactory()
-      const tokenFactoryAddress = factoryAddress // TokenFactory contract's own address
+      const tokenFactoryAddress = factoryAddress
 
       return { exchangeFactoryAddress, tokenFactoryAddress }
     } catch (error) {
