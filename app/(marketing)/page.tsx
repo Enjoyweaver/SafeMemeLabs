@@ -1,13 +1,9 @@
-"use client"
-
 import Image from "next/image"
 import Link from "next/link"
 
 import { env } from "@/env.mjs"
 import { siteConfig } from "@/config/site"
 import Sidebar from "@/components/sidebar"
-
-import WalletClient from "./walletclient"
 
 async function getGitHubStars(): Promise<string | null> {
   try {
@@ -167,7 +163,6 @@ export default async function IndexPage() {
               they are free! Additionally, leveraging Arweave's decentralized
               storage guarantees the immutability and longevity of your data.
             </p>
-            <WalletClient />
           </div>
         </section>
 

@@ -8,9 +8,7 @@ import { ArweaveWebWallet } from "arweave-wallet-connector"
 import { ethers } from "ethers"
 import { useAccount, useConnect, useSignMessage } from "wagmi"
 
-import Factory from "../create/page"
 import MyDashboard from "../mydashboard/page"
-import { useWallet } from "../walletcontext"
 import "./styles.css"
 import ArDB from "ardb"
 
@@ -62,8 +60,10 @@ const ProfilePage: React.FC = () => {
   })
 
   const [walletInfo, setWalletInfo] = useState<WalletInfo | null>(null)
-  const { address, connect, disconnect, arweaveWallet } = useWallet()
-
+  const [arweaveWallet, setArweaveWallet] = useState<ArweaveWebWallet | null>(
+    null
+  )
+  const [isConnected, setIsConnected] = useState(false)
   const [existingWallets, setExistingWallets] = useState<WalletInfo[]>([])
   const [isSquare, setIsSquare] = useState(false)
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
@@ -99,23 +99,24 @@ const ProfilePage: React.FC = () => {
   }, [arweaveWallet])
 
   useEffect(() => {
-    const initializeWalletConnection = async () => {
-      if (address && arweaveWallet) {
-        try {
-          setWalletInfo({ address, jwk: null })
-          console.log("Automatically connected to Arweave Wallet:", address)
-
-          // Connect account and fetch profiles
-          await account.connect()
-          fetchAllArProfiles(address)
-        } catch (error) {
-          console.error("Error initializing wallet connection:", error)
-        }
+    const connectAccount = async () => {
+      try {
+        await account.connect()
+        console.log("Account connected via Arweave Web Wallet.")
+        fetchAllArProfiles(walletInfo?.address || "")
+      } catch (error) {
+        console.error(
+          "Error connecting account with Arweave Web Wallet:",
+          error
+        )
+        alert("Failed to connect account with Arweave Web Wallet.")
       }
     }
 
-    initializeWalletConnection()
-  }, [address, arweaveWallet])
+    if (isConnected) {
+      connectAccount()
+    }
+  }, [isConnected])
 
   useEffect(() => {
     fetchProfileCount()
@@ -299,47 +300,52 @@ const ProfilePage: React.FC = () => {
 
   const handleConnectWallet = async () => {
     try {
-      await connect()
-      const walletAddress = address
-      if (!walletAddress || !arweaveWallet) {
-        throw new Error("Wallet address or instance not found.")
+      const wallet = new ArweaveWebWallet({
+        name: "SafeMeme Labs",
+        logo: "URL to your app logo",
+      })
+      wallet.setUrl("https://arweave.app")
+      await wallet.connect()
+      setArweaveWallet(wallet)
+      const address = wallet.address
+      if (!address) {
+        throw new Error("Wallet address not found.")
       }
-      setWalletInfo({ address: walletAddress, jwk: null })
-
-      // Connect account and fetch profiles
-      await account.connect()
-      fetchAllArProfiles(walletAddress)
+      setWalletInfo({ address, jwk: null })
+      setIsConnected(true)
+      console.log("Arweave Wallet connected. Address:", address)
     } catch (error) {
       console.error("Error connecting wallet:", error)
-      alert("Failed to connect Arweave Wallet.")
+      alert("Failed to connect Arweave.app Wallet.")
     }
   }
 
-  const handleDisconnect = async () => {
-    try {
-      await disconnect()
-      setWalletInfo(null)
-      setProfileData({
-        handleName: "",
-        name: "",
-        bio: "",
-        avatar: "",
-        avatarURL: "",
-        banner: "",
-        bannerURL: "",
-        email: "",
-        website: "",
-        links: {},
-        wallets: {},
-      })
-      setSelectedImage(null)
-      setSelectedBanner(null)
-      setArProfiles([])
-      setSelectedProfile(null)
-      console.log("User disconnected and profile reset.")
-    } catch (error) {
-      console.error("Error disconnecting wallet:", error)
+  const handleDisconnect = () => {
+    if (arweaveWallet) {
+      arweaveWallet.disconnect()
+      setArweaveWallet(null)
+      console.log("Arweave Wallet disconnected.")
     }
+    setWalletInfo(null)
+    setIsConnected(false)
+    setProfileData({
+      handleName: "",
+      name: "",
+      bio: "",
+      avatar: "",
+      avatarURL: "",
+      banner: "",
+      bannerURL: "",
+      email: "",
+      website: "",
+      links: {},
+      wallets: {},
+    })
+    setSelectedImage(null)
+    setSelectedBanner(null)
+    setArProfiles([])
+    setSelectedProfile(null)
+    console.log("User disconnected and profile reset.")
   }
 
   const handleBannerSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -536,7 +542,7 @@ const ProfilePage: React.FC = () => {
       <div className="profile-page">
         <div className="profile-section">
           <h2>Your Profile</h2>
-          {address && selectedProfile ? (
+          {isConnected && selectedProfile ? (
             <>
               <div className="profile-banner">
                 <label className="image-upload-label">
@@ -916,15 +922,17 @@ const ProfilePage: React.FC = () => {
             </div>
           )}
           <div className="intro">
-            {!address ? (
-              <button onClick={connect}>Log In or Create Your Profile</button>
-            ) : (
-              <button onClick={disconnect}>Disconnect Wallet</button>
+            {!isConnected && (
+              <>
+                <button onClick={handleConnectWallet}>
+                  Log In or Create Your Profile
+                </button>
+              </>
             )}
           </div>
         </div>
       </div>
-      {address && selectedProfile ? (
+      {isConnected && selectedProfile ? (
         <>
           <MyDashboard />
         </>
