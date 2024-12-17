@@ -137,6 +137,16 @@ const MyDashboard: React.FC = () => {
   const [totalFrames, setTotalFrames] = useState(0)
   const [totalSafeMemes, setTotalSafeMemes] = useState(0)
   const [totalSafeLaunched, setTotalSafeLaunched] = useState(0)
+  const [selectedSafeLaunchOptions, setSelectedSafeLaunchOptions] = useState<
+    Record<string, string>
+  >({})
+
+  const setSelectedSafeLaunchOption = (address: string, value: string) => {
+    setSelectedSafeLaunchOptions((prev) => ({
+      ...prev,
+      [address]: value,
+    }))
+  }
 
   useEffect(() => {
     const fetchFees = async () => {
