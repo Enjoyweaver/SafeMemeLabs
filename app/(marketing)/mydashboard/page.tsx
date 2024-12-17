@@ -1896,7 +1896,7 @@ const MyDashboard: React.FC = () => {
                               e.target.value
                             )
                           }
-                          defaultValue="advanced"
+                          defaultValue="basic"
                         >
                           <option value="basic">Basic SafeLaunch</option>
                           <option value="advanced">Advanced SafeLaunch</option>
@@ -2214,6 +2214,7 @@ const MyDashboard: React.FC = () => {
                         Initialize SafeLaunch
                       </button>
                     )}
+
                     {token.safeLaunchInitialized &&
                       !token.safeLaunchStarted && (
                         <button
