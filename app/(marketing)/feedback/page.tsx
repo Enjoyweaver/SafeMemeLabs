@@ -47,6 +47,16 @@ const FeedbackPage = () => {
   const [feedback, setFeedback] = useState(feedbackInitialState)
   const [checklistItems, setChecklistItems] = useState([
     {
+      text: "Redeploy contracts and test basic and advanced functionality",
+      completed: false,
+      status: "open",
+    },
+    {
+      text: "Confirm SafeMeme and token B are set automatically for each stage",
+      completed: false,
+      status: "open",
+    },
+    {
       text: "Update persistent Arweave wallet login state",
       completed: false,
       status: "open",
@@ -251,11 +261,6 @@ const FeedbackPage = () => {
       },
       {
         text: "Create a SafeDEX",
-        votes: 0,
-        address: SAFEMEME_WALLET_ADDRESS,
-      },
-      {
-        text: "Update smart contracts to Vyper",
         votes: 0,
         address: SAFEMEME_WALLET_ADDRESS,
       },
